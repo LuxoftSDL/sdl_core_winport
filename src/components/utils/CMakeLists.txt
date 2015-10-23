@@ -40,7 +40,69 @@ include_directories (
   ${LOG4CXX_INCLUDE_DIRECTORY}
 )
 
-set (SOURCES
+if(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
+
+    file (GLOB inc ${UTILS_INCLUDE_DIR}/utils/*.h) 
+    set (src
+            ${UTILS_SRC_DIR}/bitstream.cc
+            ${UTILS_SRC_DIR}/conditional_variable_posix.cc
+            ${UTILS_SRC_DIR}/file_system.cc
+            ${UTILS_SRC_DIR}/lock_posix.cc
+            ${UTILS_SRC_DIR}/rwlock_posix.cc
+            ${UTILS_SRC_DIR}/date_time.cc
+            ${UTILS_SRC_DIR}/system.cc
+            ${UTILS_SRC_DIR}/resource_usage.cc
+            ${UTILS_SRC_DIR}/appenders_loader.cc
+            ${UTILS_SRC_DIR}/gen_hash.cc
+    )
+
+#    add_subdirectory(./src/sqlite_wrapper)
+    string( REPLACE / \\ group ${inc} )
+    source_group("Header Files" FILES ${inc} )
+    string( REPLACE / \\ group ${src} )
+    source_group("Source Files" FILES ${src} )  
+    add_library("Utils" ${src}
+                        ${inc})
+    target_link_libraries("Utils" ${LIBRARIES})
+    
+else()
+    if(ENABLE_LOG)
+      list(APPEND SOURCES
+        ${UTILS_SRC_DIR}/push_log.cc
+        ${UTILS_SRC_DIR}/log_message_loop_thread.cc
+        ${UTILS_SRC_DIR}/logger_status.cc
+        ${UTILS_SRC_DIR}/auto_trace.cc
+        ${UTILS_SRC_DIR}/logger.cc
+      )
+    endif()
+
+    if (BUILD_BACKTRACE_SUPPORT)
+        list(APPEND SOURCES
+        ${UTILS_SRC_DIR}/back_trace.cc
+        )
+    endif()
+
+    if (CMAKE_SYSTEM_NAME STREQUAL "QNX")
+        list(APPEND SOURCES
+        ${UTILS_SRC_DIR}/threads/pulse_thread_delegate.cc
+        )
+    endif()
+
+    add_library("Utils" ${SOURCES})
+
+    if (CMAKE_SYSTEM_NAME STREQUAL "QNX")
+        # --- QDB Wrapper 
+        add_subdirectory(./src/qdb_wrapper)
+    else ()
+        # --- SQLite Wrapper
+        add_subdirectory(./src/sqlite_wrapper)
+    endif ()
+
+    if(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
+     list(APPEND LIBRARIES dl) 
+    endif()
+
+    set (SOURCES
     ${UTILS_SRC_DIR}/bitstream.cc
     ${UTILS_SRC_DIR}/conditional_variable_posix.cc
     ${UTILS_SRC_DIR}/file_system.cc
@@ -58,67 +120,32 @@ set (SOURCES
     ${UTILS_SRC_DIR}/gen_hash.cc
 )
 
-if(ENABLE_LOG)
-  list(APPEND SOURCES
-    ${UTILS_SRC_DIR}/push_log.cc
-    ${UTILS_SRC_DIR}/log_message_loop_thread.cc
-    ${UTILS_SRC_DIR}/logger_status.cc
-    ${UTILS_SRC_DIR}/auto_trace.cc
-    ${UTILS_SRC_DIR}/logger.cc
-  )
+
+    if(ENABLE_LOG)
+      list(APPEND LIBRARIES log4cxx -L${LOG4CXX_LIBS_DIRECTORY})
+      list(APPEND LIBRARIES apr-1 -L${APR_LIBS_DIRECTORY})
+      list(APPEND LIBRARIES aprutil-1 -L${APR_UTIL_LIBS_DIRECTORY})
+      list(APPEND LIBRARIES ConfigProfile)
+
+      ADD_DEPENDENCIES(Utils install-3rd_party_logger)
+    endif()
+
+    if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
+      target_link_libraries("Utils" pthread ${RTLIB})
+    endif()
+
+    target_link_libraries("Utils" ${LIBRARIES})
+
+
+    if(BUILD_TESTS)
+      add_subdirectory(test)
+    endif()
 endif()
 
-if (BUILD_BACKTRACE_SUPPORT)
-    list(APPEND SOURCES
-    ${UTILS_SRC_DIR}/back_trace.cc
+    install(TARGETS "Utils"
+      DESTINATION bin
+      PERMISSIONS
+        OWNER_READ OWNER_WRITE
+        GROUP_READ
+        WORLD_READ
     )
-endif()
-
-if (CMAKE_SYSTEM_NAME STREQUAL "QNX")
-    list(APPEND SOURCES
-    ${UTILS_SRC_DIR}/threads/pulse_thread_delegate.cc
-    )
-endif()
-
-add_library("Utils" ${SOURCES})
-
-if (CMAKE_SYSTEM_NAME STREQUAL "QNX")
-    # --- QDB Wrapper 
-    add_subdirectory(./src/qdb_wrapper)
-else ()
-    # --- SQLite Wrapper
-    add_subdirectory(./src/sqlite_wrapper)
-endif ()
-
-if(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
- list(APPEND LIBRARIES dl) 
-endif()
-
-
-if(ENABLE_LOG)
-  list(APPEND LIBRARIES log4cxx -L${LOG4CXX_LIBS_DIRECTORY})
-  list(APPEND LIBRARIES apr-1 -L${APR_LIBS_DIRECTORY})
-  list(APPEND LIBRARIES aprutil-1 -L${APR_UTIL_LIBS_DIRECTORY})
-  list(APPEND LIBRARIES ConfigProfile)
-
-  ADD_DEPENDENCIES(Utils install-3rd_party_logger)
-endif()
-
-if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
-  target_link_libraries("Utils" pthread ${RTLIB})
-endif()
-
-target_link_libraries("Utils" ${LIBRARIES})
-
-
-if(BUILD_TESTS)
-  add_subdirectory(test)
-endif()
-
-install(TARGETS "Utils"
-  DESTINATION bin
-  PERMISSIONS
-    OWNER_READ OWNER_WRITE
-    GROUP_READ
-    WORLD_READ
-)
