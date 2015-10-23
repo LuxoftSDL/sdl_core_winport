@@ -42,10 +42,22 @@ include_directories (
   ${LIBUSB_INCLUDE_DIRECTORY}
   ${LOG4CXX_INCLUDE_DIRECTORY}
 )
-if (BUILD_BT_SUPPORT)
-  include_directories(
-  )
-endif()
+if (${CMAKE_SYSTEM_NAME} MATCHES "Windows")
+    file (GLOB_RECURSE inc RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} include/transport_manager/*.h)
+  
+    file( GLOB_RECURSE src RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} src/*.cc )
+    foreach( file ${inc};${src} )
+         get_filename_component( path ${file} PATH )
+         string( REPLACE / \\ group ${path} )
+         source_group( ${group} FILES ${file} )
+     endforeach()
+    add_library("TransportManager" ${inc} ${src} )    
+    target_link_libraries("TransportManager" ProtocolLibrary ${inc} ${src})
+else()
+    if (BUILD_BT_SUPPORT)
+      include_directories(
+      )
+    endif()
 
 set (SOURCES
   ${TM_SRC_DIR}/transport_manager_impl.cc
@@ -125,9 +137,10 @@ endif()
 if (CMAKE_SYSTEM_NAME STREQUAL "QNX")
 endif()
 
-add_library("transport_manager" ${SOURCES}
-        ${TRANSPORT_MANAGER_SOURCES}
-)
+    add_library("transport_manager" ${SOURCES}
+            ${TRANSPORT_MANAGER_SOURCES}
+    )
+endif()
 
 if(BUILD_TESTS)
   add_subdirectory(test)

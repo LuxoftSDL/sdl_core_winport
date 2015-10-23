@@ -44,7 +44,7 @@ option(BUILD_AVAHI_SUPPORT "libavahi support" ON)
 option(BUILD_BACKTRACE_SUPPORT "backtrace support" ON)
 option(BUILD_TESTS "Possibility to build and run tests" OFF)
 option(TIME_TESTER "Enable profiling time test util" ON)
-option(ENABLE_LOG "Logging feature" ON)
+option(ENABLE_LOG "Logging feature" OFF)
 option(ENABLE_GCOV "gcov code coverage feature" OFF)
 option(ENABLE_SANITIZE "Sanitize tool" OFF)
 option(ENABLE_SECURITY "Security Ford protocol protection" ON)
@@ -64,15 +64,18 @@ set(COMPONENTS_DIR ${CMAKE_SOURCE_DIR}/src/components)
 set(SNAPSHOT_TAG 	"$ENV{SNAPSHOT_TAG}")
 
 
-
-if (ARCH_TYPE_OPTION)
-  if (NOT (${ARCH_TYPE_OPTION} STREQUAL "x86") AND NOT (${ARCH_TYPE_OPTION} STREQUAL "armv7"))
-    message(AUTHOR_WARNING "HW architecture is not defined, using x86. Allowed values are x86/armv7 (case sensitive)")
-    set(ARCH_TYPE_OPTION	"x86")
-  endif ()
+if (${CMAKE_SYSTEM_NAME} MATCHES "Windows")
+      set(ARCH_TYPE_OPTION	"x86_64")
 else ()
-    set(ARCH_TYPE_OPTION	"x86")
-endif()
+  if (ARCH_TYPE_OPTION)
+    if (NOT (${ARCH_TYPE_OPTION} STREQUAL "x86") AND NOT (${ARCH_TYPE_OPTION} STREQUAL "armv7"))
+      message(AUTHOR_WARNING "HW architecture is not defined, using x86. Allowed values are x86/armv7 (case sensitive)")
+      set(ARCH_TYPE_OPTION	"x86")
+    endif ()
+  else ()
+      set(ARCH_TYPE_OPTION	"x86")
+  endif()
+endif ()
 
 set(objcopy "objcopy")
 if (OS_TYPE_OPTION)
@@ -144,22 +147,22 @@ endif()
 
 #Jenkins integration section end
 
-add_custom_target(pasa-tarball
-  COMMAND ${CMAKE_SOURCE_DIR}/tools/Utils/export-customer-specific.sh ${CMAKE_SOURCE_DIR} ${CMAKE_BINARY_DIR} pasa
-  COMMAND tar -cz -C /tmp/PASA -f ${CMAKE_BINARY_DIR}/pasa.tar.gz .
-  DEPENDS HMI_API MOBILE_API v4_protocol_v1_2_no_extra
-)
+#add_custom_target(pasa-tarball
+#  COMMAND ${CMAKE_SOURCE_DIR}/tools/Utils/export-customer-specific.sh ${CMAKE_SOURCE_DIR} ${CMAKE_BINARY_DIR} pasa
+#  COMMAND tar -cz -C /tmp/PASA -f ${CMAKE_BINARY_DIR}/pasa.tar.gz .
+#  DEPENDS HMI_API MOBILE_API v4_protocol_v1_2_no_extra
+#)
 
-add_custom_target(ford-tarball
-  COMMAND ${CMAKE_SOURCE_DIR}/tools/Utils/export-customer-specific.sh ${CMAKE_SOURCE_DIR} ${CMAKE_BINARY_DIR} ford
-  COMMAND tar -cz -C /tmp/FORD -f ${CMAKE_BINARY_DIR}/ford.tar.gz .
-  DEPENDS HMI_API MOBILE_API v4_protocol_v1_2_no_extra
-)
+#add_custom_target(ford-tarball
+#  COMMAND ${CMAKE_SOURCE_DIR}/tools/Utils/export-customer-specific.sh ${CMAKE_SOURCE_DIR} ${CMAKE_BINARY_DIR} ford
+#  COMMAND tar -cz -C /tmp/FORD -f ${CMAKE_BINARY_DIR}/ford.tar.gz .
+#  DEPENDS HMI_API MOBILE_API v4_protocol_v1_2_no_extra
+#)
 
-add_custom_target(genivi-tarball
-  COMMAND ${CMAKE_SOURCE_DIR}/tools/Utils/export-customer-specific.sh ${CMAKE_SOURCE_DIR} ${CMAKE_BINARY_DIR} genivi
-  COMMAND tar -cz -C /tmp/GENIVI -f ${CMAKE_BINARY_DIR}/genivi.tar.gz .
-)
+#add_custom_target(genivi-tarball
+#  COMMAND ${CMAKE_SOURCE_DIR}/tools/Utils/export-customer-specific.sh ${CMAKE_SOURCE_DIR} ${CMAKE_BINARY_DIR} genivi
+#  COMMAND tar -cz -C /tmp/GENIVI -f ${CMAKE_BINARY_DIR}/genivi.tar.gz .
+#)
 
 
 project (${PROJECT})
@@ -173,17 +176,26 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/Modules/")
 set(CMAKE_INSTALL_PREFIX ${CMAKE_CURRENT_BINARY_DIR})
 set(ARCHIVE_OUTPUT_DIRECTORY ./bin)
 
-set(CMAKE_CXX_FLAGS "-fPIC -std=gnu++0x -Wall -Werror -Wuninitialized -Wvla")
-
-if(ENABLE_SANITIZE)
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=address")
+if(MSVC)
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /GF /GR /Wall /WX /Zc:wchar_t /favor:blend")# Add MSVS specific flags
+  # 0 (MultiThreaded) == /MT
+  # 1 (MultiThreadedDebug) == /MTd
+  # 2 (MultiThreadedDLL) == /MD
+  # 3 (MultiThreadedDebugDLL) == /MDd
+  set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /MT")
+  set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /MTd")
+else()
+  set(CMAKE_CXX_FLAGS "-fPIC -std=gnu++0x -Wall -Werror -Wuninitialized -Wvla")
+  if(ENABLE_SANITIZE)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=address")
+  endif()
+  if(ENABLE_GCOV)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} --coverage")
+    add_definitions(-DGCOV_ENABLED)
+  endif()
+  set(CMAKE_CXX_FLAGS_RELEASE " -DNDEBUG -s -O2")
+  set(CMAKE_CXX_FLAGS_DEBUG   " -DDEBUG -g3 -ggdb3")
 endif()
-if(ENABLE_GCOV)
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} --coverage")
-  add_definitions(-DGCOV_ENABLED)
-endif()
-set(CMAKE_CXX_FLAGS_RELEASE " -DNDEBUG -s -O2")
-set(CMAKE_CXX_FLAGS_DEBUG   " -DDEBUG -g3 -ggdb3")
 
 if (CMAKE_SYSTEM_NAME STREQUAL "Linux")
   add_definitions(-DOS_LINUX)
@@ -211,7 +223,7 @@ endif()
 if (BUILD_AVAHI_SUPPORT)
   add_definitions(-DAVAHI_SUPPORT)
 # --- Check libavahi-common, libavahi-client availability
-  find_package(Libavahi)
+#  find_package(Libavahi)
   message(STATUS "Avahi support is enabled")
 endif()
 
@@ -249,32 +261,6 @@ if(NOT PYTHONINTERP_FOUND)
     message(STATUS "sudo apt-get install python")
     message(FATAL_ERROR "Exiting!")
 endif(NOT PYTHONINTERP_FOUND)
-
-if (HMI STREQUAL "qt")
-    cmake_minimum_required(VERSION 2.8.11)
-    if (CMAKE_SYSTEM_NAME STREQUAL "QNX")
-        set(qt_version "4.8.5")
-    else ()
-        set(qt_version "5.1.0")
-    endif ()
-
-    execute_process(
-        COMMAND ${CMAKE_SOURCE_DIR}/FindQt.sh -v ${qt_version}
-            OUTPUT_VARIABLE qt_bin_dir
-    )
-    message(STATUS "Binary directory Qt ${qt_version} is ${qt_bin_dir}")
-    set(ENV{PATH} ${qt_bin_dir}:$ENV{PATH})
-
-    if (CMAKE_SYSTEM_NAME STREQUAL "QNX")
-        find_package(Qt4 ${qt_version} REQUIRED QtCore QtGui QtDBus QtDeclarative)
-    else ()
-        find_package(Qt5Core REQUIRED)
-        find_package(Qt5DBus REQUIRED)
-        find_package(Qt5Qml REQUIRED)
-        find_package(Qt5Quick REQUIRED)
-        set(qmlplugindump_binary ${qt_bin_dir}/qmlplugindump)
-    endif ()
-endif()
 
 set(INTEFRACE_GENERATOR "${PROJECT_SOURCE_DIR}/tools/InterfaceGenerator/Generator.py")
 set(INTEFRACE_GENERATOR_CMD ${PYTHON_EXECUTABLE} -B ${INTEFRACE_GENERATOR})
@@ -344,9 +330,9 @@ else ()
     add_definitions(-DNO_HMI)
 endif ()
 
-if (HMI STREQUAL "qt" AND NOT DEFINED HMIADAPTER)
-    set(HMIADAPTER "dbus")
-endif()
+# if (HMI STREQUAL "qt" AND NOT DEFINED HMIADAPTER)
+    # set(HMIADAPTER "dbus")
+# endif()
 if (HMI STREQUAL "web" AND NOT DEFINED HMIADAPTER)
     set(HMIADAPTER "messagebroker")
 endif()
@@ -383,8 +369,8 @@ INCLUDE(${CMAKE_CURRENT_SOURCE_DIR}/src/3rd_party/set_3rd_party_paths.cmake)
 set(3RD_PARTY_SOURCE_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/src/3rd_party)
 set(3RD_PARTY_BINARY_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/src/3rd_party)
 
-set (install-3rd_party_logger_var "")
-set (install-3rd_party_dbus_var "")
+#set (install-3rd_party_logger_var "")
+#set (install-3rd_party_dbus_var "")
 
 if(NO_REBUILD_3RD_PARTY)
   set(NO_REBUILD_3RD_PARTY_LOGGER ON)
@@ -626,9 +612,9 @@ if(ENABLE_HMI_PTU_DECRYPTION)
 endif()
 
 set(RTLIB rt)
-if(CMAKE_SYSTEM_NAME STREQUAL "QNX")
-set(RTLIB )
-endif()
+# if(CMAKE_SYSTEM_NAME STREQUAL "QNX")
+# set(RTLIB )
+# endif()
 
 # Building tests
 if(BUILD_TESTS)
