@@ -39,8 +39,17 @@ set (SOURCES
     ${COMPONENTS_DIR}/config_profile/src/profile.cc
     ${COMPONENTS_DIR}/config_profile/src/ini_file.cc
 )
+set (HEADERS 
+    ${COMPONENTS_DIR}/config_profile/include/config_profile/ini_file.h
+    ${COMPONENTS_DIR}/config_profile/include/config_profile/profile.h
+)
 
-add_library("ConfigProfile" ${SOURCES})
+if (${CMAKE_SYSTEM_NAME} MATCHES "Windows")
+   source_group("Header Files" FILES ${HEADERS} )
+   source_group("Source Files" FILES ${SOURCES})
+endif()
+
+add_library("ConfigProfile" ${HEADERS} ${SOURCES})
 target_link_libraries("ConfigProfile" Utils)
 
 if(BUILD_TESTS)

@@ -29,59 +29,6 @@
 # POSSIBILITY OF SUCH DAMAGE.
 
 
-if (EXTENDED_MEDIA_MODE)
-find_package(Gstreamer-1.0 REQUIRED)
-find_package(Glib-2.0 REQUIRED)
-find_package(PkgConfig)
-pkg_check_modules(GLIB2 REQUIRED glib-2.0)
-add_definitions(${GLIB2_CFLAGS})
-set(default_includes
-    ${GSTREAMER_gst_INCLUDE_DIR}
-    ${GLIB_glib_2_INCLUDE_DIR}
-)
-set(default_sources
-    ${COMPONENTS_DIR}/media_manager/src/audio/a2dp_source_player_adapter.cc
-    ${COMPONENTS_DIR}/media_manager/src/audio/from_mic_recorder_adapter.cc
-    ${COMPONENTS_DIR}/media_manager/src/audio/from_mic_to_file_recorder_thread.cc
-    ${COMPONENTS_DIR}/media_manager/src/audio/socket_audio_streamer_adapter.cc
-    ${COMPONENTS_DIR}/media_manager/src/audio/pipe_audio_streamer_adapter.cc
-    ${COMPONENTS_DIR}/media_manager/src/audio/file_audio_streamer_adapter.cc
-    ${COMPONENTS_DIR}/media_manager/src/video/socket_video_streamer_adapter.cc
-    ${COMPONENTS_DIR}/media_manager/src/video/pipe_video_streamer_adapter.cc
-    ${COMPONENTS_DIR}/media_manager/src/video/file_video_streamer_adapter.cc
-    ${COMPONENTS_DIR}/media_manager/src/streamer_adapter.cc
-    ${COMPONENTS_DIR}/media_manager/src/pipe_streamer_adapter.cc
-    ${COMPONENTS_DIR}/media_manager/src/socket_streamer_adapter.cc
-    ${COMPONENTS_DIR}/media_manager/src/file_streamer_adapter.cc
-)
-set(LIBRARIES
-    ${GSTREAMER_gstreamer_LIBRARY}
-    ApplicationManager
-    pulse-simple
-    pulse
-    gobject-2.0
-    glib-2.0
-)
-else(EXTENDED_MEDIA_MODE)
-set(default_includes
-)
-set(default_sources
-    ${COMPONENTS_DIR}/media_manager/src/audio/socket_audio_streamer_adapter.cc
-    ${COMPONENTS_DIR}/media_manager/src/audio/pipe_audio_streamer_adapter.cc
-    ${COMPONENTS_DIR}/media_manager/src/audio/file_audio_streamer_adapter.cc
-    ${COMPONENTS_DIR}/media_manager/src/video/socket_video_streamer_adapter.cc
-    ${COMPONENTS_DIR}/media_manager/src/video/pipe_video_streamer_adapter.cc
-    ${COMPONENTS_DIR}/media_manager/src/video/file_video_streamer_adapter.cc
-    ${COMPONENTS_DIR}/media_manager/src/streamer_adapter.cc
-    ${COMPONENTS_DIR}/media_manager/src/pipe_streamer_adapter.cc
-    ${COMPONENTS_DIR}/media_manager/src/socket_streamer_adapter.cc
-    ${COMPONENTS_DIR}/media_manager/src/file_streamer_adapter.cc
-)
-set(LIBRARIES
-    ProtocolLibrary
-)
-endif()
-
 include_directories (
     include
     ${COMPONENTS_DIR}/media_manager/include/audio/
@@ -100,18 +47,122 @@ include_directories (
     ${CMAKE_SOURCE_DIR}/src/components/policy/src/policy/usage_statistics/include/
     ${default_includes}
     ${LOG4CXX_INCLUDE_DIRECTORY}
-)
+    )
 
-set (SOURCES
-    ${COMPONENTS_DIR}/media_manager/src/media_adapter_impl.cc
-    ${COMPONENTS_DIR}/media_manager/src/audio/from_mic_recorder_listener.cc
-    ${COMPONENTS_DIR}/media_manager/src/audio/audio_stream_sender_thread.cc
-    ${COMPONENTS_DIR}/media_manager/src/streamer_listener.cc
-    ${COMPONENTS_DIR}/media_manager/src/media_manager_impl.cc
-)
+if (${CMAKE_SYSTEM_NAME} MATCHES "Windows")
+        set(audio_inc 
+            ${COMPONENTS_DIR}/media_manager/include/media_manager/audio/socket_audio_streamer_adapter.h
+            ${COMPONENTS_DIR}/media_manager/include/media_manager/audio/pipe_audio_streamer_adapter.h
+            ${COMPONENTS_DIR}/media_manager/include/media_manager/audio/file_audio_streamer_adapter.h)
+        set(video_inc
+            ${COMPONENTS_DIR}/media_manager/include/media_manager/video/socket_video_streamer_adapter.h
+            ${COMPONENTS_DIR}/media_manager/include/media_manager/video/pipe_video_streamer_adapter.h
+            ${COMPONENTS_DIR}/media_manager/include/media_manager/video/file_video_streamer_adapter.h)
+        set(default_inc ${COMPONENTS_DIR}/media_manager/include/media_manager/file_streamer_adapter.h
+                        ${COMPONENTS_DIR}/media_manager/include/media_manager/media_adapter.h
+                        ${COMPONENTS_DIR}/media_manager/include/media_manager/media_adapter_impl.h
+                        ${COMPONENTS_DIR}/media_manager/include/media_manager/media_adapter_listener.h
+                        ${COMPONENTS_DIR}/media_manager/include/media_manager/media_manager.h
+                        ${COMPONENTS_DIR}/media_manager/include/media_manager/media_manager_impl.h
+                        ${COMPONENTS_DIR}/media_manager/include/media_manager/pipe_streamer_adapter.h
+                        ${COMPONENTS_DIR}/media_manager/include/media_manager/socket_streamer_adapter.h
+                        ${COMPONENTS_DIR}/media_manager/include/media_manager/streamer_adapter.h
+                        ${COMPONENTS_DIR}/media_manager/include/media_manager/streamer_listener.h)
+        set(audio_src  
+            ${COMPONENTS_DIR}/media_manager/src/audio/socket_audio_streamer_adapter.cc
+            ${COMPONENTS_DIR}/media_manager/src/audio/pipe_audio_streamer_adapter.cc
+            ${COMPONENTS_DIR}/media_manager/src/audio/file_audio_streamer_adapter.cc)
+        set(video_src  
+            ${COMPONENTS_DIR}/media_manager/src/video/socket_video_streamer_adapter.cc
+            ${COMPONENTS_DIR}/media_manager/src/video/pipe_video_streamer_adapter.cc
+            ${COMPONENTS_DIR}/media_manager/src/video/file_video_streamer_adapter.cc)
+        set(default_src
+            ${COMPONENTS_DIR}/media_manager/src/streamer_adapter.cc
+            ${COMPONENTS_DIR}/media_manager/src/pipe_streamer_adapter.cc
+            ${COMPONENTS_DIR}/media_manager/src/socket_streamer_adapter.cc
+            ${COMPONENTS_DIR}/media_manager/src/file_streamer_adapter.cc)
+        source_group("Header Files" FILES ${default_inc} )            
+        source_group("Header Files/audio" FILES ${audio_inc} )
+        source_group("Header Files/video" FILES ${video_inc} )        
+        source_group("Source Files" FILES ${default_src} )            
+        source_group("Source Files/audio" FILES ${audio_src} )
+        source_group("Source Files/video" FILES ${video_src} )                
+        set(LIBRARIES
+            ProtocolLibrary
+        )
+      add_library("MediaManager" ${audio_inc}
+                                 ${video_inc}
+                                 ${default_inc}
+                                 ${audio_src}
+                                 ${video_src}                                 
+                                 ${default_src}) 
 
-add_library("MediaManager" ${SOURCES} ${default_sources})
+else()
+    if (EXTENDED_MEDIA_MODE)
+        find_package(Gstreamer-1.0 REQUIRED)
+        find_package(Glib-2.0 REQUIRED)
+        find_package(PkgConfig)
+        pkg_check_modules(GLIB2 REQUIRED glib-2.0)
+        add_definitions(${GLIB2_CFLAGS})
+        set(default_includes
+            ${GSTREAMER_gst_INCLUDE_DIR}
+            ${GLIB_glib_2_INCLUDE_DIR}
+        )
+        set(default_sources
+            ${COMPONENTS_DIR}/media_manager/src/audio/a2dp_source_player_adapter.cc
+            ${COMPONENTS_DIR}/media_manager/src/audio/from_mic_recorder_adapter.cc
+            ${COMPONENTS_DIR}/media_manager/src/audio/from_mic_to_file_recorder_thread.cc
+            ${COMPONENTS_DIR}/media_manager/src/audio/socket_audio_streamer_adapter.cc
+            ${COMPONENTS_DIR}/media_manager/src/audio/pipe_audio_streamer_adapter.cc
+            ${COMPONENTS_DIR}/media_manager/src/audio/file_audio_streamer_adapter.cc
+            ${COMPONENTS_DIR}/media_manager/src/video/socket_video_streamer_adapter.cc
+            ${COMPONENTS_DIR}/media_manager/src/video/pipe_video_streamer_adapter.cc
+            ${COMPONENTS_DIR}/media_manager/src/video/file_video_streamer_adapter.cc
+            ${COMPONENTS_DIR}/media_manager/src/streamer_adapter.cc
+            ${COMPONENTS_DIR}/media_manager/src/pipe_streamer_adapter.cc
+            ${COMPONENTS_DIR}/media_manager/src/socket_streamer_adapter.cc
+            ${COMPONENTS_DIR}/media_manager/src/file_streamer_adapter.cc
+        )
+        set(LIBRARIES
+            ${GSTREAMER_gstreamer_LIBRARY}
+            ApplicationManager
+            pulse-simple
+            pulse
+            gobject-2.0
+            glib-2.0
+        )
+    else(EXTENDED_MEDIA_MODE)
+        set(default_includes
+        )
+        set(default_sources
+            ${COMPONENTS_DIR}/media_manager/src/audio/socket_audio_streamer_adapter.cc
+            ${COMPONENTS_DIR}/media_manager/src/audio/pipe_audio_streamer_adapter.cc
+            ${COMPONENTS_DIR}/media_manager/src/audio/file_audio_streamer_adapter.cc
+            ${COMPONENTS_DIR}/media_manager/src/video/socket_video_streamer_adapter.cc
+            ${COMPONENTS_DIR}/media_manager/src/video/pipe_video_streamer_adapter.cc
+            ${COMPONENTS_DIR}/media_manager/src/video/file_video_streamer_adapter.cc
+            ${COMPONENTS_DIR}/media_manager/src/streamer_adapter.cc
+            ${COMPONENTS_DIR}/media_manager/src/pipe_streamer_adapter.cc
+            ${COMPONENTS_DIR}/media_manager/src/socket_streamer_adapter.cc
+            ${COMPONENTS_DIR}/media_manager/src/file_streamer_adapter.cc
+        )
+        set(LIBRARIES
+            ProtocolLibrary
+        )
+    endif()
+    set (SOURCES
+      ${COMPONENTS_DIR}/media_manager/src/media_adapter_impl.cc
+      ${COMPONENTS_DIR}/media_manager/src/audio/from_mic_recorder_listener.cc
+      ${COMPONENTS_DIR}/media_manager/src/audio/audio_stream_sender_thread.cc
+      ${COMPONENTS_DIR}/media_manager/src/streamer_listener.cc
+      ${COMPONENTS_DIR}/media_manager/src/media_manager_impl.cc
+    )
+    
+    add_library("MediaManager" ${SOURCES} ${default_sources})
+endif()   
+
 target_link_libraries("MediaManager" ${LIBRARIES})
+
 
 if(BUILD_TESTS)
     add_subdirectory(test)

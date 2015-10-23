@@ -47,8 +47,14 @@ set (SOURCES
   ${COMPONENTS_DIR}/security_manager/src/crypto_manager_impl.cc
   ${COMPONENTS_DIR}/security_manager/src/ssl_context_impl.cc
 )
-
-add_library(SecurityManager ${SOURCES})
+if(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
+    file (GLOB inc ${COMPONENTS_DIR}/security_manager/include/security_manager/*.h) 
+    string( REPLACE / \\ group ${inc} )
+    source_group("Header Files" FILES ${inc} )
+    add_library("SecurityManager" ${inc} ${SOURCES})
+else()
+  add_library(SecurityManager ${SOURCES})
+endif()
 target_link_libraries(SecurityManager crypto ssl ProtocolHandler jsoncpp ProtocolLibrary)
 
 if(BUILD_TESTS)

@@ -36,7 +36,9 @@ include_directories (
   ${JSONCPP_INCLUDE_DIRECTORY}
   ${LOG4CXX_INCLUDE_DIRECTORY}
 )
-
+set (HEADERS
+  ${COMPONENTS_DIR}/resumption/include/resumption/last_state.h
+)
 set (SOURCES
   ${COMPONENTS_DIR}/resumption/src/last_state.cc
 )

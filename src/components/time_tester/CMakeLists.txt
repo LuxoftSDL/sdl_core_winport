@@ -61,8 +61,18 @@ set (SOURCES
     ${TIME_TESTER_SRC_DIR}/protocol_handler_metric.cc
 )
 
-add_library("TimeTester" ${SOURCES})
-target_link_libraries("TimeTester" ${LIBRARIES})
+if (${CMAKE_SYSTEM_NAME} MATCHES "Windows")
+    file (GLOB inc ${COMPONENTS_DIR}/time_tester/include/time_tester/*.h) 
+    string( REPLACE / \\ group ${inc} )
+    source_group("Header Files" FILES ${inc} )
+    string( REPLACE / \\ group ${SOURCES} )
+    source_group("Source Files" FILES ${SOURCES} )  
+    add_library("TimeTester" ${inc} ${SOURCES})
+else ()
+    add_library("TimeTester" ${SOURCES})
+endif()
+
+target_link_libraries("TimeTester" ${LIBRARIES})    
 add_dependencies("TimeTester" HMI_API MOBILE_API)
 
 if(BUILD_TESTS)
