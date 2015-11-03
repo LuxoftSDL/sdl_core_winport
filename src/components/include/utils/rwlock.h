@@ -35,8 +35,13 @@
 
 #if defined(OS_POSIX)
 #include <pthread.h>
+#elif defined(WIN_NATIVE)
+#include <windows.h>
+#else
+#error "RWLock is not defined for this platform"
 #endif
 
+#include <stdint.h>
 #include "utils/macro.h"
 
 namespace sync_primitives {
@@ -44,8 +49,10 @@ namespace sync_primitives {
 namespace impl {
 #if defined(OS_POSIX)
 typedef pthread_rwlock_t PlatformRWLock;
+#elif defined(WIN_NATIVE)
+typedef SRWLOCK PlatformRWLock;
 #else
-#error Please implement rwlock for your OS
+#error "RWLock is not defined for this platform"
 #endif
 }  // namespace impl
 
@@ -59,6 +66,11 @@ typedef pthread_rwlock_t PlatformRWLock;
 
 class RWLock {
  public:
+  /**
+   * @brief RWLockStatus shows current rwlock state:
+   */
+  enum RWLockStatus { kNotAcquired, kAcquiredForReading, kAcquiredForWriting };
+
   RWLock();
   ~RWLock();
 
@@ -123,13 +135,13 @@ class RWLock {
 
  private:
   impl::PlatformRWLock rwlock_;
+  RWLockStatus         status_;
 };
 
 /**
  * @brief Makes auto lock read-write locks for reading
  * Please use AutoReadLock to acquire for reading and (automatically) release it
  */
-
 class AutoReadLock {
  public:
   explicit AutoReadLock(RWLock& rwlock)
