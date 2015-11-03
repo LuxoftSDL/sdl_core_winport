@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013, Ford Motor Company
+ * Copyright (c) 2013-2015, Ford Motor Company
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -35,9 +35,12 @@
 #if defined(OS_POSIX)
 #include <pthread.h>
 #include <sched.h>
+#elif defined(WIN_NATIVE)
+#include <windows.h>
 #else
-#error Please implement lock for your OS
+#error "Lock is not defined for this platform"
 #endif
+
 #include <stdint.h>
 #include "utils/macro.h"
 #include "utils/atomic.h"
@@ -48,9 +51,12 @@ namespace sync_primitives {
 namespace impl {
 #if defined(OS_POSIX)
 typedef pthread_mutex_t PlatformMutex;
+#elif defined(WIN_NATIVE)
+typedef CRITICAL_SECTION PlatformMutex;
+#else
+#error "Lock is not defined for this platform"
 #endif
 } // namespace impl
-
 
 class SpinMutex {
  public:
@@ -61,7 +67,11 @@ class SpinMutex {
       return;
     }
     for(;;) {
+#if defined(OS_POSIX)
       sched_yield();
+#elif defined(WIN_NATIVE)
+	  SwitchToThread();
+#endif
       if (state_ == 0 && atomic_post_set(&state_) == 0) {
         return;
       }
