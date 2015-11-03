@@ -29,10 +29,11 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
+#if defined(WIN_NATIVE)
 
 #include "utils/threads/thread_delegate.h"
 
-#include <pthread.h>
+#include <windows.h>
 
 #include "utils/threads/thread.h"
 #include "utils/lock.h"
@@ -47,10 +48,11 @@ ThreadDelegate::~ThreadDelegate() {
 
 void ThreadDelegate::exitThreadMain() {
   if (thread_) {
-    if (thread_->thread_handle() == pthread_self()) {
-      pthread_exit(NULL);
+    thread_->cleanup();
+    if (thread_->thread_handle() == GetCurrentThread()) {
+      ExitThread(NULL);
     } else {
-      pthread_cancel(thread_->thread_handle());
+      TerminateThread(thread_->thread_handle(), NULL);
     }
   }
 }
@@ -61,3 +63,5 @@ void ThreadDelegate::set_thread(Thread *thread) {
 }
 
 }  // namespace threads
+
+#endif // WIN_NATIVE
