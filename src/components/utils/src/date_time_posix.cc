@@ -29,26 +29,25 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
+#if defined(OS_POSIX)
 
 #include <sys/time.h>
 #include <stdint.h>
 #include "utils/date_time.h"
 
-
 namespace date_time {
 
-  TimevalStruct DateTime::getCurrentTime() {
-    TimevalStruct currentTime;
-    timezone timeZone;
+TimevalStruct DateTime::getCurrentTime() {
+  TimevalStruct currentTime;
+  timezone timeZone;
 
-    gettimeofday(&currentTime, &timeZone);
-
-    return currentTime;
-  }
+  gettimeofday(&currentTime, &timeZone);
+  return currentTime;
+}
 
 int64_t date_time::DateTime::getSecs(const TimevalStruct &time) {
-   const TimevalStruct times = ConvertionUsecs(time);
-   return static_cast<int64_t>(times.tv_sec);
+  const TimevalStruct times = ConvertionUsecs(time);
+  return static_cast<int64_t>(times.tv_sec);
 }
 
 int64_t DateTime::getmSecs(const TimevalStruct &time) {
@@ -95,7 +94,7 @@ TimevalStruct DateTime::Sub(const TimevalStruct& time1,
   const TimevalStruct times2 = ConvertionUsecs(time2);
   TimevalStruct ret;
   timersub(&times1, &times2, &ret);
-  return ret;
+  return times1 - times2;
 }
 
 bool DateTime::Greater(const TimevalStruct& time1, const TimevalStruct& time2) {
@@ -145,3 +144,5 @@ bool operator==(const TimevalStruct& time1, const TimevalStruct& time2) {
 const TimevalStruct operator-(const TimevalStruct& time1, const TimevalStruct& time2) {
     return date_time::DateTime::Sub(time1, time2);
 }
+
+#endif // OS_POSIX
