@@ -34,10 +34,6 @@ set(UTILS_SRC_DIR ${COMPONENTS_DIR}/utils/src)
 
 include_directories (
   ${UTILS_INCLUDE_DIR}
-  ${COMPONENTS_DIR}/config_profile/include
-  ${COMPONENTS_DIR}/media_manager/include
-  ${COMPONENTS_DIR}/protocol_handler/include
-  ${LOG4CXX_INCLUDE_DIRECTORY}
 )
 
 if(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
@@ -45,15 +41,16 @@ if(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
     file (GLOB inc ${UTILS_INCLUDE_DIR}/utils/*.h) 
     set (src
             ${UTILS_SRC_DIR}/bitstream.cc
-            ${UTILS_SRC_DIR}/conditional_variable_posix.cc
-            ${UTILS_SRC_DIR}/file_system.cc
-            ${UTILS_SRC_DIR}/lock_posix.cc
-            ${UTILS_SRC_DIR}/rwlock_posix.cc
-            ${UTILS_SRC_DIR}/date_time.cc
-            ${UTILS_SRC_DIR}/system.cc
-            ${UTILS_SRC_DIR}/resource_usage.cc
-            ${UTILS_SRC_DIR}/appenders_loader.cc
-            ${UTILS_SRC_DIR}/gen_hash.cc
+            ${UTILS_SRC_DIR}/conditional_variable_win.cc
+			${UTILS_SRC_DIR}/date_time_win.cc
+            ${UTILS_SRC_DIR}/file_system_win.cc
+			${UTILS_SRC_DIR}/gen_hash.cc
+            ${UTILS_SRC_DIR}/lock_win.cc
+            ${UTILS_SRC_DIR}/rwlock_win.cc
+			${UTILS_SRC_DIR}/threads/thread_validator.cc
+			${UTILS_SRC_DIR}/threads/async_runner.cc
+			${UTILS_SRC_DIR}/threads/thread_delegate_win.cc
+			${UTILS_SRC_DIR}/threads/win_thread.cc
     )
 
 #    add_subdirectory(./src/sqlite_wrapper)
