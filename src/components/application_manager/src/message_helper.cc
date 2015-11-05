@@ -145,7 +145,7 @@ std::pair<std::string, VehicleDataType> kVehicleDataInitializer[] = {
 
 const VehicleData MessageHelper::vehicle_data_(
   kVehicleDataInitializer, kVehicleDataInitializer +
-  ARRAYSIZE(kVehicleDataInitializer));
+  GETARRAYSIZE(kVehicleDataInitializer));
 
 #ifdef HMI_DBUS_API
 namespace {
