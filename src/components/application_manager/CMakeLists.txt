@@ -38,7 +38,7 @@ set (AM_SOURCE_DIR ${COMPONENTS_DIR}/application_manager)
 set (AM_TEST_DIR ${AM_SOURCE_DIR}/test)
 set (AM_MOCK_DIR ${AM_TEST_DIR}/mock)
 include_directories (
-    include/
+    include/7
     ${COMPONENTS_DIR}/utils/include/
     ${COMPONENTS_DIR}/formatters/include/
     ${COMPONENTS_DIR}/protocol_handler/include/
@@ -87,7 +87,20 @@ if (${CMAKE_SYSTEM_NAME} MATCHES "Windows")
                   dl
                   formatters
                   dbms)
-    target_link_libraries("ApplicationManager" ${LIBRARIES} ${src})
+    if (${HMI_JSON_API})
+      message ("Generating project ${PROJECT_NAME} in ${CMAKE_CURRENT_BINARY_DIR} set ${HMI_JSON_API}")
+      set (HMI_COMMANDS_SOURCES ${HMI_COMMANDS_SOURCES} ${HMI_COMMANDS_SOURCES_JSON})
+    endif (${HMI_JSON_API})
+    message ("Generating project ${PROJECT_NAME} in ${CMAKE_CURRENT_BINARY_DIR} set HMI_DBUS_API: ${HMI_DBUS_API}")        
+    if (${HMI_DBUS_API})
+        set (HMI_COMMANDS_SOURCES ${HMI_COMMANDS_SOURCES} ${HMI_COMMANDS_SOURCES_DBUS})
+    endif (${HMI_DBUS_API})
+                  
+    if(${QT_PORT})
+       target_link_libraries("ApplicationManager" ${LIBRARIES} ${src} ${QT5Core} )
+    else()
+        target_link_libraries("ApplicationManager" ${LIBRARIES} ${src})        
+    endif()
 else ()
 
   if (${CMAKE_SYSTEM_NAME} MATCHES "Linux")
@@ -403,9 +416,18 @@ else ()
                                                          AMMobileCommandsLibrary
                                                          AMEventEngine
                                                          AMPolicyLibrary)
+  if(DEFINED QT_PORT)
+      target_link_libraries("ApplicationManager" ${LIBRARIES} AMHMICommandsLibrary
+                                                         AMMobileCommandsLibrary
+                                                         AMEventEngine
+                                                         AMPolicyLibrary 
+                                                         Core)
+  endif(DEFINED QT_PORT)
+                                                         
   if(ENABLE_LOG)
-    target_link_libraries("ApplicationManager" log4cxx -L${LOG4CXX_LIBS_DIRECTORY})
+    qt5_use_package("ApplicationManager" log4cxx -L${LOG4CXX_LIBS_DIRECTORY})
   endif()
+  
 endif()
 
 if(BUILD_TESTS)
