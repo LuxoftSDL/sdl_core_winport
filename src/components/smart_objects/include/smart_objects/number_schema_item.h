@@ -124,6 +124,7 @@ bool TNumberSchemaItem<NumberType>::isValidNumberType(SmartType type) {
   }
 }
 
+#pragma warning( push, 0 )
 template<typename NumberType>
 Errors::eType TNumberSchemaItem<NumberType>::validate(const SmartObject& Object) {
   if (!isValidNumberType(Object.getType())) {
@@ -152,6 +153,7 @@ Errors::eType TNumberSchemaItem<NumberType>::validate(const SmartObject& Object)
   }
   return Errors::OK;
 }
+#pragma warning( pop )
 
 template<typename NumberType>
 TNumberSchemaItem<NumberType>::TNumberSchemaItem(

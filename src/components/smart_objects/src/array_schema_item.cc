@@ -67,7 +67,7 @@ Errors::eType CArraySchemaItem::validate(const SmartObject& Object) {
 
 void CArraySchemaItem::applySchema(SmartObject& Object) {
   if (SmartType_Array == Object.getType()) {
-    for (size_t i = 0U; i < Object.length(); ++i) {
+    for (uint32_t i = 0U; i < Object.length(); ++i) {
       mElementSchemaItem->applySchema(Object[i]);
     }
   }
@@ -75,7 +75,7 @@ void CArraySchemaItem::applySchema(SmartObject& Object) {
 
 void CArraySchemaItem::unapplySchema(SmartObject& Object) {
   if (SmartType_Array == Object.getType()) {
-    for (size_t i = 0U; i < Object.length(); ++i) {
+    for (uint32_t i = 0U; i < Object.length(); ++i) {
       mElementSchemaItem->unapplySchema(Object[i]);
     }
   }
@@ -86,7 +86,7 @@ void CArraySchemaItem::BuildObjectBySchema(
   if (SmartType_Array == pattern_object.getType()) {
     const size_t array_len = pattern_object.length();
     if (array_len > 0) {
-      for (size_t i = 0u; i < array_len; i++) {
+      for (uint32_t i = 0u; i < array_len; i++) {
         mElementSchemaItem->BuildObjectBySchema(pattern_object.getElement(i),
                                                 result_object[i]);
       }
