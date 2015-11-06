@@ -63,7 +63,11 @@ if(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
     source_group("Source Files" FILES ${src} )  
     add_library("Utils" ${src}
                         ${inc})
-    target_link_libraries("Utils" ${LIBRARIES})
+    if(DEFINED QT_PORT)
+       target_link_libraries("Utils" ${LIBRARIES} ${QT5Core})    
+    else(DEFINED QT_PORT)
+      target_link_libraries("Utils" ${LIBRARIES})    
+    endif(DEFINED QT_PORT)
     
 else()
     if(ENABLE_LOG)

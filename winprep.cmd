@@ -8,11 +8,17 @@ shift
 
 @echo on
 pushd "%BUILDDIR%" > NUL
-cmake -G %_SDL_GEN% %SDL_ROOT% 
-@echo off
-
-popd
-goto end
+IF %_QT_PORT% == 1 (
+   cmake -G %_SDL_GEN% -DQT_PORT=1 %SDL_ROOT% 
+   @echo off
+   popd
+   goto end
+) ELSE (
+   cmake -G %_SDL_GEN% %SDL_ROOT% 
+   @echo off
+   popd
+  goto end
+)
 
 :builddir_error
 echo ERROR: Could not change to %BUILDDIR%

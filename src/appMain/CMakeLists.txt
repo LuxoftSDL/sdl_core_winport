@@ -155,7 +155,11 @@ if( NOT CMAKE_BUILD_TYPE )
 endif()
 
 add_executable(${PROJECT} ${HEADERS} ${SOURCES})
-target_link_libraries(${PROJECT} ${LIBRARIES})
+if(${QT_PORT})
+        target_link_libraries(${PROJECT} ${LIBRARIES} ${QT5Core})
+  else()
+        target_link_libraries(${PROJECT} ${LIBRARIES})
+endif()
 
 
 file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/log4cxx.properties DESTINATION ${CMAKE_CURRENT_BINARY_DIR})

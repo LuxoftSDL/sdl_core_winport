@@ -63,9 +63,16 @@ set(SECURITY_OPTION 	"$ENV{SECURITY_MODE}")
 set(COMPONENTS_DIR ${CMAKE_SOURCE_DIR}/src/components)
 set(SNAPSHOT_TAG 	"$ENV{SNAPSHOT_TAG}")
 
+project (${PROJECT})
 
 if (${CMAKE_SYSTEM_NAME} MATCHES "Windows")
+  if (${QT_PORT})
+      message(STATUS "Build QT port")
+      set(ARCH_TYPE_OPTION	"x86")	
+    else()
       set(ARCH_TYPE_OPTION	"x86_64")
+    endif()
+
 else ()
   if (ARCH_TYPE_OPTION)
     if (NOT (${ARCH_TYPE_OPTION} STREQUAL "x86") AND NOT (${ARCH_TYPE_OPTION} STREQUAL "armv7"))
@@ -165,8 +172,6 @@ endif()
 #)
 
 
-project (${PROJECT})
-
 #ADD_DEPENDENCIES(${PROJECT} Policy)
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/Modules/")
@@ -177,13 +182,17 @@ set(CMAKE_INSTALL_PREFIX ${CMAKE_CURRENT_BINARY_DIR})
 set(ARCHIVE_OUTPUT_DIRECTORY ./bin)
 
 if(MSVC)
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /GF /GR /Wall /WX /Zc:wchar_t /favor:blend")# Add MSVS specific flags
-  # 0 (MultiThreaded) == /MT
-  # 1 (MultiThreadedDebug) == /MTd
-  # 2 (MultiThreadedDLL) == /MD
-  # 3 (MultiThreadedDebugDLL) == /MDd
-  set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /MT")
-  set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /MTd")
+  if (${QT_PORT})
+  # qt specific  flags
+  else()
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /GF /GR /Wall /WX /Zc:wchar_t /favor:blend")# Add MSVS specific flags
+    # 0 (MultiThreaded) == /MT
+    # 1 (MultiThreadedDebug) == /MTd
+    # 2 (MultiThreadedDLL) == /MD
+    # 3 (MultiThreadedDebugDLL) == /MDd
+    set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /MT")
+    set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /MTd")
+ endif()
 else()
   set(CMAKE_CXX_FLAGS "-fPIC -std=gnu++0x -Wall -Werror -Wuninitialized -Wvla")
   if(ENABLE_SANITIZE)
@@ -196,6 +205,13 @@ else()
   set(CMAKE_CXX_FLAGS_RELEASE " -DNDEBUG -s -O2")
   set(CMAKE_CXX_FLAGS_DEBUG   " -DDEBUG -g3 -ggdb3")
 endif()
+
+if (${QT_PORT})
+  set(CMAKE_AUTOMOC ON)
+  find_package(WinQt5Core REQUIRED)
+  add_definitions(-DQT_PORT)
+endif ()
+
 
 if (CMAKE_SYSTEM_NAME STREQUAL "Linux")
   add_definitions(-DOS_LINUX)
@@ -241,7 +257,10 @@ if (TIME_TESTER)
 endif()
 
 # TODO(AK): check current OS here
-add_definitions(-DOS_POSIX)
+
+if ( NOT ${CMAKE_SYSTEM_NAME} MATCHES "Windows")
+  add_definitions(-DOS_POSIX)
+endif()  
 
 if (EXTENDED_MEDIA_MODE)
 add_definitions(-DEXTENDED_MEDIA_MODE)
