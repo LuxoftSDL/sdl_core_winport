@@ -35,6 +35,10 @@
 
 #if defined(OS_POSIX)
 #include <pthread.h>
+#elif defined(WIN_NATIVE)
+#include <windows.h>
+#else
+#error "Thread is not defined for this platform"
 #endif
 
 #include <ostream>
@@ -50,8 +54,10 @@ namespace threads {
 
 #if defined(OS_POSIX)
 typedef pthread_t PlatformThreadHandle;
+#elif defined(WIN_NATIVE)
+typedef HANDLE PlatformThreadHandle;
 #else
-#error Please implement thread for your OS
+#error "Thread is not defined for this platform"
 #endif
 
 /**
@@ -115,6 +121,10 @@ class Thread {
    */
   bool start(const ThreadOptions& options);
 
+#if defined(WIN_NATIVE)
+  void cleanup();
+#endif
+
   sync_primitives::Lock& delegate_lock() {
     return delegate_lock_;
   }
@@ -164,7 +174,7 @@ class Thread {
    * @return true if the thread has been started, and not yet stopped.
    */
   bool is_running() const {
-    return isThreadRunning_;
+    return isThreadRunning_ != 0;
   }
 
   void set_running(bool running);

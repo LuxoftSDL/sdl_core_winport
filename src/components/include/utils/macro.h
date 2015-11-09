@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014, Ford Motor Company
+ * Copyright (c) 2014-2015, Ford Motor Company
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -37,8 +37,7 @@
 #else  // RELEASE
 #include <stdio.h>
 #endif
-#include "logger.h"
-
+#include "utils/logger.h"
 
 // A macro to set some action for variable to avoid "unused variable" warning
 #define UNUSED(x) (void)x;
@@ -104,7 +103,6 @@
     return ; \
   }
 
-
 #define NOTREACHED() DCHECK(!"Unreachable code")
 
 // Allows to perform static check that virtual function from base class is
@@ -121,7 +119,7 @@
 * @brief Calculate size of na array
 * @param arr  array, which size need to calculate
 */
-#define ARRAYSIZE(arr) sizeof (arr) / sizeof(*arr)
+#define GETARRAYSIZE(arr) sizeof (arr) / sizeof(*arr)
 
 #ifdef BUILD_TESTS
 #define FRIEND_TEST(test_case_name, test_name)\

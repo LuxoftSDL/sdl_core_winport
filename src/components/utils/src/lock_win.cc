@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2015, Ford Motor Company
  * All rights reserved.
  *
@@ -29,35 +29,88 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
+#if defined(WIN_NATIVE)
 
-#include "utils/threads/thread_delegate.h"
-
-#include <pthread.h>
-
-#include "utils/threads/thread.h"
 #include "utils/lock.h"
+#include <errno.h>
+#include <stdint.h>
+#include <stdio.h>
+#include <string.h>
+#include <cstring>
+#include "utils/logger.h"
 
-namespace threads {
+namespace sync_primitives {
 
-ThreadDelegate::~ThreadDelegate() {
-  if (thread_) {
-    thread_->set_delegate(NULL);
+CREATE_LOGGERPTR_GLOBAL(logger_, "Utils")
+
+Lock::Lock()
+#ifndef NDEBUG
+    : lock_taken_(0),
+      is_mutex_recursive_(false)
+#endif // NDEBUG
+{
+  Init(false);
+}
+
+Lock::Lock(bool is_recursive)
+#ifndef NDEBUG
+    : lock_taken_(0),
+      is_mutex_recursive_(is_recursive)
+#endif // NDEBUG
+{
+  Init(is_recursive);
+}
+
+Lock::~Lock() {
+#ifndef NDEBUG
+  if (lock_taken_ > 0) {
+    LOG4CXX_ERROR(logger_, "Destroying non-released mutex " << &mutex_);
   }
+#endif
+  DeleteCriticalSection(&mutex_);
 }
 
-void ThreadDelegate::exitThreadMain() {
-  if (thread_) {
-    if (thread_->thread_handle() == pthread_self()) {
-      pthread_exit(NULL);
-    } else {
-      pthread_cancel(thread_->thread_handle());
-    }
+void Lock::Acquire() {
+  EnterCriticalSection(&mutex_);
+  AssertFreeAndMarkTaken();
+}
+
+void Lock::Release() {
+  AssertTakenAndMarkFree();
+  LeaveCriticalSection(&mutex_);
+}
+
+bool Lock::Try() {
+  if (TryEnterCriticalSection(&mutex_)) {
+#ifndef NDEBUG
+    lock_taken_++;
+#endif
+    return true;
   }
+  return false;
 }
 
-void ThreadDelegate::set_thread(Thread *thread) {
-  DCHECK(thread);
-  thread_ = thread;
+#ifndef NDEBUG
+void Lock::AssertFreeAndMarkTaken() {
+  if ((lock_taken_ > 0) && !is_mutex_recursive_) {
+    LOG4CXX_ERROR(logger_, "Locking already taken not recursive mutex");
+    NOTREACHED();
+  }
+  lock_taken_++;
+}
+void Lock::AssertTakenAndMarkFree() {
+  if (lock_taken_ == 0) {
+    LOG4CXX_ERROR(logger_, "Unlocking a mutex that is not taken");
+    NOTREACHED();
+  }
+  lock_taken_--;
+}
+#endif
+
+void Lock::Init(bool is_recursive) {
+  InitializeCriticalSection(&mutex_);
 }
 
-}  // namespace threads
+}  // namespace sync_primitives
+
+#endif // WIN_NATIVE

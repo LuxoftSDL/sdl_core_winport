@@ -34,9 +34,11 @@
 
 #if defined(OS_POSIX)
 #include <sys/time.h>
-typedef struct timeval TimevalStruct;
 #endif
+
 #include <stdint.h>
+
+typedef struct timeval TimevalStruct;
 
 namespace date_time {
 
@@ -92,7 +94,9 @@ class DateTime {
 };
 
 }  // namespace date_time
+
 bool operator<(const TimevalStruct& time1, const TimevalStruct& time2);
 bool operator==(const TimevalStruct& time1, const TimevalStruct& time2);
 const TimevalStruct operator-(const TimevalStruct& time1, const TimevalStruct& time2);
+
 #endif  // SRC_COMPONENTS_INCLUDE_UTILS_DATE_TIME_H_

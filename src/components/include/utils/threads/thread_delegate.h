@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013, Ford Motor Company
+ * Copyright (c) 2013-2015, Ford Motor Company
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -32,8 +32,6 @@
 
 #ifndef SRC_COMPONENTS_INCLUDE_UTILS_THREADS_THREAD_DELEGATE_H_
 #define SRC_COMPONENTS_INCLUDE_UTILS_THREADS_THREAD_DELEGATE_H_
-
-#include <pthread.h>
 
 #include "utils/lock.h"
 

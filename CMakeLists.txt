@@ -1,4 +1,4 @@
-# Copyright (c) 2014, Ford Motor Company
+# Copyright (c) 2015, Ford Motor Company
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -185,7 +185,7 @@ if(MSVC)
   if (${QT_PORT})
   # qt specific  flags
   else()
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /GF /GR /Wall /WX /Zc:wchar_t /favor:blend")# Add MSVS specific flags
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /GF /GR /W3 /WX /Zc:wchar_t /favor:blend")# Add MSVS specific flags
     # 0 (MultiThreaded) == /MT
     # 1 (MultiThreadedDebug) == /MTd
     # 2 (MultiThreadedDLL) == /MD
@@ -256,11 +256,11 @@ if (TIME_TESTER)
     add_definitions(-DTIME_TESTER)
 endif()
 
-# TODO(AK): check current OS here
-
-if ( NOT ${CMAKE_SYSTEM_NAME} MATCHES "Windows")
+if (${CMAKE_SYSTEM_NAME} MATCHES "Windows")
+  add_definitions(-DWIN_NATIVE)
+else()
   add_definitions(-DOS_POSIX)
-endif()  
+endif()
 
 if (EXTENDED_MEDIA_MODE)
 add_definitions(-DEXTENDED_MEDIA_MODE)

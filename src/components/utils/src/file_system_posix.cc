@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014, Ford Motor Company
+ * Copyright (c) 2015, Ford Motor Company
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -29,6 +29,7 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
+#if defined(OS_POSIX)
 
 #include "utils/file_system.h"
 #include "utils/logger.h"
@@ -449,3 +450,5 @@ bool file_system::MoveFile(const std::string& src,
   }
   return true;
 }
+
+#endif // OS_POSIX

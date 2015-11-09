@@ -29,7 +29,9 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-#if defined(OS_POSIX)
+#if defined(WIN_NATIVE)
+
+#include <windows.h>
 
 #include "utils/rwlock.h"
 #include "utils/logger.h"
@@ -40,17 +42,12 @@ CREATE_LOGGERPTR_GLOBAL(logger_, "Utils")
 
 RWLock::RWLock()
   : status_(kNotAcquired) {
-  if (pthread_rwlock_init(&rwlock_, 0) != 0) {
-    LOG4CXX_ERROR(logger_, "Failed to initialize rwlock");
-  }
+  InitializeSRWLock(&rwlock_);
 }
 
 RWLock::~RWLock() {
   if (kNotAcquired != status_) {
     LOG4CXX_ERROR(logger_, "RWLock is acquired");
-  }
-  if (pthread_rwlock_destroy(&rwlock_) != 0) {
-    LOG4CXX_ERROR(logger_, "Failed to destroy rwlock");
   }
 }
 
@@ -59,10 +56,7 @@ bool RWLock::AcquireForReading() {
     LOG4CXX_WARN(logger_, "RWLock is already acquired");
 	return false;
   }
-  if (pthread_rwlock_rdlock(&rwlock_) != 0) {
-    LOG4CXX_WARN(logger_, "Failed to acquire rwlock for reading");
-    return false;
-  }
+  AcquireSRWLockShared(&rwlock_);
   status_ = kAcquiredForReading;
   return true;
 }
@@ -72,7 +66,7 @@ bool RWLock::TryAcquireForReading() {
     LOG4CXX_WARN(logger_, "RWLock is already acquired");
 	return false;
   }
-  if (pthread_rwlock_tryrdlock(&rwlock_) != 0) {
+  if (!TryAcquireSRWLockShared(&rwlock_)) {
     LOG4CXX_WARN(logger_, "Failed to acquire rwlock for reading");
     return false;
   }
@@ -85,10 +79,7 @@ bool RWLock::AcquireForWriting() {
     LOG4CXX_WARN(logger_, "RWLock is already acquired");
 	return false;
   }
-  if (pthread_rwlock_wrlock(&rwlock_) != 0) {
-    LOG4CXX_WARN(logger_, "Failed to acquire rwlock for writing");
-    return false;
-  }
+  AcquireSRWLockExclusive(&rwlock_);
   status_ = kAcquiredForWriting;
   return true;
 }
@@ -98,7 +89,7 @@ bool RWLock::TryAcquireForWriting() {
     LOG4CXX_WARN(logger_, "RWLock is already acquired");
 	return false;
   }
-  if (pthread_rwlock_trywrlock(&rwlock_) != 0) {
+  if (!TryAcquireSRWLockExclusive(&rwlock_)) {
     LOG4CXX_WARN(logger_, "Failed to acquire rwlock for writing");
     return false;
   }
@@ -107,12 +98,12 @@ bool RWLock::TryAcquireForWriting() {
 }
 
 bool RWLock::Release() {
-  if (kNotAcquired == status_) {
+  if (kAcquiredForReading == status_) {
+    ReleaseSRWLockShared(&rwlock_);
+  } else if (kAcquiredForWriting == status_) {
+    ReleaseSRWLockExclusive(&rwlock_);
+  } else {
     LOG4CXX_WARN(logger_, "RWLock is not acquired");
-	return false;
-  }
-  if (pthread_rwlock_unlock(&rwlock_) != 0) {
-    LOG4CXX_ERROR(logger_, "Failed to release rwlock");
     return false;
   }
   status_ = kNotAcquired;
@@ -121,4 +112,4 @@ bool RWLock::Release() {
 
 }  // namespace sync_primitives
 
-#endif // OS_POSIX
+#endif // WIN_NATIVE

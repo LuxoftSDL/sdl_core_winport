@@ -29,31 +29,39 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
+#if defined(WIN_NATIVE)
 
-#ifndef SRC_COMPONENTS_UTILS_INCLUDE_UTILS_GEN_HASH_H_
-#define SRC_COMPONENTS_UTILS_INCLUDE_UTILS_GEN_HASH_H_
+#include "utils/threads/thread_delegate.h"
 
-#include <string>
-#include <stdint.h>
+#include <windows.h>
 
-namespace utils {
+#include "utils/threads/thread.h"
+#include "utils/lock.h"
 
-/**
- * @brief generate random alphanumeric string of specified length
- * @param size length of random string
- * @return random string
- */
+namespace threads {
 
-const std::string gen_hash(size_t size);
+ThreadDelegate::~ThreadDelegate() {
+  if (thread_) {
+    thread_->set_delegate(NULL);
+  }
+}
 
-/**
- * @brief Allows to generate hash from the specified string.
- * The djb2 algorithm uses for hash generation.
- * @param str_to_hash - the string from which hash should be generated.
- * @return integer hash for the specified string.
- */
-int32_t Djb2HashFromString(const std::string& str_to_hash);
+void ThreadDelegate::exitThreadMain() {
+  if (thread_) {
+    thread_->cleanup();
+    if (thread_->thread_handle() == GetCurrentThread()) {
+      ExitThread(NULL);
+    } else {
+      TerminateThread(thread_->thread_handle(), NULL);
+    }
+  }
+}
 
-}  // namespace utils
+void ThreadDelegate::set_thread(Thread *thread) {
+  DCHECK(thread);
+  thread_ = thread;
+}
 
-#endif  // SRC_COMPONENTS_UTILS_INCLUDE_UTILS_GEN_HASH_H_
+}  // namespace threads
+
+#endif // WIN_NATIVE

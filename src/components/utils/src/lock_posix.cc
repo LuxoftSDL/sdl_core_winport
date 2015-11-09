@@ -29,6 +29,7 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
+#if defined(OS_POSIX)
 
 #include "utils/lock.h"
 #include <errno.h>
@@ -142,3 +143,5 @@ void Lock::Init(bool is_recursive) {
 }
 
 }  // namespace sync_primitives
+
+#endif // OS_POSIX
