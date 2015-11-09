@@ -9,6 +9,7 @@ include_directories (
   ./libusb/
   ./
 )
+
 set (LIBUSB_SOURCES
   ./libusb/core.c
   ./libusb/descriptor.c
