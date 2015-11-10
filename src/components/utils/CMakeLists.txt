@@ -53,7 +53,7 @@ if(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
 			${UTILS_SRC_DIR}/threads/win_thread.cc
     )
 
-#    add_subdirectory(./src/sqlite_wrapper)
+    add_subdirectory(./src/sqlite_wrapper)
     string( REPLACE / \\ group ${inc} )
     source_group("Header Files" FILES ${inc} )
     string( REPLACE / \\ group ${src} )
