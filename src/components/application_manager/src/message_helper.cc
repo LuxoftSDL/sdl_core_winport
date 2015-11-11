@@ -32,10 +32,6 @@
 
 #include "application_manager/message_helper.h"
 
-#define __STDC_FORMAT_MACROS
-#include <inttypes.h>
-#undef __STDC_FORMAT_MACROS
-
 #include <set>
 #include <string>
 #include <algorithm>
@@ -60,31 +56,45 @@
 #include "formatters/CFormatterJsonSDLRPCv2.hpp"
 #include "formatters/CFormatterJsonSDLRPCv1.hpp"
 
+#if defined(_MSC_VER)
+#define snprintf _snprintf_s
+#endif
+
 namespace application_manager {
 
 CREATE_LOGGERPTR_GLOBAL(logger_, "ApplicationManager")
 
 namespace {
+  typedef
+  std::map<std::string, hmi_apis::Common_AppPriority::eType> CommonAppPriorityMap;
+  CommonAppPriorityMap app_priority_values;
 
-typedef
-std::map<std::string, hmi_apis::Common_AppPriority::eType> CommonAppPriorityMap;
-
-CommonAppPriorityMap app_priority_values = {
-  {"NORMAL", hmi_apis::Common_AppPriority::NORMAL},
-  {"COMMUNICATION", hmi_apis::Common_AppPriority::COMMUNICATION},
-  {"EMERGENCY", hmi_apis::Common_AppPriority::EMERGENCY},
-  {"NAVIGATION", hmi_apis::Common_AppPriority::NAVIGATION},
-  {"NONE", hmi_apis::Common_AppPriority::NONE},
-  {"VOICECOM", hmi_apis::Common_AppPriority::VOICE_COMMUNICATION},
-  {"INVALID_ENUM", hmi_apis::Common_AppPriority::INVALID_ENUM}
-};
-
-const uint32_t GetPriorityCode(const std::string& priority) {
-  CommonAppPriorityMap::const_iterator it = app_priority_values.find(priority);
-  if (app_priority_values.end() != it) {
-    return static_cast<uint32_t>((*it).second);
+  void InitAppPriorityMap() {
+    app_priority_values.insert(
+        std::make_pair("NORMAL", hmi_apis::Common_AppPriority::NORMAL));
+    app_priority_values.insert(
+        std::make_pair("COMMUNICATION", hmi_apis::Common_AppPriority::COMMUNICATION));
+    app_priority_values.insert(
+        std::make_pair("EMERGENCY", hmi_apis::Common_AppPriority::EMERGENCY));
+    app_priority_values.insert(
+        std::make_pair("NAVIGATION", hmi_apis::Common_AppPriority::NAVIGATION));
+    app_priority_values.insert(
+        std::make_pair("NONE", hmi_apis::Common_AppPriority::NONE));
+    app_priority_values.insert(
+        std::make_pair("VOICECOM", hmi_apis::Common_AppPriority::VOICE_COMMUNICATION));
+    app_priority_values.insert(
+        std::make_pair("INVALID_ENUM", hmi_apis::Common_AppPriority::INVALID_ENUM));
   }
-  return static_cast<uint32_t>(hmi_apis::Common_AppPriority::INVALID_ENUM);
+  uint32_t GetPriorityCode(const std::string& priority) {
+    if (app_priority_values.empty()) {
+      InitAppPriorityMap();
+	}
+    CommonAppPriorityMap::const_iterator it = app_priority_values.find(priority);
+    if (app_priority_values.end() != it) {
+      return static_cast<uint32_t>((*it).second);
+    }
+    return static_cast<uint32_t>(hmi_apis::Common_AppPriority::INVALID_ENUM);
+  }
 }
 
 bool ValidateSoftButtons(smart_objects::SmartObject& soft_buttons) {
@@ -105,9 +115,8 @@ bool ValidateSoftButtons(smart_objects::SmartObject& soft_buttons) {
     }
   }
   return true;
-}  // namespace
-
 }
+
 std::pair<std::string, VehicleDataType> kVehicleDataInitializer[] = {
   std::make_pair(strings::gps, VehicleDataType::GPS), std::make_pair(
     strings::speed, VehicleDataType::SPEED), std::make_pair(

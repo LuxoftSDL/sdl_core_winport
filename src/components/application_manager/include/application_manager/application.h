@@ -45,6 +45,13 @@
 #include "application_manager/hmi_state.h"
 #include "protocol_handler/protocol_handler.h"
 
+#if defined(OS_POSIX)
+#include <strings.h>
+#elif defined(OS_WINDOWS)
+#define ssize_t SSIZE_T
+#define strcasecmp _stricmp
+#endif
+
 namespace NsSmartDeviceLink {
 namespace NsSmartObjects {
 

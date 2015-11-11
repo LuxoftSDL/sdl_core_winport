@@ -32,14 +32,17 @@
 
 #include "application_manager/policies/policy_handler.h"
 
-#include <unistd.h>
-#include <dlfcn.h>
 #include <algorithm>
 #include <vector>
+
+#if defined(OS_POSIX)
+#include <dlfcn.h>
+#elif defined(OS_WINDOWS)
+#include <windows.h>
+#endif
+
 #include "application_manager/smart_object_keys.h"
-
 #include "application_manager/policies/delegates/app_permission_delegate.h"
-
 #include "application_manager/application_manager_impl.h"
 #include "application_manager/message_helper.h"
 #include "policy/policy_manager_impl.h"
@@ -59,40 +62,66 @@ namespace policy {
 using namespace application_manager;
 
 namespace {
-using namespace mobile_apis;
-typedef std::map<RequestType::eType, std::string> RequestTypeMap;
-RequestTypeMap TypeToString = {
-  {RequestType::INVALID_ENUM, "INVALID_ENUM"},
-  {RequestType::HTTP, "HTTP"},
-  {RequestType::FILE_RESUME, "FILE_RESUME"},
-  {RequestType::AUTH_REQUEST, "AUTH_REQUEST"},
-  {RequestType::AUTH_CHALLENGE, "AUTH_CHALLENGE"},
-  {RequestType::AUTH_ACK, "AUTH_ACK"},
-  {RequestType::PROPRIETARY, "PROPRIETARY"},
-  {RequestType::QUERY_APPS, "QUERY_APPS"},
-  {RequestType::LAUNCH_APP, "LAUNCH_APP"},
-  {RequestType::LOCK_SCREEN_ICON_URL, "LOCK_SCREEN_ICON_URL"},
-  {RequestType::TRAFFIC_MESSAGE_CHANNEL, "TRAFFIC_MESSAGE_CHANNEL"},
-  {RequestType::DRIVER_PROFILE, "DRIVER_PROFILE"},
-  {RequestType::VOICE_SEARCH, "VOICE_SEARCH"},
-  {RequestType::NAVIGATION, "NAVIGATION"},
-  {RequestType::PHONE,"PHONE"},
-  {RequestType::CLIMATE, "CLIMATE"},
-  {RequestType::SETTINGS, "SETTINGS"},
-  {RequestType::VEHICLE_DIAGNOSTICS, "VEHICLE_DIAGNOSTICS"},
-  {RequestType::EMERGENCY, "EMERGENCY"},
-  {RequestType::MEDIA, "MEDIA"},
-  {RequestType::FOTA, "FOTA"}
-};
+  using namespace mobile_apis;
+  typedef std::map<RequestType::eType, std::string> RequestTypeMap;
+  RequestTypeMap typeToString;
 
-const std::string RequestTypeToString(RequestType::eType type) {
-  RequestTypeMap::const_iterator it = TypeToString.find(type);
-  if (TypeToString.end() != it) {
-    return (*it).second;
+  void InitRequestTypeMap() {
+    typeToString.insert(
+		std::make_pair(RequestType::INVALID_ENUM, "INVALID_ENUM"));
+    typeToString.insert(
+		std::make_pair(RequestType::HTTP, "HTTP"));
+    typeToString.insert(
+		std::make_pair(RequestType::FILE_RESUME, "FILE_RESUME"));
+    typeToString.insert(
+		std::make_pair(RequestType::AUTH_REQUEST, "AUTH_REQUEST"));
+    typeToString.insert(
+		std::make_pair(RequestType::AUTH_CHALLENGE, "AUTH_CHALLENGE"));
+    typeToString.insert(
+		std::make_pair(RequestType::AUTH_ACK, "AUTH_ACK"));
+    typeToString.insert(
+		std::make_pair(RequestType::PROPRIETARY, "PROPRIETARY"));
+    typeToString.insert(
+		std::make_pair(RequestType::QUERY_APPS, "QUERY_APPS"));
+    typeToString.insert(
+		std::make_pair(RequestType::LAUNCH_APP, "LAUNCH_APP"));
+    typeToString.insert(
+		std::make_pair(RequestType::LOCK_SCREEN_ICON_URL, "LOCK_SCREEN_ICON_URL"));
+    typeToString.insert(
+		std::make_pair(RequestType::TRAFFIC_MESSAGE_CHANNEL, "TRAFFIC_MESSAGE_CHANNEL"));
+    typeToString.insert(
+		std::make_pair(RequestType::DRIVER_PROFILE, "DRIVER_PROFILE"));
+    typeToString.insert(
+		std::make_pair(RequestType::VOICE_SEARCH, "VOICE_SEARCH"));
+    typeToString.insert(
+		std::make_pair(RequestType::NAVIGATION, "NAVIGATION"));
+    typeToString.insert(
+		std::make_pair(RequestType::PHONE,"PHONE"));
+    typeToString.insert(
+		std::make_pair(RequestType::CLIMATE, "CLIMATE"));
+    typeToString.insert(
+		std::make_pair(RequestType::SETTINGS, "SETTINGS"));
+    typeToString.insert(
+		std::make_pair(RequestType::VEHICLE_DIAGNOSTICS, "VEHICLE_DIAGNOSTICS"));
+    typeToString.insert(
+		std::make_pair(RequestType::EMERGENCY, "EMERGENCY"));
+    typeToString.insert(
+		std::make_pair(RequestType::MEDIA, "MEDIA"));
+    typeToString.insert(
+		std::make_pair(RequestType::FOTA, "FOTA"));
   }
-  return "";
+  std::string RequestTypeToString(RequestType::eType type) {
+    if (typeToString.empty()) {
+      InitRequestTypeMap();
+    }
+    RequestTypeMap::const_iterator it = typeToString.find(type);
+    if (typeToString.end() != it) {
+      return (*it).second;
+    }
+    return "";
+  }
 }
-}
+
 #define POLICY_LIB_CHECK(return_value) {\
   sync_primitives::AutoReadLock lock(policy_manager_lock_); \
   if (!policy_manager_) {\
@@ -277,18 +306,21 @@ bool PolicyHandler::LoadPolicyLibrary() {
     policy_manager_ = NULL;
     return NULL;
   }
+#if defined(OS_POSIX)
   dl_handle_ = dlopen(kLibrary.c_str(), RTLD_LAZY);
-
   char* error_string = dlerror();
   if (error_string == NULL) {
+#elif defined(OS_WINDOWS)
+  dl_handle_ = LoadLibrary(kLibrary.c_str());
+  if (dl_handle_ != NULL) {
+#endif
     if (CreateManager()) {
       policy_manager_->set_listener(this);
       event_observer_= new PolicyEventObserver(this);
     }
   } else {
-    LOG4CXX_ERROR(logger_, error_string);
+    LOG4CXX_ERROR(logger_, "Policy library loading error");
   }
-
   return policy_manager_.valid();
 }
 
@@ -298,13 +330,24 @@ bool PolicyHandler::PolicyEnabled() {
 
 bool PolicyHandler::CreateManager() {
   typedef PolicyManager* (*CreateManager)();
-  CreateManager create_manager = reinterpret_cast<CreateManager>(dlsym(dl_handle_, "CreateManager"));
+#if defined(OS_POSIX)
+  CreateManager create_manager =
+      reinterpret_cast<CreateManager>(dlsym(dl_handle_, "CreateManager"));
   char* error_string = dlerror();
   if (error_string == NULL) {
     policy_manager_ = create_manager();
   } else {
     LOG4CXX_WARN(logger_, error_string);
   }
+#elif defined(OS_WINDOWS)
+  CreateManager create_manager =
+      reinterpret_cast<CreateManager>(GetProcAddress(dl_handle_, "CreateManager"));
+  if (create_manager != NULL) {
+    policy_manager_ = create_manager();
+  } else {
+    LOG4CXX_WARN(logger_, "Policy library loading error. Cannot get proc address");
+  }
+#endif
   return policy_manager_.valid();
 }
 
@@ -813,7 +856,11 @@ bool PolicyHandler::UnloadPolicyLibrary() {
     policy_manager_.reset();
   }
   if (dl_handle_) {
+#if defined(OS_POSIX)
     ret = (dlclose(dl_handle_) == 0);
+#elif defined(OS_WINDOWS)
+    ret = FreeLibrary(dl_handle_);
+#endif
     dl_handle_ = 0;
   }
   LOG4CXX_TRACE(logger_, "exit");

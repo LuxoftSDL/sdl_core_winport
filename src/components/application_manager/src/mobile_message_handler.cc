@@ -55,12 +55,21 @@ using protocol_handler::Extract;
 
 namespace {
   typedef std::map<MessageType, std::string> MessageTypeMap;
-  MessageTypeMap messageTypes = {
-    std::make_pair(kRequest, "Request"),
-    std::make_pair(kResponse, "Response"),
-    std::make_pair(kNotification, "Notification")
-  };
+  MessageTypeMap messageTypes;
+
+  void InitMessageTypes() {
+    messageTypes.insert(std::make_pair(kRequest, "Request"));
+    messageTypes.insert(std::make_pair(kResponse, "Response"));
+    messageTypes.insert(std::make_pair(kNotification, "Notification"));
+  }
+  MessageTypeMap& GetMessageTypes(const std::string& priority) {
+    if (messageTypes.empty()) {
+      InitMessageTypes();
+	}
+    return messageTypes;
+  }
 }
+
 CREATE_LOGGERPTR_GLOBAL(logger_, "MobileMessageHandler")
 
 application_manager::Message* MobileMessageHandler::HandleIncomingMessageProtocol(
@@ -95,7 +104,7 @@ application_manager::Message* MobileMessageHandler::HandleIncomingMessageProtoco
   }
   LOG4CXX_DEBUG(logger_, "Incoming RPC_INFO: " <<
                          (out_message->connection_key() >> 16) <<", "<<
-                         messageTypes[out_message->type()] <<", "<<
+                         GetMessageTypes[out_message->type()] <<", "<<
                          out_message->function_id() << ", " <<
                          out_message->correlation_id() << ", " <<
                          out_message->json_message());
@@ -107,7 +116,7 @@ protocol_handler::RawMessage* MobileMessageHandler::HandleOutgoingMessageProtoco
 
   LOG4CXX_DEBUG(logger_, "Outgoing RPC_INFO: " <<
                 (message->connection_key() >> 16) <<", "<<
-                messageTypes[message->type()]<<", "<<
+                GetMessageTypes[message->type()]<<", "<<
                 message->function_id() << ", " <<
                 message->correlation_id() << ", " <<
                 message->json_message());

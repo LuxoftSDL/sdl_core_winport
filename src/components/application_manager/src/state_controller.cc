@@ -245,7 +245,7 @@ void StateController::ApplyRegularState(ApplicationSharedPtr app,
   DCHECK_OR_RETURN_VOID(state);
   DCHECK_OR_RETURN_VOID(state->state_id() == HmiState::STATE_ID_REGULAR);
   SetupRegularHmiState(app, state);
-  ForEachApplication<HmiLevelConflictResolver, ApplicationManagerImpl>
+  ForEachApplication<HmiLevelConflictResolver>
       (HmiLevelConflictResolver(app, state, this));
 }
 

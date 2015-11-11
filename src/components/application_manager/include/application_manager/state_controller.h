@@ -267,16 +267,15 @@ class StateController : public event_engine::EventObserver {
     /**
      * Execute Unary punction for each application
      */
-    template < typename UnaryFunction,
-             typename ContextAcessor = ApplicationManagerImpl >
+    template < typename UnaryFunction>
     void ForEachApplication(UnaryFunction func) {
       using namespace utils;
-      typename ContextAcessor::ApplicationListAccessor accessor;
-      typedef typename ContextAcessor::ApplictionSetConstIt Iter;
+      typename ApplicationManagerImpl::ApplicationListAccessor accessor;
+      typedef typename ApplicationManagerImpl::ApplictionSetConstIt Iter;
       for (Iter it = accessor.begin(); it != accessor.end(); ++it) {
         if (it->valid()) {
           ApplicationConstSharedPtr const_app = *it;
-          func(ContextAcessor::instance()->application(const_app->app_id()));
+          func(ApplicationManagerImpl::instance()->application(const_app->app_id()));
         }
       }
     }
