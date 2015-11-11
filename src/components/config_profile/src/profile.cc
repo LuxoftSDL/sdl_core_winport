@@ -47,6 +47,13 @@
 #include <openssl/ssl.h>
 #endif  // ENABLE_SECURITY
 
+#ifdef min
+#undef min
+#endif
+
+#ifdef max
+#undef max
+#endif
 
 namespace {
 #define LOG_UPDATED_VALUE(value, key, section) {\
@@ -258,9 +265,9 @@ const uint32_t kDefaultAppHmiLevelNoneRequestsTimeScale = 10;
 const uint32_t kDefaultPendingRequestsAmount = 0;
 const uint32_t kDefaultTransportManagerDisconnectTimeout = 0;
 const uint32_t kDefaultApplicationListUpdateTimeout = 1;
-const std::pair<uint32_t, uint32_t> kReadDIDFrequency = { 5, 1 };
-const std::pair<uint32_t, uint32_t> kGetVehicleDataFrequency = { 5, 1 };
-const std::pair<uint32_t, uint32_t> kStartStreamRetryAmount = { 3, 1 };
+const std::pair<uint32_t, uint32_t> kReadDIDFrequency = std::make_pair(5, 1);
+const std::pair<uint32_t, uint32_t> kGetVehicleDataFrequency = std::make_pair(5, 1);
+const std::pair<uint32_t, uint32_t> kStartStreamRetryAmount = std::make_pair(3, 1);
 const uint32_t kDefaultMaxThreadPoolSize = 2;
 const int kDefaultIAP2HubConnectAttempts = 0;
 const int kDefaultIAPHubConnectionWaitTimeout = 10000;
@@ -524,11 +531,11 @@ const std::string& Profile::audio_stream_file() const {
   return audio_stream_file_;
 }
 
-const std::uint32_t Profile::audio_data_stopped_timeout() const {
+const uint32_t Profile::audio_data_stopped_timeout() const {
   return audio_data_stopped_timeout_;
 }
 
-const std::uint32_t Profile::video_data_stopped_timeout() const {
+const uint32_t Profile::video_data_stopped_timeout() const {
   return video_data_stopped_timeout_;
 }
 
