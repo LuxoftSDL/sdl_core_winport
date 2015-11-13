@@ -28,6 +28,9 @@
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 
+if (${CMAKE_SYSTEM_NAME} MATCHES "Windows")
+  find_package(WinOpenSSL REQUIRED)
+endif()
 
 set(CH_SRC_DIR ${COMPONENTS_DIR}/connection_handler/src)
 
@@ -37,6 +40,7 @@ include_directories (
     ${COMPONENTS_DIR}/config_profile/include/
     ${COMPONENTS_DIR}/utils/include/
     ${ENCRYPTION_INCLUDE_DIRECTORY}
+    ${OPENSSL_INCLUDE_DIRECTORY}
     ${LOG4CXX_INCLUDE_DIRECTORY}
 )
 
