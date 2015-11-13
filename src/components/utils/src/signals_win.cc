@@ -29,43 +29,27 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-#if defined(OS_POSIX)
+#if defined(WIN_NATIVE)
 
 #include <csignal>
-#include <cstdlib>
-#include <stdint.h>
+#include <windows.h>
 
 #include "utils/signals.h"
 
 namespace utils {
 
 bool SubscribeToInterruptSignal(sighandler_t func) {
-  struct sigaction act;
-  act.sa_handler = func;
-  sigemptyset(&act.sa_mask);
-  act.sa_flags = 0;
-
-  return sigaction(SIGINT, &act, NULL) == 0;
+  return signal(SIGINT, func) != SIG_ERR;
 }
 
 bool SubscribeToTerminateSignal(sighandler_t func) {
-  struct sigaction act;
-  act.sa_handler = func;
-  sigemptyset(&act.sa_mask);
-  act.sa_flags = 0;
-
-  return sigaction(SIGTERM, &act, NULL) == 0;
+  return signal(SIGTERM, func) != SIG_ERR;
 }
 
 bool SubscribeToFaultSignal(sighandler_t func) {
-  struct sigaction act;
-  act.sa_handler = func;
-  sigemptyset(&act.sa_mask);
-  act.sa_flags = 0;
-
-  return sigaction(SIGSEGV, &act, NULL) == 0;
+  return signal(SIGSEGV, func) != SIG_ERR;
 }
 
 }  //  namespace utils
 
-#endif // OS_POSIX
+#endif // WIN_NATIVE
