@@ -89,7 +89,6 @@ if (${CMAKE_SYSTEM_NAME} MATCHES "Windows")
                   ProtocolLibrary
                   SmartObjects
                   UsageStatistics
-                  dl
                   formatters
                   dbms)
     if (${HMI_JSON_API})
@@ -102,9 +101,9 @@ if (${CMAKE_SYSTEM_NAME} MATCHES "Windows")
     endif (${HMI_DBUS_API})
                   
     if(${QT_PORT})
-       target_link_libraries("ApplicationManager" ${LIBRARIES} ${src} ${QT5Core} )
+       target_link_libraries("ApplicationManager" ${LIBRARIES} ${QT5Core} )
     else()
-        target_link_libraries("ApplicationManager" ${LIBRARIES} ${src})        
+        target_link_libraries("ApplicationManager" ${LIBRARIES})        
     endif()
 else ()
 

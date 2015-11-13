@@ -66,11 +66,11 @@ namespace helpers {
     return !EQ<T>(what, to);
   }
 
-  bool ALL (bool what, bool to) {
+  inline bool ALL (bool what, bool to) {
     return what && to;
   }
 
-  bool ONE (bool what, bool to) {
+  inline bool ONE (bool what, bool to) {
     return what || to;
   }
 

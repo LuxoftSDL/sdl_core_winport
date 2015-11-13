@@ -29,6 +29,7 @@
  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  POSSIBILITY OF SUCH DAMAGE.
  */
+#include <functional>
 
 #include "application_manager/state_controller.h"
 #include "application_manager/application_manager_impl.h"
