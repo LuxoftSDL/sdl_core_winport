@@ -60,7 +60,7 @@ FileStreamerAdapter::FileStreamer::~FileStreamer() {
 
 bool FileStreamerAdapter::FileStreamer::Connect() {
   LOG4CXX_AUTO_TRACE(logger);
-  if (!file_system::CreateDirectoryRecursively(
+  /*if (!file_system::CreateDirectoryRecursively(
       profile::Profile::instance()->app_storage_folder())) {
     LOG4CXX_ERROR(logger, "Cannot create app folder");
     return false;
@@ -74,24 +74,24 @@ bool FileStreamerAdapter::FileStreamer::Connect() {
   }
 
   LOG4CXX_INFO(logger, "File " << file_name_
-                << " was successfuly opened");
+                << " was successfuly opened");*/
   return true;
 }
 
 void FileStreamerAdapter::FileStreamer::Disconnect() {
   LOG4CXX_AUTO_TRACE(logger);
-  if (file_stream_) {
+  /*if (file_stream_) {
     file_system::Close(file_stream_);
     delete file_stream_;
     file_stream_ = NULL;
   }
-  file_system::DeleteFile(file_name_);
+  file_system::DeleteFile(file_name_);*/
 }
 
 bool FileStreamerAdapter::FileStreamer::Send(
     protocol_handler::RawMessagePtr msg) {
   LOG4CXX_AUTO_TRACE(logger);
-  if (!file_stream_) {
+  /*if (!file_stream_) {
     LOG4CXX_ERROR(logger, "File stream not found "
                   << file_name_);
     return false;
@@ -104,7 +104,7 @@ bool FileStreamerAdapter::FileStreamer::Send(
     return false;
   }
 
-  LOG4CXX_INFO(logger, "Streamer::sent " << msg->data_size());
+  LOG4CXX_INFO(logger, "Streamer::sent " << msg->data_size());*/
   return true;
 }
 

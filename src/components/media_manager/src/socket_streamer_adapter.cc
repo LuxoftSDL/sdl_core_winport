@@ -30,13 +30,13 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include <sys/socket.h>
+/*#include <sys/socket.h>
 #include <sys/types.h>
 #include <sys/select.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <netdb.h>
-#include <unistd.h>
+#include <unistd.h>*/
 #include "utils/logger.h"
 #include "media_manager/socket_streamer_adapter.h"
 
@@ -73,7 +73,7 @@ SocketStreamerAdapter::SocketStreamer::~SocketStreamer() {
 
 bool SocketStreamerAdapter::SocketStreamer::Connect() {
   LOG4CXX_AUTO_TRACE(logger);
-  socket_fd_ = socket(AF_INET, SOCK_STREAM, 0);
+  /*socket_fd_ = socket(AF_INET, SOCK_STREAM, 0);
   if (0 >= socket_fd_) {
     LOG4CXX_ERROR(logger, "Unable to create socket");
     return false;
@@ -109,24 +109,24 @@ bool SocketStreamerAdapter::SocketStreamer::Connect() {
   }
 
   is_first_frame_ = true;
-  LOG4CXX_INFO(logger, "Client connected: " << send_socket_fd_);
+  LOG4CXX_INFO(logger, "Client connected: " << send_socket_fd_);*/
   return true;
 }
 
 void SocketStreamerAdapter::SocketStreamer::Disconnect() {
   LOG4CXX_AUTO_TRACE(logger);
-  if (0 < send_socket_fd_) {
+  /*if (0 < send_socket_fd_) {
     close(send_socket_fd_);
   }
   if (0 < socket_fd_) {
     close(socket_fd_);
-  }
+  }*/
 }
 
 bool SocketStreamerAdapter::SocketStreamer::Send(
     protocol_handler::RawMessagePtr msg) {
   LOG4CXX_AUTO_TRACE(logger);
-  ssize_t ret;
+  /*ssize_t ret;
   if (is_first_frame_) {
     ret = send(send_socket_fd_, header_.c_str(),
                header_.size(), MSG_NOSIGNAL);
@@ -149,7 +149,7 @@ bool SocketStreamerAdapter::SocketStreamer::Send(
                  << send_socket_fd_);
   }
 
-  LOG4CXX_INFO(logger, "Streamer::sent " << msg->data_size());
+  LOG4CXX_INFO(logger, "Streamer::sent " << msg->data_size());*/
   return true;
 }
 
