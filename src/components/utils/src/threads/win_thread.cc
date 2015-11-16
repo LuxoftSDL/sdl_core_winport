@@ -73,7 +73,7 @@ void* Thread::threadFunc(void* arg) {
   //     running = 1
   //     finalized = 1
   LOG4CXX_DEBUG(logger_,
-                "Thread #" << GetCurrentThread() << " started successfully");
+                "Thread #" << GetCurrentThreadId() << " started successfully");
 
   threads::Thread* thread = reinterpret_cast<Thread*>(arg);
   DCHECK(thread);
@@ -82,11 +82,11 @@ void* Thread::threadFunc(void* arg) {
   thread->state_cond_.Broadcast();
 
   while (!thread->finalized_) {
-    LOG4CXX_DEBUG(logger_, "Thread #" << GetCurrentThread() << " iteration");
+    LOG4CXX_DEBUG(logger_, "Thread #" << GetCurrentThreadId() << " iteration");
     thread->run_cond_.Wait(thread->state_lock_);
     LOG4CXX_DEBUG(
         logger_,
-        "Thread #" << pthread_self() << " execute. " << "stopped_ = "
+        "Thread #" << GetCurrentThreadId() << " execute. " << "stopped_ = "
 		<< thread->stopped_ << "; finalized_ = " << thread->finalized_);
     if (!thread->stopped_ && !thread->finalized_) {
       thread->isThreadRunning_ = true;
@@ -99,13 +99,13 @@ void* Thread::threadFunc(void* arg) {
     }
     thread->state_cond_.Broadcast();
     LOG4CXX_DEBUG(logger_,
-                  "Thread #" << GetCurrentThread() << " finished iteration");
+                  "Thread #" << GetCurrentThreadId() << " finished iteration");
   }
 
   thread->state_lock_.Release();
 
   LOG4CXX_DEBUG(logger_,
-                "Thread #" << GetCurrentThread() << " exited successfully");
+                "Thread #" << GetCurrentThreadId() << " exited successfully");
   return NULL;
 }
 

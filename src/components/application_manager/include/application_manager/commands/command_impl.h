@@ -147,7 +147,11 @@ class CommandImpl : public Command {
   uint32_t default_timeout_;
   bool allowed_to_terminate_;
 #ifdef ENABLE_LOG
+#if defined(OS_POSIX)
   static log4cxx::LoggerPtr logger_;
+#elif defined(WIN_NATIVE)
+  static std::string logger_;
+#endif
 #endif // ENABLE_LOG
 
  private:

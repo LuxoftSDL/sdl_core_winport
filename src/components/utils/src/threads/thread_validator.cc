@@ -48,7 +48,7 @@ SingleThreadSimpleValidator::~SingleThreadSimpleValidator() {
 void SingleThreadSimpleValidator::AssertRunningOnCreationThread() const {
   PlatformThreadHandle current_id = Thread::CurrentId();
   if (creation_thread_id_ != current_id) {
-    LOG4CXX_ERROR(logger_, "Single-threaded object created at thread "
+    /*LOG4CXX_ERROR(logger_, "Single-threaded object created at thread "
                           << creation_thread_id_
                           <<" is accessed from thread "
                           << current_id
@@ -56,7 +56,7 @@ void SingleThreadSimpleValidator::AssertRunningOnCreationThread() const {
                           << "\n"
                           << utils::Backtrace()
 #endif
-    );
+    );*/
   }
 }
 
@@ -80,14 +80,14 @@ void SingleThreadValidator::PassToThread(PlatformThreadHandle thread_id) const {
 void SingleThreadValidator::AssertRunningOnValidThread() const {
   PlatformThreadHandle current_id = Thread::CurrentId();
   if (owning_thread_id_ != current_id) {
-    LOG4CXX_ERROR(logger_, "Single-threaded object owned by thread "
+    /*LOG4CXX_ERROR(logger_, "Single-threaded object owned by thread "
                          << owning_thread_id_
                          << " is accessed from thread "
                          << current_id << "\n"
 #ifdef BACKTRACE_SUPPORT
                          << utils::Backtrace()
 #endif
-                         );
+                         );*/
   }
 }
 

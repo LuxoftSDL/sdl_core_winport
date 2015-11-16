@@ -104,7 +104,7 @@ application_manager::Message* MobileMessageHandler::HandleIncomingMessageProtoco
   }
   LOG4CXX_DEBUG(logger_, "Incoming RPC_INFO: " <<
                          (out_message->connection_key() >> 16) <<", "<<
-                         GetMessageTypes[out_message->type()] <<", "<<
+                         //GetMessageTypes[out_message->type()] <<", "<<
                          out_message->function_id() << ", " <<
                          out_message->correlation_id() << ", " <<
                          out_message->json_message());
@@ -116,7 +116,7 @@ protocol_handler::RawMessage* MobileMessageHandler::HandleOutgoingMessageProtoco
 
   LOG4CXX_DEBUG(logger_, "Outgoing RPC_INFO: " <<
                 (message->connection_key() >> 16) <<", "<<
-                GetMessageTypes[message->type()]<<", "<<
+                //GetMessageTypes[message->type()]<<", "<<
                 message->function_id() << ", " <<
                 message->correlation_id() << ", " <<
                 message->json_message());

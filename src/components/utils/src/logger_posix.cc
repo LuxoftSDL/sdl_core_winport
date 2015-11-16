@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014, Ford Motor Company
+ * Copyright (c) 2015, Ford Motor Company
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -29,28 +29,60 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
+#if defined(OS_POSIX)
 
+#include "utils/logger.h"
 #include "utils/log_message_loop_thread.h"
-#include "utils/logger_status.h"
+
+namespace {
+  bool is_logs_enabled = false;
+  logger::LogMessageLoopThread* message_loop_thread = NULL;
+}
 
 namespace logger {
 
-void LogMessageHandler::Handle(const LogMessage message) {
-  message.logger->forcedLog(message.level,
-                            message.entry,
-                            message.timeStamp,
-                            message.location,
-                            message.threadName);
+bool init_logger(const std::string& file_name) {
+  log4cxx::PropertyConfigurator::configure(file_name);
+  if (!message_loop_thread) {
+    message_loop_thread = new LogMessageLoopThread();
+  }
+  set_logs_enabled(true);
+  return true;
 }
 
-LogMessageLoopThread::LogMessageLoopThread() :
-  LogMessageLoopThreadTemplate("Logger", new LogMessageHandler()) {
+void deinit_logger() {
+  CREATE_LOGGERPTR_LOCAL(logger_, "Logger");
+  LOG4CXX_DEBUG(logger_, "Logger deinitialization");
+
+  set_logs_enabled(false);
+  delete message_loop_thread;
 }
 
-LogMessageLoopThread::~LogMessageLoopThread() {
-// we'll have to drop messages
-// while deleting logger thread
-  logger_status = DeletingLoggerThread;
+bool logs_enabled() {
+  return is_logs_enabled;
 }
 
-}  // namespace logger
+void set_logs_enabled(bool state) {
+  is_logs_enabled = state;
+}
+
+bool push_log(log4cxx::LoggerPtr logger,
+              log4cxx::LevelPtr level,
+              const std::string& entry,
+              log4cxx_time_t time_stamp,
+              const log4cxx::spi::LocationInfo& location,
+              const log4cxx::LogString& thread_name) {
+  if (!logs_enabled()) {
+    return false;
+  }
+  if (!logger->isEnabledFor(level)) {
+    return false;
+  }
+  LogMessage message = { logger, level, entry, time_stampm location, thread_name };
+  message_loop_thread->PostMessage(message);
+  return true;
+}
+
+} // namespace logger
+
+#endif // OS_POSIX

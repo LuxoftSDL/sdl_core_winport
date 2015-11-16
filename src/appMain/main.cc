@@ -35,11 +35,11 @@
 #include <vector>
 #include <string>
 
-#include "utils/logger.h"
 #include "./life_cycle.h"
 #include "utils/system.h"
 #include "config_profile/profile.h"
 #include "networking.h"
+#include "utils/logger.h"
 
 CREATE_LOGGERPTR_GLOBAL(logger_, "appMain")
 

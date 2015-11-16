@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014, Ford Motor Company
+ * Copyright (c) 2015, Ford Motor Company
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -29,51 +29,61 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-
 #ifndef SRC_COMPONENTS_UTILS_INCLUDE_UTILS_LOG_MESSAGE_LOOP_THREAD_H_
 #define SRC_COMPONENTS_UTILS_INCLUDE_UTILS_LOG_MESSAGE_LOOP_THREAD_H_
 
 #include <string>
 #include <queue>
+#include <cstdint>
+
+#if defined(OS_POSIX)
 #include <log4cxx/logger.h>
+#elif defined(WIN_NATIVE)
+#include <windows.h>
+#endif
 
 #include "utils/macro.h"
 #include "utils/threads/message_loop_thread.h"
-#include "utils/singleton.h"
 
 namespace logger {
 
+#if defined(OS_POSIX)
 typedef struct {
   log4cxx::LoggerPtr logger;
   log4cxx::LevelPtr level;
   std::string entry;
-  log4cxx_time_t timeStamp;
+  log4cxx_time_t time_stamp;
   log4cxx::spi::LocationInfo location;
-  log4cxx::LogString threadName;
+  log4cxx::LogString thread_name;
 } LogMessage;
+#elif defined(WIN_NATIVE)
+typedef struct {
+  HANDLE      logger_handle;
+  std::string logger_name;
+  uint32_t    level;
+  std::string entry;
+  uint32_t    thread;
+  FILE*       file;
+} LogMessage;
+#endif
 
 typedef std::queue<LogMessage> LogMessageQueue;
-
 typedef threads::MessageLoopThread<LogMessageQueue> LogMessageLoopThreadTemplate;
 
 class LogMessageHandler : public LogMessageLoopThreadTemplate::Handler {
  public:
-  virtual void Handle(const LogMessage message) OVERRIDE;
+  virtual void Handle(const LogMessage message);
 };
 
-class LogMessageLoopThread :
-  public LogMessageLoopThreadTemplate,
-  public utils::Singleton<LogMessageLoopThread> {
-
+class LogMessageLoopThread: public LogMessageLoopThreadTemplate {
  public:
-  ~LogMessageLoopThread();
+  LogMessageLoopThread():
+    LogMessageLoopThreadTemplate("Logger", new LogMessageHandler()) {
+  }
+  ~LogMessageLoopThread() {};
 
  private:
-  LogMessageLoopThread();
-
-DISALLOW_COPY_AND_ASSIGN(LogMessageLoopThread);
-FRIEND_BASE_SINGLETON_CLASS(LogMessageLoopThread);
-
+  DISALLOW_COPY_AND_ASSIGN(LogMessageLoopThread);
 };
 
 }  // namespace logger

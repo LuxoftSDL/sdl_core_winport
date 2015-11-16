@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014, Ford Motor Company
+ * Copyright (c) 2015, Ford Motor Company
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -29,51 +29,68 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
+#if defined(WIN_NATIVE)
 
-#include "utils/push_log.h"
+#include "utils/logger.h"
 #include "utils/log_message_loop_thread.h"
-#include "utils/logger_status.h"
-#include "config_profile/profile.h"
+
+namespace {
+  bool is_logs_enabled = false;
+  logger::LogMessageLoopThread* message_loop_thread = NULL;
+
+  uint32_t log_level = 0;
+  HANDLE logger_handle = NULL;
+  FILE* output_file = NULL;
+}
 
 namespace logger {
 
-static bool logs_enabled_ = false;
+bool init_logger(const std::string& file_name) {
+  logger_handle = RegisterEventSource(NULL, TEXT("SDL"));
+  output_file = fopen("SmartDeviceLink.log", "a");
 
-bool push_log(log4cxx::LoggerPtr logger,
-              log4cxx::LevelPtr level,
-              const std::string& entry,
-              log4cxx_time_t timeStamp,
-              const log4cxx::spi::LocationInfo& location,
-              const log4cxx::LogString& threadName
-              ) {
-  if (LoggerThreadCreated == logger_status) {
-    LogMessage message = {logger, level, entry, timeStamp, location, threadName};
-    LogMessageLoopThread::instance()->PostMessage(message);
-    return true;
+  if (!message_loop_thread) {
+    message_loop_thread = new LogMessageLoopThread();
   }
+  set_logs_enabled(true);
+  return true;
+}
 
-  if (LoggerThreadNotCreated == logger_status) {
-    logger_status = CreatingLoggerThread;
-// we'll have to drop messages
-// while creating logger thread
-    LogMessage message = {logger, level, entry, timeStamp, location, threadName};
-    LogMessageLoopThread::instance()->PostMessage(message);
-    logger_status = LoggerThreadCreated;
-    return true;
-  }
+void deinit_logger() {
+  CREATE_LOGGERPTR_LOCAL(logger_, "Logger");
+  LOG4CXX_DEBUG(logger_, "Logger deinitialization");
 
-// also we drop messages
-// while deleting logger thread
+  set_logs_enabled(false);
+  delete message_loop_thread;
 
-  return false;
+  fclose(output_file);
+  DeregisterEventSource(logger_handle);
 }
 
 bool logs_enabled() {
-  return logs_enabled_;
+  return is_logs_enabled;
 }
 
 void set_logs_enabled(bool state) {
-  logs_enabled_ = state;
+  is_logs_enabled = state;
 }
 
-}  // namespace logger
+bool push_log(const std::string& logger,
+              uint32_t level,
+              const std::string& entry) {
+  if (!logs_enabled()) {
+    return false;
+  }
+  if (level < log_level) {
+    return false;
+  }
+  LogMessage message =
+      { logger_handle, logger, level, entry,
+        static_cast<uint32_t>(GetCurrentThreadId()), output_file };
+  message_loop_thread->PostMessage(message);
+  return true;
+}
+
+} // namespace logger
+
+#endif // WIN_NATIVE
