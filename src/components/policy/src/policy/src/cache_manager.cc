@@ -82,11 +82,14 @@ private:
   const std::string& language_;
 };
 
-CacheManager::CacheManager()
+CacheManager::CacheManager(const std::string& app_storage_folder,
+                           uint16_t attempts_to_open_policy_db,
+                           uint16_t open_attempt_timeout_ms)
   : CacheManagerInterface(),
     pt_(new policy_table::Table),
     backup_(
-                     new SQLPTRepresentation()
+      new SQLPTRepresentation(
+          app_storage_folder, attempts_to_open_policy_db, open_attempt_timeout_ms)
     ),
     update_required(false) {
 

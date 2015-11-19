@@ -52,7 +52,9 @@ namespace policy {
 
 class SQLPTRepresentation : public virtual PTRepresentation {
   public:
-    SQLPTRepresentation();
+    SQLPTRepresentation(const std::string& app_storage_folder,
+                        uint16_t attempts_to_open_policy_db,
+                        uint16_t open_attempt_timeout_ms);
     ~SQLPTRepresentation();
     virtual void CheckPermissions(const PTString& app_id,
         const PTString& hmi_level,
@@ -174,6 +176,10 @@ class SQLPTRepresentation : public virtual PTRepresentation {
   private:
     static const std::string kDatabaseName;
     utils::dbms::SQLDatabase* db_;
+
+    const std::string app_storage_folder_;
+    const uint16_t attempts_to_open_policy_db_;
+    const uint16_t open_attempt_timeout_ms_;
 
 #ifdef BUILD_TESTS
     uint32_t open_counter_;

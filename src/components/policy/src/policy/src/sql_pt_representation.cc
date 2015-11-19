@@ -50,7 +50,6 @@
 #include "policy/sql_pt_queries.h"
 #include "policy/policy_helper.h"
 #include "policy/cache_manager.h"
-#include "config_profile/profile.h"
 
 namespace policy {
 
@@ -70,12 +69,16 @@ template<typename T, typename K> void InsertUnique(K value, T* array) {
 
 const std::string SQLPTRepresentation::kDatabaseName = "policy";
 
-SQLPTRepresentation::SQLPTRepresentation()
-  : db_(new utils::dbms::SQLDatabase(kDatabaseName)) {
+SQLPTRepresentation::SQLPTRepresentation(const std::string& app_storage_folder,
+                                         uint16_t attempts_to_open_policy_db,
+                                         uint16_t open_attempt_timeout_ms)
+  : db_(new utils::dbms::SQLDatabase(kDatabaseName)),
+    app_storage_folder_(app_storage_folder),
+    attempts_to_open_policy_db_(attempts_to_open_policy_db),
+    open_attempt_timeout_ms_(open_attempt_timeout_ms) {
 #ifndef __QNX__
-  std::string path = profile::Profile::instance()->app_storage_folder();
-  if (!path.empty()) {
-    db_->set_path(path + "/");
+  if (!app_storage_folder_.empty()) {
+    db_->set_path(app_storage_folder_ + "/");
   }
 #endif  // __QNX__
 }
@@ -333,22 +336,19 @@ InitResult SQLPTRepresentation::Init() {
   if (!db_->Open()) {
     LOG4CXX_ERROR(logger_, "Failed opening database.");
     LOG4CXX_INFO(logger_, "Starting opening retries.");
-    const uint16_t attempts =
-        profile::Profile::instance()->attempts_to_open_policy_db();
-    LOG4CXX_DEBUG(logger_, "Total attempts number is: " << attempts);
+    LOG4CXX_DEBUG(logger_, "Total attempts number is: "
+                  << attempts_to_open_policy_db_);
     bool is_opened = false;
-    const uint16_t open_attempt_timeout_ms =
-        profile::Profile::instance()->open_attempt_timeout_ms();
 #ifdef WIN_NATIVE
-	std::chrono::microseconds sleep_interval_mcsec(open_attempt_timeout_ms * 1000);
+    std::chrono::microseconds sleep_interval_mcsec(open_attempt_timeout_ms_ * 1000);
 #else
     const useconds_t sleep_interval_mcsec = open_attempt_timeout_ms * 1000;
 #endif
     LOG4CXX_DEBUG(logger_, "Open attempt timeout(ms) is: "
-                  << open_attempt_timeout_ms);
-    for (int i = 0; i < attempts; ++i) {
+                  << open_attempt_timeout_ms_);
+    for (int i = 0; i < attempts_to_open_policy_db_; ++i) {
 #ifdef WIN_NATIVE
-		std::this_thread::sleep_for(std::chrono::microseconds(sleep_interval_mcsec));
+      std::this_thread::sleep_for(std::chrono::microseconds(sleep_interval_mcsec));
 #else
       usleep(sleep_interval_mcsec);
 #endif
@@ -361,8 +361,9 @@ InitResult SQLPTRepresentation::Init() {
     }
     if (!is_opened) {
       LOG4CXX_ERROR(logger_, "Open retry sequence failed. Tried "
-                    << attempts << " attempts with "
-                    << open_attempt_timeout_ms
+                    << attempts_to_open_policy_db_ 
+                    << " attempts with "
+                    << open_attempt_timeout_ms_
                     << " open timeout(ms) for each.");
       return InitResult::FAIL;
     }

@@ -459,6 +459,13 @@ class PolicyManager : public usage_statistics::StatisticsManager {
 
 }  // namespace policy
 
-extern "C" policy::PolicyManager* CreateManager();
+#if defined(OS_POSIX)
+extern "C" policy::PolicyManager* CreateManager(
+#elif defined(OS_WINDOWS)
+extern "C" __declspec(dllexport) policy::PolicyManager* CreateManager(
+#endif
+    const std::string& app_storage_folder,
+    uint16_t attempts_to_open_policy_db,
+    uint16_t open_attempt_timeout_ms);
 
 #endif  // SRC_COMPONENTS_POLICY_INCLUDE_POLICY_POLICY_MANAGER_H_
