@@ -262,6 +262,19 @@ bool MoveFile(const std::string& src,
               const std::string& dst);
 void remove_directory_content(const std::string& directory_name);
 
+/**
+  * @brief Checks if path is relative or not
+  * @param path Path to check
+  * @return True if path is relative, otherwise false
+  */
+bool IsRelativePath(const std::string& path);
+
+/**
+  * @brief Converts path from relative to absolute
+  * @param path Path to convert
+  */
+void MakeAbsolutePath(std::string& path);
+
 }  // namespace file_system
 
 #endif  // SRC_COMPONENTS_UTILS_INCLUDE_UTILS_FILE_SYSTEM_H_

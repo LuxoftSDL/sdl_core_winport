@@ -854,8 +854,8 @@ void Profile::UpdateValues() {
                   file_system::CurrentWorkingDirectory().c_str(),
                   kMainSection, kAppConfigFolderKey);
 
-  if (IsRelativePath(app_config_folder_)) {
-    MakeAbsolutePath(app_config_folder_);
+  if (file_system::IsRelativePath(app_config_folder_)) {
+    file_system::MakeAbsolutePath(app_config_folder_);
   }
 
   LOG_UPDATED_VALUE(app_config_folder_, kAppConfigFolderKey, kMainSection);
@@ -865,8 +865,8 @@ void Profile::UpdateValues() {
                   file_system::CurrentWorkingDirectory().c_str(),
                   kMainSection, kAppStorageFolderKey);
 
-  if (IsRelativePath(app_storage_folder_)) {
-    MakeAbsolutePath(app_storage_folder_);
+  if (file_system::IsRelativePath(app_storage_folder_)) {
+    file_system::MakeAbsolutePath(app_storage_folder_);
   }
 
   LOG_UPDATED_VALUE(app_storage_folder_, kAppStorageFolderKey, kMainSection);
@@ -876,8 +876,8 @@ void Profile::UpdateValues() {
                   file_system::CurrentWorkingDirectory().c_str(),
                   kMainSection, kAppResourseFolderKey);
 
-  if (IsRelativePath(app_resourse_folder_)) {
-    MakeAbsolutePath(app_resourse_folder_);
+  if (file_system::IsRelativePath(app_resourse_folder_)) {
+    file_system::MakeAbsolutePath(app_resourse_folder_);
   }
 
   LOG_UPDATED_VALUE(app_resourse_folder_, kAppResourseFolderKey,
@@ -899,8 +899,8 @@ void Profile::UpdateValues() {
                   file_system::CurrentWorkingDirectory().c_str(),
                   kSDL4Section, kAppIconsFolderKey);
 
-  if (IsRelativePath(app_icons_folder_)) {
-    MakeAbsolutePath(app_icons_folder_);
+  if (file_system::IsRelativePath(app_icons_folder_)) {
+    file_system::MakeAbsolutePath(app_icons_folder_);
   }
 
   LOG_UPDATED_VALUE(app_icons_folder_, kAppIconsFolderKey,
@@ -1326,6 +1326,9 @@ void Profile::UpdateValues() {
   // System files path
   ReadStringValue(&system_files_path_, kDefaultSystemFilesPath, kMainSection,
                   kSystemFilesPathKey);
+  if (file_system::IsRelativePath(system_files_path_)) {
+    file_system::MakeAbsolutePath(system_files_path_);
+  }
 
   LOG_UPDATED_VALUE(system_files_path_, kSystemFilesPathKey, kMainSection);
 
@@ -1738,18 +1741,6 @@ bool Profile::StringToNumber(const std::string& input, uint64_t& output) const {
   }
   output = user_value;
   return true;
-}
-
-bool Profile::IsRelativePath(const std::string& path) {
-  if (path.empty()) {
-    LOG4CXX_ERROR(logger_, "Empty path passed.");
-    return false;
-  }
-  return '/' != path[0];
-}
-
-void Profile::MakeAbsolutePath(std::string& path) {
-  path = file_system::CurrentWorkingDirectory() + "/" + path;
 }
 
 }//  namespace profile

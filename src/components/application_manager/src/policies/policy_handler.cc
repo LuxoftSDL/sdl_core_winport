@@ -68,47 +68,47 @@ namespace {
 
   void InitRequestTypeMap() {
     typeToString.insert(
-		std::make_pair(RequestType::INVALID_ENUM, "INVALID_ENUM"));
+        std::make_pair(RequestType::INVALID_ENUM, std::string("INVALID_ENUM")));
     typeToString.insert(
-		std::make_pair(RequestType::HTTP, "HTTP"));
+        std::make_pair(RequestType::HTTP, std::string("HTTP")));
     typeToString.insert(
-		std::make_pair(RequestType::FILE_RESUME, "FILE_RESUME"));
+        std::make_pair(RequestType::FILE_RESUME, std::string("FILE_RESUME")));
     typeToString.insert(
-		std::make_pair(RequestType::AUTH_REQUEST, "AUTH_REQUEST"));
+        std::make_pair(RequestType::AUTH_REQUEST, std::string("AUTH_REQUEST")));
     typeToString.insert(
-		std::make_pair(RequestType::AUTH_CHALLENGE, "AUTH_CHALLENGE"));
+        std::make_pair(RequestType::AUTH_CHALLENGE, std::string("AUTH_CHALLENGE")));
     typeToString.insert(
-		std::make_pair(RequestType::AUTH_ACK, "AUTH_ACK"));
+        std::make_pair(RequestType::AUTH_ACK, std::string("AUTH_ACK")));
     typeToString.insert(
-		std::make_pair(RequestType::PROPRIETARY, "PROPRIETARY"));
+        std::make_pair(RequestType::PROPRIETARY, std::string("PROPRIETARY")));
     typeToString.insert(
-		std::make_pair(RequestType::QUERY_APPS, "QUERY_APPS"));
+        std::make_pair(RequestType::QUERY_APPS, std::string("QUERY_APPS")));
     typeToString.insert(
-		std::make_pair(RequestType::LAUNCH_APP, "LAUNCH_APP"));
+        std::make_pair(RequestType::LAUNCH_APP, std::string("LAUNCH_APP")));
     typeToString.insert(
-		std::make_pair(RequestType::LOCK_SCREEN_ICON_URL, "LOCK_SCREEN_ICON_URL"));
+        std::make_pair(RequestType::LOCK_SCREEN_ICON_URL, std::string("LOCK_SCREEN_ICON_URL")));
     typeToString.insert(
-		std::make_pair(RequestType::TRAFFIC_MESSAGE_CHANNEL, "TRAFFIC_MESSAGE_CHANNEL"));
+        std::make_pair(RequestType::TRAFFIC_MESSAGE_CHANNEL, std::string("TRAFFIC_MESSAGE_CHANNEL")));
     typeToString.insert(
-		std::make_pair(RequestType::DRIVER_PROFILE, "DRIVER_PROFILE"));
+        std::make_pair(RequestType::DRIVER_PROFILE, std::string("DRIVER_PROFILE")));
     typeToString.insert(
-		std::make_pair(RequestType::VOICE_SEARCH, "VOICE_SEARCH"));
+        std::make_pair(RequestType::VOICE_SEARCH, std::string("VOICE_SEARCH")));
     typeToString.insert(
-		std::make_pair(RequestType::NAVIGATION, "NAVIGATION"));
+        std::make_pair(RequestType::NAVIGATION, std::string("NAVIGATION")));
     typeToString.insert(
-		std::make_pair(RequestType::PHONE,"PHONE"));
+        std::make_pair(RequestType::PHONE, std::string("PHONE")));
     typeToString.insert(
-		std::make_pair(RequestType::CLIMATE, "CLIMATE"));
+        std::make_pair(RequestType::CLIMATE, std::string("CLIMATE")));
     typeToString.insert(
-		std::make_pair(RequestType::SETTINGS, "SETTINGS"));
+        std::make_pair(RequestType::SETTINGS, std::string("SETTINGS")));
     typeToString.insert(
-		std::make_pair(RequestType::VEHICLE_DIAGNOSTICS, "VEHICLE_DIAGNOSTICS"));
+        std::make_pair(RequestType::VEHICLE_DIAGNOSTICS, std::string("VEHICLE_DIAGNOSTICS")));
     typeToString.insert(
-		std::make_pair(RequestType::EMERGENCY, "EMERGENCY"));
+        std::make_pair(RequestType::EMERGENCY, std::string("EMERGENCY")));
     typeToString.insert(
-		std::make_pair(RequestType::MEDIA, "MEDIA"));
+        std::make_pair(RequestType::MEDIA, std::string("MEDIA")));
     typeToString.insert(
-		std::make_pair(RequestType::FOTA, "FOTA"));
+        std::make_pair(RequestType::FOTA, std::string("FOTA")));
   }
   std::string RequestTypeToString(RequestType::eType type) {
     if (typeToString.empty()) {
@@ -282,7 +282,11 @@ private:
 };
 
 PolicyHandler* PolicyHandler::instance_ = NULL;
+#if defined(OS_POSIX)
 const std::string PolicyHandler::kLibrary = "libPolicy.so";
+#elif defined(OS_WINDOWS)
+const std::string PolicyHandler::kLibrary = "Policy.dll";
+#endif
 
 PolicyHandler::PolicyHandler()
 

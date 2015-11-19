@@ -135,11 +135,9 @@ bool file_system::IsDirectory(const std::string& name) {
 }
 
 bool file_system::DirectoryExists(const std::string& name) {
-  struct _stat status = { 0 };
-  if (-1 == _stat(name.c_str(), &status) || !(S_IFDIR == status.st_mode)) {
-    return false;
-  }
-  return true;
+  DWORD attrib = GetFileAttributes(name.c_str());
+  return (attrib != INVALID_FILE_ATTRIBUTES &&
+         (attrib & FILE_ATTRIBUTE_DIRECTORY));
 }
 
 bool file_system::FileExists(const std::string& name) {
@@ -393,6 +391,20 @@ bool file_system::MoveFile(const std::string& src,
     return false;
   }
   return true;
+}
+
+bool file_system::IsRelativePath(const std::string& path) {
+  if (path.empty()) {
+    return false;
+  }
+  return path.size() < 2 || ':' != path[1];
+}
+
+void file_system::MakeAbsolutePath(std::string& path) {
+  if (!IsRelativePath(path)) {
+    return;
+  }
+  path = file_system::CurrentWorkingDirectory() + "/" + path;
 }
 
 #endif // WIN_NATIVE

@@ -77,7 +77,10 @@ if (${CMAKE_SYSTEM_NAME} MATCHES "Windows")
             ${COMPONENTS_DIR}/media_manager/src/video/pipe_video_streamer_adapter.cc
             ${COMPONENTS_DIR}/media_manager/src/video/file_video_streamer_adapter.cc)
         set(default_src
+            ${COMPONENTS_DIR}/media_manager/src/media_adapter_impl.cc
+            ${COMPONENTS_DIR}/media_manager/src/media_manager_impl.cc
             ${COMPONENTS_DIR}/media_manager/src/streamer_adapter.cc
+            ${COMPONENTS_DIR}/media_manager/src/streamer_listener.cc
             ${COMPONENTS_DIR}/media_manager/src/pipe_streamer_adapter.cc
             ${COMPONENTS_DIR}/media_manager/src/socket_streamer_adapter.cc
             ${COMPONENTS_DIR}/media_manager/src/file_streamer_adapter.cc

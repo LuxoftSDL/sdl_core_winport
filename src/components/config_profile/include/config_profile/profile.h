@@ -660,19 +660,6 @@ class Profile : public utils::Singleton<Profile> {
                        const char* const pKey) const;
 
     /**
-     * @brief Checks, if path is relative
-     * @param path Path
-     * @return true, if is relative, otherwise - false
-     */
-    bool IsRelativePath(const std::string& path);
-
-    /**
-     * @brief Makes relative path absolute
-     * @param path Path
-     */
-    void MakeAbsolutePath(std::string& path);
-
-    /**
      * @brief Converts input string to number
      * @param input Input string
      * @param output Output number

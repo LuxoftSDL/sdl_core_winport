@@ -129,9 +129,9 @@ ApplicationManagerImpl::ApplicationManagerImpl()
     std::srand(std::time(0));
     AddPolicyObserver(this);
 
-    dir_type_to_string_map_.insert(std::make_pair(TYPE_STORAGE, "Storage"));
-    dir_type_to_string_map_.insert(std::make_pair(TYPE_SYSTEM, "System"));
-    dir_type_to_string_map_.insert(std::make_pair(TYPE_ICONS, "Icons"));
+    dir_type_to_string_map_.insert(std::make_pair(TYPE_STORAGE, std::string("Storage")));
+    dir_type_to_string_map_.insert(std::make_pair(TYPE_SYSTEM, std::string("System")));
+    dir_type_to_string_map_.insert(std::make_pair(TYPE_ICONS, std::string("Icons")));
 
     sync_primitives::AutoLock lock(timer_pool_lock_);
     ApplicationManagerTimerPtr clearTimerPoolTimer(new TimerThread<ApplicationManagerImpl>(
