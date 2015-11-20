@@ -39,11 +39,14 @@
 #include <memory.h>
 #include <signal.h>
 #include <errno.h>
+#include <sys/types.h>
+#ifdef OS_POSIX
 #include <arpa/inet.h>
 #include <netinet/in.h>
-#include <sys/types.h>
 #include <sys/socket.h>
-
+#elif defined(WIN_NATIVE)
+#include "utils/wsa_startup.h"
+#endif
 #include <map>
 #include <string>
 
@@ -64,7 +67,11 @@ class TcpDevice : public Device {
    * @param in_addr Address.
    * @param name Device Name.
    **/
+#if defined(WIN_NATIVE)
+  TcpDevice(const uint32_t& in_addr, const std::string& name);
+#else
   TcpDevice(const in_addr_t& in_addr, const std::string& name);
+#endif
 
   virtual ~TcpDevice();
 
@@ -128,7 +135,11 @@ class TcpDevice : public Device {
    *
    * @return Address.
    */
+#if defined(WIN_NATIVE)
+  uint32_t in_addr() const {
+#else
   in_addr_t in_addr() const {
+#endif
     return in_addr_;
   }
 
@@ -140,7 +151,12 @@ class TcpDevice : public Device {
   };
   std::map<ApplicationHandle, Application> applications_;
   mutable sync_primitives::Lock applications_mutex_;
+#if defined(WIN_NATIVE)
+  const uint32_t in_addr_;
+  WsaStartup wsaStartup_;
+#else
   const in_addr_t in_addr_;
+#endif
   const std::string name_;
   ApplicationHandle last_handle_;
 };

@@ -114,7 +114,7 @@ class Singleton {
 };
 
 template<typename T, class Deleter>
-T* Singleton<T, Deleter>::instance() {
+T* utils::Singleton<T, Deleter>::instance() {
   static sync_primitives::Lock lock;
 
   T* local_instance;

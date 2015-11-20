@@ -34,7 +34,13 @@
 #include <stdlib.h>
 #include <stdint.h>
 #include <errno.h>
+#ifdef OS_POSIX
 #include <unistd.h>
+#elif defined (WIN_NATIVE)
+#include <chrono>
+#include <thread>
+#include <io.h>
+#endif
 
 #include "utils/logger.h"
 #include "utils/file_system.h"
@@ -333,11 +339,19 @@ InitResult SQLPTRepresentation::Init() {
     bool is_opened = false;
     const uint16_t open_attempt_timeout_ms =
         profile::Profile::instance()->open_attempt_timeout_ms();
+#ifdef WIN_NATIVE
+	std::chrono::microseconds sleep_interval_mcsec(open_attempt_timeout_ms * 1000);
+#else
     const useconds_t sleep_interval_mcsec = open_attempt_timeout_ms * 1000;
+#endif
     LOG4CXX_DEBUG(logger_, "Open attempt timeout(ms) is: "
                   << open_attempt_timeout_ms);
     for (int i = 0; i < attempts; ++i) {
+#ifdef WIN_NATIVE
+		std::this_thread::sleep_for(std::chrono::microseconds(sleep_interval_mcsec));
+#else
       usleep(sleep_interval_mcsec);
+#endif
       LOG4CXX_INFO(logger_, "Attempt: " << i+1);
       if (db_->Open()){
         LOG4CXX_INFO(logger_, "Database opened.");
@@ -1557,7 +1571,12 @@ bool SQLPTRepresentation::SetIsDefault(const std::string& app_id,
 }
 
 void SQLPTRepresentation::RemoveDB() const {
+#ifdef WIN_NATIVE
+	LPCSTR path(db_->get_path().c_str());
+	DeleteFile(path);
+#else
   file_system::DeleteFile(db_->get_path());
+#endif
 }
 
 bool SQLPTRepresentation::IsDBVersionActual() const {

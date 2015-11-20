@@ -80,13 +80,16 @@ if (${CMAKE_SYSTEM_NAME} MATCHES "Windows")
             ${COMPONENTS_DIR}/media_manager/src/streamer_adapter.cc
             ${COMPONENTS_DIR}/media_manager/src/pipe_streamer_adapter.cc
             ${COMPONENTS_DIR}/media_manager/src/socket_streamer_adapter.cc
-            ${COMPONENTS_DIR}/media_manager/src/file_streamer_adapter.cc)
+            ${COMPONENTS_DIR}/media_manager/src/file_streamer_adapter.cc
+            ${COMPONENTS_DIR}/media_manager/src/media_manager_impl.cc
+            ${COMPONENTS_DIR}/media_manager/src/media_adapter_impl.cc
+            ${COMPONENTS_DIR}/media_manager/src/streamer_listener.cc)
         source_group("Header Files" FILES ${default_inc} )            
-        source_group("Header Files/audio" FILES ${audio_inc} )
-        source_group("Header Files/video" FILES ${video_inc} )        
+        source_group("Header Files\\audio" FILES ${audio_inc} )
+        source_group("Header Files\\video" FILES ${video_inc} )        
         source_group("Source Files" FILES ${default_src} )            
-        source_group("Source Files/audio" FILES ${audio_src} )
-        source_group("Source Files/video" FILES ${video_src} )                
+        source_group("Source Files\\audio" FILES ${audio_src} )
+        source_group("Source Files\\video" FILES ${video_src} )                
         set(LIBRARIES
             ProtocolLibrary
         )

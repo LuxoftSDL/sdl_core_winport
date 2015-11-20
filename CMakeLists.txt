@@ -65,6 +65,7 @@ set(POLICY_OPTION 	"$ENV{POLICY_TYPE}")
 set(SECURITY_OPTION 	"$ENV{SECURITY_MODE}")
 set(COMPONENTS_DIR ${CMAKE_SOURCE_DIR}/src/components)
 set(SNAPSHOT_TAG 	"$ENV{SNAPSHOT_TAG}")
+set(BUILDDIR "$ENV{BUILDDIR}")
 
 project (${PROJECT})
 
@@ -632,7 +633,9 @@ if(ENABLE_HMI_PTU_DECRYPTION)
   add_definitions(-DUSE_HMI_PTU_DECRYPTION)
 endif()
 
+if(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
 set(RTLIB rt)
+endif()
 # if(CMAKE_SYSTEM_NAME STREQUAL "QNX")
 # set(RTLIB )
 # endif()

@@ -23,11 +23,13 @@ if (${CMAKE_SYSTEM_NAME} MATCHES "Windows")
   include_directories (
     ./msvc
   )
-  set (LIBUSB_SOURCES
+  LIST (APPEND LIBUSB_SOURCES
     ./libusb/os/poll_windows.c
     ./libusb/os/threads_windows.c
     ./libusb/os/windows_usb.c
   )
+  add_library("Libusb-1.0.16" ${LIBUSB_SOURCES})
+  target_link_libraries("Libusb-1.0.16") 
 else()
   set (LIBUSB_SOURCES
     ./libusb/os/linux_udev.c
@@ -36,8 +38,7 @@ else()
     ./libusb/os/poll_posix.c
     ./libusb/os/threads_posix.c
   )
+  add_library("Libusb-1.0.16" ${LIBUSB_SOURCES})
+  target_link_libraries("Libusb-1.0.16" udev)
 endif()
 
-add_library("Libusb-1.0.16" ${LIBUSB_SOURCES})
-
-target_link_libraries("Libusb-1.0.16" udev)

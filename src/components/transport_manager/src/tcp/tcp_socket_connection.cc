@@ -36,7 +36,13 @@
 #include <memory.h>
 #include <signal.h>
 #include <errno.h>
+#ifdef OS_POSIX
 #include <unistd.h>
+#elif defined (WIN_NATIVE)
+#include "utils/winhdr.h"
+#pragma comment(lib, "Ws2_32.lib")
+#include <io.h>
+#endif
 
 #include "utils/logger.h"
 #include "utils/threads/thread.h"

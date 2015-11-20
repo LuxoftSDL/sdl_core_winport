@@ -35,7 +35,16 @@
 #ifndef SRC_COMPONENTS_TRANSPORT_MANAGER_INCLUDE_TRANSPORT_MANAGER_TRANSPORT_ADAPTER_THREADED_SOCKET_CONNECTION_H_
 #define SRC_COMPONENTS_TRANSPORT_MANAGER_INCLUDE_TRANSPORT_MANAGER_TRANSPORT_ADAPTER_THREADED_SOCKET_CONNECTION_H_
 
+#ifdef OS_POSIX
 #include <poll.h>
+#elif defined(WIN_NATIVE)
+#include "utils/wsa_startup.h"
+#if defined(_WIN64)
+typedef SSIZE_T ssize_t;
+#else
+typedef long ssize_t;
+#endif
+#endif
 #include <queue>
 
 #include "transport_manager/transport_adapter/connection.h"
@@ -155,7 +164,12 @@ class ThreadedSocketConnection : public Connection {
   FrameQueue frames_to_send_;
   mutable sync_primitives::Lock frames_to_send_mutex_;
 
+#ifdef OS_POSIX
   int socket_;
+#else
+ SOCKET socket_;
+ WsaStartup wsaStartup_;
+#endif
   bool terminate_flag_;
   bool unexpected_disconnect_;
   const DeviceUID device_uid_;
