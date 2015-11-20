@@ -29,58 +29,15 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
+#ifndef SRC_COMPONENTS_INCLUDE_UTILS_WINHDR_H_
+#define SRC_COMPONENTS_INCLUDE_UTILS_WINHDR_H_
 
-#if defined(WIN_NATIVE)
-#include "utils/winhdr.h"
-#endif
+#include <winsock2.h>
+#include <ws2tcpip.h>
+#include <wspiapi.h>
+#include <windows.h>
+#include <Mstcpip.h>
+#include <psapi.h>
+#include <Wtsapi32.h>
 
-#include "transport_manager/tcp/tcp_connection_factory.h"
-#include "transport_manager/tcp/tcp_socket_connection.h"
-
-#include "utils/logger.h"
-
-namespace transport_manager {
-namespace transport_adapter {
-
-CREATE_LOGGERPTR_GLOBAL(logger_, "TransportManager")
-
-TcpConnectionFactory::TcpConnectionFactory(
-    TransportAdapterController* controller)
-    : controller_(controller) {
-}
-
-TransportAdapter::Error TcpConnectionFactory::Init() {
-  return TransportAdapter::OK;
-}
-
-TransportAdapter::Error TcpConnectionFactory::CreateConnection(
-    const DeviceUID& device_uid, const ApplicationHandle& app_handle) {
-  LOG4CXX_AUTO_TRACE(logger_);
-  LOG4CXX_DEBUG(
-      logger_,
-      "DeviceUID: " << &device_uid << ", ApplicationHandle: " << &app_handle);
-  TcpServerOiginatedSocketConnection* connection(
-      new TcpServerOiginatedSocketConnection(device_uid, app_handle,
-                                             controller_));
-  controller_->ConnectionCreated(connection, device_uid, app_handle);
-  if (connection->Start() == TransportAdapter::OK) {
-    LOG4CXX_DEBUG(logger_, "TCP connection initialised");
-    return TransportAdapter::OK;
-  } else {
-    LOG4CXX_ERROR(logger_, "Could not initialise TCP connection");
-    return TransportAdapter::FAIL;
-  }
-}
-
-void TcpConnectionFactory::Terminate() {
-}
-
-bool TcpConnectionFactory::IsInitialised() const {
-  return true;
-}
-
-TcpConnectionFactory::~TcpConnectionFactory() {
-}
-
-}  // namespace transport_adapter
-}  // namespace transport_manager
+#endif // SRC_COMPONENTS_INCLUDE_UTILS_WINHDR_H_

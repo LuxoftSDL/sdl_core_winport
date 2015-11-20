@@ -44,8 +44,10 @@ set (SOURCES
   ./src/Base64.cpp
   ./src/hashing.cc
 )
-
-set (LIBRARIES crypto)
-
+if(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
+  set (LIBRARIES libeay32  ssleay32)
+else()
+  set (LIBRARIES crypto)
+endif()
 add_library("encryption" ${SOURCES})
 target_link_libraries("encryption" "${LIBRARIES}")

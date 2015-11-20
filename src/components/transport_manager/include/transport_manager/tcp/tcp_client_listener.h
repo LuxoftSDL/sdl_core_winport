@@ -36,9 +36,13 @@
 #ifndef SRC_COMPONENTS_TRANSPORT_MANAGER_INCLUDE_TRANSPORT_MANAGER_TCP_TCP_CLIENT_LISTENER_H_
 #define SRC_COMPONENTS_TRANSPORT_MANAGER_INCLUDE_TRANSPORT_MANAGER_TCP_TCP_CLIENT_LISTENER_H_
 
+#if defined(WIN_NATIVE)
+#include "utils/wsa_startup.h"
+#include <iostream>
+#endif
+
 #include "utils/threads/thread_delegate.h"
 #include "transport_manager/transport_adapter/client_connection_listener.h"
-
 class Thread;
 
 namespace transport_manager {
@@ -104,7 +108,13 @@ class TcpClientListener : public ClientConnectionListener {
   const bool enable_keepalive_;
   TransportAdapterController* controller_;
   threads::Thread* thread_;
+#ifdef WIN_NATIVE
+  SOCKET socket_;
+  WsaStartup wsaStartup_;
+#else
   int socket_;
+#endif
+
   bool thread_stop_requested_;
 
   void Loop();

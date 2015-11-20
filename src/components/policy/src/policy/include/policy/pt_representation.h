@@ -49,6 +49,11 @@ struct VehicleData {
   const std::string vehicle_make;
   const std::string vehicle_model;
   int vehicle_year;
+#ifdef OS_POSIX
+  VehicleData();
+#elif defined(WIN_NATIVE)
+  VehicleData();
+#else  
 };
 
 enum InitResult {

@@ -33,10 +33,18 @@
 #include <errno.h>
 #include <fcntl.h>
 #include <memory.h>
+#ifdef OS_POSIX
 #include <unistd.h>
 #include <sys/types.h>
 #include <sys/socket.h>
-
+#elif defined (WIN_NATIVE)
+#include "utils/winhdr.h"
+#include <stdlib.h>
+#include <sys/types.h>
+#include <io.h>
+#include <BaseTsd.h>
+#define MSG_DONTWAIT 0
+#endif
 #include "utils/logger.h"
 #include "utils/threads/thread.h"
 
@@ -52,6 +60,9 @@ ThreadedSocketConnection::ThreadedSocketConnection(
     TransportAdapterController* controller)
     : read_fd_(-1),
       write_fd_(-1),
+#ifdef WIN_NATIVE
+	  wsaStartup_(1, 2),
+#endif
       controller_(controller),
       frames_to_send_(),
       frames_to_send_mutex_(),
@@ -90,7 +101,11 @@ void ThreadedSocketConnection::Abort() {
 TransportAdapter::Error ThreadedSocketConnection::Start() {
   LOG4CXX_AUTO_TRACE(logger_);
   int fds[2];
+#ifdef OS_POSIX
   const int pipe_ret = pipe(fds);
+#elif defined (WIN_NATIVE)
+  const int pipe_ret = _pipe(fds, (sizeof(fds) / sizeof(fds[0])), O_BINARY);
+#endif
   if (0 == pipe_ret) {
     LOG4CXX_DEBUG(logger_, "pipe created");
     read_fd_ = fds[0];
@@ -99,8 +114,13 @@ TransportAdapter::Error ThreadedSocketConnection::Start() {
     LOG4CXX_ERROR(logger_, "pipe creation failed");
     return TransportAdapter::FAIL;
   }
+#ifdef OS_POSIX
   const int fcntl_ret = fcntl(read_fd_, F_SETFL,
                               fcntl(read_fd_, F_GETFL) | O_NONBLOCK);
+#else
+  u_long iMode = 0;
+  const int fcntl_ret = ioctlsocket(read_fd_, FIONBIO, &iMode);
+#endif
   if (0 != fcntl_ret) {
     LOG4CXX_ERROR(logger_, "fcntl failed");
     return TransportAdapter::FAIL;
@@ -185,8 +205,11 @@ void ThreadedSocketConnection::threadMain() {
 
 void ThreadedSocketConnection::Transmit() {
   LOG4CXX_AUTO_TRACE(logger_);
-
+#ifdef OS_POSIX
   const nfds_t kPollFdsSize = 2;
+#elif defined (WIN_NATIVE)
+  const ULONG kPollFdsSize = 2;
+#endif
   pollfd poll_fds[kPollFdsSize];
   poll_fds[0].fd = socket_;
   poll_fds[0].events = POLLIN | POLLPRI
@@ -195,7 +218,11 @@ void ThreadedSocketConnection::Transmit() {
   poll_fds[1].events = POLLIN | POLLPRI;
 
   LOG4CXX_DEBUG(logger_, "poll " << this);
+#ifdef OS_POSIX
   if (-1 == poll(poll_fds, kPollFdsSize, -1)) {
+#elif defined (WIN_NATIVE)
+  if (-1 == WSAPoll(poll_fds, kPollFdsSize, -1)) {
+#endif
     LOG4CXX_ERROR_WITH_ERRNO(logger_, "poll failed for connection " << this);
     Abort();
     return;
@@ -210,6 +237,7 @@ void ThreadedSocketConnection::Transmit() {
                   "Notification pipe for connection " << this << " terminated");
     Abort();
     return;
+
   }
 
   if (poll_fds[0].revents & (POLLERR | POLLHUP | POLLNVAL)) {
@@ -261,7 +289,7 @@ bool ThreadedSocketConnection::Receive() {
   ssize_t bytes_read = -1;
 
   do {
-    bytes_read = recv(socket_, buffer, sizeof(buffer), MSG_DONTWAIT);
+    bytes_read = recv(socket_, (char *)buffer, sizeof(buffer), MSG_DONTWAIT);
 
     if (bytes_read > 0) {
       LOG4CXX_DEBUG(
@@ -297,7 +325,7 @@ bool ThreadedSocketConnection::Send() {
   while (!frames_to_send.empty()) {
     LOG4CXX_INFO(logger_, "frames_to_send is not empty");
     ::protocol_handler::RawMessagePtr frame = frames_to_send.front();
-    const ssize_t bytes_sent = ::send(socket_, frame->data() + offset,
+    const ssize_t bytes_sent = ::send(socket_,(const char*) frame->data() + offset,
                                       frame->data_size() - offset, 0);
 
     if (bytes_sent >= 0) {
