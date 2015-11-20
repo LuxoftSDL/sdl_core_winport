@@ -36,12 +36,18 @@
 #ifndef SRC_COMPONENTS_TRANSPORT_MANAGER_INCLUDE_TRANSPORT_MANAGER_BLUETOOTH_BLUETOOTH_DEVICE_SCANNER_H_
 #define SRC_COMPONENTS_TRANSPORT_MANAGER_INCLUDE_TRANSPORT_MANAGER_BLUETOOTH_BLUETOOTH_DEVICE_SCANNER_H_
 
+#ifdef WIN_NATIVE
+#include "utils/wsa_startup.h"
+#include <ws2bth.h>
+#include <BluetoothAPIs.h>
+#else
 #include <bluetooth/bluetooth.h>
 #include <bluetooth/hci.h>
 #include <bluetooth/hci_lib.h>
 #include <bluetooth/sdp.h>
 #include <bluetooth/sdp_lib.h>
 #include <bluetooth/rfcomm.h>
+#endif
 
 #include "transport_manager/transport_adapter/device_scanner.h"
 #include "utils/conditional_variable.h"
@@ -125,16 +131,26 @@ class BluetoothDeviceScanner : public DeviceScanner {
    * @param device_addresses Bluetooth addresses to search on
    * @return List of RFCOMM-channels lists
    */
+#ifdef WIN_NATIVE
+  std::vector<RfcommChannelVector> DiscoverSmartDeviceLinkRFCOMMChannels(
+	  const std::vector<BTH_ADDR*>& device_addresses);
+#else
   std::vector<RfcommChannelVector> DiscoverSmartDeviceLinkRFCOMMChannels(
     const std::vector<bdaddr_t>& device_addresses);
-
+#endif
   /**
    * @brief Finds RFCOMM-channels of SDL enabled applications for given device
    * @param[out] discovered List of RFCOMM-channels to fill
    * @return true - if search was OK, false if it failed
    */
+#ifdef WIN_NATIVE
+  bool DiscoverSmartDeviceLinkRFCOMMChannels(const BTH_ADDR& device_address,
+	  RfcommChannelVector* discovered);
+#else
   bool DiscoverSmartDeviceLinkRFCOMMChannels(const bdaddr_t& device_address,
       RfcommChannelVector* discovered);
+#endif
+
 
   /**
    * @brief Summarizes the total list of devices (paired and scanned) and notifies controller
@@ -152,10 +168,15 @@ class BluetoothDeviceScanner : public DeviceScanner {
    * @param device_handle HCI handle
    * @param[out] discovered_devices List of created BluetoothDevice objects to fill
    */
+#ifdef WIN_NATIVE
+  void CheckSDLServiceOnDevices(const std::vector<BTH_ADDR*>& bd_address,
+	  int device_handle,
+	  DeviceVector* discovered_devices);
+#else
   void CheckSDLServiceOnDevices(const std::vector<bdaddr_t>& bd_address,
                                 int device_handle,
                                 DeviceVector* discovered_devices);
-
+#endif
   TransportAdapterController* controller_;
   threads::Thread* thread_;
   bool shutdown_requested_;
@@ -164,7 +185,12 @@ class BluetoothDeviceScanner : public DeviceScanner {
   sync_primitives::Lock device_scan_requested_lock_;
   sync_primitives::ConditionalVariable device_scan_requested_cv_;
 
+#ifdef WIN_NATIVE
+  std::vector<BTH_ADDR*> paired_devices_;
+  WsaStartup wsaStartup_;
+#else
   std::vector<bdaddr_t> paired_devices_;
+#endif
 
   DeviceVector paired_devices_with_sdl_;
   DeviceVector found_devices_with_sdl_;
@@ -172,7 +198,11 @@ class BluetoothDeviceScanner : public DeviceScanner {
   /**
    * @brief UUID of SmartDeviceLink service.
    **/
+#ifdef OS_POSIX
   uuid_t smart_device_link_service_uuid_;
+#elif defined(WIN_NATIVE)
+  WSAQUERYSET smart_device_link_service_uuid_;
+#endif
 
   const bool auto_repeat_search_;
   const int auto_repeat_pause_sec_;

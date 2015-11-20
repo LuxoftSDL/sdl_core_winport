@@ -31,19 +31,28 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "transport_manager/tcp/tcp_client_listener.h"
+#ifdef WIN_NATIVE
+#define WIN32_LEAN_AND_MEAN
+#include "utils/winhdr.h"
+#pragma comment(lib, "Ws2_32.lib")
+#include <io.h>
+#endif
+#ifndef SHUT_RDWR
+#define SHUT_RDWR SD_BOTH
+#endif
 
+#include "transport_manager/tcp/tcp_client_listener.h"
 #include <memory.h>
 #include <signal.h>
 #include <errno.h>
-#include <arpa/inet.h>
-#include <unistd.h>
 #include <sys/types.h>
-#include <sys/sysctl.h>
-#include <sys/socket.h>
-#ifdef __linux__
+#ifdef OS_POSIX
 #  include <linux/tcp.h>
-#else  // __linux__
+#elif defined( __linux__ )
+#  include <sys/sysctl.h>
+#  include <sys/socket.h>
+#  include <arpa/inet.h>
+#  include <unistd.h>
 #  include <sys/time.h>
 #  include <netinet/in.h>
 #  include <netinet/tcp.h>
@@ -58,6 +67,7 @@
 #include "transport_manager/tcp/tcp_device.h"
 #include "transport_manager/tcp/tcp_socket_connection.h"
 
+
 namespace transport_manager {
 namespace transport_adapter {
 
@@ -67,6 +77,9 @@ TcpClientListener::TcpClientListener(TransportAdapterController* controller,
                                      const uint16_t port,
                                      const bool enable_keepalive)
     : port_(port),
+#ifdef WIN_NATIVE
+	wsaStartup_(1, 2),
+#endif
       enable_keepalive_(enable_keepalive),
       controller_(controller),
       thread_(0),
@@ -92,7 +105,7 @@ TransportAdapter::Error TcpClientListener::Init() {
   server_address.sin_addr.s_addr = INADDR_ANY;
 
   int optval = 1;
-  setsockopt(socket_, SOL_SOCKET, SO_REUSEADDR, &optval, sizeof(optval));
+  setsockopt(socket_, SOL_SOCKET, SO_REUSEADDR, reinterpret_cast<char *>(&optval), sizeof(optval));
 
   if (bind(socket_, reinterpret_cast<sockaddr*>(&server_address),
            sizeof(server_address)) != 0) {
@@ -150,6 +163,35 @@ void SetKeepaliveOptions(const int fd) {
   setsockopt(fd, IPPROTO_TCP, TCP_KEEPINTVL, &keepintvl, sizeof(keepintvl));
   setsockopt(fd, IPPROTO_TCP, TCP_USER_TIMEOUT, &user_timeout,
              sizeof(user_timeout));
+#elif defined(WIN_NATIVE)
+  int user_timeout = 7000;  // milliseconds
+  struct tcp_keepalive settings;
+  settings.onoff = 1;
+  settings.keepalivetime = keepidle * 1000;
+  settings.keepaliveinterval = keepintvl * 1000;
+// TO DO: check if corerrect setup socket options. 
+// For example posix setup socket options 
+/*  setsockopt(fd, SOL_SOCKET, SO_KEEPALIVE, (const char*)&yes, sizeof(yes));
+**  setsockopt(fd, IPPROTO_TCP, TCP_KEEPIDLE, (const char*)&keepidle, sizeof(keepidle));
+**setsockopt(fd, IPPROTO_TCP, TCP_KEEPCNT, (const char*)&keepcnt, sizeof(keepcnt));
+**setsockopt(fd, IPPROTO_TCP, TCP_KEEPINTVL, (const char*)&keepintvl, sizeof(keepintvl));
+**  setsockopt(fd, IPPROTO_TCP, SO_SNDTIMEO, (const char*)&user_timeout,
+**	  sizeof(user_timeout));
+*/
+
+  DWORD bytesReturned;
+  WSAOVERLAPPED overlapped;
+  overlapped.hEvent = NULL;
+  WSAIoctl(fd,
+		   SIO_KEEPALIVE_VALS,
+		   &settings,
+	 	   sizeof( struct tcp_keepalive ),
+	       NULL,
+		   0,
+	       &bytesReturned,
+	       &overlapped,
+	       NULL 
+  );
 #elif defined(__QNX__)  // __linux__
   // TODO(KKolodiy): Out of order!
   const int kMidLength = 4;
@@ -183,11 +225,15 @@ void SetKeepaliveOptions(const int fd) {
 void TcpClientListener::Loop() {
   LOG4CXX_AUTO_TRACE(logger_);
   while (!thread_stop_requested_) {
-    sockaddr_in client_address;
-    socklen_t client_address_size = sizeof(client_address);
-    const int connection_fd = accept(socket_,
+	  sockaddr_in client_address;
+#ifdef OS_POSIX
+	socklen_t client_address_size = sizeof(client_address);
+#elif defined(WIN_NATIVE)
+	int client_address_size = sizeof(client_address);
+#endif
+    const int connection_fd = static_cast<int>(accept(socket_,
                                      (struct sockaddr*) &client_address,
-                                     &client_address_size);
+                                     &client_address_size));
     if (thread_stop_requested_) {
       LOG4CXX_DEBUG(logger_, "thread_stop_requested_");
       close(connection_fd);
@@ -236,14 +282,14 @@ void TcpClientListener::StopLoop() {
   LOG4CXX_AUTO_TRACE(logger_);
   thread_stop_requested_ = true;
   // We need to connect to the listening socket to unblock accept() call
-  int byesocket = socket(AF_INET, SOCK_STREAM, 0);
+  int byesocket = static_cast<int>(socket(AF_INET, SOCK_STREAM, 0));
   sockaddr_in server_address = { 0 };
   server_address.sin_family = AF_INET;
-  server_address.sin_port = htons(port_);
+  server_address.sin_port = static_cast<USHORT>(htons(port_));
   server_address.sin_addr.s_addr = INADDR_ANY;
-  connect(byesocket, reinterpret_cast<sockaddr*>(&server_address),
+    connect(byesocket, reinterpret_cast<sockaddr*>(&server_address),
           sizeof(server_address));
-  shutdown(byesocket, SHUT_RDWR);
+  shutdown(byesocket, (int)SHUT_RDWR);
   close(byesocket);
 }
 

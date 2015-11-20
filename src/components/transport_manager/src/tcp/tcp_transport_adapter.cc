@@ -29,6 +29,14 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
+#ifndef WIN32_LEAN_AND_MEAN
+#define WIN32_LEAN_AND_MEAN
+#endif
+
+#if defined(WIN_NATIVE)
+#include "utils/wsa_startup.h"
+
+#endif
 
 #include "transport_manager/tcp/tcp_transport_adapter.h"
 
@@ -104,7 +112,11 @@ void TcpTransportAdapter::Store() const {
         if (port != -1) {  // don't want to store incoming applications
           Json::Value application_dictionary;
           char port_record[12];
+#if defined(WIN_NATIVE)
+          _snprintf(port_record, sizeof(port_record), "%d", port);
+#else
           snprintf(port_record, sizeof(port_record), "%d", port);
+#endif
           application_dictionary["port"] = std::string(port_record);
           applications_dictionary.append(application_dictionary);
         }
@@ -131,7 +143,11 @@ bool TcpTransportAdapter::Restore() {
     const Json::Value device_dictionary = *i;
     std::string name = device_dictionary["name"].asString();
     std::string address_record = device_dictionary["address"].asString();
+#if defined(WIN_NATIVE)
+    uint32_t address = inet_addr(address_record.c_str());
+#else
     in_addr_t address = inet_addr(address_record.c_str());
+#endif
     TcpDevice* tcp_device = new TcpDevice(address, name);
     DeviceSptr device(tcp_device);
     AddDevice(device);

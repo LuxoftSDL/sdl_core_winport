@@ -20,7 +20,7 @@ set (LIBRARIES
     SmartObjects
     formatters
     jsoncpp
-    ${RTLIB}
+#    ${RTLIB}
     ProtocolLibrary
 )
 

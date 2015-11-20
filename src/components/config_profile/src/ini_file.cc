@@ -43,6 +43,8 @@
 #include <unistd.h>
 #else
 #define PATH_MAX   _MAX_PATH
+#define sprintf _sprintf
+#define snprintf _snprintf
 #endif
 
 #ifdef __linux__

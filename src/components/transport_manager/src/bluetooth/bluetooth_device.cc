@@ -33,16 +33,25 @@
 
 #include "transport_manager/bluetooth/bluetooth_device.h"
 
+#ifndef WIN_NATIVE
 #include <bluetooth/bluetooth.h>
 #include <bluetooth/hci.h>
 #include <bluetooth/hci_lib.h>
 #include <bluetooth/sdp.h>
 #include <bluetooth/sdp_lib.h>
 #include <bluetooth/rfcomm.h>
+#else
+#ifdef max
+#undef max
+#endif
+#endif
 
 #include <errno.h>
 #include <sys/types.h>
+
+#ifndef WIN_NATIVE
 #include <sys/socket.h>
+#endif
 
 #include <algorithm>
 #include <limits>
@@ -74,17 +83,42 @@ bool BluetoothDevice::GetRfcommChannel(const ApplicationHandle app_handle,
   return true;
 }
 
+#ifdef WIN_NATIVE
+std::string BluetoothDevice::GetUniqueDeviceId(const BTH_ADDR & device_address) {
+#else
 std::string BluetoothDevice::GetUniqueDeviceId(const bdaddr_t& device_address) {
+#endif
   LOG4CXX_TRACE(logger_, "enter. device_adress: " << &device_address);
   char device_address_string[32];
+#ifdef WIN_NATIVE
+  DWORD addrSize = sizeof(struct sockaddr_storage);
+  int addr_size = sizeof(struct sockaddr_storage);
+  int ret_val = WSAAddressToString( (LPSOCKADDR)&device_address, 
+									 addr_size,
+									 NULL,
+									 device_address_string,
+									 &addrSize); 
+  if (ret_val != 0){
+	  LOG4CXX_ERROR(logger_, "WSAAddressToString() failed with error code" << WSAGetLastError());
+  }
+#else
   ba2str(&device_address, device_address_string);
+#endif
   LOG4CXX_TRACE(logger_, "exit with BT-" << device_address_string);
   return std::string("BT-") + device_address_string;
 }
 
+#ifdef WIN_NATIVE
+BluetoothDevice::BluetoothDevice(const BTH_ADDR& device_address, const char* device_name,
+	const RfcommChannelVector& rfcomm_channels)
+#else
 BluetoothDevice::BluetoothDevice(const bdaddr_t& device_address, const char* device_name,
                                  const RfcommChannelVector& rfcomm_channels)
+#endif
   : Device(device_name, GetUniqueDeviceId(device_address)),
+#ifdef WIN_NATIVE
+  wsaStartup_(2, 2),
+#endif
     address_(device_address),
     rfcomm_channels_(rfcomm_channels) {
 }
@@ -99,7 +133,11 @@ bool BluetoothDevice::IsSameAs(const Device* other) const {
   if (0 != other_bluetooth_device) {
     if (0
         == memcmp(&address_, &other_bluetooth_device->address_,
+#ifdef WIN_NATIVE
+		sizeof(BTH_ADDR))) {
+#else
                   sizeof(bdaddr_t))) {
+#endif
       result = true;
     }
   }

@@ -36,11 +36,16 @@
 #ifndef SRC_COMPONENTS_TRANSPORT_MANAGER_INCLUDE_TRANSPORT_MANAGER_TCP_TCP_SOCKET_CONNECTION_H_
 #define SRC_COMPONENTS_TRANSPORT_MANAGER_INCLUDE_TRANSPORT_MANAGER_TCP_TCP_SOCKET_CONNECTION_H_
 
+#include <sys/types.h>
+#ifdef OS_POSIX
 #include <arpa/inet.h>
 #include <netinet/in.h>
-#include <sys/types.h>
 #include <sys/socket.h>
+#elif defined(WIN_NATIVE)
+#define WIN32_LEAN_AND_MEAN
 
+
+#endif
 #include "transport_manager/transport_adapter/threaded_socket_connection.h"
 
 namespace transport_manager {
