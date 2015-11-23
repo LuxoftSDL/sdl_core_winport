@@ -33,7 +33,12 @@
 
 #include "application_manager/commands/mobile/register_app_interface_request.h"
 
+#if defined(OS_POSIX)
 #include <unistd.h>
+#elif defined(OS_WINDOWS)
+#include <windows.h>
+#endif
+
 #include <algorithm>
 #include <string.h>
 
@@ -158,7 +163,11 @@ void RegisterAppInterfaceRequest::Run() {
 
   // wait till HMI started
   while (!ApplicationManagerImpl::instance()->IsHMICooperating()) {
+#if defined(OS_POSIX)
     sleep(1);
+#elif defined(OS_WINDOWS)
+    Sleep(1000);
+#endif
     // TODO(DK): timer_->StartWait(1);
     ApplicationManagerImpl::instance()->updateRequestTimeout(connection_key(),
                                                              correlation_id(),

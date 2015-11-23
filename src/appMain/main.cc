@@ -29,41 +29,17 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-
 #include <sys/stat.h>
-#include <unistd.h>
-#include <signal.h>
 #include <cstdio>
 #include <cstdlib>
 #include <vector>
 #include <string>
-#include <iostream>  // cpplint: Streams are highly discouraged.
-#include <fstream>   // cpplint: Streams are highly discouraged.
 
-// ----------------------------------------------------------------------------
-
-#include "utils/log_message_loop_thread.h"
 #include "utils/logger.h"
-
 #include "./life_cycle.h"
-#include "signal_handlers.h"
-
-#include "utils/signals.h"
 #include "utils/system.h"
 #include "config_profile/profile.h"
-#include "utils/appenders_loader.h"
-
-#if defined(EXTENDED_MEDIA_MODE)
-#include <gst/gst.h>
-#endif
-
-#include "media_manager/media_manager_impl.h"
-// ----------------------------------------------------------------------------
-// Third-Party includes
-#include "networking.h"  // cpplint: Include the directory when naming .h files
-
-// ----------------------------------------------------------------------------
-
+#include "networking.h"
 
 CREATE_LOGGERPTR_GLOBAL(logger_, "appMain")
 
@@ -81,8 +57,8 @@ const std::string kLocalHostAddress = "127.0.0.1";
  */
 bool InitHmi() {
   std::string hmi_link = profile::Profile::instance()->link_to_web_hmi();
-  struct stat sb;
-  if (stat(hmi_link.c_str(), &sb) == -1) {
+  struct _stat sb;
+  if (_stat(hmi_link.c_str(), &sb) == -1) {
     LOG4CXX_FATAL(logger_, "HMI index file " << hmi_link << " doesn't exist!");
     return false;
   }
@@ -130,9 +106,9 @@ int32_t main(int32_t argc, char** argv) {
 
   threads::Thread::SetNameForId(threads::Thread::CurrentId(), "MainThread");
 
-  if (!utils::appenders_loader.Loaded()) {
+  /*if (!utils::appenders_loader.Loaded()) {
     LOG4CXX_ERROR(logger_, "Appenders plugin not loaded, file logging disabled");
-  }
+  }*/
 
   LOG4CXX_INFO(logger_, "Application started!");
   LOG4CXX_INFO(logger_, "SDL version: "
@@ -144,7 +120,7 @@ int32_t main(int32_t argc, char** argv) {
     LOG4CXX_FATAL(logger_, "Failed to start components");
     main_namespace::LifeCycle::instance()->StopComponents();
     DEINIT_LOGGER();
-    exit(EXIT_FAILURE);
+    _exit(EXIT_FAILURE);
   }
 
   // --------------------------------------------------------------------------

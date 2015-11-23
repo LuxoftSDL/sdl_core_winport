@@ -29,7 +29,13 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
+
+#if defined(OS_POSIX)
 #include <strings.h>
+#elif defined(WIN_NATIVE)
+#include <string.h>
+#define strcasecmp _stricmp
+#endif
 
 #include <string>
 #include <list>

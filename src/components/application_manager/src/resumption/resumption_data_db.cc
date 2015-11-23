@@ -30,7 +30,13 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 #include <string>
+
+#if defined(OS_POSIX)
 #include <unistd.h>
+#elif defined(OS_WINDOWS)
+#include <windows.h>
+#include <time.h>
+#endif
 
 #include "application_manager/resumption/resumption_data_db.h"
 #include "application_manager/resumption/resumption_sql_queries.h"
@@ -75,6 +81,7 @@ bool ResumptionDataDB::Init() {
     bool is_opened = false;
     const uint16_t open_attempt_timeout_ms =
         profile::Profile::instance()->open_attempt_timeout_ms_resumption_db();
+#if defined(OS_POSIX)
     const useconds_t sleep_interval_mcsec = open_attempt_timeout_ms * 1000;
     LOG4CXX_DEBUG(logger_, "Open attempt timeout(ms) is: "
                   << open_attempt_timeout_ms);
@@ -87,6 +94,19 @@ bool ResumptionDataDB::Init() {
         break;
       }
     }
+#elif defined(OS_WINDOWS)
+    LOG4CXX_DEBUG(logger_, "Open attempt timeout(ms) is: "
+                  << open_attempt_timeout_ms);
+    for (int i = 0; i < attempts; ++i) {
+      Sleep(open_attempt_timeout_ms);
+      LOG4CXX_INFO(logger_, "Attempt: " << i+1);
+      if (db_->Open()){
+        LOG4CXX_INFO(logger_, "Database opened.");
+        is_opened = true;
+        break;
+      }
+    }
+#endif
     if (!is_opened) {
       LOG4CXX_ERROR(logger_, "Open retry sequence failed. Tried "
                     << attempts << " attempts with "

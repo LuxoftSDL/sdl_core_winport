@@ -29,21 +29,20 @@
 * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 * POSSIBILITY OF SUCH DAMAGE.
 */
+#include <csignal>
 
+#include "utils/logger.h"
 #include "./life_cycle.h"
 #include "utils/signals.h"
 #include "config_profile/profile.h"
 #include "resumption/last_state.h"
 
 #ifdef ENABLE_SECURITY
+#include <openssl/ssl.h>
 #include "security_manager/security_manager_impl.h"
 #include "security_manager/crypto_manager_impl.h"
 #include "application_manager/policies/policy_handler.h"
 #endif  // ENABLE_SECURITY
-
-#ifdef ENABLE_LOG
-#include "utils/log_message_loop_thread.h"
-#endif
 
 using threads::Thread;
 
@@ -346,7 +345,9 @@ bool LifeCycle::InitMessageSystem() {
 #endif  // MQUEUE_HMIADAPTER
 
 namespace {
-  pthread_t main_thread;
+#if defined(OS_WINDOWS)
+  HANDLE signal_event = NULL;
+#endif
   void sig_handler(int sig) {
     switch(sig) {
       case SIGINT:
@@ -362,22 +363,16 @@ namespace {
         LOG4CXX_DEBUG(logger_, "Unexpected signal has been caught");
         break;
     }
-    /*
-     * Resend signal to the main thread in case it was
-     * caught by another thread
-     */
-    if(pthread_equal(pthread_self(), main_thread) == 0) {
-      LOG4CXX_DEBUG(logger_, "Resend signal to the main thread");
-      if(pthread_kill(main_thread, sig) != 0) {
-        LOG4CXX_FATAL(logger_, "Send signal to thread error");
-      }
+#if defined(OS_WINDOWS)
+    if (NULL != signal_event) {
+      SetEvent(signal_event);
     }
+#endif
   }
 }  //  namespace
 
 void LifeCycle::Run() {
   LOG4CXX_AUTO_TRACE(logger_);
-  main_thread = pthread_self();
   // First, register signal handlers
   if(!::utils::SubscribeToInterruptSignal(&sig_handler) ||
      !::utils::SubscribeToTerminateSignal(&sig_handler) ||
@@ -385,9 +380,15 @@ void LifeCycle::Run() {
     LOG4CXX_FATAL(logger_, "Subscribe to system signals error");
   }
   // Now wait for any signal
-  pause();
+#if defined(OS_WINDOWS)
+  signal_event = CreateEvent(NULL, false, false, "SignalEvent");
+  if (NULL != signal_event) {
+    WaitForSingleObject(signal_event, INFINITE);
+  } else {
+    LOG4CXX_FATAL(logger_, "Create system event error");
+  }
+#endif
 }
-
 
 void LifeCycle::StopComponents() {
   LOG4CXX_AUTO_TRACE(logger_);

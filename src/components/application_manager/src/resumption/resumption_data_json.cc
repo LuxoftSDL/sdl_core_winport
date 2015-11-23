@@ -30,6 +30,10 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
+#if defined(OS_WINDOWS)
+#include <time.h>
+#endif
+
 #include "application_manager/resumption/resumption_data_json.h"
 #include "smart_objects/smart_object.h"
 #include "json/json.h"

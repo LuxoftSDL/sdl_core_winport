@@ -33,6 +33,8 @@
 #include "protocol_handler/protocol_handler_impl.h"
 #include <memory.h>
 #include <algorithm>    // std::find
+#include <cctype>
+#include <locale>
 
 #include "connection_handler/connection_handler_impl.h"
 #include "config_profile/profile.h"

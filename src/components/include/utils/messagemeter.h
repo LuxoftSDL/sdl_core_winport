@@ -94,8 +94,9 @@ class MessageMeter {
 
 template <class Id>
 MessageMeter<Id>::MessageMeter()
-  : time_range_(TimevalStruct {0, 0}) {
+  : time_range_() {
   time_range_.tv_sec = 1;
+  time_range_.tv_usec = 0;
 }
 
 template <class Id>

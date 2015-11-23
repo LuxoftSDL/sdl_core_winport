@@ -34,21 +34,24 @@ set (PROJECT smartDeviceLinkCore)
 
 #Jenkins integration section
 #dont modify this section if you dont know details about integration with Jenkins!!!
+
+# AN: Some functionality was disabled for Windows native version until
+# appropriate task will be resolved (SDLWIN-48)
 set (HMI "web" CACHE STRING "HMI type")
 option(HMI2 "Use Qt HMI" OFF)
 option(EXTENDED_MEDIA_MODE "Turn on and off extended Madia Manager features relates to PulseAudio A2DP and GStreamer" OFF)
 option(BUILD_SHARED_LIBS "Build all libraries as shared (if ON) or static (if OFF)" OFF)
-option(BUILD_BT_SUPPORT "Bluetooth support" ON)
+option(BUILD_BT_SUPPORT "Bluetooth support" OFF)
 option(BUILD_USB_SUPPORT "libusb support" ON)
-option(BUILD_AVAHI_SUPPORT "libavahi support" ON)
-option(BUILD_BACKTRACE_SUPPORT "backtrace support" ON)
+option(BUILD_AVAHI_SUPPORT "libavahi support" OFF)
+option(BUILD_BACKTRACE_SUPPORT "backtrace support" OFF)
 option(BUILD_TESTS "Possibility to build and run tests" OFF)
-option(TIME_TESTER "Enable profiling time test util" ON)
+option(TIME_TESTER "Enable profiling time test util" OFF)
 option(ENABLE_LOG "Logging feature" OFF)
 option(ENABLE_GCOV "gcov code coverage feature" OFF)
 option(ENABLE_SANITIZE "Sanitize tool" OFF)
 option(ENABLE_SECURITY "Security Ford protocol protection" ON)
-option(ENABLE_HMI_PTU_DECRYPTION "Policy table update parsed by hmi" ON)
+option(ENABLE_HMI_PTU_DECRYPTION "Policy table update parsed by hmi" OFF)
 
 set(OS_TYPE_OPTION 	"$ENV{OS_TYPE}")
 set(DEBUG_OPTION 	"$ENV{DEBUG}")
@@ -171,9 +174,6 @@ endif()
 #  COMMAND tar -cz -C /tmp/GENIVI -f ${CMAKE_BINARY_DIR}/genivi.tar.gz .
 #)
 
-
-#ADD_DEPENDENCIES(${PROJECT} Policy)
-
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/Modules/")
 
 # Please do not change compiler/linker flags if You do not know how particular
@@ -185,7 +185,7 @@ if(MSVC)
   if (${QT_PORT})
   # qt specific  flags
   else()
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /GF /GR /W3 /WX /Zc:wchar_t /favor:blend")# Add MSVS specific flags
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /GF /GR /W0 /WX /Zc:wchar_t /favor:blend")# Add MSVS specific flags
     # 0 (MultiThreaded) == /MT
     # 1 (MultiThreadedDebug) == /MTd
     # 2 (MultiThreadedDLL) == /MD
@@ -193,6 +193,7 @@ if(MSVC)
     set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /MT")
     set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /MTd")
  endif()
+ add_definitions(-D_CRT_SECURE_NO_WARNINGS)
 else()
   set(CMAKE_CXX_FLAGS "-fPIC -std=gnu++0x -Wall -Werror -Wuninitialized -Wvla")
   if(ENABLE_SANITIZE)
@@ -257,6 +258,7 @@ if (TIME_TESTER)
 endif()
 
 if (${CMAKE_SYSTEM_NAME} MATCHES "Windows")
+  add_definitions(-DOS_WINDOWS)
   add_definitions(-DWIN_NATIVE)
 else()
   add_definitions(-DOS_POSIX)
@@ -660,6 +662,8 @@ add_subdirectory(./src/appMain)
 # --- Plugins
 add_subdirectory(./src/plugins)
 
+ADD_DEPENDENCIES(${PROJECT} Policy)
+ADD_DEPENDENCIES(${PROJECT} copy_library_Policy)
 
 # Building tests
 if(BUILD_TESTS)

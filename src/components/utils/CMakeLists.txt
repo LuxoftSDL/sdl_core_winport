@@ -42,15 +42,16 @@ if(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
     set (src
             ${UTILS_SRC_DIR}/bitstream.cc
             ${UTILS_SRC_DIR}/conditional_variable_win.cc
-			${UTILS_SRC_DIR}/date_time_win.cc
+            ${UTILS_SRC_DIR}/date_time_win.cc
             ${UTILS_SRC_DIR}/file_system_win.cc
-			${UTILS_SRC_DIR}/gen_hash.cc
+            ${UTILS_SRC_DIR}/gen_hash.cc
             ${UTILS_SRC_DIR}/lock_win.cc
             ${UTILS_SRC_DIR}/rwlock_win.cc
-			${UTILS_SRC_DIR}/threads/thread_validator.cc
-			${UTILS_SRC_DIR}/threads/async_runner.cc
-			${UTILS_SRC_DIR}/threads/thread_delegate_win.cc
-			${UTILS_SRC_DIR}/threads/win_thread.cc
+            ${UTILS_SRC_DIR}/signals_win.cc
+            ${UTILS_SRC_DIR}/threads/thread_validator.cc
+            ${UTILS_SRC_DIR}/threads/async_runner.cc
+            ${UTILS_SRC_DIR}/threads/thread_delegate_win.cc
+            ${UTILS_SRC_DIR}/threads/win_thread.cc
     )
 
     add_subdirectory(./src/sqlite_wrapper)

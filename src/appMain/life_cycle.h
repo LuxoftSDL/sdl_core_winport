@@ -32,19 +32,26 @@
 
 #ifndef SRC_APPMAIN_LIFE_CYCLE_H_
 #define SRC_APPMAIN_LIFE_CYCLE_H_
-#include "utils/macro.h"
-#include "unistd.h"
 
-#include "hmi_message_handler/hmi_message_handler_impl.h"
-#ifdef DBUS_HMIADAPTER
-#  include "hmi_message_handler/dbus_message_adapter.h"
-#endif  // DBUS_HMIADAPTER
-#if ( defined (MESSAGEBROKER_HMIADAPTER) || defined(PASA_HMI)  )
+#ifdef MESSAGEBROKER_HMIADAPTER
 #include "hmi_message_handler/messagebroker_adapter.h"
-#endif  // #if ( defined (MESSAGEBROKER_HMIADAPTER) || defined(PASA_HMI)  )
+#include "CMessageBroker.hpp"
+#include "mb_tcpserver.hpp"
+#include "networking.h"  // cpplint: Include the directory when naming .h files
+#include "system.h"
+#endif  // MESSAGEBROKER_HMIADAPTER
+
+#include "utils/macro.h"
+#include "hmi_message_handler/hmi_message_handler_impl.h"
+
+#ifdef DBUS_HMIADAPTER
+#include "hmi_message_handler/dbus_message_adapter.h"
+#endif  // DBUS_HMIADAPTER
+
 #ifdef MQUEUE_HMIADAPTER
-#  include "hmi_message_handler/mqueue_adapter.h"
+#include "hmi_message_handler/mqueue_adapter.h"
 #endif  // MQUEUE_HMIADAPTER
+
 #include "application_manager/application_manager_impl.h"
 #include "connection_handler/connection_handler_impl.h"
 #include "protocol_handler/protocol_handler_impl.h"
@@ -52,17 +59,10 @@
 #include "transport_manager/transport_manager_default.h"
 #include "media_manager/media_manager_impl.h"
 #include "utils/singleton.h"
+
 #ifdef TIME_TESTER
 #include "time_tester/time_manager.h"
 #endif
-
-//#if ( defined (MESSAGEBROKER_HMIADAPTER) || defined(PASA_HMI)  )
-#ifdef MESSAGEBROKER_HMIADAPTER
-#include "CMessageBroker.hpp"
-#include "mb_tcpserver.hpp"
-#  include "networking.h"  // cpplint: Include the directory when naming .h files
-#endif  // MESSAGEBROKER_HMIADAPTER
-#include "system.h"      // cpplint: Include the directory when naming .h files
 
 #ifdef ENABLE_SECURITY
 namespace security_manager {
@@ -75,7 +75,6 @@ namespace main_namespace {
 class LifeCycle : public utils::Singleton<LifeCycle> {
   public:
     bool StartComponents();
-
     /**
     * Initialize MessageBroker component
     * @return true if success otherwise false.
@@ -86,7 +85,6 @@ class LifeCycle : public utils::Singleton<LifeCycle> {
      */
     void Run();
     void StopComponents();
-
 
   private:
     LifeCycle();
@@ -118,10 +116,10 @@ class LifeCycle : public utils::Singleton<LifeCycle> {
     System::Thread* mb_adapter_thread_;
 #endif  // MESSAGEBROKER_HMIADAPTER
 
-
     FRIEND_BASE_SINGLETON_CLASS(LifeCycle);
     DISALLOW_COPY_AND_ASSIGN(LifeCycle);
 };
+
 }  //  namespace main_namespace
 
 #endif  // SRC_APPMAIN_LIFE_CYCLE_H_

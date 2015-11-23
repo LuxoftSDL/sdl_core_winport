@@ -33,7 +33,7 @@
 #include <errno.h>
 #include <fcntl.h>
 #include <sys/stat.h>
-#include <unistd.h>
+//#include <unistd.h>
 #include "utils/logger.h"
 #include "utils/file_system.h"
 #include "config_profile/profile.h"
@@ -64,7 +64,7 @@ PipeStreamerAdapter::PipeStreamer::~PipeStreamer() {
 
 bool PipeStreamerAdapter::PipeStreamer::Connect() {
   LOG4CXX_AUTO_TRACE(logger);
-  if (!file_system::CreateDirectoryRecursively(
+  /*if (!file_system::CreateDirectoryRecursively(
       profile::Profile::instance()->app_storage_folder())) {
     LOG4CXX_ERROR(logger, "Cannot create app folder");
     return false;
@@ -86,20 +86,20 @@ bool PipeStreamerAdapter::PipeStreamer::Connect() {
   }
 
   LOG4CXX_INFO(logger, "Pipe " << named_pipe_path_
-                << " was successfuly created");
+                << " was successfuly created");*/
   return true;
 }
 
 void PipeStreamerAdapter::PipeStreamer::Disconnect() {
   LOG4CXX_AUTO_TRACE(logger);
-  close(pipe_fd_);
-  unlink(named_pipe_path_.c_str());
+  //close(pipe_fd_);
+  //unlink(named_pipe_path_.c_str());
 }
 
 bool PipeStreamerAdapter::PipeStreamer::Send(
     protocol_handler::RawMessagePtr msg) {
   LOG4CXX_AUTO_TRACE(logger);
-  ssize_t ret = write(pipe_fd_, msg->data(), msg->data_size());
+  /*ssize_t ret = write(pipe_fd_, msg->data(), msg->data_size());
   if (-1 == ret) {
     LOG4CXX_ERROR(logger, "Failed writing data to pipe "
                   << named_pipe_path_);
@@ -111,7 +111,7 @@ bool PipeStreamerAdapter::PipeStreamer::Send(
                  << named_pipe_path_);
   }
 
-  LOG4CXX_INFO(logger, "Streamer::sent " << msg->data_size());
+  LOG4CXX_INFO(logger, "Streamer::sent " << msg->data_size());*/
   return true;
 }
 

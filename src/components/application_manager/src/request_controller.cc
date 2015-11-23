@@ -37,6 +37,10 @@
 #include "application_manager/commands/hmi/request_to_hmi.h"
 #include "utils/make_shared.h"
 
+#if defined(_MSC_VER)
+#define snprintf _snprintf_s
+#endif
+
 namespace application_manager {
 
 namespace request_controller {

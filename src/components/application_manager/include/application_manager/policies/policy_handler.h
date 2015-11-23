@@ -37,6 +37,13 @@
 #include <map>
 #include <set>
 #include <vector>
+
+#if defined(OS_POSIX)
+#include <dlfcn.h>
+#elif defined(OS_WINDOWS)
+#include <windows.h>
+#endif
+
 #include "policy/policy_manager.h"
 #include "application_manager/policies/policy_event_observer.h"
 #include "application_manager/policies/delegates/statistics_delegate.h"
@@ -457,7 +464,11 @@ private:
   static const std::string kLibrary;
   mutable sync_primitives::RWLock policy_manager_lock_;
   utils::SharedPtr<PolicyManager> policy_manager_;
+#if defined(OS_POSIX)
   void* dl_handle_;
+#elif defined(OS_WINDOWS)
+  HMODULE dl_handle_;
+#endif
   AppIds last_used_app_ids_;
   utils::SharedPtr<PolicyEventObserver> event_observer_;
   uint32_t last_activated_app_id_;

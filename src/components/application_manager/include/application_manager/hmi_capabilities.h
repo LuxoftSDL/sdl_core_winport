@@ -38,6 +38,8 @@
 #include "json/json.h"
 #include "utils/macro.h"
 
+#include <cstdint>
+
 namespace NsSmartDeviceLink {
 namespace NsSmartObjects {
 class SmartObject;

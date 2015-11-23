@@ -28,6 +28,10 @@
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 
+if (${CMAKE_SYSTEM_NAME} MATCHES "Windows")
+  find_package(WinOpenSSL REQUIRED)
+endif()
+
 IF (HMIADAPTER STREQUAL "messagebroker")
 set (BROKER_LIBRARIES
   MessageBrokerClient
@@ -134,6 +138,7 @@ include_directories (
   ${CMAKE_SOURCE_DIR}
   ${default_media_inc}
   ${LOG4CXX_INCLUDE_DIRECTORY}
+  ${OPENSSL_INCLUDE_DIRECTORY}
   ${CMAKE_SOURCE_DIR}/src/3rd_party/dbus-1.7.8
   ${CMAKE_SOURCE_DIR}/src/3rd_party/dbus-1.7.8/dbus/
 )
@@ -141,13 +146,11 @@ include_directories (
 set (SOURCES
   main.cc
   life_cycle.cc
-  signal_handlers.cc
 )
 
 set (HEADERS 
      btinclude.h
      life_cycle.h
-     signal_handlers.h
 )
 
 if( NOT CMAKE_BUILD_TYPE )

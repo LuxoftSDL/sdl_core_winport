@@ -30,7 +30,6 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "utils/threads/thread_manager.h"
 #include "utils/threads/thread_delegate.h"
 #include "utils/lock.h"
 #include "utils/conditional_variable.h"

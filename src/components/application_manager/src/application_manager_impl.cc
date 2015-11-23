@@ -71,12 +71,7 @@ namespace {
 namespace application_manager {
 
 namespace {
-  DeviceTypes devicesType = {
-    std::make_pair(std::string("USB_AOA"), hmi_apis::Common_TransportType::USB_AOA),
-    std::make_pair(std::string("USB_IOS"), hmi_apis::Common_TransportType::USB_IOS),
-    std::make_pair(std::string("BLUETOOTH"), hmi_apis::Common_TransportType::BLUETOOTH),
-    std::make_pair(std::string("WIFI"), hmi_apis::Common_TransportType::WIFI)
-  };
+  DeviceTypes devicesType;
 }
 
 CREATE_LOGGERPTR_GLOBAL(logger_, "ApplicationManager")
@@ -121,14 +116,22 @@ ApplicationManagerImpl::ApplicationManagerImpl()
                                       &ApplicationManagerImpl::OnTimerSendTTSGlobalProperties,
                                       true),
     is_low_voltage_(false) {
+
+    devicesType.insert(
+        std::make_pair(std::string("USB_AOA"), hmi_apis::Common_TransportType::USB_AOA));
+    devicesType.insert(
+        std::make_pair(std::string("USB_IOS"), hmi_apis::Common_TransportType::USB_IOS));
+    devicesType.insert(
+        std::make_pair(std::string("BLUETOOTH"), hmi_apis::Common_TransportType::BLUETOOTH));
+    devicesType.insert(
+        std::make_pair(std::string("WIFI"), hmi_apis::Common_TransportType::WIFI));
+
     std::srand(std::time(0));
     AddPolicyObserver(this);
 
-    dir_type_to_string_map_ = {
-      {TYPE_STORAGE, "Storage"},
-      {TYPE_SYSTEM, "System"},
-      {TYPE_ICONS, "Icons"}
-    };
+    dir_type_to_string_map_.insert(std::make_pair(TYPE_STORAGE, "Storage"));
+    dir_type_to_string_map_.insert(std::make_pair(TYPE_SYSTEM, "System"));
+    dir_type_to_string_map_.insert(std::make_pair(TYPE_ICONS, "Icons"));
 
     sync_primitives::AutoLock lock(timer_pool_lock_);
     ApplicationManagerTimerPtr clearTimerPoolTimer(new TimerThread<ApplicationManagerImpl>(
@@ -782,7 +785,8 @@ ApplicationConstSharedPtr ApplicationManagerImpl::waiting_app(
 
   HmiAppIdPredicate finder(hmi_id);
   ApplicationSharedPtr result;
-  ApplictionSetConstIt it_app = std::find_if(app_list.begin(), it_end, finder);
+  AppsWaitRegistrationSet::const_iterator it_app =
+      std::find_if(app_list.begin(), it_end, finder);
   if (it_app != it_end) {
     result = *it_app;
   }

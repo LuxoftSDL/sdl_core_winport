@@ -45,6 +45,10 @@ Copyright (c) 2013, Ford Motor Company
 #include "json/json.h"
 #include "utils/helpers.h"
 
+#if defined(_MSC_VER)
+#define snprintf _snprintf_s
+#endif
+
 namespace application_manager {
 
 namespace commands {

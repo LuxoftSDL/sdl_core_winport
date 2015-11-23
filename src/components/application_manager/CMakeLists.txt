@@ -28,6 +28,9 @@
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 
+if (${CMAKE_SYSTEM_NAME} MATCHES "Windows")
+  find_package(WinOpenSSL REQUIRED)
+endif()
 
 if (VERBOSE)
     message ("Generating project ${PROJECT_NAME} in ${CMAKE_CURRENT_BINARY_DIR}")
@@ -55,10 +58,12 @@ include_directories (
     ${COMPONENTS_DIR}/include/
     ${COMPONENTS_DIR}/policy/src/policy/include/
     ${COMPONENTS_DIR}/policy/src/policy/usage_statistics/include/
+    ${COMPONENTS_DIR}/application_manager/include/
     ${JSONCPP_INCLUDE_DIRECTORY}
     ${ENCRYPTION_INCLUDE_DIRECTORY}
     ${MESSAGE_BROKER_INCLUDE_DIRECTORY}
     ${LOG4CXX_INCLUDE_DIRECTORY}
+    ${OPENSSL_INCLUDE_DIRECTORY}
   )
 
   include_directories(
@@ -84,7 +89,6 @@ if (${CMAKE_SYSTEM_NAME} MATCHES "Windows")
                   ProtocolLibrary
                   SmartObjects
                   UsageStatistics
-                  dl
                   formatters
                   dbms)
     if (${HMI_JSON_API})
@@ -97,9 +101,9 @@ if (${CMAKE_SYSTEM_NAME} MATCHES "Windows")
     endif (${HMI_DBUS_API})
                   
     if(${QT_PORT})
-       target_link_libraries("ApplicationManager" ${LIBRARIES} ${src} ${QT5Core} )
+       target_link_libraries("ApplicationManager" ${LIBRARIES} ${QT5Core} )
     else()
-        target_link_libraries("ApplicationManager" ${LIBRARIES} ${src})        
+        target_link_libraries("ApplicationManager" ${LIBRARIES})        
     endif()
 else ()
 
