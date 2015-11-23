@@ -31,11 +31,16 @@
  */
 
 #include <algorithm>
+#include <iterator>
 #include <sstream>
 #include <string.h>
 #include "utils/logger.h"
 #include "policy/policy_helper.h"
 #include "policy/policy_manager_impl.h"
+
+#if defined (WIN_NATIVE)
+#define strcasecmp _stricmp
+#endif
 
 namespace policy {
 

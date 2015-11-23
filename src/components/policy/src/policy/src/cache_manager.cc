@@ -33,6 +33,7 @@
 #include "policy/cache_manager.h"
 
 #include <algorithm>
+#include <iterator>
 #include <functional>
 #include <ctime>
 #include <cmath>
@@ -42,6 +43,10 @@
 #include "json/features.h"
 #include "json/writer.h"
 #include "utils/logger.h"
+#ifdef WIN_NATIVE
+#define strncasecmp _strnicmp
+#define strcasecmp _stricmp
+#endif
 
 #  include "policy/sql_pt_representation.h"
 

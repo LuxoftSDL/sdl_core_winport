@@ -33,6 +33,10 @@
 #include "utils/logger.h"
 #include "transport_manager/tcp/tcp_device.h"
 
+#ifdef WIN_NATIVE
+#include "utils/winhdr.h"
+#pragma comment(lib, "Ws2_32.lib")
+#endif
 
 namespace transport_manager {
 namespace transport_adapter {
@@ -41,8 +45,11 @@ namespace transport_adapter {
 CREATE_LOGGERPTR_GLOBAL(logger_, "TransportManager")
 
 
-TcpDevice::TcpDevice(const in_addr_t& in_addr, const std::string& name)
+TcpDevice::TcpDevice(const uint32_t& in_addr, const std::string& name)
     : Device(name, name),
+#ifdef WIN_NATIVE
+     wsaStartup_(1, 2),
+#endif
       applications_mutex_(),
       in_addr_(in_addr),
       last_handle_(0) {
@@ -148,6 +155,5 @@ int TcpDevice::GetApplicationPort(const ApplicationHandle app_handle) const {
   LOG4CXX_DEBUG(logger_, "port " << it->second.port);
   return it->second.port;
 }
-
 }  // namespace transport_adapter
 }  // namespace transport_manager

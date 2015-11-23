@@ -31,12 +31,14 @@
  */
 #ifdef __QNX__
 #  include <process.h>
-#else  // __QNX__
+#elif defined(OS_POSIX)
 #  include <sys/types.h>
 #  include <sys/wait.h>
 #  include <sys/stat.h>
 #  include <fcntl.h>
 #  include <unistd.h>
+#else
+#  include <fcntl.h>
 #endif  // __QNX__
 
 #include <algorithm>
@@ -108,8 +110,12 @@ bool System::Execute(bool wait) {
 
   return true;
 }
+#elif defined (WIN_NATIVE)
+bool System::Execute(bool wait) {
+	return true;
+}
 
-#else  // __QNX__
+#elif defined (OS_POSIX)
 
 bool System::Execute(bool wait) {
   // Create a child process.

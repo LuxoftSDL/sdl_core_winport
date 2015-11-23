@@ -30,8 +30,13 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
+#ifdef OS_POSIX
 #include <pthread.h>
 #include <unistd.h>
+#elif defined(WIN_NATIVE)
+#include <windows.h>
+#include <io.h>
+#endif
 #include <iomanip>
 
 #include <libusb/libusb.h>
@@ -256,7 +261,12 @@ void UsbConnection::Finalise() {
     }
   }
   while (waiting_in_transfer_cancel_ || waiting_out_transfer_cancel_) {
+#ifdef OS_POSIX
     pthread_yield();
+#elif defined(WIN_NATIVE)
+	  SwitchToThread();
+#endif
+
   }
   LOG4CXX_TRACE(logger_, "exit");
 }

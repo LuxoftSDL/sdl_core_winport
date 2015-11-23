@@ -1,7 +1,4 @@
 /*
- * \file bluetooth_socket_connection.h
- * \brief BluetoothSocketConnection class header file.
- *
  * Copyright (c) 2013, Ford Motor Company
  * All rights reserved.
  *
@@ -32,56 +29,13 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
+#include "utils/wsa_startup.h"
 
-#ifndef SRC_COMPONENTS_TRANSPORT_MANAGER_INCLUDE_TRANSPORT_MANAGER_BLUETOOTH_BLUETOOTH_SOCKET_CONNECTION_H_
-#define SRC_COMPONENTS_TRANSPORT_MANAGER_INCLUDE_TRANSPORT_MANAGER_BLUETOOTH_BLUETOOTH_SOCKET_CONNECTION_H_
+WsaStartup::WsaStartup(BYTE minorVer, BYTE majorVer){
+  WSAData wsaData;
+  WSAStartup(MAKEWORD(majorVer, minorVer), &wsaData);
+}
 
-#include "transport_manager/transport_adapter/threaded_socket_connection.h"
-#ifdef WIN_NATIVE
-#include <ws2bth.h>
-#include <BluetoothAPIs.h>
-#endif
-
-namespace transport_manager {
-namespace transport_adapter {
-
-class TransportAdapterController;
-
-/**
- * @brief Class responsible for communication over bluetooth sockets.
- */
-class BluetoothSocketConnection : public ThreadedSocketConnection {
- public:
-
-  /**
-   * @brief Constructor.
-   *
-   * @param device_uid Device unique identifier.
-   * @param app_handle Handle of device.
-   * @param controller Pointer to the device adapter controller.
-   */
-  BluetoothSocketConnection(const DeviceUID& device_uid,
-                            const ApplicationHandle& app_handle,
-                            TransportAdapterController* controller);
-
-  /**
-   * @brief Destructor.
-   */
-  virtual ~BluetoothSocketConnection();
- protected:
-
-  /**
-   * @brief Establish connection.
-   *
-   * @param error Connection error.
-   *
-   * @return True - connection established.
-   * false - connection not established.
-   */
-  virtual bool Establish(ConnectError** error);
-};
-
-}  // namespace transport_adapter
-}  // namespace transport_manager
-
-#endif /* BLUETOOTH_SOCKET_CONNECTION_H_ */
+WsaStartup::~WsaStartup(){
+  WSACleanup();
+}

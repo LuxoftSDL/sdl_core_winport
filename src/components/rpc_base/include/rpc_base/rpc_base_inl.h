@@ -40,6 +40,10 @@
 
 #include "rpc_base/validation_report.h"
 
+#if defined(_MSC_VER)
+#define snprintf _snprintf_s
+#endif
+
 namespace rpc {
 
 /*

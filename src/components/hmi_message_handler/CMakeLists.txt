@@ -1,4 +1,3 @@
-# Copyright (c) 2014, Ford Motor Company
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -59,12 +58,16 @@ set (SOURCES
     ${COMPONENTS_DIR}/hmi_message_handler/src/hmi_message_adapter.cc
     ${DBUS_SOURCE}
 )
-
-set(LIBRARIES
+if (${CMAKE_SYSTEM_NAME} MATCHES "Linux")	
+  set(LIBRARIES
     Utils
     ${DBUS_ADAPTER}
     ${RTLIB}
 )
+else()
+  set(LIBRARIES   Utils )
+endif()	
+
 if (${CMAKE_SYSTEM_NAME} MATCHES "Windows")
   set (HEADERS
         ${COMPONENTS_DIR}/hmi_message_handler/include/hmi_message_handler/hmi_message_handler_impl.h
