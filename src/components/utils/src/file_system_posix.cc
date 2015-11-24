@@ -451,4 +451,18 @@ bool file_system::MoveFile(const std::string& src,
   return true;
 }
 
+bool file_system::IsRelativePath(const std::string& path) {
+  if (path.empty()) {
+    return false;
+  }
+  return '/' != path[0];
+}
+
+void file_system::MakeAbsolutePath(std::string& path) {
+  if (!IsRelativePath(path)) {
+    return;
+  }
+  path = file_system::CurrentWorkingDirectory() + "/" + path;
+}
+
 #endif // OS_POSIX

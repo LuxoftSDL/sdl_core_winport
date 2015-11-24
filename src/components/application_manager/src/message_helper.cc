@@ -71,19 +71,19 @@ namespace {
 
   void InitAppPriorityMap() {
     app_priority_values.insert(
-        std::make_pair("NORMAL", hmi_apis::Common_AppPriority::NORMAL));
+        std::make_pair(std::string("NORMAL"), hmi_apis::Common_AppPriority::NORMAL));
     app_priority_values.insert(
-        std::make_pair("COMMUNICATION", hmi_apis::Common_AppPriority::COMMUNICATION));
+        std::make_pair(std::string("COMMUNICATION"), hmi_apis::Common_AppPriority::COMMUNICATION));
     app_priority_values.insert(
-        std::make_pair("EMERGENCY", hmi_apis::Common_AppPriority::EMERGENCY));
+        std::make_pair(std::string("EMERGENCY"), hmi_apis::Common_AppPriority::EMERGENCY));
     app_priority_values.insert(
-        std::make_pair("NAVIGATION", hmi_apis::Common_AppPriority::NAVIGATION));
+        std::make_pair(std::string("NAVIGATION"), hmi_apis::Common_AppPriority::NAVIGATION));
     app_priority_values.insert(
-        std::make_pair("NONE", hmi_apis::Common_AppPriority::NONE));
+        std::make_pair(std::string("NONE"), hmi_apis::Common_AppPriority::NONE));
     app_priority_values.insert(
-        std::make_pair("VOICECOM", hmi_apis::Common_AppPriority::VOICE_COMMUNICATION));
+        std::make_pair(std::string("VOICECOM"), hmi_apis::Common_AppPriority::VOICE_COMMUNICATION));
     app_priority_values.insert(
-        std::make_pair("INVALID_ENUM", hmi_apis::Common_AppPriority::INVALID_ENUM));
+        std::make_pair(std::string("INVALID_ENUM"), hmi_apis::Common_AppPriority::INVALID_ENUM));
   }
   uint32_t GetPriorityCode(const std::string& priority) {
     if (app_priority_values.empty()) {

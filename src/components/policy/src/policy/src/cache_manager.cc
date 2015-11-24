@@ -526,16 +526,11 @@ int CacheManager::TimeoutResponse() {
 
 bool CacheManager::SecondsBetweenRetries(std::vector<int>& seconds) {
   CACHE_MANAGER_CHECK(false);
-  rpc::policy_table_interface_base::SecondsBetweenRetries::iterator iter =
-    pt_->policy_table.module_config.seconds_between_retries.begin();
-  rpc::policy_table_interface_base::SecondsBetweenRetries::iterator iter_end =
-    pt_->policy_table.module_config.seconds_between_retries.end();
-
   const std::size_t size =
       pt_->policy_table.module_config.seconds_between_retries.size();
   seconds.reserve(size);
-  for (;iter != iter_end; ++iter) {
-    seconds.push_back(*iter);
+  for (size_t i = 0; i < size; ++i) {
+    seconds.push_back(pt_->policy_table.module_config.seconds_between_retries[i]);
   }
   return true;
 }
