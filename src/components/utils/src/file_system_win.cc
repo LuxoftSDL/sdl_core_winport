@@ -37,6 +37,7 @@
 #include <winbase.h>
 #include <direct.h>
 #include <io.h>
+#include "Shlwapi.h"
 // TODO(VS): lint error: Streams are highly discouraged.
 #include <sstream>
 #include <fstream>
@@ -44,6 +45,8 @@
 #include <algorithm>
 
 #include "utils/file_system.h"
+
+#pragma comment(lib,"Shlwapi.lib")
 
 uint64_t file_system::GetAvailableDiskSpace(const std::string& path) {
   DWORD sectors_per_cluster;
@@ -394,17 +397,15 @@ bool file_system::MoveFile(const std::string& src,
 }
 
 bool file_system::IsRelativePath(const std::string& path) {
-  if (path.empty()) {
-    return false;
-  }
-  return path.size() < 2 || ':' != path[1];
+  return static_cast<bool>(PathIsRelative(path.c_str()));
 }
 
 void file_system::MakeAbsolutePath(std::string& path) {
-  if (!IsRelativePath(path)) {
-    return;
+  TCHAR buffer[MAX_PATH];
+  const DWORD size = GetFullPathName(path.c_str(), MAX_PATH, buffer, NULL);
+  if (size != 0) {
+	  path.assign(buffer);
   }
-  path = file_system::CurrentWorkingDirectory() + "/" + path;
 }
 
 #endif // WIN_NATIVE
