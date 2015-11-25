@@ -275,6 +275,8 @@ bool IsRelativePath(const std::string& path);
   */
 void MakeAbsolutePath(std::string& path);
 
+std::string GetPathDelimiter();
+
 }  // namespace file_system
 
 #endif  // SRC_COMPONENTS_UTILS_INCLUDE_UTILS_FILE_SYSTEM_H_

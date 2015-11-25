@@ -404,8 +404,12 @@ void file_system::MakeAbsolutePath(std::string& path) {
   TCHAR buffer[MAX_PATH];
   const DWORD size = GetFullPathName(path.c_str(), MAX_PATH, buffer, NULL);
   if (size != 0) {
-	  path.assign(buffer);
+    path.assign(buffer);
   }
+}
+
+std::string file_system::GetPathDelimiter() {
+  return "/";
 }
 
 #endif // WIN_NATIVE

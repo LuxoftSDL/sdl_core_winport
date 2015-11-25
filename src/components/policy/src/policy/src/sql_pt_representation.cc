@@ -79,7 +79,7 @@ SQLPTRepresentation::SQLPTRepresentation(const std::string& app_storage_folder,
     open_attempt_timeout_ms_(open_attempt_timeout_ms) {
 #ifndef __QNX__
   if (!app_storage_folder_.empty()) {
-    db_->set_path(app_storage_folder_ + "/");
+    db_->set_path(app_storage_folder_ + file_system::GetPathDelimiter());
   }
 #endif  // __QNX__
 }
