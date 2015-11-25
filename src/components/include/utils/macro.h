@@ -122,9 +122,9 @@
 #define GETARRAYSIZE(arr) sizeof (arr) / sizeof(*arr)
 
 #if defined(OS_POSIX)
-#define SDL_DLL_EXPORT extern "C"
+#define SDL_EXPORT extern "C"
 #elif defined(OS_WINDOWS)
-#define SDL_DLL_EXPORT extern "C" __declspec(dllexport)
+#define SDL_EXPORT extern "C" __declspec(dllexport)
 #endif
 
 #ifdef BUILD_TESTS

@@ -460,7 +460,7 @@ class PolicyManager : public usage_statistics::StatisticsManager {
 
 }  // namespace policy
 
-SDL_DLL_EXPORT
+SDL_EXPORT
 policy::PolicyManager* CreateManager(
     const std::string& app_storage_folder,
     uint16_t attempts_to_open_policy_db,
