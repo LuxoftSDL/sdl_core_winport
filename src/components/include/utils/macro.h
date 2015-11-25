@@ -121,6 +121,12 @@
 */
 #define GETARRAYSIZE(arr) sizeof (arr) / sizeof(*arr)
 
+#if defined(OS_POSIX)
+#define SDL_DLL_EXPORT extern "C"
+#elif defined(OS_WINDOWS)
+#define SDL_DLL_EXPORT extern "C" __declspec(dllexport)
+#endif
+
 #ifdef BUILD_TESTS
 #define FRIEND_TEST(test_case_name, test_name)\
 friend class test_case_name##_##test_name##_Test
