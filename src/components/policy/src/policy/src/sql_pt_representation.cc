@@ -43,6 +43,7 @@
 #endif
 
 #include "utils/logger.h"
+#include "utils/threads/thread.h"
 #include "utils/file_system.h"
 #include "utils/gen_hash.h"
 #include "policy/sql_pt_representation.h"
@@ -339,19 +340,10 @@ InitResult SQLPTRepresentation::Init() {
     LOG4CXX_DEBUG(logger_, "Total attempts number is: "
                   << attempts_to_open_policy_db_);
     bool is_opened = false;
-#ifdef WIN_NATIVE
-    std::chrono::microseconds sleep_interval_mcsec(open_attempt_timeout_ms_ * 1000);
-#else
-    const useconds_t sleep_interval_mcsec = open_attempt_timeout_ms * 1000;
-#endif
     LOG4CXX_DEBUG(logger_, "Open attempt timeout(ms) is: "
                   << open_attempt_timeout_ms_);
     for (int i = 0; i < attempts_to_open_policy_db_; ++i) {
-#ifdef WIN_NATIVE
-      std::this_thread::sleep_for(std::chrono::microseconds(sleep_interval_mcsec));
-#else
-      usleep(sleep_interval_mcsec);
-#endif
+      threads::sleep(open_attempt_timeout_ms_);
       LOG4CXX_INFO(logger_, "Attempt: " << i+1);
       if (db_->Open()){
         LOG4CXX_INFO(logger_, "Database opened.");

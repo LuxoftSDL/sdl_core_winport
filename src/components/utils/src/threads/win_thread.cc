@@ -48,6 +48,10 @@ namespace threads {
 
 CREATE_LOGGERPTR_GLOBAL(logger_, "Utils")
 
+void sleep(uint32_t ms) {
+  Sleep(ms);
+}
+
 /* Parameter is not actual for Windows platform */
 size_t Thread::kMinStackSize = 0; 
 
