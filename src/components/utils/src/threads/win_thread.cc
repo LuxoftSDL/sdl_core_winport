@@ -49,7 +49,12 @@ namespace threads {
 CREATE_LOGGERPTR_GLOBAL(logger_, "Utils")
 
 void sleep(uint32_t ms) {
+#ifdef SDL_CPP11
+  std::chrono::microseconds sleep_interval_mcsec(ms * 1000);
+  std::this_thread::sleep_for(std::chrono::microseconds(sleep_interval_mcsec));
+#else
   Sleep(ms);
+#endif
 }
 
 /* Parameter is not actual for Windows platform */

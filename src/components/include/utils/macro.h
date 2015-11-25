@@ -105,9 +105,14 @@
 
 #define NOTREACHED() DCHECK(!"Unreachable code")
 
+#if __cplusplus >= 201103L
+#define SDL_CPP11
+#endif
+
 // Allows to perform static check that virtual function from base class is
 // actually being overriden if compiler support is available
-#if __cplusplus >= 201103L
+
+#ifdef SDL_CPP11
 #define OVERRIDE override
 #define FINAL final
 #else
