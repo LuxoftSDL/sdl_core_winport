@@ -91,17 +91,19 @@ size_t file_system::DirectorySize(const std::string& path) {
   do
   {
     if (FILE_ATTRIBUTE_DIRECTORY == ffd.dwFileAttributes) {
-	  size += DirectorySize(ffd.cFileName);
-	} else {
-	  uint64_t file_size = 0;
-	  file_size |= ffd.nFileSizeHigh;
+      if (std::string(ffd.cFileName).compare(".") != 0 &&
+            std::string(ffd.cFileName).compare("..") != 0) {
+        size += DirectorySize(ffd.cFileName);
+      }
+    } else {
+      uint64_t file_size = 0;
+      file_size |= ffd.nFileSizeHigh;
       file_size <<= 32;
       file_size |= ffd.nFileSizeLow;
 
-	  size += file_size;
-	}
-  }
-  while (FindNextFile(find, &ffd) != 0);
+      size += file_size;
+    }
+  } while (FindNextFile(find, &ffd) != 0);
 
   FindClose(find);
   return size;
