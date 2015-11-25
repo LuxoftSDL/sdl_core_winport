@@ -320,7 +320,7 @@ private:
      */
     std::string last_device_id_;
 
-    bool ignition_check;
+    bool ignition_check_;
 
     const std::string app_storage_folder_;
 

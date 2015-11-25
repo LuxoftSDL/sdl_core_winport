@@ -50,7 +50,7 @@ policy::PolicyManager* CreateManager(const std::string& app_storage_folder,
                                      uint16_t attempts_to_open_policy_db,
                                      uint16_t open_attempt_timeout_ms) {
   return new policy::PolicyManagerImpl(
-      app_storage_folder, attempts_to_open_policy_db, open_attempt_timeout_ms);
+    app_storage_folder, attempts_to_open_policy_db, open_attempt_timeout_ms);
 }
 
 namespace policy {
@@ -67,7 +67,7 @@ PolicyManagerImpl::PolicyManagerImpl(const std::string& app_storage_folder,
                             open_attempt_timeout_ms)),
     retry_sequence_timeout_(60),
     retry_sequence_index_(0),
-    ignition_check(true),
+    ignition_check_(true),
     app_storage_folder_(app_storage_folder) {
 }
 
@@ -288,9 +288,9 @@ void PolicyManagerImpl::StartPTExchange() {
   }
 
   if (listener_ && listener_->CanUpdate()) {
-    if (ignition_check) {
+    if (ignition_check_) {
       CheckTriggers();
-      ignition_check = false;
+      ignition_check_ = false;
     }
 
     if (update_status_manager_.IsUpdateRequired()) {
