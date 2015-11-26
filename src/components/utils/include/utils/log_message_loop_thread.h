@@ -61,6 +61,7 @@ typedef struct {
   HANDLE      logger_handle;
   std::string logger_name;
   uint32_t    level;
+  SYSTEMTIME  time;
   std::string entry;
   uint32_t    thread;
   FILE*       file;

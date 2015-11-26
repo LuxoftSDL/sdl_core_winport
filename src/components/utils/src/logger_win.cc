@@ -62,6 +62,7 @@ void deinit_logger() {
 
   set_logs_enabled(false);
   delete message_loop_thread;
+  message_loop_thread = NULL;
 
   fclose(output_file);
   DeregisterEventSource(logger_handle);
@@ -77,6 +78,7 @@ void set_logs_enabled(bool state) {
 
 bool push_log(const std::string& logger,
               uint32_t level,
+              SYSTEMTIME time,
               const std::string& entry) {
   if (!logs_enabled()) {
     return false;
@@ -85,10 +87,16 @@ bool push_log(const std::string& logger,
     return false;
   }
   LogMessage message =
-      { logger_handle, logger, level, entry,
+      { logger_handle, logger, level, time, entry,
         static_cast<uint32_t>(GetCurrentThreadId()), output_file };
   message_loop_thread->PostMessage(message);
   return true;
+}
+
+SYSTEMTIME time_now() {
+  SYSTEMTIME time;
+  GetLocalTime(&time);
+  return time;
 }
 
 } // namespace logger

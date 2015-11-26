@@ -77,9 +77,8 @@ namespace logger {
                 log4cxx_time_t timeStamp,
                 const log4cxx::spi::LocationInfo& location,
                 const log4cxx::LogString& threadName);
+  log4cxx_time_t time_now();
 }
-
-log4cxx_time_t time_now();
 
 #define CREATE_LOGGERPTR_LOCAL(logger_var, logger_name) \
     log4cxx::LoggerPtr logger_var = log4cxx::LoggerPtr(log4cxx::Logger::getLogger(logger_name));
@@ -90,7 +89,7 @@ log4cxx_time_t time_now();
 do { \
      std::stringstream accumulator; \
      accumulator << logEvent; \
-     logger::push_log(loggerPtr, logLevel, accumulator.str(), time_now(), \
+     logger::push_log(loggerPtr, logLevel, accumulator.str(), logger::time_now(), \
          LOG4CXX_LOCATION, ::log4cxx::spi::LoggingEvent::getCurrentThreadName()); \
 } while (false)
 
@@ -121,7 +120,9 @@ do { \
 namespace logger {
   bool push_log(const std::string& logger,
                 uint32_t level,
+                SYSTEMTIME time,
                 const std::string& entry);
+  SYSTEMTIME time_now();
 }
 
 #define CREATE_LOGGERPTR_LOCAL(logger_var, logger_name) \
@@ -133,7 +134,7 @@ namespace logger {
 do { \
      std::stringstream accumulator; \
      accumulator << logEvent; \
-     logger::push_log(loggerPtr, logLevel, accumulator.str()); \
+     logger::push_log(loggerPtr, logLevel, logger::time_now(), accumulator.str()); \
 } while (false)
 
 #undef LOG4CXX_TRACE
