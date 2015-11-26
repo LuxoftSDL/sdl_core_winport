@@ -146,8 +146,6 @@ class ThreadedSocketConnection : public Connection {
     ThreadedSocketConnection* connection_;
   };
 
-  int read_fd_;
-  int write_fd_;
   void threadMain();
   void Transmit();
   void Finalize();
@@ -164,11 +162,14 @@ class ThreadedSocketConnection : public Connection {
   FrameQueue frames_to_send_;
   mutable sync_primitives::Lock frames_to_send_mutex_;
 
-#ifdef OS_POSIX
   int socket_;
+
+#ifdef OS_POSIX
+  int read_fd_;
+  int write_fd_;
 #else
- SOCKET socket_;
  WsaStartup wsaStartup_;
+ HANDLE frames_to_send_not_empty_event_;
 #endif
   bool terminate_flag_;
   bool unexpected_disconnect_;

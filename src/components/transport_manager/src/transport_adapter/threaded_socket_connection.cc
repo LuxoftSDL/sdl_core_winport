@@ -58,20 +58,23 @@ CREATE_LOGGERPTR_GLOBAL(logger_, "TransportManager")
 ThreadedSocketConnection::ThreadedSocketConnection(
     const DeviceUID& device_id, const ApplicationHandle& app_handle,
     TransportAdapterController* controller)
-    : read_fd_(-1),
-      write_fd_(-1),
-#ifdef WIN_NATIVE
-	  wsaStartup_(1, 2),
+    : controller_(controller)
+    , frames_to_send_()
+    , frames_to_send_mutex_()
+    , socket_(-1)
+#ifdef OS_POSIX
+    , read_fd_(-1)
+    , write_fd_(-1)
 #endif
-      controller_(controller),
-      frames_to_send_(),
-      frames_to_send_mutex_(),
-      socket_(-1),
-      terminate_flag_(false),
-      unexpected_disconnect_(false),
-      device_uid_(device_id),
-      app_handle_(app_handle),
-      thread_(NULL) {
+#ifdef WIN_NATIVE
+	 , wsaStartup_(1, 2)
+   , frames_to_send_not_empty_event_(NULL)
+#endif
+   , terminate_flag_(false)
+   , unexpected_disconnect_(false)
+   , device_uid_(device_id)
+   , app_handle_(app_handle)
+   , thread_(NULL) {
   const std::string thread_name = std::string("Socket ") + device_handle();
   thread_ = threads::CreateThread(thread_name.c_str(),
                                   new SocketConnectionDelegate(this));
@@ -84,12 +87,16 @@ ThreadedSocketConnection::~ThreadedSocketConnection() {
   delete thread_->delegate();
   threads::DeleteThread(thread_);
 
+#ifdef OS_POSIX
   if (-1 != read_fd_) {
     close(read_fd_);
   }
   if (-1 != write_fd_) {
     close(write_fd_);
   }
+#else
+  CloseHandle(frames_to_send_not_empty_event_);
+#endif
 }
 
 void ThreadedSocketConnection::Abort() {
@@ -100,32 +107,40 @@ void ThreadedSocketConnection::Abort() {
 
 TransportAdapter::Error ThreadedSocketConnection::Start() {
   LOG4CXX_AUTO_TRACE(logger_);
-  int fds[2];
 #ifdef OS_POSIX
+  int fds[2];
   const int pipe_ret = pipe(fds);
-#elif defined (WIN_NATIVE)
-  const int pipe_ret = _pipe(fds, (sizeof(fds) / sizeof(fds[0])), O_BINARY);
-#endif
   if (0 == pipe_ret) {
     LOG4CXX_DEBUG(logger_, "pipe created");
     read_fd_ = fds[0];
     write_fd_ = fds[1];
-  } else {
+  }
+  else {
     LOG4CXX_ERROR(logger_, "pipe creation failed");
     return TransportAdapter::FAIL;
   }
+#elif defined (WIN_NATIVE)
+  frames_to_send_not_empty_event_ = CreateEvent(
+    NULL,    // no security attribute
+    true,    // is manual-reset event
+    false,   // initial state = non-signaled
+    NULL);   // unnamed event object
+  if (frames_to_send_not_empty_event_) {
+    LOG4CXX_DEBUG(logger_, "frames_to_send_not_empty_event_ has been created");
+  } else {
+    LOG4CXX_ERROR(logger_, "frames_to_send_not_empty_event_ creation failed");
+    return TransportAdapter::FAIL;
+  }
+#endif
+  
 #ifdef OS_POSIX
   const int fcntl_ret = fcntl(read_fd_, F_SETFL,
                               fcntl(read_fd_, F_GETFL) | O_NONBLOCK);
-#else
-  u_long iMode = 0;
-  const int fcntl_ret = ioctlsocket(read_fd_, FIONBIO, &iMode);
-#endif
   if (0 != fcntl_ret) {
     LOG4CXX_ERROR(logger_, "fcntl failed");
     return TransportAdapter::FAIL;
   }
-
+#endif
   if (!thread_->start()) {
     LOG4CXX_ERROR(logger_, "thread creation failed");
     return TransportAdapter::FAIL;
@@ -144,11 +159,17 @@ void ThreadedSocketConnection::Finalize() {
     LOG4CXX_DEBUG(logger_, "not unexpected_disconnect");
     controller_->ConnectionFinished(device_handle(), application_handle());
   }
+#ifdef OS_POSIX
   close(socket_);
+#else
+  closesocket(socket_);
+  WSACleanup();
+#endif
 }
 
 TransportAdapter::Error ThreadedSocketConnection::Notify() const {
   LOG4CXX_AUTO_TRACE(logger_);
+#ifdef OS_POSIX
   if (-1 == write_fd_) {
     LOG4CXX_ERROR_WITH_ERRNO(
         logger_, "Failed to wake up connection thread for connection " << this);
@@ -161,6 +182,9 @@ TransportAdapter::Error ThreadedSocketConnection::Notify() const {
         logger_, "Failed to wake up connection thread for connection " << this);
     return TransportAdapter::FAIL;
   }
+#else
+  SetEvent(frames_to_send_not_empty_event_);
+#endif
   return TransportAdapter::OK;
 }
 
@@ -201,51 +225,43 @@ void ThreadedSocketConnection::threadMain() {
     controller_->DataSendFailed(device_handle(), application_handle(),
                                 message, DataSendError());
   }
+#ifndef OS_POSIX
+  ResetEvent(frames_to_send_not_empty_event_);
+#endif
 }
 
 void ThreadedSocketConnection::Transmit() {
   LOG4CXX_AUTO_TRACE(logger_);
-#ifdef OS_POSIX
-  const nfds_t kPollFdsSize = 2;
-#elif defined (WIN_NATIVE)
-  const ULONG kPollFdsSize = 2;
-#endif
-  pollfd poll_fds[kPollFdsSize];
-  poll_fds[0].fd = socket_;
-  poll_fds[0].events = POLLIN | POLLPRI
-      | (frames_to_send_.empty() ? 0 : POLLOUT);
-  poll_fds[1].fd = read_fd_;
-  poll_fds[1].events = POLLIN | POLLPRI;
-
   LOG4CXX_DEBUG(logger_, "poll " << this);
 #ifdef OS_POSIX
+  const nfds_t kPollFdsSize = 2;
+  pollfd poll_fds[kPollFdsSize];
+  poll_fds[0].fd = socket_;
+  // TODO: Fix data race. frames_to_send_ should be protected
+  poll_fds[0].events = POLLIN | POLLPRI
+    | (frames_to_send_.empty() ? 0 : POLLOUT);
+  poll_fds[1].fd = read_fd_;
+  poll_fds[1].events = POLLIN | POLLPRI;
   if (-1 == poll(poll_fds, kPollFdsSize, -1)) {
-#elif defined (WIN_NATIVE)
-  if (-1 == WSAPoll(poll_fds, kPollFdsSize, -1)) {
-#endif
     LOG4CXX_ERROR_WITH_ERRNO(logger_, "poll failed for connection " << this);
     Abort();
     return;
   }
   LOG4CXX_DEBUG(
-      logger_,
-      "poll is ok " << this << " revents0: " << std::hex << poll_fds[0].revents <<
-      " revents1:" << std::hex << poll_fds[1].revents);
+    logger_,
+    "poll is ok " << this << " revents0: " << std::hex << poll_fds[0].revents <<
+    " revents1:" << std::hex << poll_fds[1].revents);
   // error check
   if (0 != (poll_fds[1].revents & (POLLERR | POLLHUP | POLLNVAL))) {
-    LOG4CXX_ERROR(logger_,
-                  "Notification pipe for connection " << this << " terminated");
+    LOG4CXX_ERROR(logger_, "Notification pipe for connection " << this << " terminated");
     Abort();
     return;
-
   }
-
   if (poll_fds[0].revents & (POLLERR | POLLHUP | POLLNVAL)) {
     LOG4CXX_WARN(logger_, "Connection " << this << " terminated");
     Abort();
     return;
   }
-
   // clear notifications
   char buffer[256];
   ssize_t bytes_read = -1;
@@ -260,7 +276,9 @@ void ThreadedSocketConnection::Transmit() {
   }
 
   // send data if possible
-  if (!frames_to_send_.empty() && (poll_fds[0].revents | POLLOUT)) {
+  // TODO: Fix data race. frames_to_send_ should be protected
+  if (!frames_to_send_.empty()
+    && (poll_fds[0].revents | POLLOUT)) {
     LOG4CXX_DEBUG(logger_, "frames_to_send_ not empty() ");
 
     // send data
@@ -281,6 +299,81 @@ void ThreadedSocketConnection::Transmit() {
       return;
     }
   }
+#elif defined (WIN_NATIVE)
+  WSANETWORKEVENTS net_events;
+  HANDLE socketEvent = WSACreateEvent();
+  WSAEventSelect(socket_, socketEvent, FD_WRITE | FD_READ | FD_CLOSE);
+  
+  const int events_to_wait_count = 2;
+  HANDLE events_to_wait[events_to_wait_count] = {
+    socketEvent,
+    frames_to_send_not_empty_event_ };
+
+  DWORD waited_index = WSAWaitForMultipleEvents(
+    events_to_wait_count, events_to_wait, false, WSA_INFINITE, false);
+
+  const bool is_socket_event = (waited_index == WAIT_OBJECT_0);
+  const bool is_frames_to_send_not_empty_event = (waited_index == WAIT_OBJECT_0 + 1);
+
+  if (is_socket_event || is_frames_to_send_not_empty_event) {
+    LOG4CXX_DEBUG(
+      logger_,
+      "poll is ok " << this << ". Socket event: "
+        << is_socket_event << ". Notify event: "
+        << is_frames_to_send_not_empty_event);
+  } else {
+    LOG4CXX_ERROR(
+      logger_,
+      "Wait for socket or notification has failed with error: "
+        << WSAGetLastError());
+    Abort();
+    return;
+  }
+  bool is_need_socket_write = false;
+  if (is_socket_event) {
+    if (WSAEnumNetworkEvents(socket_,
+                             events_to_wait[waited_index - WAIT_OBJECT_0],
+                             &net_events) == SOCKET_ERROR) {
+      LOG4CXX_ERROR(logger_, "Failed to enum socket events: " << WSAGetLastError());
+      Abort();
+      return;
+    }
+    if (net_events.lNetworkEvents & FD_READ) {
+      LOG4CXX_DEBUG(logger_, "Network event: FD_READ");
+      const bool receive_ok = Receive();
+      if (!receive_ok) {
+        LOG4CXX_DEBUG(logger_, "Receive() failed ");
+        Abort();
+        return;
+      }
+    }
+    if (net_events.lNetworkEvents & FD_WRITE) {
+      LOG4CXX_DEBUG(logger_, "Network event: FD_WRITE");
+      is_need_socket_write = true;
+    }
+    if (net_events.lNetworkEvents & FD_CLOSE) {
+      LOG4CXX_DEBUG(
+        logger_,
+        "Network event: FD_CLOSE. " << "Connection " << this << " terminated");
+      Abort();
+      return;
+    }
+  }
+
+  // means that we received notify, thus we have
+  // something in the frames_to_send_
+  if (is_frames_to_send_not_empty_event || is_need_socket_write) {
+    LOG4CXX_ERROR(logger_, "Trying to send data");
+    const bool is_send_ok = Send();
+    if (!is_send_ok) {
+      LOG4CXX_ERROR(logger_, "Send() failed ");
+      Abort();
+      return;
+    }
+  }
+#else
+#error Unsupported platform
+#endif
 }
 
 bool ThreadedSocketConnection::Receive() {
@@ -290,7 +383,6 @@ bool ThreadedSocketConnection::Receive() {
 
   do {
     bytes_read = recv(socket_, (char *)buffer, sizeof(buffer), MSG_DONTWAIT);
-
     if (bytes_read > 0) {
       LOG4CXX_DEBUG(
           logger_,
@@ -300,9 +392,17 @@ bool ThreadedSocketConnection::Receive() {
       controller_->DataReceiveDone(device_handle(), application_handle(),
                                    frame);
     } else if (bytes_read < 0) {
-      if (EAGAIN != errno && EWOULDBLOCK != errno) {
-        LOG4CXX_ERROR_WITH_ERRNO(logger_,
-                                 "recv() failed for connection " << this);
+#ifdef OS_POSIX
+      int socket_error = errno;
+      if (EAGAIN != socket_error && EWOULDBLOCK != socket_error) {
+#else
+      int socket_error = WSAGetLastError();
+      if (bytes_read == SOCKET_ERROR && WSAEWOULDBLOCK != socket_error) {
+#endif
+        LOG4CXX_ERROR(
+          logger_,
+          "recv() failed for connection " << this << ". Error: "
+            << socket_error);
         return false;
       }
     } else {
@@ -321,6 +421,10 @@ bool ThreadedSocketConnection::Send() {
   std::swap(frames_to_send, frames_to_send_);
   frames_to_send_mutex_.Release();
 
+#ifndef OS_POSIX
+  ResetEvent(frames_to_send_not_empty_event_);
+#endif
+
   size_t offset = 0;
   while (!frames_to_send.empty()) {
     LOG4CXX_INFO(logger_, "frames_to_send is not empty");
@@ -338,7 +442,15 @@ bool ThreadedSocketConnection::Send() {
       }
     } else {
       LOG4CXX_DEBUG(logger_, "bytes_sent < 0");
-      LOG4CXX_ERROR_WITH_ERRNO(logger_, "Send failed for connection " << this);
+#ifdef OS_POSIX
+      int socket_error = errno;
+#else
+      int socket_error = WSAGetLastError();
+#endif
+      LOG4CXX_ERROR(
+        logger_,
+        "Send failed for connection " << this << ". Error: "
+          << socket_error);
       frames_to_send.pop();
       offset = 0;
       controller_->DataSendFailed(device_handle(), application_handle(), frame,

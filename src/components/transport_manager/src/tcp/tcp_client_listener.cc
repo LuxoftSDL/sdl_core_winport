@@ -120,6 +120,20 @@ TransportAdapter::Error TcpClientListener::Init() {
   return TransportAdapter::OK;
 }
 
+namespace {
+
+int CloseSocket(int socket) {
+#ifdef OS_POSIX
+  return close(socket);
+#else
+  int result = closesocket(socket);
+  WSACleanup();
+  return result;
+#endif
+}
+
+} // namespace
+
 void TcpClientListener::Terminate() {
   LOG4CXX_AUTO_TRACE(logger_);
   if (socket_ == -1) {
@@ -129,7 +143,7 @@ void TcpClientListener::Terminate() {
   if (shutdown(socket_, SHUT_RDWR) != 0) {
     LOG4CXX_ERROR_WITH_ERRNO(logger_, "Failed to shutdown socket");
   }
-  if (close(socket_) != 0) {
+  if (CloseSocket(socket_) != 0) {
     LOG4CXX_ERROR_WITH_ERRNO(logger_, "Failed to close socket");
   }
   socket_ = -1;
@@ -221,6 +235,25 @@ void SetKeepaliveOptions(const int fd) {
 #endif  // __QNX__
 }
 
+namespace {
+
+/** Returns true on success, or false if there was an error */
+bool SetSocketBlockingEnabled(int socket, bool blocking) {
+  if (socket < 0) return false;
+
+#ifdef WIN_NATIVE
+  unsigned long mode = blocking ? 0 : 1;
+  return (ioctlsocket(socket, FIONBIO, &mode) == 0) ? true : false;
+#else
+  int flags = fcntl(socket, F_GETFL, 0);
+  if (flags < 0) return false;
+  flags = blocking ? (flags&~O_NONBLOCK) : (flags | O_NONBLOCK);
+  return (fcntl(socket, F_SETFL, flags) == 0) ? true : false;
+#endif
+}
+
+} // namespace
+
 void TcpClientListener::Loop() {
   LOG4CXX_AUTO_TRACE(logger_);
   while (!thread_stop_requested_) {
@@ -235,7 +268,7 @@ void TcpClientListener::Loop() {
                                      &client_address_size));
     if (thread_stop_requested_) {
       LOG4CXX_DEBUG(logger_, "thread_stop_requested_");
-      close(connection_fd);
+      CloseSocket(connection_fd);
       break;
     }
 
@@ -244,9 +277,15 @@ void TcpClientListener::Loop() {
       continue;
     }
 
+    if (!SetSocketBlockingEnabled(connection_fd, false)) {
+      LOG4CXX_DEBUG(logger_, "Failed to set socket to non blocking mode");
+      CloseSocket(connection_fd);
+      continue;
+    }
+
     if (AF_INET != client_address.sin_family) {
       LOG4CXX_DEBUG(logger_, "Address of connected client is invalid");
-      close(connection_fd);
+      CloseSocket(connection_fd);
       continue;
     }
 
@@ -289,7 +328,7 @@ void TcpClientListener::StopLoop() {
     connect(byesocket, reinterpret_cast<sockaddr*>(&server_address),
           sizeof(server_address));
   shutdown(byesocket, (int)SHUT_RDWR);
-  close(byesocket);
+  CloseSocket(byesocket);
 }
 
 TransportAdapter::Error TcpClientListener::StartListening() {
