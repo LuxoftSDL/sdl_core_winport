@@ -37,7 +37,7 @@
 namespace {
   bool is_logs_enabled = false;
   logger::LogMessageLoopThread* message_loop_thread = NULL;
-}
+} //namespace
 
 namespace logger {
 
