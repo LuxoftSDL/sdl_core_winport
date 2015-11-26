@@ -82,12 +82,12 @@ void LogMessageHandler::Handle(const LogMessage message) {
   }
 
   char time_buf[15];
-  _snprintf_s(time_buf, 15, "%i:%i:%i:%i",
+  _snprintf_s(time_buf, sizeof(time_buf), "%i:%i:%i:%i",
               message.time.wHour, message.time.wMinute,
               message.time.wSecond, message.time.wMilliseconds);
 
   char thread_buf[8];
-  _snprintf_s(thread_buf, 8, "%i", message.thread);
+  _snprintf_s(thread_buf, sizeof(thread_buf), "%i", message.thread);
 
   const std::string entry =
       type_str + " [" + time_buf + "]" +
