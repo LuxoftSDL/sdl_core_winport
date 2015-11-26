@@ -120,8 +120,11 @@ bool file_system::CreateDirectoryRecursively(const std::string& path) {
   size_t pos = 0;
   bool ret_val = true;
 
-  while (ret_val == true && pos <= path.length()) {
-    pos = path.find('/', pos + 1);
+  while (ret_val == true && pos < path.length()) {
+    pos = path.find('\\', pos + 1);
+    if (pos == std::string::npos) {
+      pos = path.length();
+    }
     if (!DirectoryExists(path.substr(0, pos))) {
       if (0 != _mkdir(path.substr(0, pos).c_str())) {
         ret_val = false;
