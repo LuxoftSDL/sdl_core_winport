@@ -76,8 +76,8 @@ TcpClientListener::TcpClientListener(TransportAdapterController* controller,
                                      const uint16_t port,
                                      const bool enable_keepalive)
     : port_(port),
-#ifdef WIN_NATIVE
-	wsaStartup_(1, 2),
+#if defined(OS_WINDOWS)
+	    wsaStartup_(1, 2),
 #endif
       enable_keepalive_(enable_keepalive),
       controller_(controller),
@@ -88,13 +88,39 @@ TcpClientListener::TcpClientListener(TransportAdapterController* controller,
                                   new ListeningThreadDelegate(this));
 }
 
+namespace {
+
+int CloseSocket(int socket) {
+#if defined(OS_POSIX)
+  return close(socket);
+#elif defined(OS_WINDOWS)
+  int result = closesocket(socket);
+  WSACleanup();
+  return result;
+#else
+#error Unsupported platform
+#endif
+}
+
+int GetErrorCode() {
+#if defined(OS_POSIX)
+  return errno;
+#elif defined(OS_WINDOWS)
+  return WSAGetLastError();
+#else
+#error Unsupported platform
+#endif
+}
+
+} // namespace
+
 TransportAdapter::Error TcpClientListener::Init() {
   LOG4CXX_AUTO_TRACE(logger_);
   thread_stop_requested_ = false;
 
   socket_ = socket(AF_INET, SOCK_STREAM, 0);
   if (-1 == socket_) {
-    LOG4CXX_ERROR_WITH_ERRNO(logger_, "Failed to create socket");
+    LOG4CXX_ERROR(logger_, "Failed to create socket. Error: " << GetErrorCode());
     return TransportAdapter::FAIL;
   }
 
@@ -108,31 +134,17 @@ TransportAdapter::Error TcpClientListener::Init() {
 
   if (bind(socket_, reinterpret_cast<sockaddr*>(&server_address),
            sizeof(server_address)) != 0) {
-    LOG4CXX_ERROR_WITH_ERRNO(logger_, "bind() failed");
+    LOG4CXX_ERROR(logger_, "bind() failed. Error: " << GetErrorCode());
     return TransportAdapter::FAIL;
   }
 
   const int kBacklog = 128;
   if (0 != listen(socket_, kBacklog)) {
-    LOG4CXX_ERROR_WITH_ERRNO(logger_, "listen() failed");
+    LOG4CXX_ERROR(logger_, "listen() failed. Error: " << GetErrorCode());
     return TransportAdapter::FAIL;
   }
   return TransportAdapter::OK;
 }
-
-namespace {
-
-int CloseSocket(int socket) {
-#ifdef OS_POSIX
-  return close(socket);
-#else
-  int result = closesocket(socket);
-  WSACleanup();
-  return result;
-#endif
-}
-
-} // namespace
 
 void TcpClientListener::Terminate() {
   LOG4CXX_AUTO_TRACE(logger_);
@@ -141,10 +153,10 @@ void TcpClientListener::Terminate() {
     return;
   }
   if (shutdown(socket_, SHUT_RDWR) != 0) {
-    LOG4CXX_ERROR_WITH_ERRNO(logger_, "Failed to shutdown socket");
+    LOG4CXX_ERROR(logger_, "Failed to shutdown socket. Error: " << GetErrorCode());
   }
   if (CloseSocket(socket_) != 0) {
-    LOG4CXX_ERROR_WITH_ERRNO(logger_, "Failed to close socket");
+    LOG4CXX_ERROR(logger_, "Failed to close socket. Error: " << GetErrorCode());
   }
   socket_ = -1;
 }
@@ -235,33 +247,14 @@ void SetKeepaliveOptions(const int fd) {
 #endif  // __QNX__
 }
 
-namespace {
-
-/** Returns true on success, or false if there was an error */
-bool SetSocketBlockingEnabled(int socket, bool blocking) {
-  if (socket < 0) return false;
-
-#ifdef WIN_NATIVE
-  unsigned long mode = blocking ? 0 : 1;
-  return (ioctlsocket(socket, FIONBIO, &mode) == 0) ? true : false;
-#else
-  int flags = fcntl(socket, F_GETFL, 0);
-  if (flags < 0) return false;
-  flags = blocking ? (flags&~O_NONBLOCK) : (flags | O_NONBLOCK);
-  return (fcntl(socket, F_SETFL, flags) == 0) ? true : false;
-#endif
-}
-
-} // namespace
-
 void TcpClientListener::Loop() {
   LOG4CXX_AUTO_TRACE(logger_);
   while (!thread_stop_requested_) {
 	  sockaddr_in client_address;
-#ifdef OS_POSIX
-	socklen_t client_address_size = sizeof(client_address);
-#elif defined(WIN_NATIVE)
-	int client_address_size = sizeof(client_address);
+#if defined(OS_POSIX)
+	  socklen_t client_address_size = sizeof(client_address);
+#elif defined(OS_WINDOWS)
+	  int client_address_size = sizeof(client_address);
 #endif
     const int connection_fd = static_cast<int>(accept(socket_,
                                      (struct sockaddr*) &client_address,
@@ -273,15 +266,19 @@ void TcpClientListener::Loop() {
     }
 
     if (connection_fd < 0) {
-      LOG4CXX_ERROR_WITH_ERRNO(logger_, "accept() failed");
+      LOG4CXX_ERROR(logger_, "accept() failed. Error: " << GetErrorCode());
       continue;
     }
 
-    if (!SetSocketBlockingEnabled(connection_fd, false)) {
+#if defined(OS_WINDOWS)
+    // Make windows socket non-block
+    unsigned long socket_mode = 1;
+    if (!ioctlsocket(socket_, FIONBIO, &socket_mode) == 0) {
       LOG4CXX_DEBUG(logger_, "Failed to set socket to non blocking mode");
       CloseSocket(connection_fd);
       continue;
     }
+#endif
 
     if (AF_INET != client_address.sin_family) {
       LOG4CXX_DEBUG(logger_, "Address of connected client is invalid");

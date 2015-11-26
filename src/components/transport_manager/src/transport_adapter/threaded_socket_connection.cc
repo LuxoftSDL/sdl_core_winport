@@ -65,10 +65,11 @@ ThreadedSocketConnection::ThreadedSocketConnection(
 #ifdef OS_POSIX
     , read_fd_(-1)
     , write_fd_(-1)
-#endif
-#ifdef WIN_NATIVE
+#elif OS_WINDOWS
 	 , wsaStartup_(1, 2)
    , frames_to_send_not_empty_event_(NULL)
+#else
+#error Unsupported platform
 #endif
    , terminate_flag_(false)
    , unexpected_disconnect_(false)
@@ -94,8 +95,10 @@ ThreadedSocketConnection::~ThreadedSocketConnection() {
   if (-1 != write_fd_) {
     close(write_fd_);
   }
-#else
+#elif OS_WINDOWS
   CloseHandle(frames_to_send_not_empty_event_);
+#else
+#error Unsupported platform
 #endif
 }
 
@@ -107,7 +110,7 @@ void ThreadedSocketConnection::Abort() {
 
 TransportAdapter::Error ThreadedSocketConnection::Start() {
   LOG4CXX_AUTO_TRACE(logger_);
-#ifdef OS_POSIX
+#if defined(OS_POSIX)
   int fds[2];
   const int pipe_ret = pipe(fds);
   if (0 == pipe_ret) {
@@ -119,7 +122,7 @@ TransportAdapter::Error ThreadedSocketConnection::Start() {
     LOG4CXX_ERROR(logger_, "pipe creation failed");
     return TransportAdapter::FAIL;
   }
-#elif defined (WIN_NATIVE)
+#elif defined(OS_WINDOWS)
   frames_to_send_not_empty_event_ = CreateEvent(
     NULL,    // no security attribute
     true,    // is manual-reset event
@@ -131,9 +134,11 @@ TransportAdapter::Error ThreadedSocketConnection::Start() {
     LOG4CXX_ERROR(logger_, "frames_to_send_not_empty_event_ creation failed");
     return TransportAdapter::FAIL;
   }
+#else
+#error Unsupported platform
 #endif
   
-#ifdef OS_POSIX
+#if defined(OS_POSIX)
   const int fcntl_ret = fcntl(read_fd_, F_SETFL,
                               fcntl(read_fd_, F_GETFL) | O_NONBLOCK);
   if (0 != fcntl_ret) {
@@ -159,17 +164,19 @@ void ThreadedSocketConnection::Finalize() {
     LOG4CXX_DEBUG(logger_, "not unexpected_disconnect");
     controller_->ConnectionFinished(device_handle(), application_handle());
   }
-#ifdef OS_POSIX
+#if defined(OS_POSIX)
   close(socket_);
-#else
+#elif defined(OS_WINDOWS)
   closesocket(socket_);
   WSACleanup();
+#else
+#error Unsupported platform
 #endif
 }
 
 TransportAdapter::Error ThreadedSocketConnection::Notify() const {
   LOG4CXX_AUTO_TRACE(logger_);
-#ifdef OS_POSIX
+#if defined(OS_POSIX)
   if (-1 == write_fd_) {
     LOG4CXX_ERROR_WITH_ERRNO(
         logger_, "Failed to wake up connection thread for connection " << this);
@@ -182,8 +189,10 @@ TransportAdapter::Error ThreadedSocketConnection::Notify() const {
         logger_, "Failed to wake up connection thread for connection " << this);
     return TransportAdapter::FAIL;
   }
-#else
+#elif defined(OS_WINDOWS)
   SetEvent(frames_to_send_not_empty_event_);
+#else
+#error Unsupported platform
 #endif
   return TransportAdapter::OK;
 }
@@ -225,7 +234,7 @@ void ThreadedSocketConnection::threadMain() {
     controller_->DataSendFailed(device_handle(), application_handle(),
                                 message, DataSendError());
   }
-#ifndef OS_POSIX
+#if defined(OS_WINDOWS)
   ResetEvent(frames_to_send_not_empty_event_);
 #endif
 }
@@ -233,7 +242,7 @@ void ThreadedSocketConnection::threadMain() {
 void ThreadedSocketConnection::Transmit() {
   LOG4CXX_AUTO_TRACE(logger_);
   LOG4CXX_DEBUG(logger_, "poll " << this);
-#ifdef OS_POSIX
+#if defined(OS_POSIX)
   const nfds_t kPollFdsSize = 2;
   pollfd poll_fds[kPollFdsSize];
   poll_fds[0].fd = socket_;
@@ -299,7 +308,7 @@ void ThreadedSocketConnection::Transmit() {
       return;
     }
   }
-#elif defined (WIN_NATIVE)
+#elif defined(OS_WINDOWS)
   WSANETWORKEVENTS net_events;
   HANDLE socketEvent = WSACreateEvent();
   WSAEventSelect(socket_, socketEvent, FD_WRITE | FD_READ | FD_CLOSE);
@@ -392,12 +401,14 @@ bool ThreadedSocketConnection::Receive() {
       controller_->DataReceiveDone(device_handle(), application_handle(),
                                    frame);
     } else if (bytes_read < 0) {
-#ifdef OS_POSIX
+#if defined(OS_POSIX)
       int socket_error = errno;
       if (EAGAIN != socket_error && EWOULDBLOCK != socket_error) {
-#else
+#elif defined(OS_WINDOWS)
       int socket_error = WSAGetLastError();
       if (bytes_read == SOCKET_ERROR && WSAEWOULDBLOCK != socket_error) {
+#else
+#error Unsupported platform
 #endif
         LOG4CXX_ERROR(
           logger_,
@@ -421,7 +432,7 @@ bool ThreadedSocketConnection::Send() {
   std::swap(frames_to_send, frames_to_send_);
   frames_to_send_mutex_.Release();
 
-#ifndef OS_POSIX
+#if defined(OS_WINDOWS)
   ResetEvent(frames_to_send_not_empty_event_);
 #endif
 
@@ -442,10 +453,12 @@ bool ThreadedSocketConnection::Send() {
       }
     } else {
       LOG4CXX_DEBUG(logger_, "bytes_sent < 0");
-#ifdef OS_POSIX
+#if defined(OS_POSIX)
       int socket_error = errno;
-#else
+#elif defined(OS_WINDOWS)
       int socket_error = WSAGetLastError();
+#else
+#error Unsupported platform
 #endif
       LOG4CXX_ERROR(
         logger_,

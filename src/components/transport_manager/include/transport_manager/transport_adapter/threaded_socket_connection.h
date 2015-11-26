@@ -164,12 +164,14 @@ class ThreadedSocketConnection : public Connection {
 
   int socket_;
 
-#ifdef OS_POSIX
+#if defined(OS_POSIX)
   int read_fd_;
   int write_fd_;
+#elif defined(OS_WINDOWS)
+  WsaStartup wsaStartup_;
+  HANDLE frames_to_send_not_empty_event_;
 #else
- WsaStartup wsaStartup_;
- HANDLE frames_to_send_not_empty_event_;
+#error Unsupported platform
 #endif
   bool terminate_flag_;
   bool unexpected_disconnect_;
