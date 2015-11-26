@@ -43,6 +43,7 @@
 
 #include <ostream>
 #include <string>
+#include <cstdint>
 
 #include "utils/macro.h"
 #include "utils/threads/thread_delegate.h"
@@ -84,6 +85,7 @@ typedef HANDLE PlatformThreadHandle;
 
 class Thread;
 void enqueue_to_join(Thread* thread);
+void sleep(uint32_t ms);
 
 Thread* CreateThread(const char* name, ThreadDelegate* delegate);
 void DeleteThread(Thread* thread);

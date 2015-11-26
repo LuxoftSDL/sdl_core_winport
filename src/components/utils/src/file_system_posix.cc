@@ -465,4 +465,8 @@ void file_system::MakeAbsolutePath(std::string& path) {
   path = file_system::CurrentWorkingDirectory() + "/" + path;
 }
 
+std::string file_system::GetPathDelimiter() {
+  return "/";
+}
+
 #endif // OS_POSIX

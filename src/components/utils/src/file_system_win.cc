@@ -91,17 +91,19 @@ size_t file_system::DirectorySize(const std::string& path) {
   do
   {
     if (FILE_ATTRIBUTE_DIRECTORY == ffd.dwFileAttributes) {
-	  size += DirectorySize(ffd.cFileName);
-	} else {
-	  uint64_t file_size = 0;
-	  file_size |= ffd.nFileSizeHigh;
+      if (std::string(ffd.cFileName).compare(".") != 0 &&
+            std::string(ffd.cFileName).compare("..") != 0) {
+        size += DirectorySize(ffd.cFileName);
+      }
+    } else {
+      uint64_t file_size = 0;
+      file_size |= ffd.nFileSizeHigh;
       file_size <<= 32;
       file_size |= ffd.nFileSizeLow;
 
-	  size += file_size;
-	}
-  }
-  while (FindNextFile(find, &ffd) != 0);
+      size += file_size;
+    }
+  } while (FindNextFile(find, &ffd) != 0);
 
   FindClose(find);
   return size;
@@ -404,8 +406,12 @@ void file_system::MakeAbsolutePath(std::string& path) {
   TCHAR buffer[MAX_PATH];
   const DWORD size = GetFullPathName(path.c_str(), MAX_PATH, buffer, NULL);
   if (size != 0) {
-	  path.assign(buffer);
+    path.assign(buffer);
   }
+}
+
+std::string file_system::GetPathDelimiter() {
+  return "/";
 }
 
 #endif // WIN_NATIVE

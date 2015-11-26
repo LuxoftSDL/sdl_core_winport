@@ -333,7 +333,7 @@ bool PolicyHandler::PolicyEnabled() {
 }
 
 bool PolicyHandler::CreateManager() {
-  typedef PolicyManager* (*CreateManager)();
+  typedef PolicyManager* (*CreateManager)(const std::string&, uint16_t, uint16_t);
 #if defined(OS_POSIX)
   CreateManager create_manager =
       reinterpret_cast<CreateManager>(dlsym(dl_handle_, "CreateManager"));
@@ -347,7 +347,10 @@ bool PolicyHandler::CreateManager() {
   CreateManager create_manager =
       reinterpret_cast<CreateManager>(GetProcAddress(dl_handle_, "CreateManager"));
   if (create_manager != NULL) {
-    policy_manager_ = create_manager();
+    policy_manager_ = create_manager(
+        profile::Profile::instance()->app_storage_folder(),
+        profile::Profile::instance()->attempts_to_open_policy_db(),
+        profile::Profile::instance()->open_attempt_timeout_ms());
   } else {
     LOG4CXX_WARN(logger_, "Policy library loading error. Cannot get proc address");
   }

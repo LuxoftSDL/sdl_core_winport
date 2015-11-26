@@ -45,23 +45,30 @@
 #include "utils/date_time.h"
 #include "policy/cache_manager.h"
 #include "policy/update_status_manager.h"
-#include "config_profile/profile.h"
 
-policy::PolicyManager* CreateManager() {
-  return new policy::PolicyManagerImpl();
+policy::PolicyManager* CreateManager(const std::string& app_storage_folder,
+                                     uint16_t attempts_to_open_policy_db,
+                                     uint16_t open_attempt_timeout_ms) {
+  return new policy::PolicyManagerImpl(
+    app_storage_folder, attempts_to_open_policy_db, open_attempt_timeout_ms);
 }
 
 namespace policy {
 
 CREATE_LOGGERPTR_GLOBAL(logger_, "PolicyManagerImpl")
 
-PolicyManagerImpl::PolicyManagerImpl()
+PolicyManagerImpl::PolicyManagerImpl(const std::string& app_storage_folder,
+                                     uint16_t attempts_to_open_policy_db,
+                                     uint16_t open_attempt_timeout_ms)
   : PolicyManager(),
     listener_(NULL),
-    cache_(new CacheManager),
+    cache_(new CacheManager(app_storage_folder,
+                            attempts_to_open_policy_db,
+                            open_attempt_timeout_ms)),
     retry_sequence_timeout_(60),
     retry_sequence_index_(0),
-    ignition_check(true) {
+    ignition_check_(true),
+    app_storage_folder_(app_storage_folder) {
 }
 
 void PolicyManagerImpl::set_listener(PolicyListener* listener) {
@@ -281,9 +288,9 @@ void PolicyManagerImpl::StartPTExchange() {
   }
 
   if (listener_ && listener_->CanUpdate()) {
-    if (ignition_check) {
+    if (ignition_check_) {
       CheckTriggers();
-      ignition_check = false;
+      ignition_check_ = false;
     }
 
     if (update_status_manager_.IsUpdateRequired()) {
@@ -904,19 +911,17 @@ bool PolicyManagerImpl::ResetPT(const std::string& file_name) {
 
 bool PolicyManagerImpl::CheckAppStorageFolder() const {
   LOG4CXX_AUTO_TRACE(logger_);
-  const std::string app_storage_folder =
-      profile::Profile::instance()->app_storage_folder();
-  LOG4CXX_DEBUG(logger_, "AppStorageFolder " << app_storage_folder);
-  if (!file_system::DirectoryExists(app_storage_folder)) {
+  LOG4CXX_DEBUG(logger_, "AppStorageFolder " << app_storage_folder_);
+  if (!file_system::DirectoryExists(app_storage_folder_)) {
     LOG4CXX_WARN(logger_,
-                 "Storage directory doesn't exist " << app_storage_folder);
+                 "Storage directory doesn't exist " << app_storage_folder_);
     return false;
   }
-  if (!(file_system::IsWritingAllowed(app_storage_folder) &&
-        file_system::IsReadingAllowed(app_storage_folder))) {
+  if (!(file_system::IsWritingAllowed(app_storage_folder_) &&
+        file_system::IsReadingAllowed(app_storage_folder_))) {
     LOG4CXX_WARN(
         logger_,
-        "Storage directory doesn't have read/write permissions " << app_storage_folder);
+        "Storage directory doesn't have read/write permissions " << app_storage_folder_);
     return false;
   }
   return true;

@@ -35,6 +35,7 @@
 
 #include <vector>
 
+#include "utils/macro.h"
 #include "policy/policy_types.h"
 #include "policy/policy_listener.h"
 #include "usage_statistics/statistics_manager.h"
@@ -459,6 +460,10 @@ class PolicyManager : public usage_statistics::StatisticsManager {
 
 }  // namespace policy
 
-extern "C" policy::PolicyManager* CreateManager();
+SDL_EXPORT
+policy::PolicyManager* CreateManager(
+    const std::string& app_storage_folder,
+    uint16_t attempts_to_open_policy_db,
+    uint16_t open_attempt_timeout_ms);
 
 #endif  // SRC_COMPONENTS_POLICY_INCLUDE_POLICY_POLICY_MANAGER_H_

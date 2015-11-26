@@ -105,9 +105,14 @@
 
 #define NOTREACHED() DCHECK(!"Unreachable code")
 
+#if __cplusplus >= 201103L
+#define SDL_CPP11
+#endif
+
 // Allows to perform static check that virtual function from base class is
 // actually being overriden if compiler support is available
-#if __cplusplus >= 201103L
+
+#ifdef SDL_CPP11
 #define OVERRIDE override
 #define FINAL final
 #else
@@ -120,6 +125,12 @@
 * @param arr  array, which size need to calculate
 */
 #define GETARRAYSIZE(arr) sizeof (arr) / sizeof(*arr)
+
+#if defined(OS_POSIX)
+#define SDL_EXPORT extern "C"
+#elif defined(OS_WINDOWS)
+#define SDL_EXPORT extern "C" __declspec(dllexport)
+#endif
 
 #ifdef BUILD_TESTS
 #define FRIEND_TEST(test_case_name, test_name)\
