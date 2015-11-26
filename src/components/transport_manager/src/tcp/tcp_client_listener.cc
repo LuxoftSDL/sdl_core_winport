@@ -318,12 +318,23 @@ void TcpClientListener::StopLoop() {
   thread_stop_requested_ = true;
   // We need to connect to the listening socket to unblock accept() call
   int byesocket = static_cast<int>(socket(AF_INET, SOCK_STREAM, 0));
+  if (-1 == byesocket) {
+    LOG4CXX_ERROR(logger_, "Failed to create bye socket. Error: " << GetErrorCode());
+  }
   sockaddr_in server_address = { 0 };
   server_address.sin_family = AF_INET;
   server_address.sin_port = static_cast<USHORT>(htons(port_));
-  server_address.sin_addr.s_addr = INADDR_ANY;
-    connect(byesocket, reinterpret_cast<sockaddr*>(&server_address),
-          sizeof(server_address));
+  // On windows INADDR_ANY is not the correct address for the client side
+  // Here is related discussion
+  // http://stackoverflow.com/questions/22384694/sockets-using-inaddr-any-on-client-side
+  server_address.sin_addr.s_addr = htonl(INADDR_LOOPBACK);
+  if (!connect(
+    byesocket,
+    reinterpret_cast<sockaddr*>(&server_address),
+    sizeof(server_address)) == 0) {
+    LOG4CXX_ERROR(logger_, "Bye socket has failed to connect to the server. Error: " << GetErrorCode());
+  }
+
   shutdown(byesocket, (int)SHUT_RDWR);
   CloseSocket(byesocket);
 }
