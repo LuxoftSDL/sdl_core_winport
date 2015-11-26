@@ -33,7 +33,9 @@
 #ifndef SRC_COMPONENTS_INCLUDE_UTILS_AUTO_TRACE_H_
 #define SRC_COMPONENTS_INCLUDE_UTILS_AUTO_TRACE_H_
 
+#ifdef LOG4CXX_LOGGER
 #include <log4cxx/logger.h>
+#endif
 #include <string>
 
 namespace logger {

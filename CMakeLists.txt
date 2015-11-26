@@ -264,6 +264,7 @@ if (${CMAKE_SYSTEM_NAME} MATCHES "Windows")
   add_definitions(-DWIN_NATIVE)
 else()
   add_definitions(-DOS_POSIX)
+  add_definitions(-DLOG4CXX_LOGGER)
 endif()
 
 if (EXTENDED_MEDIA_MODE)

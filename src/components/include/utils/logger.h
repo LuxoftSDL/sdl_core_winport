@@ -39,10 +39,10 @@
 #include <sstream>
 #include <cstdint>
 
-#if defined(OS_POSIX)
+#ifdef LOG4CXX_LOGGER
 #include <log4cxx/logger.h>
 #include <log4cxx/spi/loggingevent.h>
-#elif defined(WIN_NATIVE)
+#else
 #include <windows.h>
 #endif
 

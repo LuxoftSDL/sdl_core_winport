@@ -31,7 +31,9 @@
  */
 #if defined(OS_POSIX)
 
+#ifdef LOG4CXX_LOGGER
 #include <log4cxx/logger.h>
+#endif
 
 #include "utils/macro.h"
 #include "utils/threads/message_loop_thread.h"
