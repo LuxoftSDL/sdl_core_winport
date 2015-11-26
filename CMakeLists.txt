@@ -260,6 +260,7 @@ endif()
 
 if (${CMAKE_SYSTEM_NAME} MATCHES "Windows")
   add_definitions(-DOS_WINDOWS)
+  add_definitions(-DWIN32_LEAN_AND_MEAN)
   add_definitions(-DWIN_NATIVE)
 else()
   add_definitions(-DOS_POSIX)

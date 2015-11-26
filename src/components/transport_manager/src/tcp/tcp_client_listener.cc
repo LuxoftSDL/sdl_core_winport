@@ -32,7 +32,6 @@
  */
 
 #ifdef WIN_NATIVE
-#define WIN32_LEAN_AND_MEAN
 #include "utils/winhdr.h"
 #pragma comment(lib, "Ws2_32.lib")
 #include <io.h>
