@@ -407,7 +407,14 @@ bool file_system::IsRelativePath(const std::string& path) {
 
 void file_system::MakeAbsolutePath(std::string& path) {
   TCHAR buffer[MAX_PATH];
-  const DWORD size = GetFullPathName(path.c_str(), MAX_PATH, buffer, NULL);
+  // Handle the case when we receive abs linux path.
+  // Removal of the leading slash will allow to get
+  // correct path from the GetFullPathName
+  int offset = 0;
+  if (path.find("/") == 0) {
+    offset = 1;
+  }
+  const DWORD size = GetFullPathName(path.c_str() + offset, MAX_PATH, buffer, NULL);
   if (size != 0) {
     path.assign(buffer);
   }
