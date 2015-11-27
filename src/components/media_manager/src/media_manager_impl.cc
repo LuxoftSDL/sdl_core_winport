@@ -32,7 +32,7 @@
 
 #include "config_profile/profile.h"
 #include "media_manager/media_manager_impl.h"
-//#include "media_manager/audio/from_mic_recorder_listener.h"
+#include "media_manager/audio/from_mic_recorder_listener.h"
 #include "media_manager/streamer_listener.h"
 #include "application_manager/message_helper.h"
 #include "application_manager/application.h"
@@ -137,7 +137,7 @@ void MediaManagerImpl::StartMicrophoneRecording(
   int32_t application_key,
   const std::string& output_file,
   int32_t duration) {
-  /*LOG4CXX_INFO(logger_, "MediaManagerImpl::StartMicrophoneRecording to "
+  LOG4CXX_INFO(logger_, "MediaManagerImpl::StartMicrophoneRecording to "
                << output_file);
   application_manager::ApplicationSharedPtr app =
     application_manager::ApplicationManagerImpl::instance()->
@@ -183,7 +183,7 @@ void MediaManagerImpl::StartMicrophoneRecording(
     LOG4CXX_WARN(logger_, "Could not read file " << record_file_source);
   }
 #endif
-  from_mic_listener_->OnActivityStarted(application_key);*/
+  from_mic_listener_->OnActivityStarted(application_key);
 }
 
 void MediaManagerImpl::StopMicrophoneRecording(int32_t application_key) {
