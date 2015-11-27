@@ -32,7 +32,7 @@
 #include <csignal>
 
 #include "utils/logger.h"
-#include "./life_cycle.h"
+#include "life_cycle.h"
 #include "utils/signals.h"
 #include "config_profile/profile.h"
 #include "resumption/last_state.h"

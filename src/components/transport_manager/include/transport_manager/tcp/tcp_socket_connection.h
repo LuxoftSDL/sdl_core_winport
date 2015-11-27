@@ -42,9 +42,6 @@
 #include <netinet/in.h>
 #include <sys/socket.h>
 #elif defined(WIN_NATIVE)
-#define WIN32_LEAN_AND_MEAN
-
-
 #endif
 #include "transport_manager/transport_adapter/threaded_socket_connection.h"
 

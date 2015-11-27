@@ -30,8 +30,8 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-#include "utils/logger.h"
 #include "transport_manager/tcp/tcp_device.h"
+#include "utils/logger.h"
 
 #ifdef WIN_NATIVE
 #include "utils/winhdr.h"

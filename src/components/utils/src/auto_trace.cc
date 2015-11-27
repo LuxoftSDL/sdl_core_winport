@@ -29,9 +29,10 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-
+#ifdef LOG4CXX_LOGGER
 #include <apr_time.h>
 #include <log4cxx/spi/loggingevent.h>
+#endif
 
 #include "utils/auto_trace.h"
 #include "utils/push_log.h"

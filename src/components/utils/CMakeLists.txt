@@ -34,6 +34,7 @@ set(UTILS_SRC_DIR ${COMPONENTS_DIR}/utils/src)
 
 include_directories (
   ${UTILS_INCLUDE_DIR}
+  ${COMPONENTS_DIR}/config_profile/include
 )
 
 if(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
@@ -48,6 +49,8 @@ if(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
             ${UTILS_SRC_DIR}/lock_win.cc
             ${UTILS_SRC_DIR}/rwlock_win.cc
             ${UTILS_SRC_DIR}/signals_win.cc
+            ${UTILS_SRC_DIR}/logger_win.cc
+            ${UTILS_SRC_DIR}/log_message_loop_thread_win.cc
             ${UTILS_SRC_DIR}/threads/thread_validator.cc
             ${UTILS_SRC_DIR}/threads/async_runner.cc
             ${UTILS_SRC_DIR}/threads/thread_delegate_win.cc
@@ -69,11 +72,7 @@ if(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
 else()
     if(ENABLE_LOG)
       list(APPEND SOURCES
-        ${UTILS_SRC_DIR}/push_log.cc
-        ${UTILS_SRC_DIR}/log_message_loop_thread.cc
-        ${UTILS_SRC_DIR}/logger_status.cc
-        ${UTILS_SRC_DIR}/auto_trace.cc
-        ${UTILS_SRC_DIR}/logger.cc
+        ${UTILS_SRC_DIR}/logger_posix.cc
       )
     endif()
 
@@ -119,6 +118,7 @@ else()
     ${UTILS_SRC_DIR}/resource_usage.cc
     ${UTILS_SRC_DIR}/appenders_loader.cc
     ${UTILS_SRC_DIR}/gen_hash.cc
+    ${UTILS_SRC_DIR}/logger_posix.cc
 )
 
 

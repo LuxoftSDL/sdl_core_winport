@@ -334,12 +334,12 @@ uint32_t ConnectionHandlerImpl::OnSessionStartedCallback(
     }
   } else {  // Could be create new service or protected exists one
     if (!connection->AddNewService(session_id, service_type, is_protected)) {
-      LOG4CXX_ERROR(logger_, "Couldn't establish "
+      /*LOG4CXX_ERROR(logger_, "Couldn't establish "
 #ifdef ENABLE_SECURITY
                     << (is_protected ? "protected" : "non-protected")
 #endif  // ENABLE_SECURITY
                     << " service " << static_cast<int>(service_type)
-                    << " for session " << static_cast<int>(session_id));
+                    << " for session " << static_cast<int>(session_id));*/
       return 0;
     }
     new_session_id = session_id;
