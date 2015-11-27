@@ -273,7 +273,7 @@ void TcpClientListener::Loop() {
 #if defined(OS_WINDOWS)
     // Make windows socket non-block
     unsigned long socket_mode = 1;
-    if (!ioctlsocket(socket_, FIONBIO, &socket_mode) == 0) {
+    if (!ioctlsocket(connection_fd, FIONBIO, &socket_mode) == 0) {
       LOG4CXX_DEBUG(logger_, "Failed to set socket to non blocking mode");
       CloseSocket(connection_fd);
       continue;
