@@ -45,6 +45,7 @@
 #include <algorithm>
 
 #include "utils/file_system.h"
+#include "utils/string_utils.h"
 
 #pragma comment(lib,"Shlwapi.lib")
 
@@ -120,8 +121,13 @@ bool file_system::CreateDirectoryRecursively(const std::string& path) {
   size_t pos = 0;
   bool ret_val = true;
 
+  // We have a lot of hardcoded posix paths.
+  // So lets, just in case, try to replace delimiters
+  const std::string delimiter = GetPathDelimiter();
+  utils::ReplaceString(path, "/", delimiter);
+
   while (ret_val == true && pos < path.length()) {
-    pos = path.find('\\', pos + 1);
+    pos = path.find(delimiter, pos + 1);
     if (pos == std::string::npos) {
       pos = path.length();
     }
