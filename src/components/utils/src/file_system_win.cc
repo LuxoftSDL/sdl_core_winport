@@ -45,6 +45,7 @@
 #include <algorithm>
 
 #include "utils/file_system.h"
+#include "utils/string_utils.h"
 
 #pragma comment(lib,"Shlwapi.lib")
 
@@ -80,7 +81,7 @@ size_t file_system::DirectorySize(const std::string& path) {
     return size;
   }
   
-  const std::string find_string = path + "\\*";
+  const std::string find_string = path + GetPathDelimiter() + "*";
   WIN32_FIND_DATA ffd;
 
   HANDLE find = FindFirstFile(find_string.c_str(), &ffd);
@@ -120,8 +121,16 @@ bool file_system::CreateDirectoryRecursively(const std::string& path) {
   size_t pos = 0;
   bool ret_val = true;
 
-  while (ret_val == true && pos <= path.length()) {
-    pos = path.find('/', pos + 1);
+  // We have a lot of hardcoded posix paths.
+  // So lets, just in case, try to replace delimiters
+  const std::string delimiter = GetPathDelimiter();
+  utils::ReplaceString(path, "/", delimiter);
+
+  while (ret_val == true && pos < path.length()) {
+    pos = path.find(delimiter, pos + 1);
+    if (pos == std::string::npos) {
+      pos = path.length();
+    }
     if (!DirectoryExists(path.substr(0, pos))) {
       if (0 != _mkdir(path.substr(0, pos).c_str())) {
         ret_val = false;
@@ -217,7 +226,7 @@ void file_system::remove_directory_content(const std::string& directory_name) {
     return;
   }
 
-  const std::string find_string = directory_name + "\\*";
+  const std::string find_string = directory_name + GetPathDelimiter() + "*";
   WIN32_FIND_DATA ffd;
 
   HANDLE find = FindFirstFile(find_string.c_str(), &ffd);
@@ -270,7 +279,7 @@ std::vector<std::string> file_system::ListFiles(
     return list_files;
   }
 
-  const std::string find_string = directory_name + "\\*";
+  const std::string find_string = directory_name + GetPathDelimiter() + "*";
   WIN32_FIND_DATA ffd;
 
   HANDLE find = FindFirstFile(find_string.c_str(), &ffd);
@@ -404,14 +413,21 @@ bool file_system::IsRelativePath(const std::string& path) {
 
 void file_system::MakeAbsolutePath(std::string& path) {
   TCHAR buffer[MAX_PATH];
-  const DWORD size = GetFullPathName(path.c_str(), MAX_PATH, buffer, NULL);
+  // Handle the case when we receive abs linux path.
+  // Removal of the leading slash will allow to get
+  // correct path from the GetFullPathName
+  int offset = 0;
+  if (path.find("/") == 0) {
+    offset = 1;
+  }
+  const DWORD size = GetFullPathName(path.c_str() + offset, MAX_PATH, buffer, NULL);
   if (size != 0) {
     path.assign(buffer);
   }
 }
 
 std::string file_system::GetPathDelimiter() {
-  return "/";
+  return "\\";
 }
 
 #endif // WIN_NATIVE

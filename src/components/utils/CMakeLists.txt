@@ -55,6 +55,7 @@ if(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
             ${UTILS_SRC_DIR}/threads/async_runner.cc
             ${UTILS_SRC_DIR}/threads/thread_delegate_win.cc
             ${UTILS_SRC_DIR}/threads/win_thread.cc
+            ${UTILS_SRC_DIR}/string_utils.cc
     )
 
     add_subdirectory(./src/sqlite_wrapper)
@@ -119,6 +120,7 @@ else()
     ${UTILS_SRC_DIR}/appenders_loader.cc
     ${UTILS_SRC_DIR}/gen_hash.cc
     ${UTILS_SRC_DIR}/logger_posix.cc
+    ${UTILS_SRC_DIR}/string_utils.cc
 )
 
 

@@ -76,8 +76,8 @@ TcpClientListener::TcpClientListener(TransportAdapterController* controller,
                                      const uint16_t port,
                                      const bool enable_keepalive)
     : port_(port),
-#ifdef WIN_NATIVE
-	wsaStartup_(1, 2),
+#if defined(OS_WINDOWS)
+	    wsaStartup_(1, 2),
 #endif
       enable_keepalive_(enable_keepalive),
       controller_(controller),
@@ -88,13 +88,39 @@ TcpClientListener::TcpClientListener(TransportAdapterController* controller,
                                   new ListeningThreadDelegate(this));
 }
 
+namespace {
+
+int CloseSocket(int socket) {
+#if defined(OS_POSIX)
+  return close(socket);
+#elif defined(OS_WINDOWS)
+  int result = closesocket(socket);
+  WSACleanup();
+  return result;
+#else
+#error Unsupported platform
+#endif
+}
+
+int GetErrorCode() {
+#if defined(OS_POSIX)
+  return errno;
+#elif defined(OS_WINDOWS)
+  return WSAGetLastError();
+#else
+#error Unsupported platform
+#endif
+}
+
+} // namespace
+
 TransportAdapter::Error TcpClientListener::Init() {
   LOG4CXX_AUTO_TRACE(logger_);
   thread_stop_requested_ = false;
 
   socket_ = socket(AF_INET, SOCK_STREAM, 0);
   if (-1 == socket_) {
-    LOG4CXX_ERROR_WITH_ERRNO(logger_, "Failed to create socket");
+    LOG4CXX_ERROR(logger_, "Failed to create socket. Error: " << GetErrorCode());
     return TransportAdapter::FAIL;
   }
 
@@ -108,13 +134,13 @@ TransportAdapter::Error TcpClientListener::Init() {
 
   if (bind(socket_, reinterpret_cast<sockaddr*>(&server_address),
            sizeof(server_address)) != 0) {
-    LOG4CXX_ERROR_WITH_ERRNO(logger_, "bind() failed");
+    LOG4CXX_ERROR(logger_, "bind() failed. Error: " << GetErrorCode());
     return TransportAdapter::FAIL;
   }
 
   const int kBacklog = 128;
   if (0 != listen(socket_, kBacklog)) {
-    LOG4CXX_ERROR_WITH_ERRNO(logger_, "listen() failed");
+    LOG4CXX_ERROR(logger_, "listen() failed. Error: " << GetErrorCode());
     return TransportAdapter::FAIL;
   }
   return TransportAdapter::OK;
@@ -127,10 +153,10 @@ void TcpClientListener::Terminate() {
     return;
   }
   if (shutdown(socket_, SHUT_RDWR) != 0) {
-    LOG4CXX_ERROR_WITH_ERRNO(logger_, "Failed to shutdown socket");
+    LOG4CXX_ERROR(logger_, "Failed to shutdown socket. Error: " << GetErrorCode());
   }
-  if (close(socket_) != 0) {
-    LOG4CXX_ERROR_WITH_ERRNO(logger_, "Failed to close socket");
+  if (CloseSocket(socket_) != 0) {
+    LOG4CXX_ERROR(logger_, "Failed to close socket. Error: " << GetErrorCode());
   }
   socket_ = -1;
 }
@@ -225,28 +251,38 @@ void TcpClientListener::Loop() {
   LOG4CXX_AUTO_TRACE(logger_);
   while (!thread_stop_requested_) {
 	  sockaddr_in client_address;
-#ifdef OS_POSIX
-	socklen_t client_address_size = sizeof(client_address);
-#elif defined(WIN_NATIVE)
-	int client_address_size = sizeof(client_address);
+#if defined(OS_POSIX)
+	  socklen_t client_address_size = sizeof(client_address);
+#elif defined(OS_WINDOWS)
+	  int client_address_size = sizeof(client_address);
 #endif
     const int connection_fd = static_cast<int>(accept(socket_,
                                      (struct sockaddr*) &client_address,
                                      &client_address_size));
     if (thread_stop_requested_) {
       LOG4CXX_DEBUG(logger_, "thread_stop_requested_");
-      close(connection_fd);
+      CloseSocket(connection_fd);
       break;
     }
 
     if (connection_fd < 0) {
-      LOG4CXX_ERROR_WITH_ERRNO(logger_, "accept() failed");
+      LOG4CXX_ERROR(logger_, "accept() failed. Error: " << GetErrorCode());
       continue;
     }
 
+#if defined(OS_WINDOWS)
+    // Make windows socket non-block
+    unsigned long socket_mode = 1;
+    if (!ioctlsocket(connection_fd, FIONBIO, &socket_mode) == 0) {
+      LOG4CXX_DEBUG(logger_, "Failed to set socket to non blocking mode");
+      CloseSocket(connection_fd);
+      continue;
+    }
+#endif
+
     if (AF_INET != client_address.sin_family) {
       LOG4CXX_DEBUG(logger_, "Address of connected client is invalid");
-      close(connection_fd);
+      CloseSocket(connection_fd);
       continue;
     }
 
@@ -282,14 +318,25 @@ void TcpClientListener::StopLoop() {
   thread_stop_requested_ = true;
   // We need to connect to the listening socket to unblock accept() call
   int byesocket = static_cast<int>(socket(AF_INET, SOCK_STREAM, 0));
+  if (-1 == byesocket) {
+    LOG4CXX_ERROR(logger_, "Failed to create bye socket. Error: " << GetErrorCode());
+  }
   sockaddr_in server_address = { 0 };
   server_address.sin_family = AF_INET;
   server_address.sin_port = static_cast<USHORT>(htons(port_));
-  server_address.sin_addr.s_addr = INADDR_ANY;
-    connect(byesocket, reinterpret_cast<sockaddr*>(&server_address),
-          sizeof(server_address));
+  // On windows INADDR_ANY is not the correct address for the client side
+  // Here is related discussion
+  // http://stackoverflow.com/questions/22384694/sockets-using-inaddr-any-on-client-side
+  server_address.sin_addr.s_addr = htonl(INADDR_LOOPBACK);
+  if (!connect(
+    byesocket,
+    reinterpret_cast<sockaddr*>(&server_address),
+    sizeof(server_address)) == 0) {
+    LOG4CXX_ERROR(logger_, "Bye socket has failed to connect to the server. Error: " << GetErrorCode());
+  }
+
   shutdown(byesocket, (int)SHUT_RDWR);
-  close(byesocket);
+  CloseSocket(byesocket);
 }
 
 TransportAdapter::Error TcpClientListener::StartListening() {
