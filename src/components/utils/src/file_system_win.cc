@@ -80,7 +80,7 @@ size_t file_system::DirectorySize(const std::string& path) {
     return size;
   }
   
-  const std::string find_string = path + "\\*";
+  const std::string find_string = path + GetPathDelimiter() + "*";
   WIN32_FIND_DATA ffd;
 
   HANDLE find = FindFirstFile(find_string.c_str(), &ffd);
@@ -220,7 +220,7 @@ void file_system::remove_directory_content(const std::string& directory_name) {
     return;
   }
 
-  const std::string find_string = directory_name + "\\*";
+  const std::string find_string = directory_name + GetPathDelimiter() + "*";
   WIN32_FIND_DATA ffd;
 
   HANDLE find = FindFirstFile(find_string.c_str(), &ffd);
@@ -273,7 +273,7 @@ std::vector<std::string> file_system::ListFiles(
     return list_files;
   }
 
-  const std::string find_string = directory_name + "\\*";
+  const std::string find_string = directory_name + GetPathDelimiter() + "*";
   WIN32_FIND_DATA ffd;
 
   HANDLE find = FindFirstFile(find_string.c_str(), &ffd);
@@ -421,7 +421,7 @@ void file_system::MakeAbsolutePath(std::string& path) {
 }
 
 std::string file_system::GetPathDelimiter() {
-  return "/";
+  return "\\";
 }
 
 #endif // WIN_NATIVE
