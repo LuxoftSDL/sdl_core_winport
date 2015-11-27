@@ -53,7 +53,9 @@ if (${CMAKE_SYSTEM_NAME} MATCHES "Windows")
         set(audio_inc 
             ${COMPONENTS_DIR}/media_manager/include/media_manager/audio/socket_audio_streamer_adapter.h
             ${COMPONENTS_DIR}/media_manager/include/media_manager/audio/pipe_audio_streamer_adapter.h
-            ${COMPONENTS_DIR}/media_manager/include/media_manager/audio/file_audio_streamer_adapter.h)
+            ${COMPONENTS_DIR}/media_manager/include/media_manager/audio/file_audio_streamer_adapter.h
+            ${COMPONENTS_DIR}/media_manager/include/media_manager/audio/from_mic_recorder_listener.h
+            ${COMPONENTS_DIR}/media_manager/include/media_manager/audio/audio_stream_sender_thread.h)
         set(video_inc
             ${COMPONENTS_DIR}/media_manager/include/media_manager/video/socket_video_streamer_adapter.h
             ${COMPONENTS_DIR}/media_manager/include/media_manager/video/pipe_video_streamer_adapter.h
@@ -71,22 +73,21 @@ if (${CMAKE_SYSTEM_NAME} MATCHES "Windows")
         set(audio_src  
             ${COMPONENTS_DIR}/media_manager/src/audio/socket_audio_streamer_adapter.cc
             ${COMPONENTS_DIR}/media_manager/src/audio/pipe_audio_streamer_adapter.cc
-            ${COMPONENTS_DIR}/media_manager/src/audio/file_audio_streamer_adapter.cc)
+            ${COMPONENTS_DIR}/media_manager/src/audio/file_audio_streamer_adapter.cc
+            ${COMPONENTS_DIR}/media_manager/src/audio/from_mic_recorder_listener.cc
+            ${COMPONENTS_DIR}/media_manager/src/audio/audio_stream_sender_thread.cc)
         set(video_src  
             ${COMPONENTS_DIR}/media_manager/src/video/socket_video_streamer_adapter.cc
             ${COMPONENTS_DIR}/media_manager/src/video/pipe_video_streamer_adapter.cc
             ${COMPONENTS_DIR}/media_manager/src/video/file_video_streamer_adapter.cc)
         set(default_src
-            ${COMPONENTS_DIR}/media_manager/src/media_adapter_impl.cc
             ${COMPONENTS_DIR}/media_manager/src/media_manager_impl.cc
+            ${COMPONENTS_DIR}/media_manager/src/media_adapter_impl.cc
             ${COMPONENTS_DIR}/media_manager/src/streamer_adapter.cc
             ${COMPONENTS_DIR}/media_manager/src/streamer_listener.cc
             ${COMPONENTS_DIR}/media_manager/src/pipe_streamer_adapter.cc
             ${COMPONENTS_DIR}/media_manager/src/socket_streamer_adapter.cc
-            ${COMPONENTS_DIR}/media_manager/src/file_streamer_adapter.cc
-            ${COMPONENTS_DIR}/media_manager/src/media_manager_impl.cc
-            ${COMPONENTS_DIR}/media_manager/src/media_adapter_impl.cc
-            ${COMPONENTS_DIR}/media_manager/src/streamer_listener.cc)
+            ${COMPONENTS_DIR}/media_manager/src/file_streamer_adapter.cc)
         source_group("Header Files" FILES ${default_inc} )            
         source_group("Header Files\\audio" FILES ${audio_inc} )
         source_group("Header Files\\video" FILES ${video_inc} )        

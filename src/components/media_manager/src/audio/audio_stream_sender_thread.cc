@@ -30,13 +30,6 @@
 // POSSIBILITY OF SUCH DAMAGE.
 //
 
-
-#if defined(OS_POSIX) && defined(OS_LINUX)
-#include <pthread.h>  // TODO(DK): Need to remove
-#include <unistd.h>
-#endif
-
-
 #include <string>
 #include <string.h>
 #include "application_manager/application_manager_impl.h"
