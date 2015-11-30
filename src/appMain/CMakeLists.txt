@@ -143,11 +143,8 @@ include_directories (
   ${default_media_inc}
   ${LOG4CXX_INCLUDE_DIRECTORY}
   ${OPENSSL_INCLUDE_DIRECTORY}
-<<<<<<< HEAD
   ${CMAKE_SOURCE_DIR}/src/3rd_party/dbus-1.7.8
   ${CMAKE_SOURCE_DIR}/src/3rd_party/dbus-1.7.8/dbus/
-=======
->>>>>>> a9c4c51... Fix Policy and TransportManager msvc build
 )
 
 set (SOURCES
