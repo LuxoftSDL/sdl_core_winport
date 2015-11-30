@@ -94,6 +94,7 @@ else()
       ${UTILS_SRC_DIR}/gen_hash.cc
       ${UTILS_SRC_DIR}/logger_posix.cc
       ${UTILS_SRC_DIR}/string_utils.cc
+      ${UTILS_SRC_DIR}/socket_posix.cc
     )
     if(ENABLE_LOG)
       list(APPEND SOURCES

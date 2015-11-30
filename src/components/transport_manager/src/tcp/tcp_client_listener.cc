@@ -92,7 +92,6 @@ int CloseSocket(int socket) {
   return close(socket);
 #elif defined(OS_WINDOWS)
   int result = closesocket(socket);
-  WSACleanup();
   return result;
 #else
 #error Unsupported platform
