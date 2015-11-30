@@ -1,8 +1,5 @@
 /*
- * \file tcp_transport_adapter.h
- * \brief TcpTransportAdapter class header file.
- *
- * Copyright (c) 2013, Ford Motor Company
+ * Copyright (c) 2015, Ford Motor Company
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -42,7 +39,7 @@
 class WsaStartup
 {
 public:
-  WsaStartup(BYTE minorVer, BYTE majorVer);
+  WsaStartup(BYTE minor_ver, BYTE major_ver);
   virtual ~WsaStartup();
 };
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013, Ford Motor Company
+ * Copyright (c) 2015, Ford Motor Company
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -31,9 +31,9 @@
  */
 #include "utils/wsa_startup.h"
 
-WsaStartup::WsaStartup(BYTE minorVer, BYTE majorVer){
-  WSAData wsaData;
-  WSAStartup(MAKEWORD(majorVer, minorVer), &wsaData);
+WsaStartup::WsaStartup(BYTE minor_ver, BYTE major_ver){
+  WSAData wsa_data;
+  WSAStartup(MAKEWORD(major_ver, minor_ver), &wsa_data);
 }
 
 WsaStartup::~WsaStartup(){
