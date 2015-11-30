@@ -1,4 +1,10 @@
 @echo off 
+
+if not defined QT_HOME_DIR (
+@echo "ERROR: Set QT_HOME_DIR first. E.g. set QT_HOME_DIR=C:\Qt"
+exit /b 1
+)
+
 call "%ProgramW6432%\Microsoft SDKs\Windows\v7.1\Bin\SetEnv.cmd" /x86
 
 rem set PATH="%~dp0doxygen";%PATH%
