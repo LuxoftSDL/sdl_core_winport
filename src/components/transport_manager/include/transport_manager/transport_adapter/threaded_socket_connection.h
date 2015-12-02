@@ -38,7 +38,7 @@
 #ifdef OS_POSIX
 #include <poll.h>
 #elif defined(OS_WINDOWS)
-#include "utils/wsa_startup.h"
+#include "utils/winhdr.h"
 #if defined(_WIN64)
 typedef SSIZE_T ssize_t;
 #else
@@ -168,7 +168,6 @@ class ThreadedSocketConnection : public Connection {
   int read_fd_;
   int write_fd_;
 #elif defined(OS_WINDOWS)
-  WsaStartup wsaStartup_;
   HANDLE frames_to_send_not_empty_event_;
 #else
 #error Unsupported platform

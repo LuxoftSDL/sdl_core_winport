@@ -66,7 +66,6 @@ ThreadedSocketConnection::ThreadedSocketConnection(
     , read_fd_(-1)
     , write_fd_(-1)
 #elif OS_WINDOWS
-	 , wsaStartup_(1, 2)
    , frames_to_send_not_empty_event_(NULL)
 #else
 #error Unsupported platform

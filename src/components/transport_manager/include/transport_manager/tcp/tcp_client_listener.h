@@ -37,7 +37,7 @@
 #define SRC_COMPONENTS_TRANSPORT_MANAGER_INCLUDE_TRANSPORT_MANAGER_TCP_TCP_CLIENT_LISTENER_H_
 
 #if defined(OS_WINDOWS)
-#include "utils/wsa_startup.h"
+#include "utils/winhdr.h"
 #include <iostream>
 #endif
 
@@ -110,7 +110,6 @@ class TcpClientListener : public ClientConnectionListener {
   threads::Thread* thread_;
 #ifdef OS_WINDOWS
   SOCKET socket_;
-  WsaStartup wsaStartup_;
 #else
   int socket_;
 #endif

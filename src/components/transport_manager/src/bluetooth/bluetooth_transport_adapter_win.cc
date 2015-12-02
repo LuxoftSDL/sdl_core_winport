@@ -36,7 +36,6 @@
 #include <errno.h>
 #include <sys/types.h>
 
-#include "utils/wsa_startup.h"
 #include <ws2bth.h>
 #include <BluetoothAPIs.h>
 #include <sstream>

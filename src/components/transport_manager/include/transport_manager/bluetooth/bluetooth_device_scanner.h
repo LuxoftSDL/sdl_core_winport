@@ -37,7 +37,7 @@
 #define SRC_COMPONENTS_TRANSPORT_MANAGER_INCLUDE_TRANSPORT_MANAGER_BLUETOOTH_BLUETOOTH_DEVICE_SCANNER_H_
 
 #ifdef OS_WINDOWS
-#include "utils/wsa_startup.h"
+#include "utils/winhdr.h"
 #include <ws2bth.h>
 #include <BluetoothAPIs.h>
 #else
@@ -187,7 +187,6 @@ class BluetoothDeviceScanner : public DeviceScanner {
 
 #ifdef OS_WINDOWS
   std::vector<BTH_ADDR*> paired_devices_;
-  WsaStartup wsaStartup_;
 #else
   std::vector<bdaddr_t> paired_devices_;
 #endif

@@ -47,9 +47,6 @@ CREATE_LOGGERPTR_GLOBAL(logger_, "TransportManager")
 
 TcpDevice::TcpDevice(const uint32_t& in_addr, const std::string& name)
     : Device(name, name),
-#ifdef OS_WINDOWS
-     wsaStartup_(1, 2),
-#endif
       applications_mutex_(),
       in_addr_(in_addr),
       last_handle_(0) {

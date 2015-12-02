@@ -55,7 +55,7 @@ if(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
             ${UTILS_SRC_DIR}/threads/thread_delegate_win.cc
             ${UTILS_SRC_DIR}/threads/win_thread.cc
             ${UTILS_SRC_DIR}/string_utils.cc
-            ${UTILS_SRC_DIR}/wsa_startup.cc
+            ${UTILS_SRC_DIR}/socket_win.cc
     )
     if(ENABLE_LOG)
       list(APPEND src

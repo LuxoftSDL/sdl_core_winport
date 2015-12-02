@@ -37,7 +37,7 @@
 #define SRC_COMPONENTS_TRANSPORT_MANAGER_INCLUDE_TRANSPORT_MANAGER_BLUETOOTH_BLUETOOTH_DEVICE_H_
 
 #ifdef OS_WINDOWS
-#include "utils/wsa_startup.h"
+#include "utils/winhdr.h"
 #include <ws2bth.h>
 #include <BluetoothAPIs.h>
 #else
@@ -129,7 +129,6 @@ class BluetoothDevice : public Device {
    **/
 #ifdef OS_WINDOWS
   BTH_ADDR address_;
-  WsaStartup wsaStartup_;
 #else
   bdaddr_t address_;
 #endif

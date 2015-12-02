@@ -164,7 +164,6 @@ BluetoothDeviceScanner::BluetoothDeviceScanner(
   TransportAdapterController* controller, bool auto_repeat_search,
   int auto_repeat_pause_sec)
   : controller_(controller),
-	wsaStartup_(2, 2),
     thread_(NULL),
     shutdown_requested_(false),
     ready_(true),
