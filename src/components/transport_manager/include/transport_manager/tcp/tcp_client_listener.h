@@ -36,7 +36,7 @@
 #ifndef SRC_COMPONENTS_TRANSPORT_MANAGER_INCLUDE_TRANSPORT_MANAGER_TCP_TCP_CLIENT_LISTENER_H_
 #define SRC_COMPONENTS_TRANSPORT_MANAGER_INCLUDE_TRANSPORT_MANAGER_TCP_TCP_CLIENT_LISTENER_H_
 
-#if defined(WIN_NATIVE)
+#if defined(OS_WINDOWS)
 #include "utils/wsa_startup.h"
 #include <iostream>
 #endif
@@ -108,7 +108,7 @@ class TcpClientListener : public ClientConnectionListener {
   const bool enable_keepalive_;
   TransportAdapterController* controller_;
   threads::Thread* thread_;
-#ifdef WIN_NATIVE
+#ifdef OS_WINDOWS
   SOCKET socket_;
   WsaStartup wsaStartup_;
 #else

@@ -35,13 +35,17 @@
 #include <cassert>
 #include "sqlite_wrapper/sql_database.h"
 
+
+
 namespace utils {
 namespace dbms {
 
 SQLQuery::SQLQuery(SQLDatabase* db)
     : db_(*db),
       query_(""),
+#ifdef WIN_NATIVE
       statement_(NULL),
+#endif // WIN_NATIVE
       error_(SQLITE_OK) {
 }
 
@@ -50,6 +54,7 @@ SQLQuery::~SQLQuery() {
 }
 
 bool SQLQuery::Prepare(const std::string& query) {
+#if defined WIN_NATIVE
   Finalize();
   sync_primitives::AutoLock auto_lock(statement_lock_);
   if (statement_) return false;
@@ -58,50 +63,72 @@ bool SQLQuery::Prepare(const std::string& query) {
                            &statement_, NULL);
   query_ = query;
   return error_ == SQLITE_OK;
+#endif // WIN_NATIVE
+return true;
 }
 
 bool SQLQuery::Exec() {
+#if defined WIN_NATIVE
   error_ = sqlite3_step(statement_);
   return error_ == SQLITE_ROW || error_ == SQLITE_DONE;
+#endif // WIN_NATIVE
+return true;
 }
 
 bool SQLQuery::Next() {
+#if defined WIN_NATIVE
   error_ = sqlite3_step(statement_);
   return error_ == SQLITE_ROW;
+#endif // WIN_NATIVE
+return true;
 }
 
 bool SQLQuery::Reset() {
+#if defined WIN_NATIVE
   error_ = sqlite3_reset(statement_);
   return error_ == SQLITE_OK;
+#endif // WIN_NATIVE
+return true;
 }
 
 void SQLQuery::Finalize() {
+#if defined WIN_NATIVE
   sync_primitives::AutoLock auto_lock(statement_lock_);
   error_ = sqlite3_finalize(statement_);
   if (error_ == SQLITE_OK) {
     statement_ = NULL;
   }
+#endif // WIN_NATIVE
 }
 
 bool SQLQuery::Exec(const std::string& query) {
+#if defined WIN_NATIVE
   query_ = query;
   error_ = sqlite3_exec(db_.conn(), query.c_str(), NULL, NULL, NULL);
   return error_ == SQLITE_OK;
+#endif // WIN_NATIVE
+return true;
 }
 
 void SQLQuery::Bind(int pos, int value) {
+#if defined WIN_NATIVE
   // In SQLite the number of position for binding starts since 1.
   error_ = sqlite3_bind_int(statement_, pos + 1, value);
+#endif // WIN_NATIVE
 }
 
 void SQLQuery::Bind(int pos, int64_t value) {
+#if defined WIN_NATIVE
   // In SQLite the number of position for binding starts since 1.
   error_ = sqlite3_bind_int64(statement_, pos + 1, value);
+#endif // WIN_NATIVE
 }
 
 void SQLQuery::Bind(int pos, double value) {
+#if defined WIN_NATIVE
   // In SQLite the number of position for binding starts since 1.
   error_ = sqlite3_bind_double(statement_, pos + 1, value);
+#endif // WIN_NATIVE
 }
 
 void SQLQuery::Bind(int pos, bool value) {
@@ -109,10 +136,12 @@ void SQLQuery::Bind(int pos, bool value) {
 }
 
 void SQLQuery::Bind(int pos, const std::string& value) {
+#if defined WIN_NATIVE
   // In SQLite the number of position for binding starts since 1.
   error_ = sqlite3_bind_text(statement_, pos + 1, value.c_str(),
                              static_cast<int>(value.length()),
                              SQLITE_TRANSIENT);
+#endif // WIN_NATIVE
 }
 
 bool SQLQuery::GetBoolean(int pos) const {
@@ -120,26 +149,41 @@ bool SQLQuery::GetBoolean(int pos) const {
 }
 
 int SQLQuery::GetInteger(int pos) const {
+#if defined WIN_NATIVE
   return sqlite3_column_int(statement_, pos);
+#endif // WIN_NATIVE
+return 0;
 }
 
 uint32_t SQLQuery::GetUInteger(int pos) const {
+#if defined WIN_NATIVE
   return static_cast<uint32_t>(
       sqlite3_column_int64(statement_, pos));
+#endif // WIN_NATIVE
+return 0;
 }
 
 int64_t SQLQuery::GetLongInt(int pos) const {
+#if defined WIN_NATIVE
   return static_cast<int64_t>(
       sqlite3_column_int64(statement_, pos));
+#endif // WIN_NATIVE
+return 0;
 }
 
 double SQLQuery::GetDouble(int pos) const {
+#if defined WIN_NATIVE
   return sqlite3_column_double(statement_, pos);
+#endif // WIN_NATIVE
+return 0;
 }
 
 std::string SQLQuery::GetString(int pos) const {
+#if defined WIN_NATIVE
   const unsigned char* str = sqlite3_column_text(statement_, pos);
   return str ? reinterpret_cast<const char*>(str) : "";
+#endif // WIN_NATIVE
+return "";
 }
 
 const std::string& SQLQuery::query() const {
@@ -148,12 +192,17 @@ const std::string& SQLQuery::query() const {
 }
 
 bool SQLQuery::IsNull(int pos) const {
+#if defined WIN_NATIVE
   return sqlite3_column_type(statement_, pos) == SQLITE_NULL;
+#endif // WIN_NATIVE
+return true;
 }
 
 void SQLQuery::Bind(int pos) {
+#if defined WIN_NATIVE
   // In SQLite the number of position for binding starts since 1.
   error_ = sqlite3_bind_null(statement_, pos + 1);
+#endif // WIN_NATIVE
 }
 
 SQLError SQLQuery::LastError() const {
@@ -161,7 +210,10 @@ SQLError SQLQuery::LastError() const {
 }
 
 int64_t SQLQuery::LastInsertId() const {
+#if defined WIN_NATIVE
   return sqlite3_last_insert_rowid(db_.conn());
+#endif // WIN_NATIVE
+return 0;
 }
 
 }  // namespace dbms

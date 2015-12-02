@@ -45,7 +45,7 @@
 #include "utils/macro.h"
 #include "utils/lock.h"
 
-#ifdef WIN_NATIVE
+#ifdef OS_WINDOWS
 #ifdef X509_NAME
 #undef X509_NAME
 #endif

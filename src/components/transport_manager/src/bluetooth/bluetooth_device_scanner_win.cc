@@ -35,7 +35,7 @@
 
 #include "transport_manager/bluetooth/bluetooth_device_scanner.h"
 
-#ifdef WIN_NATIVE
+#ifdef OS_WINDOWS
 #include <stdlib.h>
 #include <sys/types.h>
 #include <io.h>
@@ -130,7 +130,7 @@ int FindPairedDevs(std::vector<BTH_ADDR*>* result) {
   LOG4CXX_TRACE(logger_, "exit with 0");
   return 0;
 }
-#ifdef WIN_NATIVE
+#ifdef OS_WINDOWS
 int __stdcall callback(ULONG uAttribId, LPBYTE pValueStream, ULONG cbStreamSize, LPVOID pvParam){
 	SDP_ELEMENT_DATA element;
 	if (BluetoothSdpGetElementData(pValueStream, cbStreamSize, &element) != ERROR_SUCCESS){

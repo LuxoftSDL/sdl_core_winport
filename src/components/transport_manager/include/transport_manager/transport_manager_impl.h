@@ -233,7 +233,16 @@ class TransportManagerImpl : public TransportManager,
   TransportManagerImpl();
 
  protected:
-
+#if defined (SDL_CPP11)
+  template <class Proc, class... Args>
+  void RaiseEvent(Proc proc, Args... args) {
+    for (TransportManagerListenerList::iterator it =
+             transport_manager_listener_.begin();
+         it != transport_manager_listener_.end(); ++it) {
+      ((*it)->*proc)(args...);
+    }
+  }
+#else
   template <class Proc>
   void RaiseEvent(Proc proc) {
     for (TransportManagerListenerList::iterator it =
@@ -278,6 +287,7 @@ class TransportManagerImpl : public TransportManager,
       ((*it)->*proc)(arg1, arg2, arg3, arg4);
     }
   }
+#endif // SDL_CPP11
 
   /**
    * @brief Put massage in the container of massages.

@@ -35,7 +35,7 @@
 
 #if defined(OS_POSIX)
 #include <pthread.h>
-#elif defined(WIN_NATIVE)
+#elif defined(OS_WINDOWS)
 #include <windows.h>
 #else
 #error "RWLock is not defined for this platform"
@@ -49,7 +49,7 @@ namespace sync_primitives {
 namespace impl {
 #if defined(OS_POSIX)
 typedef pthread_rwlock_t PlatformRWLock;
-#elif defined(WIN_NATIVE)
+#elif defined(OS_WINDOWS)
 typedef SRWLOCK PlatformRWLock;
 #else
 #error "RWLock is not defined for this platform"

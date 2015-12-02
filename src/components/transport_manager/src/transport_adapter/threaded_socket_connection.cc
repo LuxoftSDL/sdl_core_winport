@@ -37,7 +37,7 @@
 #include <unistd.h>
 #include <sys/types.h>
 #include <sys/socket.h>
-#elif defined (WIN_NATIVE)
+#elif defined(OS_WINDOWS)
 #include "utils/winhdr.h"
 #include <stdlib.h>
 #include <sys/types.h>

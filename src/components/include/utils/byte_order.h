@@ -43,7 +43,7 @@
 #define BE_TO_LE32(x) bswap_32(x)
 #define LE_TO_BE32(x) bswap_32(x)
 #endif
-#elif defined(WIN_NATIVE)
+#elif defined(OS_WINDOWS)
 #define bswap_16(x) (((x) << 8) & 0xff00) | (((x) >> 8 ) & 0xff)
 #define bswap_32(x) (((x) << 24) & 0xff000000)  \
                     | (((x) << 8) & 0xff0000)   \

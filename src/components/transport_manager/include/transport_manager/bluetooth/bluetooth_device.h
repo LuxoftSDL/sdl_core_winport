@@ -36,7 +36,7 @@
 #ifndef SRC_COMPONENTS_TRANSPORT_MANAGER_INCLUDE_TRANSPORT_MANAGER_BLUETOOTH_BLUETOOTH_DEVICE_H_
 #define SRC_COMPONENTS_TRANSPORT_MANAGER_INCLUDE_TRANSPORT_MANAGER_BLUETOOTH_BLUETOOTH_DEVICE_H_
 
-#ifdef WIN_NATIVE
+#ifdef OS_WINDOWS
 #include "utils/wsa_startup.h"
 #include <ws2bth.h>
 #include <BluetoothAPIs.h>
@@ -67,7 +67,7 @@ class BluetoothDevice : public Device {
    *
    * @return string with device unique identifier.
    */
-#ifdef WIN_NATIVE
+#ifdef OS_WINDOWS
 	 static std::string GetUniqueDeviceId(const BTH_ADDR& device_address);
 #else
   static std::string GetUniqueDeviceId(const bdaddr_t& device_address);
@@ -80,7 +80,7 @@ class BluetoothDevice : public Device {
    * @param name Human-readable device name.
    * @param rfcomm_channels List of RFCOMM channels where SmartDeviceLink service has been discovered.
    **/
-#ifdef WIN_NATIVE
+#ifdef OS_WINDOWS
   BluetoothDevice(const BTH_ADDR& device_address, const char* device_name,
 	  const RfcommChannelVector& rfcomm_channels);
 #else
@@ -114,7 +114,7 @@ class BluetoothDevice : public Device {
    *
    * @return Device bluetooth address.
    */
-#ifdef WIN_NATIVE
+#ifdef OS_WINDOWS
   const BTH_ADDR & address() const {
 	  return address_;
   }
@@ -127,7 +127,7 @@ class BluetoothDevice : public Device {
   /**
    * @brief Device bluetooth address.
    **/
-#ifdef WIN_NATIVE
+#ifdef OS_WINDOWS
   BTH_ADDR address_;
   WsaStartup wsaStartup_;
 #else

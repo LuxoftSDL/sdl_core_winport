@@ -149,7 +149,7 @@ class CommandImpl : public Command {
 #ifdef ENABLE_LOG
 #if defined(OS_POSIX)
   static log4cxx::LoggerPtr logger_;
-#elif defined(WIN_NATIVE)
+#elif defined(OS_WINDOWS)
   static std::string logger_;
 #endif
 #endif // ENABLE_LOG

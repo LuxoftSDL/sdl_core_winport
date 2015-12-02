@@ -41,7 +41,7 @@
 #include <bluetooth/sdp.h>
 #include <bluetooth/sdp_lib.h>
 #include <bluetooth/rfcomm.h>
-#elif defined (WIN_NATIVE)
+#elif defined (OS_WINDOWS)
 #include <io.h>
 #endif
 

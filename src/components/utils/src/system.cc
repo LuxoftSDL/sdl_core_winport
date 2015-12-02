@@ -110,7 +110,7 @@ bool System::Execute(bool wait) {
 
   return true;
 }
-#elif defined (WIN_NATIVE)
+#elif defined (OS_WINDOWS)
 bool System::Execute(bool wait) {
 	return true;
 }

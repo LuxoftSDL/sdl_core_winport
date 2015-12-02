@@ -37,7 +37,7 @@
 #define SRC_COMPONENTS_TRANSPORT_MANAGER_INCLUDE_TRANSPORT_MANAGER_BLUETOOTH_BLUETOOTH_SOCKET_CONNECTION_H_
 
 #include "transport_manager/transport_adapter/threaded_socket_connection.h"
-#ifdef WIN_NATIVE
+#ifdef OS_WINDOWS
 #include <ws2bth.h>
 #include <BluetoothAPIs.h>
 #endif

@@ -32,6 +32,7 @@
 #ifndef SRC_COMPONENTS_INCLUDE_UTILS_LOGGER_H_
 #define SRC_COMPONENTS_INCLUDE_UTILS_LOGGER_H_
 
+#ifdef ENABLE_LOG
 
 #include <errno.h>
 #include <string>
@@ -52,8 +53,6 @@ namespace logger {
   bool logs_enabled();
   void set_logs_enabled(bool state);
 }
-
-#ifdef ENABLE_LOG
 
 #define INIT_LOGGER(file_name) logger::init_logger(file_name)
 #define DEINIT_LOGGER() logger::deinit_logger()

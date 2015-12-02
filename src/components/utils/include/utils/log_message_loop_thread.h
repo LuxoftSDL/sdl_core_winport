@@ -56,7 +56,7 @@ typedef struct {
   log4cxx::spi::LocationInfo location;
   log4cxx::LogString thread_name;
 } LogMessage;
-#elif defined(WIN_NATIVE)
+#elif defined(OS_WINDOWS)
 typedef struct {
   HANDLE      logger_handle;
   std::string logger_name;

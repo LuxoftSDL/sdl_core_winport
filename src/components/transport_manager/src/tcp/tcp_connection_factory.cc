@@ -30,7 +30,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#if defined(WIN_NATIVE)
+#if defined(OS_WINDOWS)
 #include "utils/winhdr.h"
 #endif
 

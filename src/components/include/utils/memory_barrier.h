@@ -35,7 +35,7 @@
 
 #if defined(__QNXNTO__)
 #include <sys/cpuinline.h>
-#elif defined(WIN_NATIVE)
+#elif defined(OS_WINDOWS)
 #include <windows.h>
 #endif
 
@@ -46,7 +46,7 @@ inline void memory_barrier() {
   __cpu_membarrier();
 #elif defined(__GNUG__)
   __sync_synchronize();
-#elif defined(WIN_NATIVE)
+#elif defined(OS_WINDOWS)
   MemoryBarrier();
 #else
 #warning "memory_barrier() implementation does nothing"

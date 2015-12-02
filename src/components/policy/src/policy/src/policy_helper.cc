@@ -38,7 +38,7 @@
 #include "policy/policy_helper.h"
 #include "policy/policy_manager_impl.h"
 
-#if defined (WIN_NATIVE)
+#if defined (OS_WINDOWS)
 #define strcasecmp _stricmp
 #endif
 

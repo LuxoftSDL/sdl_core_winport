@@ -39,8 +39,8 @@
 #include "libusb/libusb.h"
 
 #include "transport_manager/transport_adapter/transport_adapter.h"
-#include "transport_manager/usb/usb_control_transfer.h"
 #include "transport_manager/usb/libusb/platform_usb_device.h"
+#include "transport_manager/usb/usb_control_transfer.h"
 
 #include "utils/threads/thread.h"
 
@@ -69,13 +69,15 @@ class UsbHandler {
 
   void ControlTransferCallback(libusb_transfer* transfer);
   void SubmitControlTransfer(ControlTransferSequenceState* sequence_state);
-  friend void LIBUSB_CALL UsbTransferSequenceCallback(libusb_transfer* transfer);
+  friend void LIBUSB_CALL
+  UsbTransferSequenceCallback(libusb_transfer* transfer);
 
  private:
-  class UsbHandlerDelegate: public threads::ThreadDelegate {
+  class UsbHandlerDelegate : public threads::ThreadDelegate {
    public:
     explicit UsbHandlerDelegate(UsbHandler* handler);
     void threadMain() OVERRIDE;
+
    private:
     UsbHandler* handler_;
   };
@@ -97,10 +99,13 @@ class UsbHandler {
   libusb_hotplug_callback_handle left_callback_handle_;
 
   friend void* UsbHandlerThread(void* data);
-  friend int LIBUSB_CALL ArrivedCallback(libusb_context* context, libusb_device* device,
-                             libusb_hotplug_event event, void* data);
-  friend int LIBUSB_CALL LeftCallback(libusb_context* context, libusb_device* device,
-                          libusb_hotplug_event event, void* data);
+  friend int LIBUSB_CALL ArrivedCallback(libusb_context* context,
+                                         libusb_device* device,
+                                         libusb_hotplug_event event,
+                                         void* data);
+  friend int LIBUSB_CALL LeftCallback(libusb_context* context,
+                                      libusb_device* device,
+                                      libusb_hotplug_event event, void* data);
 };
 
 }  // namespace transport_adapter

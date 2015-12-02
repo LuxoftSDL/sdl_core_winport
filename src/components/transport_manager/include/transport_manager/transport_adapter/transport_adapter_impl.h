@@ -527,8 +527,6 @@ class TransportAdapterImpl : public TransportAdapter,
    **/
   mutable sync_primitives::RWLock connections_lock_;
 
-  mutable DeviceTypes devicesType;
-
  protected:
 #ifdef TIME_TESTER
   /**
