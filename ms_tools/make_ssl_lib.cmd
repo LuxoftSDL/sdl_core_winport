@@ -32,7 +32,7 @@ IF %build_type%==x86 (
 call ms\do_ms
 nmake -f ms\ntdll.mak
 nmake -f ms\ntdll.mak install
-)ELSE if %build_type%==x64(
+) ELSE IF %build_type%==x64 (
 call ms\do_win64a
 nmake -f ms\nt.mak
 nmake -f ms\nt.mak install

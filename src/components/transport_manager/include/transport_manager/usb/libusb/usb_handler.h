@@ -36,7 +36,7 @@
 #ifndef SRC_COMPONENTS_TRANSPORT_MANAGER_INCLUDE_TRANSPORT_MANAGER_USB_LIBUSB_USB_HANDLER_H_
 #define SRC_COMPONENTS_TRANSPORT_MANAGER_INCLUDE_TRANSPORT_MANAGER_USB_LIBUSB_USB_HANDLER_H_
 
-#include <libusb/libusb.h>
+#include "libusb/libusb.h"
 
 #include "transport_manager/transport_adapter/transport_adapter.h"
 #include "transport_manager/usb/usb_control_transfer.h"
@@ -69,7 +69,7 @@ class UsbHandler {
 
   void ControlTransferCallback(libusb_transfer* transfer);
   void SubmitControlTransfer(ControlTransferSequenceState* sequence_state);
-  friend void UsbTransferSequenceCallback(libusb_transfer* transfer);
+  friend void LIBUSB_CALL UsbTransferSequenceCallback(libusb_transfer* transfer);
 
  private:
   class UsbHandlerDelegate: public threads::ThreadDelegate {
@@ -97,9 +97,9 @@ class UsbHandler {
   libusb_hotplug_callback_handle left_callback_handle_;
 
   friend void* UsbHandlerThread(void* data);
-  friend int ArrivedCallback(libusb_context* context, libusb_device* device,
+  friend int LIBUSB_CALL ArrivedCallback(libusb_context* context, libusb_device* device,
                              libusb_hotplug_event event, void* data);
-  friend int LeftCallback(libusb_context* context, libusb_device* device,
+  friend int LIBUSB_CALL LeftCallback(libusb_context* context, libusb_device* device,
                           libusb_hotplug_event event, void* data);
 };
 

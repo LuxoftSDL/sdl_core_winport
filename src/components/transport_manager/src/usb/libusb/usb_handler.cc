@@ -43,6 +43,7 @@
 #include "utils/logger.h"
 #include "utils/threads/thread.h"
 
+
 namespace transport_manager {
 namespace transport_adapter {
 
@@ -216,7 +217,7 @@ void UsbHandler::CloseDeviceHandle(libusb_device_handle* device_handle) {
   device_handles_to_close_.push_back(device_handle);
 }
 
-int ArrivedCallback(libusb_context* context, libusb_device* device,
+int LIBUSB_CALL ArrivedCallback(libusb_context* context, libusb_device* device,
                     libusb_hotplug_event event, void* data) {
   LOG4CXX_TRACE(logger_, "enter. libusb device arrived (bus number "
                 << static_cast<int>(libusb_get_bus_number(device))
@@ -229,7 +230,7 @@ int ArrivedCallback(libusb_context* context, libusb_device* device,
   return 0;
 }
 
-int LeftCallback(libusb_context* context, libusb_device* device,
+int LIBUSB_CALL LeftCallback(libusb_context* context, libusb_device* device,
                  libusb_hotplug_event event, void* data) {
   LOG4CXX_TRACE(logger_, "enter libusb device left (bus number "
                 << static_cast<int>(libusb_get_bus_number(device))
@@ -324,7 +325,7 @@ void UsbHandler::Thread() {
   LOG4CXX_TRACE(logger_, "exit");
 }
 
-void UsbTransferSequenceCallback(libusb_transfer* transfer) {
+void LIBUSB_CALL UsbTransferSequenceCallback(libusb_transfer* transfer) {
   LOG4CXX_TRACE(logger_, "enter. libusb_transfer* " << transfer);
   UsbHandler::ControlTransferSequenceState* sequence_state =
     static_cast<UsbHandler::ControlTransferSequenceState*>(transfer->user_data);

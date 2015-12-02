@@ -233,12 +233,49 @@ class TransportManagerImpl : public TransportManager,
   TransportManagerImpl();
 
  protected:
-  template <class Proc, class... Args>
-  void RaiseEvent(Proc proc, Args... args) {
+
+  template <class Proc>
+  void RaiseEvent(Proc proc) {
     for (TransportManagerListenerList::iterator it =
              transport_manager_listener_.begin();
          it != transport_manager_listener_.end(); ++it) {
-      ((*it)->*proc)(args...);
+      ((*it)->*proc)();
+    }
+  }
+
+  template <class Proc, class Arg1>
+  void RaiseEvent(Proc proc, const Arg1& arg1) {
+    for (TransportManagerListenerList::iterator it =
+             transport_manager_listener_.begin();
+         it != transport_manager_listener_.end(); ++it) {
+      ((*it)->*proc)(arg1);
+    }
+  }
+
+  template <class Proc, class Arg1, class Arg2>
+  void RaiseEvent(Proc proc, const Arg1& arg1, const Arg2& arg2) {
+    for (TransportManagerListenerList::iterator it =
+             transport_manager_listener_.begin();
+         it != transport_manager_listener_.end(); ++it) {
+      ((*it)->*proc)(arg1, arg2);
+    }
+  }
+
+  template <class Proc, class Arg1, class Arg2, class Arg3>
+  void RaiseEvent(Proc proc, const Arg1& arg1, const Arg2& arg2, const Arg3& arg3) {
+    for (TransportManagerListenerList::iterator it =
+             transport_manager_listener_.begin();
+         it != transport_manager_listener_.end(); ++it) {
+      ((*it)->*proc)(arg1, arg2, arg3);
+    }
+  }
+
+  template <class Proc, class Arg1, class Arg2, class Arg3, class Arg4>
+  void RaiseEvent(Proc proc, const Arg1& arg1, const Arg2& arg2, const Arg3& arg3, const Arg4& arg4) {
+    for (TransportManagerListenerList::iterator it =
+             transport_manager_listener_.begin();
+         it != transport_manager_listener_.end(); ++it) {
+      ((*it)->*proc)(arg1, arg2, arg3, arg4);
     }
   }
 

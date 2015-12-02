@@ -89,11 +89,11 @@ UsbConnection::~UsbConnection() {
 }
 
 // Callback for handling income and outcome data from lib_usb
-void InTransferCallback(libusb_transfer* transfer) {
+static void InTransferCallback(libusb_transfer* transfer) {
   static_cast<UsbConnection*>(transfer->user_data)->OnInTransfer(transfer);
 }
 
-void OutTransferCallback(libusb_transfer* transfer) {
+static void OutTransferCallback(libusb_transfer* transfer) {
   static_cast<UsbConnection*>(transfer->user_data)->OnOutTransfer(transfer);
 }
 
@@ -101,7 +101,7 @@ bool UsbConnection::PostInTransfer() {
   LOG4CXX_TRACE(logger_, "enter");
   libusb_fill_bulk_transfer(in_transfer_, device_handle_, in_endpoint_,
                             in_buffer_, in_endpoint_max_packet_size_,
-                            InTransferCallback, this, 0);
+                            reinterpret_cast<void(LIBUSB_CALL *)(struct libusb_transfer *transfer)>(InTransferCallback), this, 0);
   const int libusb_ret = libusb_submit_transfer(in_transfer_);
   if (LIBUSB_SUCCESS != libusb_ret) {
     LOG4CXX_ERROR(logger_, "libusb_submit_transfer failed: "
@@ -174,7 +174,7 @@ bool UsbConnection::PostOutTransfer() {
   libusb_fill_bulk_transfer(out_transfer_, device_handle_, out_endpoint_,
                             current_out_message_->data() + bytes_sent_,
                             current_out_message_->data_size() - bytes_sent_,
-                            OutTransferCallback, this, 0);
+                            reinterpret_cast<void(LIBUSB_CALL *)(struct libusb_transfer *transfer)>(OutTransferCallback), this, 0);
   const int libusb_ret = libusb_submit_transfer(out_transfer_);
   if (LIBUSB_SUCCESS != libusb_ret) {
     LOG4CXX_ERROR(logger_, "libusb_submit_transfer failed: "

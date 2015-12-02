@@ -43,16 +43,6 @@ namespace transport_manager {
 namespace transport_adapter {
 
 CREATE_LOGGERPTR_GLOBAL(logger_, "TransportAdapterImpl")
-namespace {
-DeviceTypes devicesType = {
-  std::make_pair(AOA, std::string("USB_AOA")),
-  std::make_pair(PASA_AOA, std::string("USB_AOA")),
-  std::make_pair(MME, std::string("USB_IOS")),
-  std::make_pair(BLUETOOTH, std::string("BLUETOOTH")),
-  std::make_pair(PASA_BLUETOOTH, std::string("BLUETOOTH")),
-  std::make_pair(TCP, std::string("WIFI"))
-};
-}
 
 TransportAdapterImpl::TransportAdapterImpl(
   DeviceScanner* device_scanner,
@@ -70,6 +60,13 @@ TransportAdapterImpl::TransportAdapterImpl(
     device_scanner_(device_scanner),
     server_connection_factory_(server_connection_factory),
     client_connection_listener_(client_connection_listener) {
+
+    devicesType.insert(std::make_pair(AOA, std::string("USB_AOA")));
+    devicesType.insert(std::make_pair(PASA_AOA, std::string("USB_AOA")));
+    devicesType.insert(std::make_pair(MME, std::string("USB_IOS")));
+    devicesType.insert(std::make_pair(BLUETOOTH, std::string("BLUETOOTH")));
+    devicesType.insert(std::make_pair(PASA_BLUETOOTH, std::string("BLUETOOTH")));
+    devicesType.insert(std::make_pair(TCP, std::string("WIFI")));
 }
 
 TransportAdapterImpl::~TransportAdapterImpl() {

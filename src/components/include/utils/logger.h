@@ -32,7 +32,6 @@
 #ifndef SRC_COMPONENTS_INCLUDE_UTILS_LOGGER_H_
 #define SRC_COMPONENTS_INCLUDE_UTILS_LOGGER_H_
 
-#ifdef ENABLE_LOG
 
 #include <errno.h>
 #include <string>
@@ -53,6 +52,8 @@ namespace logger {
   bool logs_enabled();
   void set_logs_enabled(bool state);
 }
+
+#ifdef ENABLE_LOG
 
 #define INIT_LOGGER(file_name) logger::init_logger(file_name)
 #define DEINIT_LOGGER() logger::deinit_logger()
@@ -115,7 +116,7 @@ do { \
 #undef LOG4CXX_FATAL
 #define LOG4CXX_FATAL(loggerPtr, logEvent) LOG_WITH_LEVEL(loggerPtr, ::log4cxx::Level::getFatal(), logEvent)
 
-#elif defined(WIN_NATIVE)
+#elif defined(OS_WINDOWS)
 
 namespace logger {
   bool push_log(const std::string& logger,
