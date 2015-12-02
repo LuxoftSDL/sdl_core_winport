@@ -211,10 +211,12 @@ class SQLQuery {
    */
   std::string query_;
 
+#if defined WIN_NATIVE
   /**
    * The SQL statement in SQLite
    */
   sqlite3_stmt* statement_;
+#endif // WIN_NATIVE
 
   /**
    * Lock for guarding statement

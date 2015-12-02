@@ -43,7 +43,7 @@
 #include "json/features.h"
 #include "json/writer.h"
 #include "utils/logger.h"
-#ifdef WIN_NATIVE
+#ifdef OS_WINDOWS
 #define strncasecmp _strnicmp
 #define strcasecmp _stricmp
 #endif
@@ -967,7 +967,7 @@ void CacheManager::Add(const std::string &app_id,
 
 long CacheManager::ConvertSecondsToMinute(int seconds) {
   const float seconds_in_minute = 60.0;
-  return std::round(seconds / seconds_in_minute);
+  return std::ceil(seconds / seconds_in_minute);
 }
 
 bool CacheManager::SetDefaultPolicy(const std::string &app_id) {

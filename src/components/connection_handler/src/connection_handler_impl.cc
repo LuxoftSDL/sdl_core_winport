@@ -32,7 +32,7 @@
 
 #if defined(OS_POSIX)
 #include <strings.h>
-#elif defined(WIN_NATIVE)
+#elif defined(OS_WINDOWS)
 #include <string.h>
 #define strcasecmp _stricmp
 #endif

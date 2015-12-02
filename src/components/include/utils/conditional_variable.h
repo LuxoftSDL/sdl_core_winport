@@ -34,7 +34,7 @@
 
 #if defined(OS_POSIX)
 #include <pthread.h>
-#elif defined(WIN_NATIVE)
+#elif defined(OS_WINDOWS)
 #include <windows.h>
 #else
 #error "Condition variable is not defined for this platform"
@@ -50,7 +50,7 @@ class Lock;
 namespace impl {
 #if defined(OS_POSIX)
 typedef pthread_cond_t PlatformConditionalVariable;
-#elif defined(WIN_NATIVE)
+#elif defined(OS_WINDOWS)
 typedef CONDITION_VARIABLE PlatformConditionalVariable;
 #else
 #error "Condition variable is not defined for this platform"

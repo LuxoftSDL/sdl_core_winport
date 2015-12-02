@@ -35,7 +35,7 @@
 #if defined(OS_POSIX)
 #include <pthread.h>
 #include <sched.h>
-#elif defined(WIN_NATIVE)
+#elif defined(OS_WINDOWS)
 #include <windows.h>
 #else
 #error "Lock is not defined for this platform"
@@ -51,7 +51,7 @@ namespace sync_primitives {
 namespace impl {
 #if defined(OS_POSIX)
 typedef pthread_mutex_t PlatformMutex;
-#elif defined(WIN_NATIVE)
+#elif defined(OS_WINDOWS)
 typedef CRITICAL_SECTION PlatformMutex;
 #else
 #error "Lock is not defined for this platform"
@@ -69,7 +69,7 @@ class SpinMutex {
     for(;;) {
 #if defined(OS_POSIX)
       sched_yield();
-#elif defined(WIN_NATIVE)
+#elif defined(OS_WINDOWS)
 	  SwitchToThread();
 #endif
       if (state_ == 0 && atomic_post_set(&state_) == 0) {

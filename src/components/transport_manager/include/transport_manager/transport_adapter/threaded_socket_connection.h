@@ -37,7 +37,7 @@
 
 #ifdef OS_POSIX
 #include <poll.h>
-#elif defined(WIN_NATIVE)
+#elif defined(OS_WINDOWS)
 #include "utils/wsa_startup.h"
 #if defined(_WIN64)
 typedef SSIZE_T ssize_t;

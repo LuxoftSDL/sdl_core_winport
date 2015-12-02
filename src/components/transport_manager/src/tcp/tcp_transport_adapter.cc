@@ -29,7 +29,7 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-#if defined(WIN_NATIVE)
+#if defined(OS_WINDOWS)
 #include "utils/wsa_startup.h"
 
 #endif
@@ -108,7 +108,7 @@ void TcpTransportAdapter::Store() const {
         if (port != -1) {  // don't want to store incoming applications
           Json::Value application_dictionary;
           char port_record[12];
-#if defined(WIN_NATIVE)
+#if defined(OS_WINDOWS)
           _snprintf(port_record, sizeof(port_record), "%d", port);
 #else
           snprintf(port_record, sizeof(port_record), "%d", port);
@@ -139,7 +139,7 @@ bool TcpTransportAdapter::Restore() {
     const Json::Value device_dictionary = *i;
     std::string name = device_dictionary["name"].asString();
     std::string address_record = device_dictionary["address"].asString();
-#if defined(WIN_NATIVE)
+#if defined(OS_WINDOWS)
     uint32_t address = inet_addr(address_record.c_str());
 #else
     in_addr_t address = inet_addr(address_record.c_str());

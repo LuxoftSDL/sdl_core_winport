@@ -49,7 +49,6 @@ if(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
             ${UTILS_SRC_DIR}/lock_win.cc
             ${UTILS_SRC_DIR}/rwlock_win.cc
             ${UTILS_SRC_DIR}/signals_win.cc
-            ${UTILS_SRC_DIR}/logger_win.cc
             ${UTILS_SRC_DIR}/log_message_loop_thread_win.cc
             ${UTILS_SRC_DIR}/threads/thread_validator.cc
             ${UTILS_SRC_DIR}/threads/async_runner.cc
@@ -69,6 +68,11 @@ if(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
     else(DEFINED QT_PORT)
       target_link_libraries("Utils" ${LIBRARIES})    
     endif(DEFINED QT_PORT)
+	if(ENABLE_LOG)
+      list(APPEND src
+		${UTILS_SRC_DIR}/logger_win.cc
+      )
+    endif()
     
 else()
     if(ENABLE_LOG)

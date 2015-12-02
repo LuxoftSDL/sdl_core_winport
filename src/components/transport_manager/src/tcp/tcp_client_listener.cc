@@ -31,7 +31,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifdef WIN_NATIVE
+#ifdef OS_WINDOWS
 #include "utils/winhdr.h"
 #pragma comment(lib, "Ws2_32.lib")
 #include <io.h>
@@ -188,7 +188,7 @@ void SetKeepaliveOptions(const int fd) {
   setsockopt(fd, IPPROTO_TCP, TCP_KEEPINTVL, &keepintvl, sizeof(keepintvl));
   setsockopt(fd, IPPROTO_TCP, TCP_USER_TIMEOUT, &user_timeout,
              sizeof(user_timeout));
-#elif defined(WIN_NATIVE)
+#elif defined(OS_WINDOWS)
   int user_timeout = 7000;  // milliseconds
   struct tcp_keepalive settings;
   settings.onoff = 1;

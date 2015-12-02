@@ -35,7 +35,7 @@
 
 #if defined(OS_POSIX)
 #include <pthread.h>
-#elif defined(WIN_NATIVE)
+#elif defined(OS_WINDOWS)
 #include <windows.h>
 #else
 #error "Thread is not defined for this platform"
@@ -55,7 +55,7 @@ namespace threads {
 
 #if defined(OS_POSIX)
 typedef pthread_t PlatformThreadHandle;
-#elif defined(WIN_NATIVE)
+#elif defined(OS_WINDOWS)
 typedef HANDLE PlatformThreadHandle;
 #else
 #error "Thread is not defined for this platform"
@@ -123,7 +123,7 @@ class Thread {
    */
   bool start(const ThreadOptions& options);
 
-#if defined(WIN_NATIVE)
+#if defined(OS_WINDOWS)
   void cleanup();
 #endif
 

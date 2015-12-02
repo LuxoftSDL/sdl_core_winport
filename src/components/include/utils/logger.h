@@ -115,7 +115,7 @@ do { \
 #undef LOG4CXX_FATAL
 #define LOG4CXX_FATAL(loggerPtr, logEvent) LOG_WITH_LEVEL(loggerPtr, ::log4cxx::Level::getFatal(), logEvent)
 
-#elif defined(WIN_NATIVE)
+#elif defined(OS_WINDOWS)
 
 namespace logger {
   bool push_log(const std::string& logger,

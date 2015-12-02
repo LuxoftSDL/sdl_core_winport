@@ -33,7 +33,7 @@
 #include "transport_manager/tcp/tcp_device.h"
 #include "utils/logger.h"
 
-#ifdef WIN_NATIVE
+#if defined(OS_WINDOWS)
 #include "utils/winhdr.h"
 #pragma comment(lib, "Ws2_32.lib")
 #endif
@@ -47,7 +47,7 @@ CREATE_LOGGERPTR_GLOBAL(logger_, "TransportManager")
 
 TcpDevice::TcpDevice(const uint32_t& in_addr, const std::string& name)
     : Device(name, name),
-#ifdef WIN_NATIVE
+#ifdef OS_WINDOWS
      wsaStartup_(1, 2),
 #endif
       applications_mutex_(),

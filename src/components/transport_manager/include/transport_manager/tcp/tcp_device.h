@@ -44,7 +44,7 @@
 #include <arpa/inet.h>
 #include <netinet/in.h>
 #include <sys/socket.h>
-#elif defined(WIN_NATIVE)
+#elif defined(OS_WINDOWS)
 #include "utils/wsa_startup.h"
 #endif
 #include <map>
@@ -67,7 +67,7 @@ class TcpDevice : public Device {
    * @param in_addr Address.
    * @param name Device Name.
    **/
-#if defined(WIN_NATIVE)
+#if defined(OS_WINDOWS)
   TcpDevice(const uint32_t& in_addr, const std::string& name);
 #else
   TcpDevice(const in_addr_t& in_addr, const std::string& name);
@@ -135,7 +135,7 @@ class TcpDevice : public Device {
    *
    * @return Address.
    */
-#if defined(WIN_NATIVE)
+#if defined(OS_WINDOWS)
   uint32_t in_addr() const {
 #else
   in_addr_t in_addr() const {
@@ -151,7 +151,7 @@ class TcpDevice : public Device {
   };
   std::map<ApplicationHandle, Application> applications_;
   mutable sync_primitives::Lock applications_mutex_;
-#if defined(WIN_NATIVE)
+#if defined(OS_WINDOWS)
   const uint32_t in_addr_;
   WsaStartup wsaStartup_;
 #else

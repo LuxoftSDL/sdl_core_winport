@@ -33,7 +33,7 @@
 
 #include "transport_manager/bluetooth/bluetooth_device.h"
 
-#ifndef WIN_NATIVE
+#ifndef OS_WINDOWS
 #include <bluetooth/bluetooth.h>
 #include <bluetooth/hci.h>
 #include <bluetooth/hci_lib.h>
@@ -49,7 +49,7 @@
 #include <errno.h>
 #include <sys/types.h>
 
-#ifndef WIN_NATIVE
+#ifndef OS_WINDOWS
 #include <sys/socket.h>
 #endif
 
@@ -83,14 +83,14 @@ bool BluetoothDevice::GetRfcommChannel(const ApplicationHandle app_handle,
   return true;
 }
 
-#ifdef WIN_NATIVE
+#ifdef OS_WINDOWS
 std::string BluetoothDevice::GetUniqueDeviceId(const BTH_ADDR & device_address) {
 #else
 std::string BluetoothDevice::GetUniqueDeviceId(const bdaddr_t& device_address) {
 #endif
   LOG4CXX_TRACE(logger_, "enter. device_adress: " << &device_address);
   char device_address_string[32];
-#ifdef WIN_NATIVE
+#ifdef OS_WINDOWS
   DWORD addrSize = sizeof(struct sockaddr_storage);
   int addr_size = sizeof(struct sockaddr_storage);
   int ret_val = WSAAddressToString( (LPSOCKADDR)&device_address, 
@@ -108,7 +108,7 @@ std::string BluetoothDevice::GetUniqueDeviceId(const bdaddr_t& device_address) {
   return std::string("BT-") + device_address_string;
 }
 
-#ifdef WIN_NATIVE
+#ifdef OS_WINDOWS
 BluetoothDevice::BluetoothDevice(const BTH_ADDR& device_address, const char* device_name,
 	const RfcommChannelVector& rfcomm_channels)
 #else
@@ -116,7 +116,7 @@ BluetoothDevice::BluetoothDevice(const bdaddr_t& device_address, const char* dev
                                  const RfcommChannelVector& rfcomm_channels)
 #endif
   : Device(device_name, GetUniqueDeviceId(device_address)),
-#ifdef WIN_NATIVE
+#ifdef OS_WINDOWS
   wsaStartup_(2, 2),
 #endif
     address_(device_address),
@@ -133,7 +133,7 @@ bool BluetoothDevice::IsSameAs(const Device* other) const {
   if (0 != other_bluetooth_device) {
     if (0
         == memcmp(&address_, &other_bluetooth_device->address_,
-#ifdef WIN_NATIVE
+#ifdef OS_WINDOWS
 		sizeof(BTH_ADDR))) {
 #else
                   sizeof(bdaddr_t))) {

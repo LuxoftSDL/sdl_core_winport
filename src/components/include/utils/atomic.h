@@ -35,7 +35,7 @@
 
 #if defined(__QNXNTO__)
 #include <atomic.h>
-#elif defined(WIN_NATIVE)
+#elif defined(OS_WINDOWS)
 #include <windows.h>
 #endif
 
@@ -43,7 +43,7 @@
 #define atomic_post_inc(ptr) atomic_add_value((ptr), 1)
 #elif defined(__GNUG__)
 #define atomic_post_inc(ptr) __sync_fetch_and_add((ptr), 1)
-#elif defined(WIN_NATIVE)
+#elif defined(OS_WINDOWS)
 #define atomic_post_inc(ptr) (InterlockedIncrement ((ptr)) - 1)
 #else
 #warning "atomic_post_inc() implementation is not atomic"
@@ -54,7 +54,7 @@
 #define atomic_post_dec(ptr) atomic_sub_value((ptr), 1)
 #elif defined(__GNUG__)
 #define atomic_post_dec(ptr) __sync_fetch_and_sub((ptr), 1)
-#elif defined(WIN_NATIVE)
+#elif defined(OS_WINDOWS)
 #define atomic_post_dec(ptr) (InterlockedDecrement ((ptr)) + 1)
 #else
 #warning "atomic_post_dec() implementation is not atomic"
@@ -68,7 +68,7 @@
 #define atomic_post_set(dst) atomic_set_value(dst, 1)
 #elif defined(__GNUG__)
 #define atomic_post_set(dst) __sync_val_compare_and_swap((dst), 0, 1)
-#elif defined(WIN_NATIVE)
+#elif defined(OS_WINDOWS)
 #define atomic_post_set(dst) InterlockedCompareExchange((dst), 1, 0)
 #else
 #warning "atomic_post_set() implementation is not atomic"
@@ -79,7 +79,7 @@
 #define atomic_post_clr(dst) atomic_clr_value(dst, 1)
 #elif defined(__GNUG__)
 #define atomic_post_clr(dst) __sync_val_compare_and_swap((dst), 1, 0)
-#elif defined(WIN_NATIVE)
+#elif defined(OS_WINDOWS)
 #define atomic_post_clr(dst) InterlockedCompareExchange((dst), 0, 1)
 #else
 #warning "atomic_post_clr() implementation is not atomic"

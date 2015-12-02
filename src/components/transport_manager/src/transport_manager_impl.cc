@@ -40,6 +40,7 @@
 #include <limits>
 #include <functional>
 #include <sstream>
+#include <iterator>
 
 #include "utils/macro.h"
 #include "utils/logger.h"

@@ -38,7 +38,7 @@
 #include <errno.h>
 #ifdef OS_POSIX
 #include <unistd.h>
-#elif defined (WIN_NATIVE)
+#elif defined (OS_WINDOWS)
 #include "utils/winhdr.h"
 #pragma comment(lib, "Ws2_32.lib")
 #include <io.h>

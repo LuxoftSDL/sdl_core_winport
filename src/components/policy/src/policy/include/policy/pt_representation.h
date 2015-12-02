@@ -49,7 +49,7 @@ struct VehicleData {
   const std::string vehicle_make;
   const std::string vehicle_model;
   int vehicle_year;
-#if defined(OS_POSIX) || defined(WIN_NATIVE)
+#if defined(OS_POSIX) || defined(OS_WINDOWS)
   VehicleData() {};
 #endif 
 };

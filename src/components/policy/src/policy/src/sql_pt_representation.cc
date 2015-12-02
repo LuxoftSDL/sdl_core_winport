@@ -36,9 +36,8 @@
 #include <errno.h>
 #ifdef OS_POSIX
 #include <unistd.h>
-#elif defined (WIN_NATIVE)
-#include <chrono>
-#include <thread>
+#elif defined (OS_WINDOWS)
+
 #include <io.h>
 #endif
 
@@ -1564,7 +1563,7 @@ bool SQLPTRepresentation::SetIsDefault(const std::string& app_id,
 }
 
 void SQLPTRepresentation::RemoveDB() const {
-#ifdef WIN_NATIVE
+#ifdef OS_WINDOWS
 	LPCSTR path(db_->get_path().c_str());
 	DeleteFile(path);
 #else

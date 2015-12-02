@@ -40,12 +40,19 @@ const std::string SQLDatabase::kInMemory = ":memory:";
 const std::string SQLDatabase::kExtension = ".sqlite";
 
 SQLDatabase::SQLDatabase()
-    : conn_(NULL),
+    : 
+#if defined WIN_NATIVE
+	conn_(NULL),
+#endif // WIN_NATIVE
       databasename_(kInMemory),
-      error_(SQLITE_OK) {}
+      error_(SQLITE_OK) 
+	  {}
 
 SQLDatabase::SQLDatabase(const std::string& db_name)
-    : conn_(NULL),
+    : 
+#if defined WIN_NATIVE
+	conn_(NULL),
+#endif // WIN_NATIVE
       databasename_(db_name + kExtension),
       error_(SQLITE_OK) {}
 
@@ -54,18 +61,25 @@ SQLDatabase::~SQLDatabase() {
 }
 
 bool SQLDatabase::Open() {
+#if defined (WIN_NATIVE)
   sync_primitives::AutoLock auto_lock(conn_lock_);
   if (conn_) return true;
   error_ = sqlite3_open(databasename_.c_str(), &conn_);
   return error_ == SQLITE_OK;
+#endif // WIN_NATIVE
+return true;
 }
 
 bool SQLDatabase::IsReadWrite() {
+#if defined WIN_NATIVE
   const char* schema = "main";
   return sqlite3_db_readonly(conn_, schema) == 0;
+#endif // WIN_NATIVE
+return true;
 }
 
 void SQLDatabase::Close() {
+#if defined WIN_NATIVE
   if (!conn_) {
     return;
   }
@@ -75,6 +89,7 @@ void SQLDatabase::Close() {
   if (error_ == SQLITE_OK) {
     conn_ = NULL;
   }
+#endif // WIN_NATIVE
 }
 
 bool SQLDatabase::BeginTransaction() {
@@ -90,18 +105,23 @@ bool SQLDatabase::RollbackTransaction() {
 }
 
 bool SQLDatabase::Exec(const std::string& query) {
+#if defined WIN_NATIVE
   sync_primitives::AutoLock auto_lock(conn_lock_);
   error_ = sqlite3_exec(conn_, query.c_str(), NULL, NULL, NULL);
   return error_ == SQLITE_OK;
+#endif // WIN_NATIVE
+return true;
 }
 
 SQLError SQLDatabase::LastError() const {
   return SQLError(Error(error_));
 }
 
+#if defined WIN_NATIVE
 sqlite3* SQLDatabase::conn() const {
   return conn_;
 }
+#endif // WIN_NATIVE
 
 void SQLDatabase::set_path(const std::string& path) {
   databasename_ = path +  databasename_;

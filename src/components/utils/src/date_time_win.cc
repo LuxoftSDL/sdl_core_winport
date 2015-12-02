@@ -29,7 +29,7 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-#if defined(WIN_NATIVE)
+#if defined(OS_WINDOWS)
 
 #include <time.h>
 #include <windows.h>
@@ -179,4 +179,4 @@ const TimevalStruct operator-(const TimevalStruct& time1, const TimevalStruct& t
   return date_time::DateTime::Sub(time1, time2);
 }
 
-#endif // WIN_NATIVE
+#endif // OS_WINDOWS

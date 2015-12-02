@@ -29,7 +29,7 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-#if defined(WIN_NATIVE)
+#if defined(OS_WINDOWS)
 
 #include <csignal>
 #include <windows.h>
@@ -52,4 +52,4 @@ bool SubscribeToFaultSignal(sighandler_t func) {
 
 }  //  namespace utils
 
-#endif // WIN_NATIVE
+#endif // OS_WINDOWS

@@ -98,7 +98,7 @@ void OnExitAllApplicationsNotification::Run() {
   }
 #if defined(OS_POSIX)
   kill(getpid(), SIGINT);
-#elif defined(WIN_NATIVE)
+#elif defined(OS_WINDOWS)
   raise(SIGINT);
 #endif
 }
