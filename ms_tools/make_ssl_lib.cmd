@@ -30,13 +30,13 @@ perl.exe Configure %CONFIG_OPT% --prefix=%BUILDDIR%\openssl_build_%build_type%
 
 IF %build_type%==x86 (
 call ms\do_ms
-nmake -f ms\ntdll.mak
-nmake -f ms\ntdll.mak install
 ) ELSE IF %build_type%==x64 (
 call ms\do_win64a
+) ELSE goto :usage
+
 nmake -f ms\nt.mak
 nmake -f ms\nt.mak install
-) ELSE goto :usage
+
 popd > NUL
 )
 
