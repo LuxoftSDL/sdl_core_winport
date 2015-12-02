@@ -47,7 +47,13 @@ option(BUILD_AVAHI_SUPPORT "libavahi support" OFF)
 option(BUILD_BACKTRACE_SUPPORT "backtrace support" OFF)
 option(BUILD_TESTS "Possibility to build and run tests" OFF)
 option(TIME_TESTER "Enable profiling time test util" OFF)
+
+if (${QT_PORT})
+option(ENABLE_LOG "Logging feature" OFF)
+else ()
 option(ENABLE_LOG "Logging feature" ON)
+endif()
+
 option(ENABLE_GCOV "gcov code coverage feature" OFF)
 option(ENABLE_SANITIZE "Sanitize tool" OFF)
 option(ENABLE_SECURITY "Security Ford protocol protection" ON)
