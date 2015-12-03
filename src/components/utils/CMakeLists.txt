@@ -56,6 +56,11 @@ if(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
             ${UTILS_SRC_DIR}/threads/win_thread.cc
             ${UTILS_SRC_DIR}/string_utils.cc
     )
+    if(ENABLE_LOG)
+      list(APPEND src
+        ${UTILS_SRC_DIR}/logger_win.cc
+      )
+    endif()
 
     add_subdirectory(./src/sqlite_wrapper)
     string( REPLACE / \\ group ${inc} )
@@ -68,13 +73,27 @@ if(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
     else(DEFINED QT_PORT)
       target_link_libraries("Utils" ${LIBRARIES})    
     endif(DEFINED QT_PORT)
-	if(ENABLE_LOG)
-      list(APPEND src
-		${UTILS_SRC_DIR}/logger_win.cc
-      )
-    endif()
     
 else()
+    set (SOURCES
+      ${UTILS_SRC_DIR}/bitstream.cc
+      ${UTILS_SRC_DIR}/conditional_variable_posix.cc
+      ${UTILS_SRC_DIR}/file_system.cc
+      ${UTILS_SRC_DIR}/threads/posix_thread.cc   
+      ${UTILS_SRC_DIR}/threads/thread_delegate.cc
+      ${UTILS_SRC_DIR}/threads/thread_validator.cc
+      ${UTILS_SRC_DIR}/threads/async_runner.cc
+      ${UTILS_SRC_DIR}/lock_posix.cc
+      ${UTILS_SRC_DIR}/rwlock_posix.cc
+      ${UTILS_SRC_DIR}/date_time.cc
+      ${UTILS_SRC_DIR}/signals_linux.cc
+      ${UTILS_SRC_DIR}/system.cc
+      ${UTILS_SRC_DIR}/resource_usage.cc
+      ${UTILS_SRC_DIR}/appenders_loader.cc
+      ${UTILS_SRC_DIR}/gen_hash.cc
+      ${UTILS_SRC_DIR}/logger_posix.cc
+      ${UTILS_SRC_DIR}/string_utils.cc
+    )
     if(ENABLE_LOG)
       list(APPEND SOURCES
         ${UTILS_SRC_DIR}/logger_posix.cc
@@ -106,27 +125,6 @@ else()
     if(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
      list(APPEND LIBRARIES dl) 
     endif()
-
-    set (SOURCES
-    ${UTILS_SRC_DIR}/bitstream.cc
-    ${UTILS_SRC_DIR}/conditional_variable_posix.cc
-    ${UTILS_SRC_DIR}/file_system.cc
-    ${UTILS_SRC_DIR}/threads/posix_thread.cc   
-    ${UTILS_SRC_DIR}/threads/thread_delegate.cc
-    ${UTILS_SRC_DIR}/threads/thread_validator.cc
-    ${UTILS_SRC_DIR}/threads/async_runner.cc
-    ${UTILS_SRC_DIR}/lock_posix.cc
-    ${UTILS_SRC_DIR}/rwlock_posix.cc
-    ${UTILS_SRC_DIR}/date_time.cc
-    ${UTILS_SRC_DIR}/signals_linux.cc
-    ${UTILS_SRC_DIR}/system.cc
-    ${UTILS_SRC_DIR}/resource_usage.cc
-    ${UTILS_SRC_DIR}/appenders_loader.cc
-    ${UTILS_SRC_DIR}/gen_hash.cc
-    ${UTILS_SRC_DIR}/logger_posix.cc
-    ${UTILS_SRC_DIR}/string_utils.cc
-)
-
 
     if(ENABLE_LOG)
       list(APPEND LIBRARIES log4cxx -L${LOG4CXX_LIBS_DIRECTORY})
