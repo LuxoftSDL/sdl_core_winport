@@ -66,9 +66,10 @@ void SetIconRequest::Run() {
       (*message_)[strings::msg_params][strings::sync_file_name].asString();
 
   std::string full_file_path =
-      profile::Profile::instance()->app_storage_folder() + "/";
+      profile::Profile::instance()->app_storage_folder() +
+      file_system::GetPathDelimiter();
   full_file_path += app->folder_name();
-  full_file_path += "/";
+  full_file_path += file_system::GetPathDelimiter();
   full_file_path += sync_file_name;
 
   if (!file_system::FileExists(full_file_path)) {

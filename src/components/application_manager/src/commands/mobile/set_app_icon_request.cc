@@ -75,9 +75,10 @@ void SetAppIconRequest::Run() {
       (*message_)[strings::msg_params][strings::sync_file_name].asString();
 
   std::string full_file_path =
-      profile::Profile::instance()->app_storage_folder() + "/";
+      profile::Profile::instance()->app_storage_folder() +
+      file_system::GetPathDelimiter();
   full_file_path += app->folder_name();
-  full_file_path += "/";
+  full_file_path += file_system::GetPathDelimiter();
   full_file_path += sync_file_name;
 
   if (!file_system::FileExists(full_file_path)) {
@@ -170,7 +171,7 @@ void SetAppIconRequest::CopyToIconStorage(
   }
 
   const std::string icon_path =
-          icon_storage + "/" + app->mobile_app_id();
+          icon_storage + file_system::GetPathDelimiter() + app->mobile_app_id();
   if (!file_system::CreateFile(icon_path)) {
     LOG4CXX_ERROR(logger_, "Can't create icon: " << icon_path);
     return;
@@ -194,7 +195,7 @@ void SetAppIconRequest::RemoveOldestIcons(const std::string& storage,
   std::vector<std::string>::const_iterator it = icons_list.begin();
   for (;it != icons_list.end(); ++it) {
     const std::string file_name = *it;
-    const std::string file_path = storage + "/" + file_name;
+    const std::string file_path = storage + file_system::GetPathDelimiter() + file_name;
     if (!file_system::FileExists(file_path)) {
       continue;
     }
@@ -208,7 +209,7 @@ void SetAppIconRequest::RemoveOldestIcons(const std::string& storage,
       return;
     }
     const std::string file_name = icon_modification_time.begin()->second;
-    const std::string file_path = storage + "/" + file_name;
+    const std::string file_path = storage + file_system::GetPathDelimiter() + file_name;
     if (!file_system::DeleteFile(file_path)) {
       LOG4CXX_DEBUG(logger_, "Error while deleting icon " << file_path);
     }

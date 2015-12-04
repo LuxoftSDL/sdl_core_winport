@@ -148,7 +148,7 @@ void PutFileRequest::Run() {
     file_path = profile::Profile::instance()->system_files_path();
   } else {
     file_path = profile::Profile::instance()->app_storage_folder();
-    file_path += "/" + application->folder_name();
+    file_path += file_system::GetPathDelimiter() + application->folder_name();
 
     uint32_t space_available = ApplicationManagerImpl::instance()->
         GetAvailableSpaceForApp(application->folder_name());
@@ -182,7 +182,8 @@ void PutFileRequest::Run() {
           application->folder_name()));
   }
 
-  sync_file_name_ = file_path + "/" + sync_file_name_;
+  sync_file_name_ =
+    file_path + file_system::GetPathDelimiter() + sync_file_name_;
   switch (save_result) {
     case mobile_apis::Result::SUCCESS: {
 

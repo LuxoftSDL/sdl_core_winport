@@ -943,7 +943,8 @@ void Profile::UpdateValues() {
                   kDefaultHmiCapabilitiesFileName,
                   kMainSection, kHmiCapabilitiesKey);
 
-  hmi_capabilities_file_name_ = app_config_folder_ + "/" +
+  hmi_capabilities_file_name_ = app_config_folder_ +
+                                file_system::GetPathDelimiter() +
                                 hmi_capabilities_file_name_;
 
   LOG_UPDATED_VALUE(hmi_capabilities_file_name_, kHmiCapabilitiesKey,
@@ -1027,7 +1028,9 @@ void Profile::UpdateValues() {
   ReadStringValue(&named_video_pipe_path_, "", kMediaManagerSection,
                   kNamedVideoPipePathKey);
 
-  named_video_pipe_path_ = app_storage_folder_ + "/" + named_video_pipe_path_;
+  named_video_pipe_path_ = app_storage_folder_ +
+                           file_system::GetPathDelimiter() +
+                           named_video_pipe_path_;
 
   LOG_UPDATED_VALUE(named_video_pipe_path_, kNamedVideoPipePathKey,
                     kMediaManagerSection);
@@ -1036,7 +1039,9 @@ void Profile::UpdateValues() {
   ReadStringValue(&named_audio_pipe_path_, "", kMediaManagerSection,
                   kNamedAudioPipePathKey);
 
-  named_audio_pipe_path_ = app_storage_folder_ + "/" + named_audio_pipe_path_;
+  named_audio_pipe_path_ = app_storage_folder_ +
+                           file_system::GetPathDelimiter() +
+                           named_audio_pipe_path_;
 
   LOG_UPDATED_VALUE(named_audio_pipe_path_, kNamedAudioPipePathKey,
                     kMediaManagerSection);
@@ -1045,7 +1050,9 @@ void Profile::UpdateValues() {
   ReadStringValue(&video_stream_file_, "", kMediaManagerSection,
                   kVideoStreamFileKey);
 
-  video_stream_file_ = app_storage_folder_ + "/" + video_stream_file_;
+  video_stream_file_ = app_storage_folder_ +
+                       file_system::GetPathDelimiter() +
+                       video_stream_file_;
 
   LOG_UPDATED_VALUE(video_stream_file_, kVideoStreamFileKey,
                     kMediaManagerSection);
@@ -1054,7 +1061,9 @@ void Profile::UpdateValues() {
   ReadStringValue(&audio_stream_file_, "", kMediaManagerSection,
                   kAudioStreamFileKey);
 
-  audio_stream_file_ = app_storage_folder_ + "/" + audio_stream_file_;
+  audio_stream_file_ = app_storage_folder_ +
+                       file_system::GetPathDelimiter() +
+                       audio_stream_file_;
 
   LOG_UPDATED_VALUE(audio_stream_file_, kAudioStreamFileKey,
                     kMediaManagerSection);

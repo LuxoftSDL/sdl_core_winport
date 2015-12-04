@@ -2065,7 +2065,8 @@ void ApplicationManagerImpl::CreateApplications(SmartArray& obj_array,
     }
 
     const std::string app_icon_dir(Profile::instance()->app_icons_folder());
-    const std::string full_icon_path(app_icon_dir + "/" + policy_app_id);
+    const std::string full_icon_path(
+      app_icon_dir + file_system::GetPathDelimiter() + policy_app_id);
 
     uint32_t device_id = 0;
 
@@ -2908,7 +2909,7 @@ mobile_apis::Result::eType ApplicationManagerImpl::SaveBinary(
     return mobile_apis::Result::OUT_OF_MEMORY;
   }
 
-  const std::string full_file_path = file_path + "/" + file_name;
+  const std::string full_file_path = file_path + file_system::GetPathDelimiter() + file_name;
   int64_t file_size = file_system::FileSize(full_file_path);
   std::ofstream* file_stream;
   if (offset != 0) {
@@ -2948,7 +2949,7 @@ uint32_t ApplicationManagerImpl::GetAvailableSpaceForApp(
   std::string app_storage_path =
     profile::Profile::instance()->app_storage_folder();
 
-  app_storage_path += "/";
+  app_storage_path += file_system::GetPathDelimiter();
   app_storage_path += folder_name;
 
   if (file_system::DirectoryExists(app_storage_path)) {

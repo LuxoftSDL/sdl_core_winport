@@ -861,7 +861,7 @@ void ApplicationImpl::UpdateHash() {
 void ApplicationImpl::CleanupFiles() {
   std::string directory_name =
       profile::Profile::instance()->app_storage_folder();
-  directory_name += "/" + folder_name();
+  directory_name += file_system::GetPathDelimiter() + folder_name();
 
   if (file_system::DirectoryExists(directory_name)) {
     std::vector<std::string> files = file_system::ListFiles(
@@ -871,7 +871,7 @@ void ApplicationImpl::CleanupFiles() {
     std::vector<std::string>::const_iterator it = files.begin();
     for (; it != files.end(); ++it) {
       std::string file_name = directory_name;
-      file_name += "/";
+      file_name += file_system::GetPathDelimiter();
       file_name += *it;
       app_files_it = app_files_.find(file_name);
       if ((app_files_it == app_files_.end()) ||
@@ -891,7 +891,8 @@ void ApplicationImpl::LoadPersistentFiles() {
 
   if (kWaitingForRegistration == app_state_) {
     const std::string app_icon_dir(Profile::instance()->app_icons_folder());
-    const std::string full_icon_path(app_icon_dir + "/" + mobile_app_id_);
+    const std::string full_icon_path(
+      app_icon_dir + file_system::GetPathDelimiter() + mobile_app_id_);
     if (file_system::FileExists(full_icon_path)) {
       AppFile file;
       file.is_persistent = true;
@@ -904,7 +905,7 @@ void ApplicationImpl::LoadPersistentFiles() {
   }
 
   std::string directory_name = Profile::instance()->app_storage_folder();
-  directory_name += "/" + folder_name();
+  directory_name += file_system::GetPathDelimiter() + folder_name();
 
   if (file_system::DirectoryExists(directory_name)) {
     std::vector<std::string> persistent_files =
@@ -916,7 +917,7 @@ void ApplicationImpl::LoadPersistentFiles() {
       file.is_persistent = true;
       file.is_download_complete = true;
       file.file_name = directory_name;
-      file.file_name += "/";
+      file.file_name += file_system::GetPathDelimiter();
       file.file_name += *it;
       file.file_type = mobile_apis::FileType::BINARY;
       // Search file extension and convert it to the type

@@ -113,13 +113,13 @@ void SystemRequest::Run() {
     binary_data_folder = profile::Profile::instance()->system_files_path();
   } else {
     binary_data_folder = profile::Profile::instance()->app_storage_folder();
-    binary_data_folder += "/";
+    binary_data_folder += file_system::GetPathDelimiter();
     binary_data_folder += application->folder_name();
-    binary_data_folder += "/";
+    binary_data_folder += file_system::GetPathDelimiter();
   }
 
   std::string file_dst_path = profile::Profile::instance()->system_files_path();
-  file_dst_path += "/";
+  file_dst_path += file_system::GetPathDelimiter();
   file_dst_path += file_name;
 
   if ((*message_)[strings::params].keyExists(strings::binary_data)) {
