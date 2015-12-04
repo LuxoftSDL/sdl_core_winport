@@ -117,6 +117,10 @@ SQLError SQLDatabase::LastError() const {
   return SQLError(Error(error_));
 }
 
+bool SQLDatabase::NoErrors() const {
+  return LastError() == OK;
+}
+
 #if defined WIN_NATIVE
 sqlite3* SQLDatabase::conn() const {
   return conn_;

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015, Ford Motor Company
+ * Copyright (c) 2013, Ford Motor Company
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,45 +30,22 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef SRC_COMPONENTS_POLICY_QDB_WRAPPER_INCLUDE_QDB_WRAPPER_SQL_ERROR_H_
-#define SRC_COMPONENTS_POLICY_QDB_WRAPPER_INCLUDE_QDB_WRAPPER_SQL_ERROR_H_
-
-#include <string>
+#include "sql_qt_wrapper/sql_error.h"
 
 namespace utils {
 namespace dbms {
 
-typedef enum Error {
-  OK          = 0,    /* Successful result */
-  ERROR               /* Error */
-} Error;
+SQLError::SQLError(const QSqlError& error)
+  : error_(error) {
+}
 
-/**
- * Provides SQL database error information
- */
-class SQLError {
- public:
-  SQLError(Error number, const std::string& text = "");
-
-  /**
-   * Gets text description of the error
-   * @return text
-   */
-  std::string text() const;
-
- private:
-  /**
-   * Number of the error
-   */
-  Error number_;
-
-  /**
-   * Description of the error
-   */
-  mutable std::string text_;
-};
+std::string SQLError::text() const {
+  std::string err_msg = error_.nativeErrorCode().toStdString();
+  if (err_msg.empty()) {
+    return  "Unknown error";
+  }
+  return err_msg;
+}
 
 }  // namespace dbms
 }  // namespace utils
-
-#endif  // SRC_COMPONENTS_POLICY_QDB_WRAPPER_INCLUDE_QDB_WRAPPER_SQL_ERROR_H_

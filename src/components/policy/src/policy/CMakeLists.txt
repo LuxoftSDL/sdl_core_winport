@@ -41,7 +41,6 @@ set(library_name ${CMAKE_SHARED_LIBRARY_PREFIX}${target}${CMAKE_SHARED_LIBRARY_S
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/Modules/")
 
-
 #Generation of policy table interface...
 #include(${CMAKE_SOURCE_DIR}/tools/intergen/GenerateInterfaceLibrary.cmake)
 
@@ -54,6 +53,7 @@ include_directories (
   ${CMAKE_SOURCE_DIR}/src/components/utils/include/
   ${CMAKE_SOURCE_DIR}/src/components
   ${LOG4CXX_INCLUDE_DIRECTORY}
+  ${COMPONENTS_DIR}/utils/include/utils
 )
 
 set(SOURCES
@@ -75,18 +75,19 @@ include_directories(./policy_table/table_struct)
 add_subdirectory(policy_table/table_struct)
 
 set(LIBRARIES policy_struct dbms jsoncpp Utils)
-if (CMAKE_SYSTEM_NAME STREQUAL "QNX")
-  # --- QDB Wrapper 
-  include_directories (${COMPONENTS_DIR}/utils/include/utils)
-else ()
-  # --- SQLite Wrapper
-  include_directories (${COMPONENTS_DIR}/utils/include/utils)
+
+# --- SQLite Wrapper
+if (${QT_PORT})
+  cmake_policy(SET CMP0020 OLD)
+  find_package(Qt5 REQUIRED Sql)
+  include_directories(${Qt5Sql_INCLUDE_DIRS})
+else()
   list(APPEND LIBRARIES sqlite3)
-endif ()
+endif()
 
 if (${CMAKE_SYSTEM_NAME} MATCHES "Windows")
   source_group("Header Files" FILES ${HEADERS} )        
-  source_group("Source Files" FILES ${SOURCES} )     
+  source_group("Source Files" FILES ${SOURCES} )
   link_directories(${SQLITE_LIB_DIRECTORY}) 
 endif()
 

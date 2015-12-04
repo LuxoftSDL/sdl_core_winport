@@ -101,6 +101,7 @@ if (${CMAKE_SYSTEM_NAME} MATCHES "Windows")
     endif (${HMI_DBUS_API})
                   
     if(${QT_PORT})
+       cmake_policy(SET CMP0020 OLD)
        target_link_libraries("ApplicationManager" ${LIBRARIES} ${QT5Core} )
     else()
         target_link_libraries("ApplicationManager" ${LIBRARIES})        

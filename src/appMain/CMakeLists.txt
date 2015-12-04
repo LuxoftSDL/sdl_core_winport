@@ -171,6 +171,7 @@ endif()
 
 add_executable(${PROJECT} ${HEADERS} ${SOURCES})
 if(${QT_PORT})
+        cmake_policy(SET CMP0020 OLD)
         target_link_libraries(${PROJECT} ${LIBRARIES} ${QT5Core})
   else()
         target_link_libraries(${PROJECT} ${LIBRARIES})
