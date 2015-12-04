@@ -11,5 +11,5 @@
       COMMAND ${CMAKE_SOURCE_DIR}/ms_tools/make_ssl_lib.cmd ${build_type}
   )
 
-set(OPENSSL_INCLUDE_DIRECTORY $ENV{OPENSSL_DIR}/include)
-set(OPENSSL_LIB_DIRECTORY $ENV{OPENSSL_DIR}/lib)
+set(OPENSSL_INCLUDE_DIRECTORY $ENV{OPENSSL_DIR}_${build_type}/include)
+set(OPENSSL_LIB_DIRECTORY $ENV{OPENSSL_DIR}_${build_type}/lib)
