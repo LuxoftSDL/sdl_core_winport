@@ -455,19 +455,21 @@ bool ThreadedSocketConnection::Send() {
       LOG4CXX_DEBUG(logger_, "bytes_sent < 0");
 #if defined(OS_POSIX)
       int socket_error = errno;
+      if (EAGAIN != socket_error && EWOULDBLOCK != socket_error) {
 #elif defined(OS_WINDOWS)
       int socket_error = WSAGetLastError();
+      if (SOCKET_ERROR == bytes_sent && WSAEWOULDBLOCK != socket_error) {
 #else
 #error Unsupported platform
 #endif
-      LOG4CXX_ERROR(
-        logger_,
-        "Send failed for connection " << this << ". Error: "
-          << socket_error);
-      frames_to_send.pop();
-      offset = 0;
-      controller_->DataSendFailed(device_handle(), application_handle(), frame,
-                                  DataSendError());
+        LOG4CXX_ERROR(logger_,
+          "Send failed for connection " << this
+          << ". Error: " << socket_error);
+        frames_to_send.pop();
+        offset = 0;
+        controller_->DataSendFailed(device_handle(), application_handle(), frame,
+                                    DataSendError());
+      }
     }
   }
 
