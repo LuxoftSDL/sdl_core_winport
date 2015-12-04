@@ -97,7 +97,7 @@ SQLError SQLDatabase::LastError() const {
 }
 
 bool SQLDatabase::NoErrors() const {
-  return LastError() == OK;
+  return Error(error_) == OK;
 }
 
 qdb_hdl_t* SQLDatabase::conn() const {
