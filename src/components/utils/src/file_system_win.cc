@@ -340,6 +340,8 @@ const std::string file_system::ConvertPathForURL(const std::string& path) {
   std::string::const_iterator it_path = path.begin();
   std::string::const_iterator it_path_end = path.end();
 
+  // list of characters to be encoded from the link:
+  // http://www.blooberry.com/indexdot/html/topics/urlencoding.htm
   const std::string reserved_symbols = "$+,<>%{}|\^~[]` ";
   std::string::const_iterator it_sym = reserved_symbols.begin();
   std::string::const_iterator it_sym_end = reserved_symbols.end();
