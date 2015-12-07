@@ -58,7 +58,15 @@ namespace logger {
   void set_logs_enabled(bool state);
 } // namespace logger
 
-#define INIT_LOGGER(file_name) logger::init_logger(file_name)
+#define INIT_LOGGER_WITH_CFG(file_name) logger::init_logger(file_name)
+
+#if defined(LOG4CXX_LOGGER)
+#define INIT_LOGGER() INIT_LOGGER_WITH_CFG("log4cxx.properties")
+#else
+// win and qt loggers don't use config file
+#define INIT_LOGGER() INIT_LOGGER_WITH_CFG("")
+#endif
+
 #define DEINIT_LOGGER() logger::deinit_logger()
 
 #define CREATE_LOGGERPTR_GLOBAL(logger_var, logger_name) \
