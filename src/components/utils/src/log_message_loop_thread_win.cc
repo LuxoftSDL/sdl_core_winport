@@ -29,7 +29,7 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-#if defined(OS_WINDOWS) && !defined(QT_PORT)
+#if defined(WIN_NATIVE)
 
 #include <string>
 #include <cstdint>
@@ -119,4 +119,4 @@ void LogMessageHandler::Handle(const LogMessage message) {
 
 } // namespace logger
 
-#endif // OS_WINDOWS
+#endif // WIN_NAITVE
