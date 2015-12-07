@@ -55,17 +55,18 @@ if(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
             ${UTILS_SRC_DIR}/threads/win_thread.cc
             ${UTILS_SRC_DIR}/string_utils.cc
     )
-    if((ENABLE_LOG) AND NOT (${QT_PORT}))
-      list(APPEND src
-        ${UTILS_SRC_DIR}/logger_win.cc
-        ${UTILS_SRC_DIR}/log_message_loop_thread_win.cc
-      )
-    endif()
-    if((ENABLE_LOG) AND (${QT_PORT}))
-      list(APPEND src
-        ${UTILS_SRC_DIR}/logger_qt.cc
-        ${UTILS_SRC_DIR}/log_message_loop_thread_qt.cc
-      )
+    if(ENABLE_LOG)
+      if ((${QT_PORT}))
+        list(APPEND src
+          ${UTILS_SRC_DIR}/logger_qt.cc
+          ${UTILS_SRC_DIR}/log_message_loop_thread_qt.cc
+        )
+      else()
+        list(APPEND src
+          ${UTILS_SRC_DIR}/logger_win.cc
+          ${UTILS_SRC_DIR}/log_message_loop_thread_win.cc
+        )
+      endif()
     endif()
 
     string( REPLACE / \\ group ${inc} )
