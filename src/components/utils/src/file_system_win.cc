@@ -430,4 +430,14 @@ std::string file_system::GetPathDelimiter() {
   return "\\";
 }
 
+std::string file_system::ConcatPath(const std::string& str1,
+                                    const std::string& str2) {
+  return str1 + GetPathDelimiter() + str2;
+}
+std::string file_system::ConcatPath(const std::string& str1,
+                                    const std::string& str2,
+                                    const std::string& str3) {
+  return str1 + GetPathDelimiter() + str2 + GetPathDelimiter() + str3;
+}
+
 #endif // OS_WINDOWS
