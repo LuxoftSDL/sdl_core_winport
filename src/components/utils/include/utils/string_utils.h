@@ -42,6 +42,9 @@ void ReplaceStringInPlace(
 std::string ReplaceString(
   std::string str, const std::string& from, const std::string& to);
 
+std::string RemoveCharsFromString(
+  const std::string& str, const std::string& to_remove);
+
 }  // namespace utils
 
 #endif // SRC_COMPONENTS_UTILS_INCLUDE_UTILS_STRING_UTILS_H_

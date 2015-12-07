@@ -51,6 +51,7 @@
 #include "utils/make_shared.h"
 #include "utils/logger.h"
 #include "utils/make_shared.h"
+#include "utils/string_utils.h"
 
 #include "formatters/formatter_json_rpc.h"
 #include "formatters/CFormatterJsonSDLRPCv2.hpp"
@@ -2335,9 +2336,8 @@ mobile_apis::Result::eType MessageHelper::VerifyImage(
     return mobile_apis::Result::SUCCESS;
   }
 
-  std::string file_path = image[strings::value].asString();
-  file_path.erase(
-    remove(file_path.begin(), file_path.end(), ' '), file_path.end());
+  std::string file_path =
+    utils::RemoveCharsFromString(image[strings::value].asString(), " ");
   if (0 == file_path.size()) {
     return mobile_apis::Result::INVALID_DATA;
   }
