@@ -91,7 +91,7 @@ size_t file_system::DirectorySize(const std::string& path) {
           || 0 == strcmp(result->d_name, ".")) {
         continue;
       }
-      std::string full_element_path = path + "/" + result->d_name;
+      std::string full_element_path = ConcatPath(path, result->d_name);
       if (file_system::IsDirectory(full_element_path)) {
         size += DirectorySize(full_element_path);
       } else {
@@ -250,8 +250,8 @@ void file_system::remove_directory_content(const std::string& directory_name) {
         continue;
       }
 
-      std::string full_element_path = directory_name + "/" + result->d_name;
-
+      std::string full_element_path =
+        ConcatPath(directory_name, result->d_name);
       if (file_system::IsDirectory(full_element_path)) {
         remove_directory_content(full_element_path);
         rmdir(full_element_path.c_str());
@@ -462,7 +462,7 @@ void file_system::MakeAbsolutePath(std::string& path) {
   if (!IsRelativePath(path)) {
     return;
   }
-  path = file_system::CurrentWorkingDirectory() + "/" + path;
+  path = ConcatPath(CurrentWorkingDirectory(), path);
 }
 
 std::string file_system::GetPathDelimiter() {

@@ -112,15 +112,14 @@ void SystemRequest::Run() {
     binary_data = (*message_)[strings::params][strings::binary_data].asBinary();
     binary_data_folder = profile::Profile::instance()->system_files_path();
   } else {
-    binary_data_folder = profile::Profile::instance()->app_storage_folder();
-    binary_data_folder += file_system::GetPathDelimiter();
-    binary_data_folder += application->folder_name();
+    binary_data_folder = file_system::ConcatPath(
+      profile::Profile::instance()->app_storage_folder(),
+      application->folder_name());
     binary_data_folder += file_system::GetPathDelimiter();
   }
 
-  std::string file_dst_path = profile::Profile::instance()->system_files_path();
-  file_dst_path += file_system::GetPathDelimiter();
-  file_dst_path += file_name;
+  std::string file_dst_path = file_system::ConcatPath(
+    profile::Profile::instance()->system_files_path(), file_name);
 
   if ((*message_)[strings::params].keyExists(strings::binary_data)) {
     LOG4CXX_DEBUG(logger_, "Binary data is present. Trying to save it to: "

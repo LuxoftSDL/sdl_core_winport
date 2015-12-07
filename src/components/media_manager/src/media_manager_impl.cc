@@ -142,10 +142,8 @@ void MediaManagerImpl::StartMicrophoneRecording(
   application_manager::ApplicationSharedPtr app =
     application_manager::ApplicationManagerImpl::instance()->
       application(application_key);
-  std::string file_path =
-  profile::Profile::instance()->app_storage_folder();
-  file_path += file_system::GetPathDelimiter();
-  file_path += output_file;
+  std::string file_path = file_system::ConcatPath(
+    profile::Profile::instance()->app_storage_folder(), output_file);
   from_mic_listener_ = new FromMicRecorderListener(file_path);
 #if defined(EXTENDED_MEDIA_MODE)
   if (from_mic_recorder_) {
@@ -166,10 +164,9 @@ void MediaManagerImpl::StartMicrophoneRecording(
       LOG4CXX_WARN(logger_, "Could not remove file " << output_file);
     }
   }
-  const std::string record_file_source =
-      profile::Profile::instance()->app_resourse_folder() +
-      file_system::GetPathDelimiter() +
-      profile::Profile::instance()->recording_file_source();
+  const std::string record_file_source = file_system::ConcatPath(
+      profile::Profile::instance()->app_resourse_folder(),
+      profile::Profile::instance()->recording_file_source());
   std::vector<uint8_t> buf;
   if (file_system::ReadBinaryFile(record_file_source, buf)) {
     if (file_system::Write(file_path, buf)) {
