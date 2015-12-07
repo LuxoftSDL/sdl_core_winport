@@ -30,25 +30,25 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef SRC_COMPONENTS_POLICY_QDB_WRAPPER_INCLUDE_QDB_WRAPPER_SQL_ERROR_H_
-#define SRC_COMPONENTS_POLICY_QDB_WRAPPER_INCLUDE_QDB_WRAPPER_SQL_ERROR_H_
+#ifndef SRC_COMPONENTS_POLICY_SQLITE_WRAPPER_INCLUDE_SQL_QT_WRAPPER_SQL_ERROR_H_
+#define SRC_COMPONENTS_POLICY_SQLITE_WRAPPER_INCLUDE_SQL_QT_WRAPPER_SQL_ERROR_H_
 
 #include <string>
 
+#include <QSqlError>
+#ifdef ERROR
+#undef ERROR
+#endif
+
 namespace utils {
 namespace dbms {
-
-typedef enum Error {
-  OK          = 0,    /* Successful result */
-  ERROR               /* Error */
-} Error;
 
 /**
  * Provides SQL database error information
  */
 class SQLError {
  public:
-  SQLError(Error number, const std::string& text = "");
+  SQLError(const QSqlError& error);
 
   /**
    * Gets text description of the error
@@ -57,18 +57,10 @@ class SQLError {
   std::string text() const;
 
  private:
-  /**
-   * Number of the error
-   */
-  Error number_;
-
-  /**
-   * Description of the error
-   */
-  mutable std::string text_;
+  QSqlError error_;
 };
 
 }  // namespace dbms
 }  // namespace utils
 
-#endif  // SRC_COMPONENTS_POLICY_QDB_WRAPPER_INCLUDE_QDB_WRAPPER_SQL_ERROR_H_
+#endif  // SRC_COMPONENTS_POLICY_SQLITE_WRAPPER_INCLUDE_SQL_QT_WRAPPER_SQL_ERROR_H_

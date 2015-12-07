@@ -46,7 +46,7 @@
 #include "utils/file_system.h"
 #include "utils/gen_hash.h"
 #include "policy/sql_pt_representation.h"
-#include "policy/sql_wrapper.h"
+#include "utils/sql_wrapper.h"
 #include "policy/sql_pt_queries.h"
 #include "policy/policy_helper.h"
 #include "policy/cache_manager.h"
@@ -418,7 +418,7 @@ InitResult SQLPTRepresentation::Init() {
 
 bool SQLPTRepresentation::Close() {
   db_->Close();
-  return db_->LastError().number() == utils::dbms::OK;
+  return !db_->HasErrors();
 }
 
 VehicleData SQLPTRepresentation::GetVehicleData() {
@@ -766,7 +766,7 @@ bool SQLPTRepresentation::SaveFunctionalGroupings(
       return false;
     }
 
-    if (!SaveRpcs(query.LastInsertId(), it->second.rpcs)) {
+    if (!SaveRpcs(id, it->second.rpcs)) {
       return false;
     }
   }
@@ -1058,11 +1058,11 @@ bool SQLPTRepresentation::SaveModuleConfig(
   query.Bind(4, config.timeout_after_x_seconds);
   query.Bind(5, config.certificate);
   config.vehicle_make.is_initialized() ?
-  query.Bind(6, *(config.vehicle_make)) : query.Bind(5);
+  query.Bind(6, *(config.vehicle_make)) : query.Bind(6);
   config.vehicle_model.is_initialized() ?
-  query.Bind(7, *(config.vehicle_model)) : query.Bind(6);
+  query.Bind(7, *(config.vehicle_model)) : query.Bind(7);
   config.vehicle_year.is_initialized() ?
-  query.Bind(8, *(config.vehicle_year)) : query.Bind(7);
+  query.Bind(8, *(config.vehicle_year)) : query.Bind(8);
 
   if (!query.Exec()) {
     LOG4CXX_WARN(logger_, "Incorrect update module config");

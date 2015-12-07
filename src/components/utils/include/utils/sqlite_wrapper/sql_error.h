@@ -84,12 +84,6 @@ class SQLError {
   SQLError(Error number, const std::string& text = "");
 
   /**
-   * Gets number of error
-   * @return error number
-   */
-  Error number() const;
-
-  /**
    * Gets text description of the error
    * @return text
    */

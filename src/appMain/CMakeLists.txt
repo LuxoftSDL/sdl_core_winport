@@ -29,7 +29,9 @@
 
 if (${CMAKE_SYSTEM_NAME} MATCHES "Windows")
   find_package(WinOpenSSL REQUIRED)
-  find_package(WinSqlite3 REQUIRED)
+  if (NOT DEFINED QT_PORT)
+    find_package(WinSqlite3 REQUIRED)
+  endif()
 endif()
 
 IF (HMIADAPTER STREQUAL "messagebroker")
@@ -47,8 +49,7 @@ link_directories(${LIBUSB_LIBS_DIRECTORY})
 cmake_policy(POP)
 
 if (EXTENDED_MEDIA_MODE)
-set(default_media_inc
-${GSTREAMER_gst_INCLUDE_DIR}
+set(default_media_inc ${GSTREAMER_gst_INCLUDE_DIR}
 )
 else(EXTENDED_MEDIA_MODE)
 set(default_media_inc
@@ -158,11 +159,14 @@ set (HEADERS
 )
 
 if(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
-  list(APPEND LIBRARIES sqlite3 bthprops)
+  if (NOT ${QT_PORT})
+    list(APPEND LIBRARIES sqlite3 bthprops)
 #  message(STATUS "Additional lib path ${SQLITE_LIB_DIRECTORY} ${OPENSSL_LIB_DIRECTORY}")
-  link_directories(${SQLITE_LIB_DIRECTORY} ${OPENSSL_LIB_DIRECTORY}) 
+    link_directories(${SQLITE_LIB_DIRECTORY})
+  endif()
+  link_directories (${OPENSSL_LIB_DIRECTORY})
   set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /INCREMENTAL:NO" )
-  set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /FORCE:MULTIPLE" )  
+  set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /FORCE:MULTIPLE" )
 endif()  
 
 if( NOT CMAKE_BUILD_TYPE )
@@ -171,7 +175,7 @@ endif()
 
 add_executable(${PROJECT} ${HEADERS} ${SOURCES})
 if(${QT_PORT})
-        target_link_libraries(${PROJECT} ${LIBRARIES} ${QT5Core})
+        target_link_libraries(${PROJECT} ${LIBRARIES} Qt5::Core)
   else()
         target_link_libraries(${PROJECT} ${LIBRARIES})
 endif()

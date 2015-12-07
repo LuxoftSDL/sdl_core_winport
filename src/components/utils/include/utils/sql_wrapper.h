@@ -36,6 +36,9 @@
 #if __QNX__
 #  include "qdb_wrapper/sql_database.h"
 #  include "qdb_wrapper/sql_query.h"
+#elif defined QT_PORT
+#  include "sql_qt_wrapper/sql_database.h"
+#  include "sql_qt_wrapper/sql_query.h"
 #else  // __QNX__
 #  include "sqlite_wrapper/sql_database.h"
 #  include "sqlite_wrapper/sql_query.h"

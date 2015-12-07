@@ -347,8 +347,7 @@ const std::string kInsertInitData =
   "INSERT OR IGNORE INTO `hmi_level`(`value`) VALUES ('BACKGROUND'); "
   "INSERT OR IGNORE INTO `hmi_level`(`value`) VALUES ('NONE'); "
   "INSERT OR IGNORE INTO `version` (`number`) VALUES('0'); "
-  "INSERT OR IGNORE INTO `_internal_data` (`db_version_hash`) VALUES(0); "
-  "";
+  "INSERT OR IGNORE INTO `_internal_data` (`db_version_hash`) VALUES(0);";
 
 const std::string kDropSchema =
   "BEGIN; "

@@ -40,10 +40,6 @@ SQLError::SQLError(Error number, const std::string& text)
       text_(text) {
 }
 
-Error SQLError::number() const {
-  return number_;
-}
-
 std::string SQLError::text() const {
   if (!text_.empty()) {
     return text_;
