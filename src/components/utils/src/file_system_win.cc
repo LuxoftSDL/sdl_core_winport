@@ -340,7 +340,9 @@ const std::string file_system::ConvertPathForURL(const std::string& path) {
   std::string::const_iterator it_path = path.begin();
   std::string::const_iterator it_path_end = path.end();
 
-  const std::string reserved_symbols = "!#$&'()*+,:;=?@[] ";
+  // list of characters to be encoded from the link:
+  // http://www.blooberry.com/indexdot/html/topics/urlencoding.htm
+  const std::string reserved_symbols = "$+,<>%{}|\^~[]` ";
   std::string::const_iterator it_sym = reserved_symbols.begin();
   std::string::const_iterator it_sym_end = reserved_symbols.end();
 
@@ -348,7 +350,6 @@ const std::string file_system::ConvertPathForURL(const std::string& path) {
   while (it_path != it_path_end) {
     it_sym = reserved_symbols.begin();
     for (; it_sym != it_sym_end; ++it_sym) {
-
       if (*it_path == *it_sym) {
         const size_t size = 100;
         char percent_value[size];
@@ -358,11 +359,9 @@ const std::string file_system::ConvertPathForURL(const std::string& path) {
         continue;
       }
     }
-
     converted_path += *it_path;
     ++it_path;
   }
-
   return converted_path;
 }
 
