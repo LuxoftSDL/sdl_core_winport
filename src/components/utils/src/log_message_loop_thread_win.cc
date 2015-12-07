@@ -29,8 +29,6 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-#if defined(WIN_NATIVE)
-
 #include <string>
 #include <cstdint>
 #include <windows.h>
@@ -118,5 +116,3 @@ void LogMessageHandler::Handle(const LogMessage message) {
 }
 
 } // namespace logger
-
-#endif // WIN_NAITVE

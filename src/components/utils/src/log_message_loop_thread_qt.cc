@@ -29,8 +29,6 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-#if defined(QT_PORT)
-
 #include <string>
 #include <cstdint>
 
@@ -103,5 +101,3 @@ void LogMessageHandler::Handle(const LogMessage message) {
 }
 
 } // namespace logger
-
-#endif // QT_PORT

@@ -29,8 +29,6 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-#if defined(OS_POSIX)
-
 #ifdef LOG4CXX_LOGGER
 #include <log4cxx/logger.h>
 #endif
@@ -49,5 +47,3 @@ void LogMessageHandler::Handle(const LogMessage message) {
 }
 
 } // namespace logger
-
-#endif // OS_POSIX
