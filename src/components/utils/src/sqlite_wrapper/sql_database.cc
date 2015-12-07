@@ -103,7 +103,7 @@ SQLError SQLDatabase::LastError() const {
 }
 
 bool SQLDatabase::HasErrors() const {
-  return Error(error_) == OK;
+  return Error(error_) != OK;
 }
 
 sqlite3* SQLDatabase::conn() const {
