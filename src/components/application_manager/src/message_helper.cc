@@ -51,6 +51,7 @@
 #include "utils/make_shared.h"
 #include "utils/logger.h"
 #include "utils/make_shared.h"
+#include "utils/string_utils.h"
 
 #include "formatters/formatter_json_rpc.h"
 #include "formatters/CFormatterJsonSDLRPCv2.hpp"
@@ -2335,47 +2336,23 @@ mobile_apis::Result::eType MessageHelper::VerifyImage(
     return mobile_apis::Result::SUCCESS;
   }
 
-  const std::string& file_name = image[strings::value].asString();
-
-  std::string str = file_name;
-  str.erase(remove(str.begin(), str.end(), ' '), str.end());
-  if (0 == str.size()) {
+  std::string file_path =
+    utils::RemoveCharsFromString(image[strings::value].asString(), " ");
+  if (0 == file_path.size()) {
     return mobile_apis::Result::INVALID_DATA;
   }
 
-  std::string full_file_path;
-  if (file_name.size() > 0 && file_name[0] == '/') {
-    full_file_path = file_name;
-  } else {
-    const std::string& app_storage_folder =
-            profile::Profile::instance()->app_storage_folder();
-    if (!app_storage_folder.empty()) {
-// TODO(nvaganov@luxoft.com): APPLINK-11293
-      if (app_storage_folder[0] == '/') { // absolute path
-        full_file_path = app_storage_folder + file_system::GetPathDelimiter();
-      }
-      else { // relative path
-        full_file_path = file_system::CurrentWorkingDirectory() +
-                         file_system::GetPathDelimiter() +
-                         app_storage_folder + file_system::GetPathDelimiter();
-      }
-    }
-    else { // empty app storage folder
-      full_file_path = file_system::CurrentWorkingDirectory() +
-                       file_system::GetPathDelimiter();
-    }
-
-    full_file_path += app->folder_name();
-    full_file_path += file_system::GetPathDelimiter();
-    full_file_path += file_name;
+  if (file_system::IsRelativePath(file_path)) {
+    file_path = file_system::ConcatPath(
+      profile::Profile::instance()->app_storage_folder(),
+      app->folder_name(), file_path);
   }
 
-  if (!file_system::FileExists(full_file_path)) {
+  if (!file_system::FileExists(file_path)) {
     return mobile_apis::Result::INVALID_DATA;
   }
 
-  image[strings::value] = full_file_path;
-
+  image[strings::value] = file_path;
   return mobile_apis::Result::SUCCESS;
 }
 

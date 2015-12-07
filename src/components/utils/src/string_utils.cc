@@ -29,6 +29,9 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
+#include <cstdint>
+#include <string>
+#include <algorithm>
 
 #include "utils/string_utils.h"
 
@@ -51,4 +54,14 @@ utils::ReplaceString(
   const std::string& to) {
   ReplaceStringInPlace(str, from, to);
   return str;
+}
+
+std::string utils::RemoveCharsFromString(
+  const std::string& str, const std::string& to_remove) {
+  std::string res = str;
+  for (size_t i = 0; i < to_remove.size(); ++i) {
+    res.erase(
+      std::remove(res.begin(), res.end(), to_remove[i]), res.end());
+  }
+  return res;
 }
