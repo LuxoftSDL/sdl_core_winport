@@ -99,13 +99,8 @@ if (${CMAKE_SYSTEM_NAME} MATCHES "Windows")
     if (${HMI_DBUS_API})
         set (HMI_COMMANDS_SOURCES ${HMI_COMMANDS_SOURCES} ${HMI_COMMANDS_SOURCES_DBUS})
     endif (${HMI_DBUS_API})
-                  
-    if(${QT_PORT})
-       cmake_policy(SET CMP0020 OLD)
-       target_link_libraries("ApplicationManager" ${LIBRARIES} ${QT5Core} )
-    else()
-        target_link_libraries("ApplicationManager" ${LIBRARIES})        
-    endif()
+
+    target_link_libraries("ApplicationManager" ${LIBRARIES})
 else ()
 
   if (${CMAKE_SYSTEM_NAME} MATCHES "Linux")

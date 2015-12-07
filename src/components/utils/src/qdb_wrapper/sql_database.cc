@@ -96,7 +96,7 @@ SQLError SQLDatabase::LastError() const {
   return SQLError(error_, qdb_geterrmsg(conn_));
 }
 
-bool SQLDatabase::NoErrors() const {
+bool SQLDatabase::HasErrors() const {
   return Error(error_) == OK;
 }
 

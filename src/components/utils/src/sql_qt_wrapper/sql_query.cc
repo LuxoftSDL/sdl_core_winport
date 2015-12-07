@@ -45,6 +45,17 @@
 namespace utils {
 namespace dbms {
 
+//  Accroding to the QSqlQuery documentation
+// the query should be moved to the next position after execution
+// in order to receive data using `QSqlQuery::value` method
+// In order to distinguish that value could be obtained
+// it is required to check if current query is active
+// and the pointer position is invalid which is means `before first record`
+#define PREPARE_PULL_VALUE \
+  if (query_.isActive() && !query_.isValid()) { \
+      query_.next(); \
+  } \
+
 SQLQuery::SQLQuery(SQLDatabase* db)
   : query_(static_cast<QSqlDatabase>(*db)) {
 }
@@ -61,6 +72,13 @@ bool SQLQuery::Exec() {
 }
 
 bool SQLQuery::Next() {
+  // According to the Qt documentation the `next()` without
+  // `exec()` will do nothing and return false.
+  // In order to avoid this need to check the `exec()` has been already
+  // called by checking `isActive()` state.
+  if (!query_.isActive()) {
+    return query_.exec() && query_.next();
+  }
   return query_.next();
 }
 
@@ -85,31 +103,37 @@ bool SQLQuery::Exec(const std::string& query) {
 }
 
 bool SQLQuery::GetBoolean(int pos) const {
+  PREPARE_PULL_VALUE
   const QVariant val = query_.value(pos);
   return val.toBool();
 }
 
 int SQLQuery::GetInteger(int pos) const {
+  PREPARE_PULL_VALUE
   const QVariant val = query_.value(pos);
   return val.toInt();
 }
 
 uint32_t SQLQuery::GetUInteger(int pos) const {
+  PREPARE_PULL_VALUE
   const QVariant val = query_.value(pos);
   return val.toUInt();
 }
 
 int64_t SQLQuery::GetLongInt(int pos) const {
+  PREPARE_PULL_VALUE
   const QVariant val = query_.value(pos);
   return val.toULongLong();
 }
 
 double SQLQuery::GetDouble(int pos) const {
+  PREPARE_PULL_VALUE
   const QVariant val = query_.value(pos);
   return val.toDouble();
 }
 
 std::string SQLQuery::GetString(int pos) const {
+  PREPARE_PULL_VALUE
   const QVariant val = query_.value(pos);
   return val.toString().toStdString();
 }

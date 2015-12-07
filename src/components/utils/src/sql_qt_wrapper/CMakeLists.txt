@@ -29,7 +29,6 @@
 # POSSIBILITY OF SUCH DAMAGE.
 
 set(target dbms)
-cmake_policy(SET CMP0020 OLD)
 find_package(Qt5 REQUIRED Sql)
 include_directories(
   ${COMPONENTS_DIR}/utils/include/utils
@@ -44,4 +43,4 @@ set(SOURCES
 
 add_library(${target} ${SOURCES})
 
-target_link_libraries(${target} Utils ${Qt5Sql_LIBRARIES})
+target_link_libraries(${target} Utils Qt5::Sql)

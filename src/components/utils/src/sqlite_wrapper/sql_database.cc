@@ -102,7 +102,7 @@ SQLError SQLDatabase::LastError() const {
   return SQLError(Error(error_));
 }
 
-bool SQLDatabase::NoErrors() const {
+bool SQLDatabase::HasErrors() const {
   return Error(error_) == OK;
 }
 

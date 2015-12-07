@@ -418,7 +418,7 @@ InitResult SQLPTRepresentation::Init() {
 
 bool SQLPTRepresentation::Close() {
   db_->Close();
-  return db_->NoErrors();
+  return !db_->HasErrors();
 }
 
 VehicleData SQLPTRepresentation::GetVehicleData() {

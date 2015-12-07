@@ -40,8 +40,8 @@ SQLError SQLDatabase::LastError() const {
   return SQLError(db_.lastError());
 }
 
-bool SQLDatabase::NoErrors() const {
-  return db_.lastError().type() == QSqlError::NoError;
+bool SQLDatabase::HasErrors() const {
+  return db_.lastError().type() != QSqlError::NoError;
 }
 
 void SQLDatabase::set_path(const std::string& path) {
