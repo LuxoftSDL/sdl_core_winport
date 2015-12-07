@@ -49,16 +49,22 @@ if(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
             ${UTILS_SRC_DIR}/lock_win.cc
             ${UTILS_SRC_DIR}/rwlock_win.cc
             ${UTILS_SRC_DIR}/signals_win.cc
-            ${UTILS_SRC_DIR}/log_message_loop_thread_win.cc
             ${UTILS_SRC_DIR}/threads/thread_validator.cc
             ${UTILS_SRC_DIR}/threads/async_runner.cc
             ${UTILS_SRC_DIR}/threads/thread_delegate_win.cc
             ${UTILS_SRC_DIR}/threads/win_thread.cc
             ${UTILS_SRC_DIR}/string_utils.cc
     )
-    if(ENABLE_LOG)
+    if((ENABLE_LOG) AND NOT (${QT_PORT}))
       list(APPEND src
         ${UTILS_SRC_DIR}/logger_win.cc
+        ${UTILS_SRC_DIR}/log_message_loop_thread_win.cc
+      )
+    endif()
+    if((ENABLE_LOG) AND (${QT_PORT}))
+      list(APPEND src
+        ${UTILS_SRC_DIR}/logger_qt.cc
+        ${UTILS_SRC_DIR}/log_message_loop_thread_qt.cc
       )
     endif()
 
