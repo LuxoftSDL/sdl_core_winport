@@ -89,7 +89,7 @@ class SQLDatabase {
   /**
    * @brief HasErrors Indicate the status of the last executed operation.
    *
-   * @return true in case last operation has been executed successfully, false otherwise.
+   * @return true in case last operation has any errors, false otherwise.
    */
   bool HasErrors() const;
 

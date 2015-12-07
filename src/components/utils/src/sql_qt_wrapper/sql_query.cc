@@ -45,7 +45,7 @@
 namespace utils {
 namespace dbms {
 
-//  Accroding to the QSqlQuery documentation
+// Accroding to the QSqlQuery documentation
 // the query should be moved to the next position after execution
 // in order to receive data using `QSqlQuery::value` method
 // In order to distinguish that value could be obtained
