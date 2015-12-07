@@ -2352,19 +2352,21 @@ mobile_apis::Result::eType MessageHelper::VerifyImage(
     if (!app_storage_folder.empty()) {
 // TODO(nvaganov@luxoft.com): APPLINK-11293
       if (app_storage_folder[0] == '/') { // absolute path
-        full_file_path = app_storage_folder + "/";
+        full_file_path = app_storage_folder + file_system::GetPathDelimiter();
       }
       else { // relative path
-        full_file_path = file_system::CurrentWorkingDirectory() + "/" +
-                         app_storage_folder + "/";
+        full_file_path = file_system::CurrentWorkingDirectory() +
+                         file_system::GetPathDelimiter() +
+                         app_storage_folder + file_system::GetPathDelimiter();
       }
     }
     else { // empty app storage folder
-      full_file_path = file_system::CurrentWorkingDirectory() + "/";
+      full_file_path = file_system::CurrentWorkingDirectory() +
+                       file_system::GetPathDelimiter();
     }
 
     full_file_path += app->folder_name();
-    full_file_path += "/";
+    full_file_path += file_system::GetPathDelimiter();
     full_file_path += file_name;
   }
 

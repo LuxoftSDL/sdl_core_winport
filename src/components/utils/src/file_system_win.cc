@@ -81,7 +81,7 @@ size_t file_system::DirectorySize(const std::string& path) {
     return size;
   }
   
-  const std::string find_string = path + GetPathDelimiter() + "*";
+  const std::string find_string = ConcatPath(path, "*");
   WIN32_FIND_DATA ffd;
 
   HANDLE find = FindFirstFile(find_string.c_str(), &ffd);
@@ -226,7 +226,7 @@ void file_system::remove_directory_content(const std::string& directory_name) {
     return;
   }
 
-  const std::string find_string = directory_name + GetPathDelimiter() + "*";
+  const std::string find_string = ConcatPath(directory_name, "*");
   WIN32_FIND_DATA ffd;
 
   HANDLE find = FindFirstFile(find_string.c_str(), &ffd);
@@ -279,7 +279,7 @@ std::vector<std::string> file_system::ListFiles(
     return list_files;
   }
 
-  const std::string find_string = directory_name + GetPathDelimiter() + "*";
+  const std::string find_string = ConcatPath(directory_name, "*");
   WIN32_FIND_DATA ffd;
 
   HANDLE find = FindFirstFile(find_string.c_str(), &ffd);
@@ -428,6 +428,16 @@ void file_system::MakeAbsolutePath(std::string& path) {
 
 std::string file_system::GetPathDelimiter() {
   return "\\";
+}
+
+std::string file_system::ConcatPath(const std::string& str1,
+                                    const std::string& str2) {
+  return str1 + GetPathDelimiter() + str2;
+}
+std::string file_system::ConcatPath(const std::string& str1,
+                                    const std::string& str2,
+                                    const std::string& str3) {
+  return ConcatPath(ConcatPath(str1, str2), str3);
 }
 
 #endif // OS_WINDOWS

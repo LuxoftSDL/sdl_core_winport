@@ -275,7 +275,22 @@ bool IsRelativePath(const std::string& path);
   */
 void MakeAbsolutePath(std::string& path);
 
+/**
+  * @brief Returns platform specific path delimiter
+  * @return Delimiter string
+  */
 std::string GetPathDelimiter();
+
+/**
+  * @brief Concatenates strings to platform specific path
+  * @param str Strings to be concatenated
+  * @return Concatenated path string
+  */
+std::string ConcatPath(const std::string& str1,
+                       const std::string& str2);
+std::string ConcatPath(const std::string& str1,
+                       const std::string& str2,
+                       const std::string& str3);
 
 }  // namespace file_system
 

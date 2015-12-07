@@ -65,11 +65,9 @@ void SetIconRequest::Run() {
   const std::string& sync_file_name =
       (*message_)[strings::msg_params][strings::sync_file_name].asString();
 
-  std::string full_file_path =
-      profile::Profile::instance()->app_storage_folder() + "/";
-  full_file_path += app->folder_name();
-  full_file_path += "/";
-  full_file_path += sync_file_name;
+  std::string full_file_path = file_system::ConcatPath(
+    profile::Profile::instance()->app_storage_folder(),
+    app->folder_name(), sync_file_name);
 
   if (!file_system::FileExists(full_file_path)) {
     LOG4CXX_ERROR(logger_, "No such file " << full_file_path);

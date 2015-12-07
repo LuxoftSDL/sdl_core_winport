@@ -45,6 +45,7 @@
 #include "application_manager/message_helper.h"
 #include "utils/helpers.h"
 #include "utils/gen_hash.h"
+#include "utils/file_system.h"
 
 namespace {
 const std::string kDatabaseName = "resumption";
@@ -59,7 +60,7 @@ ResumptionDataDB::ResumptionDataDB()
 #ifndef __QNX__
   std::string path = profile::Profile::instance()->app_storage_folder();
   if (!path.empty()) {
-    db_->set_path(path + "/");
+    db_->set_path(path + file_system::GetPathDelimiter());
   }
 #endif  // __QNX__
   }
