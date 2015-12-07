@@ -67,13 +67,13 @@ if(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
     string( REPLACE / \\ group ${src} )
     source_group("Source Files" FILES ${src} )  
     add_library("Utils" ${src} ${inc})
-    if(DEFINED QT_PORT)
+    if(${QT_PORT})
        add_subdirectory(./src/sql_qt_wrapper)
-    else(DEFINED QT_PORT)
+       target_link_libraries("Utils" Qt5::Core ${LIBRARIES})
+    else()
       add_subdirectory(./src/sqlite_wrapper)
       target_link_libraries("Utils" ${LIBRARIES})    
-    endif(DEFINED QT_PORT)
-    
+    endif()
 else()
     set (SOURCES
       ${UTILS_SRC_DIR}/bitstream.cc

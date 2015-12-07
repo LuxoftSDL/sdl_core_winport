@@ -27,6 +27,8 @@
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 
+cmake_minimum_required(VERSION 2.8.11)
+
 if (${CMAKE_SYSTEM_NAME} MATCHES "Windows")
   find_package(WinOpenSSL REQUIRED)
   if (NOT DEFINED QT_PORT)
@@ -175,11 +177,10 @@ endif()
 
 add_executable(${PROJECT} ${HEADERS} ${SOURCES})
 if(${QT_PORT})
-        target_link_libraries(${PROJECT} ${LIBRARIES} Qt5::Core)
-  else()
-        target_link_libraries(${PROJECT} ${LIBRARIES})
+    target_link_libraries(${PROJECT} Qt5::Core ${LIBRARIES})
+ else()
+    target_link_libraries(${PROJECT} ${LIBRARIES})
 endif()
-
 
 file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/log4cxx.properties DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
 file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/audio.8bit.wav DESTINATION ${CMAKE_CURRENT_BINARY_DIR})

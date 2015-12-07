@@ -28,7 +28,7 @@
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 
-cmake_minimum_required(VERSION 2.8.0)
+cmake_minimum_required(VERSION 2.8.11)
 
 set (PROJECT smartDeviceLinkCore)
 
@@ -212,7 +212,8 @@ endif()
 
 if (${QT_PORT})
   set(CMAKE_AUTOMOC ON)
-  find_package(WinQt5Core REQUIRED)
+  find_package(Qt5 REQUIRED Core)
+  include_directories(${Qt5Core_INCLUDE_DIRS})
 endif ()
 
 
