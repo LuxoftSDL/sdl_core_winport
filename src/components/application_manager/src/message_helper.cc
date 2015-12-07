@@ -2335,47 +2335,24 @@ mobile_apis::Result::eType MessageHelper::VerifyImage(
     return mobile_apis::Result::SUCCESS;
   }
 
-  const std::string& file_name = image[strings::value].asString();
-
-  std::string str = file_name;
-  str.erase(remove(str.begin(), str.end(), ' '), str.end());
-  if (0 == str.size()) {
+  std::string file_name = image[strings::value].asString();
+  file_name.erase(
+    remove(file_name.begin(), file_name.end(), ' '), file_name.end());
+  if (0 == file_name.size()) {
     return mobile_apis::Result::INVALID_DATA;
   }
 
-  std::string full_file_path;
-  if (file_name.size() > 0 && file_name[0] == '/') {
-    full_file_path = file_name;
-  } else {
-    const std::string& app_storage_folder =
-            profile::Profile::instance()->app_storage_folder();
-    if (!app_storage_folder.empty()) {
-// TODO(nvaganov@luxoft.com): APPLINK-11293
-      if (app_storage_folder[0] == '/') { // absolute path
-        full_file_path = app_storage_folder + file_system::GetPathDelimiter();
-      }
-      else { // relative path
-        full_file_path = file_system::CurrentWorkingDirectory() +
-                         file_system::GetPathDelimiter() +
-                         app_storage_folder + file_system::GetPathDelimiter();
-      }
-    }
-    else { // empty app storage folder
-      full_file_path = file_system::CurrentWorkingDirectory() +
-                       file_system::GetPathDelimiter();
-    }
-
-    full_file_path += app->folder_name();
-    full_file_path += file_system::GetPathDelimiter();
-    full_file_path += file_name;
+  if (file_system::IsRelativePath(file_name)) {
+    file_name = file_system::ConcatPath(
+      profile::Profile::instance()->app_storage_folder(),
+      app->folder_name(), file_name);
   }
 
-  if (!file_system::FileExists(full_file_path)) {
+  if (!file_system::FileExists(file_name)) {
     return mobile_apis::Result::INVALID_DATA;
   }
 
-  image[strings::value] = full_file_path;
-
+  image[strings::value] = file_name;
   return mobile_apis::Result::SUCCESS;
 }
 
