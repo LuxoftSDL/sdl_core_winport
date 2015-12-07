@@ -52,10 +52,13 @@ namespace dbms {
 // it is required to check if current query is active
 // and the pointer position is invalid which is means `before first record`
 namespace {
+
 void PreparePullValue(QSqlQuery& query) {
   if (query.isActive() && !query.isValid()) {
       query.next();
   }
+}
+
 } // namespace
 
 SQLQuery::SQLQuery(SQLDatabase* db)
@@ -104,37 +107,37 @@ bool SQLQuery::Exec(const std::string& query) {
   return true;
 }
 
-bool SQLQuery::GetBoolean(int pos) const {
+bool SQLQuery::GetBoolean(int pos) {
   PreparePullValue(query_);
   const QVariant val = query_.value(pos);
   return val.toBool();
 }
 
-int SQLQuery::GetInteger(int pos) const {
+int SQLQuery::GetInteger(int pos) {
   PreparePullValue(query_);
   const QVariant val = query_.value(pos);
   return val.toInt();
 }
 
-uint32_t SQLQuery::GetUInteger(int pos) const {
+uint32_t SQLQuery::GetUInteger(int pos) {
   PreparePullValue(query_);
   const QVariant val = query_.value(pos);
   return val.toUInt();
 }
 
-int64_t SQLQuery::GetLongInt(int pos) const {
+int64_t SQLQuery::GetLongInt(int pos) {
   PreparePullValue(query_);
   const QVariant val = query_.value(pos);
   return val.toULongLong();
 }
 
-double SQLQuery::GetDouble(int pos) const {
+double SQLQuery::GetDouble(int pos) {
   PreparePullValue(query_);
   const QVariant val = query_.value(pos);
   return val.toDouble();
 }
 
-std::string SQLQuery::GetString(int pos) const {
+std::string SQLQuery::GetString(int pos) {
   PreparePullValue(query_);
   const QVariant val = query_.value(pos);
   return val.toString().toStdString();

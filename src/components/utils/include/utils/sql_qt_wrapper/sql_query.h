@@ -139,42 +139,42 @@ class SQLQuery {
    * @param pos position of value
    * @return boolean value
    */
-  bool GetBoolean(int pos) const;
+  bool GetBoolean(int pos);
 
   /**
    * Gets value in the result record
    * @param pos position of value
    * @return integer value
    */
-  int GetInteger(int pos) const;
+  int GetInteger(int pos);
 
   /**
    * Gets value in the result record
    * @param pos position of value
    * @return unsigned integer value
    */
-  uint32_t GetUInteger(int pos) const;
+  uint32_t GetUInteger(int pos);
 
   /**
    * Gets value in the result record
    * @param pos position of value
    * @return  int64_t value
    */
-  int64_t GetLongInt(int pos) const;
+  int64_t GetLongInt(int pos);
 
   /**
    * Gets value in the result record
    * @param pos position of value
    * @return double value
    */
-  double GetDouble(int pos) const;
+  double GetDouble(int pos);
 
   /**
    * Gets value in the result record
    * @param pos position of value
    * @return string value
    */
-  std::string GetString(int pos) const;
+  std::string GetString(int pos);
 
   /**
    * Checks if value is null
