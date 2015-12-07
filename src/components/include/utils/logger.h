@@ -42,7 +42,7 @@
 #if defined(LOG4CXX_LOGGER)
 #include <log4cxx/logger.h>
 #include <log4cxx/spi/loggingevent.h>
-#elif defined (OS_WINDOWS) && !defined(QT_PORT)
+#elif defined(WIN_NATIVE)
 #include <windows.h>
 #elif defined(QT_PORT)
 // Qt includes goes here
@@ -127,7 +127,7 @@ do { \
 #undef LOG4CXX_FATAL
 #define LOG4CXX_FATAL(loggerPtr, logEvent) LOG_WITH_LEVEL(loggerPtr, ::log4cxx::Level::getFatal(), logEvent)
 
-#elif defined(OS_WINDOWS) && !defined(QT_PORT)
+#elif defined(WIN_NATIVE)
 
 namespace logger {
   bool push_log(const std::string& logger,
