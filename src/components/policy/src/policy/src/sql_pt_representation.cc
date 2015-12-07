@@ -46,7 +46,7 @@
 #include "utils/file_system.h"
 #include "utils/gen_hash.h"
 #include "policy/sql_pt_representation.h"
-#include "policy/sql_wrapper.h"
+#include "utils/sql_wrapper.h"
 #include "policy/sql_pt_queries.h"
 #include "policy/policy_helper.h"
 #include "policy/cache_manager.h"
