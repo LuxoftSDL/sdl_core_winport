@@ -2335,24 +2335,24 @@ mobile_apis::Result::eType MessageHelper::VerifyImage(
     return mobile_apis::Result::SUCCESS;
   }
 
-  std::string file_name = image[strings::value].asString();
-  file_name.erase(
-    remove(file_name.begin(), file_name.end(), ' '), file_name.end());
-  if (0 == file_name.size()) {
+  std::string file_path = image[strings::value].asString();
+  file_path.erase(
+    remove(file_path.begin(), file_path.end(), ' '), file_path.end());
+  if (0 == file_path.size()) {
     return mobile_apis::Result::INVALID_DATA;
   }
 
-  if (file_system::IsRelativePath(file_name)) {
-    file_name = file_system::ConcatPath(
+  if (file_system::IsRelativePath(file_path)) {
+    file_path = file_system::ConcatPath(
       profile::Profile::instance()->app_storage_folder(),
-      app->folder_name(), file_name);
+      app->folder_name(), file_path);
   }
 
-  if (!file_system::FileExists(file_name)) {
+  if (!file_system::FileExists(file_path)) {
     return mobile_apis::Result::INVALID_DATA;
   }
 
-  image[strings::value] = file_name;
+  image[strings::value] = file_path;
   return mobile_apis::Result::SUCCESS;
 }
 
