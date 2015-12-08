@@ -53,7 +53,7 @@ class Pipe::Impl {
   bool Open();
   bool Close();
 
-  size_t Write(const char* buf, size_t length);
+  ssize_t Write(const char* buf, size_t length);
 
  private:
   int         pipe_;
@@ -99,7 +99,7 @@ bool utils::Pipe::Close() {
   return impl_->Close();
 }
 
-size_t utils::Pipe::Write(const char* buf, size_t length) {
+ssize_t utils::Pipe::Write(const char* buf, size_t length) {
   return impl_->Write(buf, length);
 }
 
@@ -173,7 +173,7 @@ bool utils::Pipe::Impl::Close() {
   return true;
 }
 
-size_t utils::Pipe::Impl::Write(const char* buf, size_t length) {
+ssize_t utils::Pipe::Impl::Write(const char* buf, size_t length) {
   if (NULL == pipe_) {
     return -1;
   }

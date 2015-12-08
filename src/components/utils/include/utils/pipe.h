@@ -35,6 +35,10 @@
 #include <cstdint>
 #include "utils/macro.h"
 
+#if defined(_MSC_VER)
+typedef SSIZE_T ssize_t;
+#endif
+
 namespace utils {
 
 class Pipe {
@@ -52,7 +56,7 @@ class Pipe {
   bool Open();
   bool Close();
 
-  size_t Write(const char* buf, size_t length);
+  ssize_t Write(const char* buf, size_t length);
 
   void Swap(Pipe& rh);
 
