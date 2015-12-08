@@ -623,7 +623,7 @@ add_custom_target(install-3rd_party
   WORKING_DIRECTORY ${3RD_PARTY_BINARY_DIRECTORY}
 )
 
-if((ENABLE_LOG) AND NOT (${QT_PORT}))
+if((ENABLE_LOG) AND NOT (QT_PORT) AND NOT (WIN_NATIVE))
   include_directories ( ${LOG4CXX_INCLUDE_DIRECTORY} )
 endif()
 
