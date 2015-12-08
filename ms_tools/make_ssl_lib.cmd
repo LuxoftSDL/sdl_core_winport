@@ -40,9 +40,9 @@ nmake -f ms\nt.mak install
 popd > NUL
 )
 
-IF NOT $OPENSSL_DIR==%BUILDDIR%\openssl_build_%build_type% (
-setx  OPENSSL_CONF %BUILDDIR%\openssl_build_%build_type%\bin\openssl.cfg
-setx  OPENSSL_DIR %BUILDDIR%\openssl_build_%build_type% 
+IF NOT $OPENSSL_DIR_%build_type%==%BUILDDIR%\openssl_build_%build_type% (
+setx  OPENSSL_CONF_%build_type% %BUILDDIR%\openssl_build_%build_type%\bin\openssl.cfg
+setx  OPENSSL_DIR_%build_type% %BUILDDIR%\openssl_build_%build_type%
 )
 
 goto :endl
