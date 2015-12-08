@@ -92,7 +92,7 @@ void LogMessageHandler::Handle(const LogMessage message) {
   // will be the same for all messages. So the question is next, how to inject correct thread id
   // to the qlogger.
   (qlogger.*log_func)(
-    "[%5s][%s][%d][%s]: %s",
+    "%5s [%s][%d][%s] %s",
     type_str.c_str(),
     message.time.toString("yyyy:MM:dd hh:mm:ss.zzz").toStdString().c_str(),
     message.thread_id,
