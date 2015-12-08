@@ -50,7 +50,7 @@ void Preconditions() {
 }
 
 void InitLogger() {
-  INIT_LOGGER("log4cxx.properties");
+  INIT_LOGGER();
 }
 
 void CreateDeleteAutoTrace(const std::string & testlog) {

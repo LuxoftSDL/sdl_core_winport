@@ -49,7 +49,6 @@ if(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
             ${UTILS_SRC_DIR}/lock_win.cc
             ${UTILS_SRC_DIR}/rwlock_win.cc
             ${UTILS_SRC_DIR}/signals_win.cc
-            ${UTILS_SRC_DIR}/log_message_loop_thread_win.cc
             ${UTILS_SRC_DIR}/threads/thread_validator.cc
             ${UTILS_SRC_DIR}/threads/async_runner.cc
             ${UTILS_SRC_DIR}/threads/thread_delegate_win.cc
@@ -57,9 +56,17 @@ if(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
             ${UTILS_SRC_DIR}/string_utils.cc
     )
     if(ENABLE_LOG)
-      list(APPEND src
-        ${UTILS_SRC_DIR}/logger_win.cc
-      )
+      if ((${QT_PORT}))
+        list(APPEND src
+          ${UTILS_SRC_DIR}/logger_qt.cc
+          ${UTILS_SRC_DIR}/log_message_loop_thread_qt.cc
+        )
+      else()
+        list(APPEND src
+          ${UTILS_SRC_DIR}/logger_win.cc
+          ${UTILS_SRC_DIR}/log_message_loop_thread_win.cc
+        )
+      endif()
     endif()
 
     string( REPLACE / \\ group ${inc} )
@@ -67,13 +74,13 @@ if(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
     string( REPLACE / \\ group ${src} )
     source_group("Source Files" FILES ${src} )  
     add_library("Utils" ${src} ${inc})
-    if(DEFINED QT_PORT)
-       add_subdirectory(./src/sql_qt_wrapper)
-    else(DEFINED QT_PORT)
+    if(${QT_PORT})
+      add_subdirectory(./src/sql_qt_wrapper)
+      target_link_libraries("Utils" Qt5::Core ${LIBRARIES})
+    else()
       add_subdirectory(./src/sqlite_wrapper)
       target_link_libraries("Utils" ${LIBRARIES})    
-    endif(DEFINED QT_PORT)
-    
+    endif()
 else()
     set (SOURCES
       ${UTILS_SRC_DIR}/bitstream.cc

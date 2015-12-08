@@ -39,11 +39,15 @@
 #include <sstream>
 #include <cstdint>
 
-#ifdef LOG4CXX_LOGGER
+#if defined(LOG4CXX_LOGGER)
 #include <log4cxx/logger.h>
 #include <log4cxx/spi/loggingevent.h>
-#else
+#elif defined(WIN_NATIVE)
 #include <windows.h>
+#elif defined(QT_PORT)
+// Qt includes goes here
+#else
+#error Unsupported case for logging includes
 #endif
 
 namespace logger {
@@ -52,9 +56,17 @@ namespace logger {
 
   bool logs_enabled();
   void set_logs_enabled(bool state);
-}
+} // namespace logger
 
-#define INIT_LOGGER(file_name) logger::init_logger(file_name)
+#define INIT_LOGGER_WITH_CFG(file_name) logger::init_logger(file_name)
+
+#if defined(LOG4CXX_LOGGER)
+#define INIT_LOGGER() INIT_LOGGER_WITH_CFG("log4cxx.properties")
+#else
+// win and qt loggers don't use config file
+#define INIT_LOGGER() INIT_LOGGER_WITH_CFG("")
+#endif
+
 #define DEINIT_LOGGER() logger::deinit_logger()
 
 #define CREATE_LOGGERPTR_GLOBAL(logger_var, logger_name) \
@@ -115,7 +127,7 @@ do { \
 #undef LOG4CXX_FATAL
 #define LOG4CXX_FATAL(loggerPtr, logEvent) LOG_WITH_LEVEL(loggerPtr, ::log4cxx::Level::getFatal(), logEvent)
 
-#elif defined(OS_WINDOWS)
+#elif defined(WIN_NATIVE)
 
 namespace logger {
   bool push_log(const std::string& logger,
@@ -159,8 +171,57 @@ do { \
 #undef LOG4CXX_FATAL
 #define LOG4CXX_FATAL(loggerPtr, logEvent) LOG_WITH_LEVEL(loggerPtr, 5, logEvent)
 
-#endif  // OS_POSIX
+#elif defined(QT_PORT) // logging macroses for the Qt case
 
+namespace logger {
+  bool push_log(
+    const std::string& logger,
+    const uint32_t level,
+    const std::string& entry,
+    const char* file,
+    const unsigned long line);
+} // namespace logger
+
+#define CREATE_LOGGERPTR_LOCAL(logger_var, logger_name) \
+    std::string logger_var(logger_name);
+
+#define LOG4CXX_IS_TRACE_ENABLED(logger)
+
+#define LOG_WITH_LEVEL(loggerPtr, logLevel, logEvent, file, line)   \
+do {                                                                \
+     std::stringstream accumulator;                                 \
+     accumulator << logEvent;                                       \
+     logger::push_log(                                              \
+       loggerPtr,                                                   \
+       logLevel,                                                    \
+       accumulator.str(),                                           \
+       file,                                                        \
+       line);                                                       \
+} while (false)
+
+#undef LOG4CXX_TRACE
+#define LOG4CXX_TRACE(loggerPtr, logEvent) LOG_WITH_LEVEL(loggerPtr, 0, logEvent, __FILE__, __LINE__)
+
+#define LOG4CXX_AUTO_TRACE_WITH_NAME_SPECIFIED(loggerPtr, auto_trace)
+#define LOG4CXX_AUTO_TRACE(loggerPtr)
+
+#undef LOG4CXX_DEBUG
+#define LOG4CXX_DEBUG(loggerPtr, logEvent) LOG_WITH_LEVEL(loggerPtr, 1, logEvent, __FILE__, __LINE__)
+
+#undef LOG4CXX_INFO
+#define LOG4CXX_INFO(loggerPtr, logEvent) LOG_WITH_LEVEL(loggerPtr, 2, logEvent, __FILE__, __LINE__)
+
+#undef LOG4CXX_WARN
+#define LOG4CXX_WARN(loggerPtr, logEvent) LOG_WITH_LEVEL(loggerPtr, 3, logEvent, __FILE__, __LINE__)
+
+#undef LOG4CXX_ERROR
+#define LOG4CXX_ERROR(loggerPtr, logEvent) LOG_WITH_LEVEL(loggerPtr, 4, logEvent, __FILE__, __LINE__)
+
+#undef LOG4CXX_FATAL
+#define LOG4CXX_FATAL(loggerPtr, logEvent) LOG_WITH_LEVEL(loggerPtr, 5, logEvent, __FILE__, __LINE__)
+
+#endif // end of cases when logging is enabled
+  
 #else  // ENABLE_LOG is OFF
 
 #define CREATE_LOGGERPTR_GLOBAL(logger_var, logger_name)

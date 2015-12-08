@@ -36,10 +36,14 @@
 #include <queue>
 #include <cstdint>
 
-#ifdef LOG4CXX_LOGGER
+#if defined(LOG4CXX_LOGGER)
 #include <log4cxx/logger.h>
-#else
+#elif defined (OS_WINDOWS) && !defined(QT_PORT)
 #include <windows.h>
+#elif defined(QT_PORT)
+#include <QDateTime>
+#else
+#error Unsupported case for logging includes
 #endif
 
 #include "utils/macro.h"
@@ -56,7 +60,7 @@ typedef struct {
   log4cxx::spi::LocationInfo location;
   log4cxx::LogString thread_name;
 } LogMessage;
-#elif defined(OS_WINDOWS)
+#elif defined(OS_WINDOWS) && !defined(QT_PORT)
 typedef struct {
   HANDLE      logger_handle;
   std::string logger_name;
@@ -66,6 +70,18 @@ typedef struct {
   uint32_t    thread;
   FILE*       file;
 } LogMessage;
+#elif defined(QT_PORT)
+struct LogMessage {
+  std::string logger_name;
+  uint32_t level;
+  QDateTime time;
+  std::string entry;
+  uint32_t thread_id;
+  std::string file;
+  unsigned long line;
+};
+#else
+#error Unsupported case for the LogMessage
 #endif
 
 typedef std::queue<LogMessage> LogMessageQueue;
@@ -81,7 +97,8 @@ class LogMessageLoopThread: public LogMessageLoopThreadTemplate {
   LogMessageLoopThread():
     LogMessageLoopThreadTemplate("Logger", new LogMessageHandler()) {
   }
-  ~LogMessageLoopThread() {};
+
+  ~LogMessageLoopThread() {}
 
  private:
   DISALLOW_COPY_AND_ASSIGN(LogMessageLoopThread);

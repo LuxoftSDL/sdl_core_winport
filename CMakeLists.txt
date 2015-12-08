@@ -28,7 +28,7 @@
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 
-cmake_minimum_required(VERSION 2.8.0)
+cmake_minimum_required(VERSION 2.8.11)
 
 set (PROJECT smartDeviceLinkCore)
 
@@ -47,13 +47,7 @@ option(BUILD_AVAHI_SUPPORT "libavahi support" OFF)
 option(BUILD_BACKTRACE_SUPPORT "backtrace support" OFF)
 option(BUILD_TESTS "Possibility to build and run tests" OFF)
 option(TIME_TESTER "Enable profiling time test util" OFF)
-
-if (${QT_PORT})
-option(ENABLE_LOG "Logging feature" OFF)
-else ()
 option(ENABLE_LOG "Logging feature" ON)
-endif()
-
 option(ENABLE_GCOV "gcov code coverage feature" OFF)
 option(ENABLE_SANITIZE "Sanitize tool" OFF)
 option(ENABLE_SECURITY "Security Ford protocol protection" ON)
@@ -216,7 +210,8 @@ endif()
 
 if (${QT_PORT})
   set(CMAKE_AUTOMOC ON)
-  find_package(WinQt5Core REQUIRED)
+  find_package(Qt5 REQUIRED Core)
+  include_directories(${Qt5Core_INCLUDE_DIRS})
 endif ()
 
 
@@ -628,7 +623,7 @@ add_custom_target(install-3rd_party
   WORKING_DIRECTORY ${3RD_PARTY_BINARY_DIRECTORY}
 )
 
-if(ENABLE_LOG)
+if((ENABLE_LOG) AND NOT (QT_PORT) AND NOT (WIN_NATIVE))
   include_directories ( ${LOG4CXX_INCLUDE_DIRECTORY} )
 endif()
 
