@@ -31,6 +31,7 @@
  */
 #include <windows.h>
 #include <string>
+#include <algorithm>
 
 #include "utils/pipe.h"
 
@@ -107,9 +108,7 @@ utils::Pipe::Pipe(Pipe::Impl* impl)
 }
 
 void utils::Pipe::Swap(Pipe& rh) {
-  Pipe::Impl* tmp = this->impl_;
-  this->impl_ = rh.impl_;
-  rh.impl_ = tmp;
+  std::swap(this->impl_, rh.impl_);
 }
 
 utils::Pipe::Impl::Impl(): pipe_(NULL) {
