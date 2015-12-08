@@ -32,6 +32,7 @@
 #include <sys/socket.h>
 #include <sys/types.h>
 #include <unistd.h>
+#include <algorithm>
 
 #include "utils/socket.h"
 
@@ -133,9 +134,7 @@ utils::Socket::Socket(Socket::Impl* impl)
 }
 
 void utils::Socket::Swap(Socket& rh) {
-  Socket::Impl* tmp = this->impl_;
-  this->impl_ = rh.impl_;
-  rh.impl_ = tmp;
+  std::swap(this->impl_, rh.impl_);
 }
 
 utils::Socket::Impl::Impl(): socket_(NULL) {
