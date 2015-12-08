@@ -50,42 +50,42 @@ void LogMessageHandler::Handle(const LogMessage message) {
 
   std::string type_str;
   switch (message.level) {
-      case 0: {
-        // Qt doesn't have the trace method
-        log_func = &QMessageLogger::debug;
-        type_str = "TRACE";
-        break;
-      }
-      case 1: {
-        log_func = &QMessageLogger::debug;
-        type_str = "DEBUG";
-        break;
-      }
-      case 2: {
-        log_func = &QMessageLogger::info;
-        type_str = "INFO";
-        break;
-      }
-      case 3: {
-        log_func = &QMessageLogger::warning;
-        type_str = "WARN";
-        break;
-      }
-      case 4: {
-        // Qt doesn't have the error method
-        log_func = &QMessageLogger::critical;
-        type_str = "ERROR";
-        break;
-      }
-      case 5: {
-        log_func = &QMessageLogger::fatal;
-        type_str = "FATAL";
-        break;
-      }
-      default: {
-        assert(false && "Unsupported log level");
-      }
+    case 0: {
+      // Qt doesn't have the trace method
+      log_func = &QMessageLogger::debug;
+      type_str = "TRACE";
+      break;
     }
+    case 1: {
+      log_func = &QMessageLogger::debug;
+      type_str = "DEBUG";
+      break;
+    }
+    case 2: {
+      log_func = &QMessageLogger::info;
+      type_str = "INFO";
+      break;
+    }
+    case 3: {
+      log_func = &QMessageLogger::warning;
+      type_str = "WARN";
+      break;
+    }
+    case 4: {
+      // Qt doesn't have the error method
+      log_func = &QMessageLogger::critical;
+      type_str = "ERROR";
+      break;
+    }
+    case 5: {
+      log_func = &QMessageLogger::fatal;
+      type_str = "FATAL";
+      break;
+    }
+    default: {
+      assert(false && "Unsupported log level");
+    }
+  }
 
   // TODO: (malirod) Don't format manually but use QT_MESSAGE_PATTERN or qSetMessagePattern.
   // Unresolved problem: message is written in the separate thread, thus thread id in the log
