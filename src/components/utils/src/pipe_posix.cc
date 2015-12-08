@@ -126,14 +126,14 @@ utils::Pipe::Impl::~Impl() {
 utils::Pipe::Impl::Impl(Impl& rh)
   : pipe_(rh.pipe_) {
   rh.pipe_ = NULL;
-  rh.name_ "";
+  rh.name_ = "";
 }
 
 utils::Pipe::Impl& utils::Pipe::Impl::operator=(Impl& rh) {
   Close();
   pipe_ = rh.pipe_;
   rh.pipe_ = NULL;
-  rh.name_ "";
+  rh.name_ = "";
   return *this;
 }
 
