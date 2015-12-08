@@ -35,6 +35,10 @@
 #include <cstdint>
 #include "utils/macro.h"
 
+#if defined(_MSC_VER)
+typedef SSIZE_T ssize_t;
+#endif
+
 namespace utils {
 
 class Socket {
@@ -62,7 +66,7 @@ class Socket {
   Socket Accept(
     struct sockaddr* addr, size_t* addrlen);
 
-  size_t Send(
+  ssize_t Send(
     const char* buf, size_t length, int flags);
 
   void Swap(Socket& rh);

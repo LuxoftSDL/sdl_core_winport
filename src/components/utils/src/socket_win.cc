@@ -62,7 +62,7 @@ class Socket::Impl {
   Socket Accept(
     struct sockaddr* addr, size_t* addrlen);
 
-  size_t Send(
+  ssize_t Send(
     const char* buf, size_t length, int flags);
 
  private:
@@ -123,7 +123,7 @@ utils::Socket utils::Socket::Accept(
   return impl_->Accept(addr, addrlen);
 }
 
-size_t utils::Socket::Send(
+ssize_t utils::Socket::Send(
 	const char* buf, size_t length, int flags) {
   return impl_->Send(buf, length, flags);
 }
@@ -216,7 +216,7 @@ utils::Socket utils::Socket::Impl::Accept(
     new utils::Socket::Impl(accept(socket_, addr, (int*)addrlen)));
 }
 
-size_t utils::Socket::Impl::Send(
+ssize_t utils::Socket::Impl::Send(
   const char* buf, size_t length, int flags) {
   if (NULL == socket_) {
     return -1;
