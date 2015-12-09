@@ -333,7 +333,7 @@ void StateController::OnStateChanged(ApplicationSharedPtr app,
     ApplicationManagerImpl::instance()->OnHMILevelChanged(app->app_id(),
         old_state->hmi_level(), new_state->hmi_level());
   } else {
-    LOG4CXX_ERROR(logger_, "Status not changed");
+    LOG4CXX_WARN(logger_, "Status not changed");
   }
 }
 

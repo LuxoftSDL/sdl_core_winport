@@ -371,7 +371,7 @@ void ThreadedSocketConnection::Transmit() {
   // means that we received notify, thus we have
   // something in the frames_to_send_
   if (is_frames_to_send_not_empty_event || is_need_socket_write) {
-    LOG4CXX_ERROR(logger_, "Trying to send data");
+    LOG4CXX_DEBUG(logger_, "Trying to send data");
     const bool is_send_ok = Send();
     if (!is_send_ok) {
       LOG4CXX_ERROR(logger_, "Send() failed ");
