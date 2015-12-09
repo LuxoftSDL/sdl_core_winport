@@ -8,16 +8,15 @@ shift
 set QT_TOOLCHAIN="msvc2010"
 set QT_VERSION="5.5"
 
-@echo on
 pushd "%BUILDDIR%" > NUL
 IF %_QT_PORT% == 1 (
+   @echo "Generating for the Qt"
    cmake -G %_SDL_GEN% -DCMAKE_INSTALL_PREFIX:PATH="%QT_HOME_DIR%\\%QT_VERSION%\\%QT_TOOLCHAIN%" -DQT_PORT=1 %SDL_ROOT% 
-   @echo off
    popd
    goto end
 ) ELSE (
+   @echo "Generating for the win native"
    cmake -G %_SDL_GEN% %SDL_ROOT% 
-   @echo off
    popd
   goto end
 )

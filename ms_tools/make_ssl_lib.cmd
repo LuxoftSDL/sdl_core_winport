@@ -41,6 +41,7 @@ popd > NUL
 )
 
 IF NOT $OPENSSL_DIR==%BUILDDIR%\openssl_build_%build_type% (
+@echo "Updating OpenSSL releted env vars"
 setx  OPENSSL_CONF %BUILDDIR%\openssl_build_%build_type%\bin\openssl.cfg
 setx  OPENSSL_DIR %BUILDDIR%\openssl_build_%build_type% 
 )

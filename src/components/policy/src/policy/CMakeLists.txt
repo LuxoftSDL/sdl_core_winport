@@ -30,7 +30,7 @@
 
 set(target Policy)
 if (${CMAKE_SYSTEM_NAME} MATCHES "Windows")
-  if (NOT ${QT_PORT})
+  if(NOT QT_PORT)
       find_package(WinSqlite3 REQUIRED)
   endif()
 else()
@@ -79,14 +79,14 @@ add_subdirectory(policy_table/table_struct)
 set(LIBRARIES policy_struct dbms jsoncpp Utils)
 
 # --- SQLite Wrapper
-if (NOT ${QT_PORT})
+if(NOT QT_PORT)
   list(APPEND LIBRARIES sqlite3)
 endif()
 
 if (${CMAKE_SYSTEM_NAME} MATCHES "Windows")
   source_group("Header Files" FILES ${HEADERS} )        
   source_group("Source Files" FILES ${SOURCES} )
-  if (NOT ${QT_PORT})
+  if(NOT QT_PORT)
     link_directories(${SQLITE_LIB_DIRECTORY})
   endif()
 endif()

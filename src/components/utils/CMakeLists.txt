@@ -56,7 +56,7 @@ if(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
             ${UTILS_SRC_DIR}/string_utils.cc
     )
     if(ENABLE_LOG)
-      if ((${QT_PORT}))
+      if(QT_PORT)
         list(APPEND src
           ${UTILS_SRC_DIR}/logger_qt.cc
           ${UTILS_SRC_DIR}/log_message_loop_thread_qt.cc
@@ -74,7 +74,7 @@ if(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
     string( REPLACE / \\ group ${src} )
     source_group("Source Files" FILES ${src} )  
     add_library("Utils" ${src} ${inc})
-    if(${QT_PORT})
+    if(QT_PORT)
       add_subdirectory(./src/sql_qt_wrapper)
       target_link_libraries("Utils" Qt5::Core ${LIBRARIES})
     else()
