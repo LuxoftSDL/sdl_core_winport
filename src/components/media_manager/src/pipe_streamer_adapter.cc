@@ -29,11 +29,6 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-
-#include <errno.h>
-#include <fcntl.h>
-#include <sys/stat.h>
-//#include <unistd.h>
 #include "utils/logger.h"
 #include "utils/file_system.h"
 #include "config_profile/profile.h"
@@ -55,8 +50,7 @@ PipeStreamerAdapter::PipeStreamer::PipeStreamer(
     PipeStreamerAdapter* const adapter,
     const std::string& named_pipe_path)
   : Streamer(adapter),
-    named_pipe_path_(named_pipe_path),
-    pipe_fd_(0) {
+    named_pipe_path_(named_pipe_path) {
 }
 
 PipeStreamerAdapter::PipeStreamer::~PipeStreamer() {
@@ -64,54 +58,51 @@ PipeStreamerAdapter::PipeStreamer::~PipeStreamer() {
 
 bool PipeStreamerAdapter::PipeStreamer::Connect() {
   LOG4CXX_AUTO_TRACE(logger);
-  /*if (!file_system::CreateDirectoryRecursively(
+  if (!file_system::CreateDirectoryRecursively(
       profile::Profile::instance()->app_storage_folder())) {
     LOG4CXX_ERROR(logger, "Cannot create app folder");
     return false;
   }
 
-  if ((mkfifo(named_pipe_path_.c_str(),
-              S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH) < 0)
-      && (errno != EEXIST)) {
+  if (!pipe_.Create(named_pipe_path_)) {
     LOG4CXX_ERROR(logger, "Cannot create pipe "
                   << named_pipe_path_);
     return false;
   }
 
-  pipe_fd_ = open(named_pipe_path_.c_str(), O_RDWR, 0);
-  if (-1 == pipe_fd_) {
+  if (!pipe_.Open()) {
     LOG4CXX_ERROR(logger, "Cannot open pipe for writing "
                   << named_pipe_path_);
     return false;
   }
 
   LOG4CXX_INFO(logger, "Pipe " << named_pipe_path_
-                << " was successfuly created");*/
+                << " was successfuly created");
   return true;
 }
 
 void PipeStreamerAdapter::PipeStreamer::Disconnect() {
   LOG4CXX_AUTO_TRACE(logger);
-  //close(pipe_fd_);
-  //unlink(named_pipe_path_.c_str());
+  pipe_.Close();
 }
 
 bool PipeStreamerAdapter::PipeStreamer::Send(
     protocol_handler::RawMessagePtr msg) {
   LOG4CXX_AUTO_TRACE(logger);
-  /*ssize_t ret = write(pipe_fd_, msg->data(), msg->data_size());
+  size_t ret = pipe_.Write(reinterpret_cast<const char*>(msg->data()),
+                           msg->data_size());
   if (-1 == ret) {
     LOG4CXX_ERROR(logger, "Failed writing data to pipe "
                   << named_pipe_path_);
     return false;
   }
 
-  if (static_cast<uint32_t>(ret) != msg->data_size()) {
+  if (ret != msg->data_size()) {
     LOG4CXX_WARN(logger, "Couldn't write all the data to pipe "
                  << named_pipe_path_);
   }
 
-  LOG4CXX_INFO(logger, "Streamer::sent " << msg->data_size());*/
+  LOG4CXX_INFO(logger, "Streamer::sent " << msg->data_size());
   return true;
 }
 
