@@ -31,6 +31,11 @@
 */
 #include <csignal>
 
+#ifdef OS_WINDOWS
+#include <windows.h>
+#include <winsock2.h>
+#endif
+
 #include "utils/logger.h"
 #include "life_cycle.h"
 #include "utils/signals.h"
@@ -88,6 +93,15 @@ LifeCycle::LifeCycle()
 
 bool LifeCycle::StartComponents() {
   LOG4CXX_AUTO_TRACE(logger_);
+
+#ifdef OS_WINDOWS
+  WSAData wsa_data;
+  if (0 != WSAStartup(MAKEWORD(2, 2), &wsa_data)) {
+    LOG4CXX_ERROR(logger_, "WSAStartup() failed");
+    return false;
+  }
+#endif
+
   transport_manager_ =
     transport_manager::TransportManagerDefault::instance();
   DCHECK(transport_manager_ != NULL);
@@ -502,6 +516,10 @@ void LifeCycle::StopComponents() {
     time_tester_ = NULL;
   }
 #endif  // TIME_TESTER
+
+#ifdef OS_WINDOWS
+  WSACleanup();
+#endif
 }
 
 }  //  namespace main_namespace

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013, Ford Motor Company
+ * Copyright (c) 2015, Ford Motor Company
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -29,13 +29,64 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-#include "utils/wsa_startup.h"
+#ifndef SRC_COMPONENTS_UTILS_INCLUDE_UTILS_SOCKET_H_
+#define SRC_COMPONENTS_UTILS_INCLUDE_UTILS_SOCKET_H_
 
-WsaStartup::WsaStartup(BYTE minorVer, BYTE majorVer){
-  WSAData wsaData;
-  WSAStartup(MAKEWORD(majorVer, minorVer), &wsaData);
+#include <cstdint>
+#include "utils/macro.h"
+
+#if defined(_MSC_VER)
+typedef SSIZE_T ssize_t;
+#endif
+
+namespace utils {
+
+class Socket {
+ public:
+  Socket();
+  ~Socket();
+
+  Socket(Socket& rh);
+  Socket& operator=(Socket& rh);
+
+  bool Valid() const;
+
+  bool Create(int af, int type, int protocol);
+  bool Close();
+
+  bool SetOptions(
+    int level, int optname,
+    const char* optval, size_t optlen);
+
+  bool Bind(
+    const struct sockaddr* addr, size_t addrlen);
+
+  bool Listen(int backlog);
+
+  Socket Accept(
+    struct sockaddr* addr, size_t* addrlen);
+
+  ssize_t Send(
+    const char* buf, size_t length, int flags);
+
+  void Swap(Socket& rh);
+
+ private:
+  class Impl;
+  explicit Socket(Impl* impl);
+
+  Impl* impl_;
+};
+
+}  // namespace utils
+
+namespace std {
+
+template<>
+void swap<utils::Socket>(utils::Socket& lhs, utils::Socket& rhs) {
+  lhs.Swap(rhs);
 }
 
-WsaStartup::~WsaStartup(){
-  WSACleanup();
-}
+}  // namespace std
+
+#endif // SRC_COMPONENTS_UTILS_INCLUDE_UTILS_SOCKET_H_

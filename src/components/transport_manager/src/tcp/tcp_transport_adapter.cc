@@ -30,8 +30,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 #if defined(OS_WINDOWS)
-#include "utils/wsa_startup.h"
-
+#include "utils/winhdr.h"
 #endif
 
 #include "transport_manager/tcp/tcp_transport_adapter.h"

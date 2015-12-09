@@ -76,9 +76,6 @@ TcpClientListener::TcpClientListener(TransportAdapterController* controller,
                                      const uint16_t port,
                                      const bool enable_keepalive)
     : port_(port),
-#if defined(OS_WINDOWS)
-	    wsaStartup_(1, 2),
-#endif
       enable_keepalive_(enable_keepalive),
       controller_(controller),
       thread_(0),
@@ -95,7 +92,6 @@ int CloseSocket(int socket) {
   return close(socket);
 #elif defined(OS_WINDOWS)
   int result = closesocket(socket);
-  WSACleanup();
   return result;
 #else
 #error Unsupported platform

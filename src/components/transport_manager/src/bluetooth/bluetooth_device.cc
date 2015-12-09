@@ -116,9 +116,6 @@ BluetoothDevice::BluetoothDevice(const bdaddr_t& device_address, const char* dev
                                  const RfcommChannelVector& rfcomm_channels)
 #endif
   : Device(device_name, GetUniqueDeviceId(device_address)),
-#ifdef OS_WINDOWS
-  wsaStartup_(2, 2),
-#endif
     address_(device_address),
     rfcomm_channels_(rfcomm_channels) {
 }

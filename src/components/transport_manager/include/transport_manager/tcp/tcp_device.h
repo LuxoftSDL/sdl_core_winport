@@ -45,7 +45,7 @@
 #include <netinet/in.h>
 #include <sys/socket.h>
 #elif defined(OS_WINDOWS)
-#include "utils/wsa_startup.h"
+#include "utils/winhdr.h"
 #endif
 #include <map>
 #include <string>
@@ -153,7 +153,6 @@ class TcpDevice : public Device {
   mutable sync_primitives::Lock applications_mutex_;
 #if defined(OS_WINDOWS)
   const uint32_t in_addr_;
-  WsaStartup wsaStartup_;
 #else
   const in_addr_t in_addr_;
 #endif

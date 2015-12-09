@@ -66,7 +66,6 @@ if (${CMAKE_SYSTEM_NAME} MATCHES "Windows")
     ${TM_INC_DIR}/tcp/tcp_device.h
     ${TM_INC_DIR}/tcp/tcp_socket_connection.h
     ${TM_INC_DIR}/tcp/tcp_transport_adapter.h
-    ${COMPONENTS_DIR}/include/utils/wsa_startup.h
   )
   set (src
     ${TM_SRC_DIR}/transport_manager_impl.cc
@@ -84,7 +83,6 @@ if (${CMAKE_SYSTEM_NAME} MATCHES "Windows")
     ${TM_SRC_DIR}/tcp/tcp_device.cc
     ${TM_SRC_DIR}/tcp/tcp_socket_connection.cc
     ${TM_SRC_DIR}/tcp/tcp_connection_factory.cc
-	  ${TM_SRC_DIR}/tcp/wsa_startup.cc
    )
    
     source_group("Header Files" FILES ${inc} )
