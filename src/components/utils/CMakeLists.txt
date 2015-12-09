@@ -55,6 +55,7 @@ if(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
             ${UTILS_SRC_DIR}/threads/win_thread.cc
             ${UTILS_SRC_DIR}/string_utils.cc
             ${UTILS_SRC_DIR}/socket_win.cc
+            ${UTILS_SRC_DIR}/pipe_win.cc
     )
     if(ENABLE_LOG)
       if(QT_PORT)
@@ -102,6 +103,7 @@ else()
       ${UTILS_SRC_DIR}/logger_posix.cc
       ${UTILS_SRC_DIR}/string_utils.cc
       ${UTILS_SRC_DIR}/socket_posix.cc
+      ${UTILS_SRC_DIR}/pipe_posix.cc
     )
     if(ENABLE_LOG)
       list(APPEND SOURCES
