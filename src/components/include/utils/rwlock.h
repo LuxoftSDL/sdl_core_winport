@@ -29,32 +29,12 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-
 #ifndef SRC_COMPONENTS_INCLUDE_UTILS_RWLOCK_H_
 #define SRC_COMPONENTS_INCLUDE_UTILS_RWLOCK_H_
 
-#if defined(OS_POSIX)
-#include <pthread.h>
-#elif defined(OS_WINDOWS)
-#include <windows.h>
-#else
-#error "RWLock is not defined for this platform"
-#endif
-
-#include <stdint.h>
 #include "utils/macro.h"
 
 namespace sync_primitives {
-
-namespace impl {
-#if defined(OS_POSIX)
-typedef pthread_rwlock_t PlatformRWLock;
-#elif defined(OS_WINDOWS)
-typedef SRWLOCK PlatformRWLock;
-#else
-#error "RWLock is not defined for this platform"
-#endif
-}  // namespace impl
 
 /**
  * RW locks wrapper
@@ -63,14 +43,8 @@ typedef SRWLOCK PlatformRWLock;
  * To modify a resource, a thread must first acquire the exclusive write lock.
  * An exclusive write lock is not permitted until all read locks have been released.
  */
-
 class RWLock {
  public:
-  /**
-   * @brief RWLockStatus shows current rwlock state:
-   */
-  enum RWLockStatus { kNotAcquired, kAcquiredForReading, kAcquiredForWriting };
-
   RWLock();
   ~RWLock();
 
@@ -134,8 +108,10 @@ class RWLock {
   bool Release();
 
  private:
-  impl::PlatformRWLock rwlock_;
-  RWLockStatus         status_;
+  class Impl;
+  Impl* impl_;
+
+  DISALLOW_COPY_AND_ASSIGN(RWLock);
 };
 
 /**
