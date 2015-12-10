@@ -287,9 +287,7 @@ void ThreadedSocketConnection::Transmit() {
   // TODO: Fix data race. frames_to_send_ should be protected
   if (!frames_to_send_.empty()
     && (poll_fds[0].revents | POLLOUT)) {
-    LOG4CXX_DEBUG(logger_, "frames_to_send_ not empty() ");
-
-    // send data
+    LOG4CXX_DEBUG(logger_, "Frames to send is not empty. Trying to send data");
     const bool send_ok = Send();
     if (!send_ok) {
       LOG4CXX_ERROR(logger_, "Send() failed ");
@@ -371,7 +369,7 @@ void ThreadedSocketConnection::Transmit() {
   // means that we received notify, thus we have
   // something in the frames_to_send_
   if (is_frames_to_send_not_empty_event || is_need_socket_write) {
-    LOG4CXX_DEBUG(logger_, "Trying to send data");
+    LOG4CXX_DEBUG(logger_, "Frames to send is not empty. Trying to send data");
     const bool is_send_ok = Send();
     if (!is_send_ok) {
       LOG4CXX_ERROR(logger_, "Send() failed ");
@@ -437,7 +435,6 @@ bool ThreadedSocketConnection::Send() {
 
   size_t offset = 0;
   while (!frames_to_send.empty()) {
-    LOG4CXX_INFO(logger_, "frames_to_send is not empty");
     ::protocol_handler::RawMessagePtr frame = frames_to_send.front();
     const ssize_t bytes_sent = ::send(socket_,(const char*) frame->data() + offset,
                                       frame->data_size() - offset, 0);
@@ -451,7 +448,6 @@ bool ThreadedSocketConnection::Send() {
         controller_->DataSendDone(device_handle(), application_handle(), frame);
       }
     } else {
-      LOG4CXX_DEBUG(logger_, "bytes_sent < 0");
 #if defined(OS_POSIX)
       int socket_error = errno;
       if (EAGAIN != socket_error && EWOULDBLOCK != socket_error) {
