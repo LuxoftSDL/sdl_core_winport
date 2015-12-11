@@ -39,6 +39,10 @@
 #endif
 #include "utils/logger.h"
 
+#if defined(QT_PORT)
+#include <QCoreApplication>
+#endif
+
 // A macro to set some action for variable to avoid "unused variable" warning
 #define UNUSED(x) (void)x;
 // A macro to disallow the copy constructor and operator= functions
@@ -135,6 +139,12 @@
 #ifdef BUILD_TESTS
 #define FRIEND_TEST(test_case_name, test_name)\
 friend class test_case_name##_##test_name##_Test
+#endif
+
+#if defined(QT_PORT)
+#define PLATFORM_INIT(argc, argv) QCoreApplication application(argc, argv)
+#else
+#define PLATFORM_INIT(argc, argv)
 #endif
 
 #endif  // SRC_COMPONENTS_INCLUDE_UTILS_MACRO_H_

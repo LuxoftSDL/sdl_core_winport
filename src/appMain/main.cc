@@ -40,6 +40,7 @@
 #include "utils/system.h"
 #include "config_profile/profile.h"
 #include "networking.h"
+#include "utils/macro.h"
 
 CREATE_LOGGERPTR_GLOBAL(logger_, "appMain")
 
@@ -94,7 +95,6 @@ bool InitHmi() {
  * \return EXIT_SUCCESS or EXIT_FAILURE
  */
 int32_t main(int32_t argc, char** argv) {
-
   // --------------------------------------------------------------------------
   if ((argc > 1)&&(0 != argv)) {
     profile::Profile::instance()->config_file_name(argv[1]);
@@ -102,6 +102,7 @@ int32_t main(int32_t argc, char** argv) {
     profile::Profile::instance()->config_file_name("smartDeviceLink.ini");
   }
 
+  PLATFORM_INIT(argc, argv);
   // Logger initialization
   INIT_LOGGER();
 
