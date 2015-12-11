@@ -142,34 +142,34 @@ namespace logger {
 
 #define LOG4CXX_IS_TRACE_ENABLED(logger)
 
-#define LOG_WITH_LEVEL(loggerPtr, logLevel, logEvent) \
+#define LOG_WITH_LEVEL(loggerPtr, logLevel, logEvent, line) \
 do { \
      std::stringstream accumulator; \
-     accumulator << logEvent; \
+     accumulator << __FILE__ << ":" << line << " " << __FUNCTION__ << ": " << logEvent; \
      logger::push_log(loggerPtr, logLevel, logger::time_now(), accumulator.str()); \
 } while (false)
 
 #undef LOG4CXX_TRACE
-#define LOG4CXX_TRACE(loggerPtr, logEvent) LOG_WITH_LEVEL(loggerPtr, 0, logEvent)
+#define LOG4CXX_TRACE(loggerPtr, logEvent) LOG_WITH_LEVEL(loggerPtr, 0, logEvent, __LINE__)
 
 #define LOG4CXX_AUTO_TRACE_WITH_NAME_SPECIFIED(loggerPtr, auto_trace)// \
     //logger::AutoTrace auto_trace(loggerPtr, LOG4CXX_LOCATION)
 #define LOG4CXX_AUTO_TRACE(loggerPtr) //LOG4CXX_AUTO_TRACE_WITH_NAME_SPECIFIED(loggerPtr, SDL_local_auto_trace_object)
 
 #undef LOG4CXX_DEBUG
-#define LOG4CXX_DEBUG(loggerPtr, logEvent) LOG_WITH_LEVEL(loggerPtr, 1, logEvent)
+#define LOG4CXX_DEBUG(loggerPtr, logEvent) LOG_WITH_LEVEL(loggerPtr, 1, logEvent, __LINE__)
 
 #undef LOG4CXX_INFO
-#define LOG4CXX_INFO(loggerPtr, logEvent) LOG_WITH_LEVEL(loggerPtr, 2, logEvent)
+#define LOG4CXX_INFO(loggerPtr, logEvent) LOG_WITH_LEVEL(loggerPtr, 2, logEvent, __LINE__)
 
 #undef LOG4CXX_WARN
-#define LOG4CXX_WARN(loggerPtr, logEvent) LOG_WITH_LEVEL(loggerPtr, 3, logEvent)
+#define LOG4CXX_WARN(loggerPtr, logEvent) LOG_WITH_LEVEL(loggerPtr, 3, logEvent, __LINE__)
 
 #undef LOG4CXX_ERROR
-#define LOG4CXX_ERROR(loggerPtr, logEvent) LOG_WITH_LEVEL(loggerPtr, 4, logEvent)
+#define LOG4CXX_ERROR(loggerPtr, logEvent) LOG_WITH_LEVEL(loggerPtr, 4, logEvent, __LINE__)
 
 #undef LOG4CXX_FATAL
-#define LOG4CXX_FATAL(loggerPtr, logEvent) LOG_WITH_LEVEL(loggerPtr, 5, logEvent)
+#define LOG4CXX_FATAL(loggerPtr, logEvent) LOG_WITH_LEVEL(loggerPtr, 5, logEvent, __LINE__)
 
 #elif defined(QT_PORT) // logging macroses for the Qt case
 
