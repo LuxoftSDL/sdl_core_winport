@@ -140,8 +140,6 @@ namespace logger {
 #define CREATE_LOGGERPTR_LOCAL(logger_var, logger_name) \
     std::string logger_var(logger_name);
 
-#define LOG4CXX_IS_TRACE_ENABLED(logger)
-
 #define LOG_WITH_LEVEL(loggerPtr, logLevel, logEvent, line) \
 do { \
      std::stringstream accumulator; \
@@ -149,12 +147,44 @@ do { \
      logger::push_log(loggerPtr, logLevel, logger::time_now(), accumulator.str()); \
 } while (false)
 
+#define LOG_WITH_LEVEL_EXT(loggerPtr, logLevel, logEvent, line, file, function) \
+do { \
+     std::stringstream accumulator; \
+     accumulator << file << ":" << line << " " << function << ": " << logEvent; \
+     logger::push_log(loggerPtr, logLevel, logger::time_now(), accumulator.str()); \
+} while (false)
+
+namespace logger {
+  class AutoTrace {
+   public:
+    AutoTrace(const std::string& logger_ptr,
+              unsigned long line_number,
+              const char* file_name,
+              const char* function_name)
+     : logger_ptr_(logger_ptr),
+       line_number_(line_number),
+       file_name_(file_name),
+       function_name_(function_name) {
+      LOG_WITH_LEVEL_EXT(logger_ptr_, 0, "Enter", line_number_, file_name_, function_name_);
+    };
+    ~AutoTrace() {
+      LOG_WITH_LEVEL_EXT(logger_ptr_, 0, "Exit", line_number_, file_name_, function_name_);
+    };
+   private:
+    const std::string   logger_ptr_;
+    const unsigned long line_number_;
+    const char*         file_name_;
+    const char*         function_name_;
+  };
+}  // namespace logger
+
+#define LOG4CXX_IS_TRACE_ENABLED(logger) true
+
 #undef LOG4CXX_TRACE
 #define LOG4CXX_TRACE(loggerPtr, logEvent) LOG_WITH_LEVEL(loggerPtr, 0, logEvent, __LINE__)
 
-#define LOG4CXX_AUTO_TRACE_WITH_NAME_SPECIFIED(loggerPtr, auto_trace)// \
-    //logger::AutoTrace auto_trace(loggerPtr, LOG4CXX_LOCATION)
-#define LOG4CXX_AUTO_TRACE(loggerPtr) //LOG4CXX_AUTO_TRACE_WITH_NAME_SPECIFIED(loggerPtr, SDL_local_auto_trace_object)
+#define LOG4CXX_AUTO_TRACE(loggerPtr) \
+    logger::AutoTrace auto_trace(loggerPtr, __LINE__, __FILE__, __FUNCTION__);
 
 #undef LOG4CXX_DEBUG
 #define LOG4CXX_DEBUG(loggerPtr, logEvent) LOG_WITH_LEVEL(loggerPtr, 1, logEvent, __LINE__)
