@@ -155,27 +155,31 @@ do { \
 } while (false)
 
 namespace logger {
-  class AutoTrace {
-   public:
-    AutoTrace(const std::string& logger_ptr,
-              unsigned long line_number,
-              const char* file_name,
-              const char* function_name)
-     : logger_ptr_(logger_ptr),
-       line_number_(line_number),
-       file_name_(file_name),
-       function_name_(function_name) {
-      LOG_WITH_LEVEL_EXT(logger_ptr_, 0, "Enter", line_number_, file_name_, function_name_);
-    };
-    ~AutoTrace() {
-      LOG_WITH_LEVEL_EXT(logger_ptr_, 0, "Exit", line_number_, file_name_, function_name_);
-    };
-   private:
-    const std::string   logger_ptr_;
-    const unsigned long line_number_;
-    const char*         file_name_;
-    const char*         function_name_;
+
+class AutoTrace {
+ public:
+  AutoTrace(const std::string& logger_ptr,
+            unsigned long line_number,
+            const char* file_name,
+            const char* function_name)
+    : logger_ptr_(logger_ptr),
+      line_number_(line_number),
+      file_name_(file_name),
+      function_name_(function_name) {
+    LOG_WITH_LEVEL_EXT(logger_ptr_, 0, "Enter", line_number_, file_name_, function_name_);
   };
+
+  ~AutoTrace() {
+    LOG_WITH_LEVEL_EXT(logger_ptr_, 0, "Exit", line_number_, file_name_, function_name_);
+  };
+
+ private:
+  const std::string   logger_ptr_;
+  const unsigned long line_number_;
+  const char*         file_name_;
+  const char*         function_name_;
+};
+
 }  // namespace logger
 
 #define LOG4CXX_IS_TRACE_ENABLED(logger) true
