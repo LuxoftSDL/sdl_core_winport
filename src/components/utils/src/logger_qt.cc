@@ -36,6 +36,7 @@
 
 #include "utils/logger.h"
 #include "utils/log_message_loop_thread.h"
+#include "config_profile/profile.h"
 
 namespace {
 
@@ -77,7 +78,8 @@ bool logger::init_logger(const std::string&) {
   if (!message_loop_thread) {
     message_loop_thread = new LogMessageLoopThread();
   }
-  set_logs_enabled(true);
+  set_logs_enabled(
+    profile::Profile::instance()->logs_enabled());
   return true;
 }
 
