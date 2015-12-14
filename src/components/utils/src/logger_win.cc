@@ -37,14 +37,12 @@ namespace {
   logger::LogMessageLoopThread* message_loop_thread = NULL;
 
   uint32_t log_level = 0;
-  HANDLE logger_handle = NULL;
   FILE* output_file = NULL;
 }
 
 namespace logger {
 
 bool init_logger(const std::string& ini_file_name) {
-  logger_handle = RegisterEventSource(NULL, TEXT("SDL"));
   output_file = fopen("SmartDeviceLink.log", "a");
 
   if (!message_loop_thread) {
@@ -63,7 +61,6 @@ void deinit_logger() {
   message_loop_thread = NULL;
 
   fclose(output_file);
-  DeregisterEventSource(logger_handle);
 }
 
 bool logs_enabled() {
@@ -88,7 +85,7 @@ bool push_log(const std::string& logger,
     return false;
   }
   LogMessage message =
-      { logger_handle, logger, level, time, entry,
+      { logger, level, time, entry,
         line_number, file_name, function_name,
         static_cast<uint32_t>(GetCurrentThreadId()), output_file };
   message_loop_thread->PostMessage(message);

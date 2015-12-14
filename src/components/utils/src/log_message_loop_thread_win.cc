@@ -108,17 +108,6 @@ void LogMessageHandler::Handle(const LogMessage message) {
         << message.function_name << ": "
         << message.entry;
 
-  // post log to Windows Event Logging system
-  ReportEvent(message.logger_handle,
-              log_type,
-              0,
-              0,
-              NULL,
-              1,
-              0,
-              (LPCSTR*)entry.str().c_str(),
-              NULL);
-
   // dump log string to console
   printf(entry.str().c_str());
   printf("\n");

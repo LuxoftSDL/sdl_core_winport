@@ -62,7 +62,6 @@ typedef struct {
 } LogMessage;
 #elif defined(WIN_NATIVE)
 typedef struct {
-  HANDLE logger_handle;
   std::string logger;
   uint32_t level;
   SYSTEMTIME time;
