@@ -31,20 +31,23 @@
  */
 #include <string>
 #include <cstdint>
-
 #include <QtDebug>
 
 #include "utils/macro.h"
 #include "utils/log_message_loop_thread.h"
 
+#ifdef max
+#undef max
+#endif
+
 namespace logger {
 
 void LogMessageHandler::Handle(const LogMessage message) {
   QMessageLogger qlogger(
-    message.file.c_str(),
-    message.line,
-    NULL,
-    message.logger_name.c_str());
+    message.file_name,
+    message.line_number,
+    message.function_name,
+    message.logger.c_str());
 
   void (QMessageLogger:: * log_func) (const char*, ...) const = 0;
 
@@ -63,12 +66,12 @@ void LogMessageHandler::Handle(const LogMessage message) {
     }
     case 2: {
       log_func = &QMessageLogger::info;
-      type_str = "INFO";
+      type_str = "INFO ";
       break;
     }
     case 3: {
       log_func = &QMessageLogger::warning;
-      type_str = "WARN";
+      type_str = "WARN ";
       break;
     }
     case 4: {
@@ -91,12 +94,24 @@ void LogMessageHandler::Handle(const LogMessage message) {
   // Unresolved problem: message is written in the separate thread, thus thread id in the log
   // will be the same for all messages. So the question is next, how to inject correct thread id
   // to the qlogger.
+  std::string file_name_str(message.file_name);
+  size_t slash_pos =
+    file_name_str.find_last_of("/", file_name_str.length());
+  size_t back_slash_pos =
+    file_name_str.find_last_of("\\", file_name_str.length());
+  file_name_str = file_name_str.substr(
+    std::max(slash_pos != std::string::npos ? slash_pos + 1 : 0,
+             back_slash_pos != std::string::npos ? back_slash_pos + 1 : 0));
+
   (qlogger.*log_func)(
-    "%5s [%s][%d][%s] %s",
+    "%s [%s][%d][%s] %s:%d %s: %s",
     type_str.c_str(),
     message.time.toString("yyyy:MM:dd hh:mm:ss.zzz").toStdString().c_str(),
     message.thread_id,
-    message.logger_name.c_str(),
+    message.logger.c_str(),
+    file_name_str.c_str(),
+    message.line_number,
+    message.function_name,
     message.entry.c_str());
 }
 

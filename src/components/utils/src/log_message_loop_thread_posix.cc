@@ -41,7 +41,7 @@ namespace logger {
 void LogMessageHandler::Handle(const LogMessage message) {
   message.logger->forcedLog(message.level,
                             message.entry,
-                            message.time_stamp,
+                            message.time,
                             message.location,
                             message.thread_name);
 }

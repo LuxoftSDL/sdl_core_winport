@@ -30,11 +30,16 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 #include <string>
+#include <sstream>
 #include <cstdint>
 #include <windows.h>
 
 #include "utils/macro.h"
 #include "utils/log_message_loop_thread.h"
+
+#ifdef max
+#undef max
+#endif
 
 namespace logger {
 
@@ -84,34 +89,44 @@ void LogMessageHandler::Handle(const LogMessage message) {
               message.time.wHour, message.time.wMinute,
               message.time.wSecond, message.time.wMilliseconds);
 
-  char thread_buf[8];
-  _snprintf_s(thread_buf, sizeof(thread_buf), "%i", message.thread);
+  std::string file_name_str(message.file_name);
+  size_t slash_pos =
+    file_name_str.find_last_of("/", file_name_str.length());
+  size_t back_slash_pos =
+    file_name_str.find_last_of("\\", file_name_str.length());
+  file_name_str = file_name_str.substr(
+    std::max(slash_pos != std::string::npos ? slash_pos + 1 : 0,
+             back_slash_pos != std::string::npos ? back_slash_pos + 1 : 0));
 
-  const std::string entry =
-      type_str + " [" + time_buf + "]" +
-      " [" + thread_buf + "]" +
-      " [" + message.logger_name + "] " + message.entry;
+  std::stringstream entry;
+  entry << type_str
+        << " [" << time_buf << "]"
+        << " [" << message.thread_id << "]"
+        << " [" << message.logger << "] "
+        << file_name_str << ":"
+        << message.line_number << " "
+        << message.function_name << ": "
+        << message.entry;
 
-  // AN: This functionality is disabled until
-  // Windows Event Logging will be approved by customer
-  /*ReportEvent(message.logger_handle,
+  // post log to Windows Event Logging system
+  ReportEvent(message.logger_handle,
               log_type,
               0,
               0,
               NULL,
               1,
               0,
-              (LPCSTR*)message.entry.c_str(),
-              NULL);*/
+              (LPCSTR*)entry.str().c_str(),
+              NULL);
 
   // dump log string to console
-  printf(entry.c_str());
+  printf(entry.str().c_str());
   printf("\n");
   // dump log string to file
-  if (message.file) {
-    fprintf(message.file, entry.c_str());
-    fprintf(message.file, "\n");
-    fflush(message.file);
+  if (message.output_file) {
+    fprintf(message.output_file, entry.str().c_str());
+    fprintf(message.output_file, "\n");
+    fflush(message.output_file);
   }
 }
 
