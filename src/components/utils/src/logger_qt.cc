@@ -29,8 +29,6 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-#if defined(QT_PORT)
-
 #include <QThread>
 #include <QDateTime>
 #include <QFile>
@@ -110,8 +108,9 @@ bool logger::push_log(
   const std::string& logger,
   const uint32_t level,
   const std::string& entry,
-  const char* file,
-  const unsigned long line) {
+  unsigned long line_number,
+  const char* file_name,
+  const char* function_name) {
   if (!logs_enabled()) {
     return false;
   }
@@ -121,13 +120,12 @@ bool logger::push_log(
     level,
     QDateTime::currentDateTime(),
     entry,
-    reinterpret_cast<uint32_t>(QThread::currentThreadId()),
-    file,
-    line};
+    line_number,
+    file_name,
+    function_name,
+    reinterpret_cast<uint32_t>(QThread::currentThreadId()) };
 
   message_loop_thread->PostMessage(message);
 
   return true;
 }
-
-#endif // OS_WINDOWS

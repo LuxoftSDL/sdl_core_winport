@@ -29,8 +29,6 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-#if defined(OS_WINDOWS)
-
 #include "utils/logger.h"
 #include "utils/log_message_loop_thread.h"
 
@@ -45,7 +43,7 @@ namespace {
 
 namespace logger {
 
-bool init_logger(const std::string& file_name) {
+bool init_logger(const std::string& ini_file_name) {
   logger_handle = RegisterEventSource(NULL, TEXT("SDL"));
   output_file = fopen("SmartDeviceLink.log", "a");
 
@@ -79,7 +77,10 @@ void set_logs_enabled(bool state) {
 bool push_log(const std::string& logger,
               uint32_t level,
               SYSTEMTIME time,
-              const std::string& entry) {
+              const std::string& entry,
+              unsigned long line_number,
+              const char* file_name,
+              const char* function_name) {
   if (!logs_enabled()) {
     return false;
   }
@@ -88,6 +89,7 @@ bool push_log(const std::string& logger,
   }
   LogMessage message =
       { logger_handle, logger, level, time, entry,
+        line_number, file_name, function_name,
         static_cast<uint32_t>(GetCurrentThreadId()), output_file };
   message_loop_thread->PostMessage(message);
   return true;
@@ -100,5 +102,3 @@ SYSTEMTIME time_now() {
 }
 
 } // namespace logger
-
-#endif // OS_WINDOWS
