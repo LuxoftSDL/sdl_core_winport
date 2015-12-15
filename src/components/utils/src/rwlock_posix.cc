@@ -29,96 +29,110 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-#if defined(OS_POSIX)
+#include <pthread.h>
 
 #include "utils/rwlock.h"
 #include "utils/logger.h"
 
-namespace sync_primitives {
-
 CREATE_LOGGERPTR_GLOBAL(logger_, "Utils")
 
-RWLock::RWLock()
-  : status_(kNotAcquired) {
+namespace sync_primitives {
+
+class RWLock::Impl {
+ public:
+  Impl();
+  ~Impl();
+
+  bool AcquireForReading();
+  bool TryAcquireForReading();
+  bool TryAcquireForWriting();
+  bool AcquireForWriting();
+  bool Release();
+
+ private:
+  pthread_rwlock_t rwlock_;
+
+  DISALLOW_COPY_AND_ASSIGN(Impl);
+};
+
+}  // namespace sync_primitives
+
+sync_primitives::RWLock::RWLock()
+  : impl_(new RWLock::Impl) {
+}
+
+sync_primitives::RWLock::~RWLock() {
+  delete impl_;
+}
+
+bool sync_primitives::RWLock::AcquireForReading() {
+  return impl_->AcquireForReading();
+}
+
+bool sync_primitives::RWLock::TryAcquireForReading() {
+  return impl_->TryAcquireForReading();
+}
+
+bool sync_primitives::RWLock::AcquireForWriting() {
+  return impl_->AcquireForWriting();
+}
+
+bool sync_primitives::RWLock::TryAcquireForWriting() {
+  return impl_->TryAcquireForWriting();
+}
+
+bool sync_primitives::RWLock::Release() {
+  return impl_->Release();
+}
+
+sync_primitives::RWLock::Impl::Impl() {
   if (pthread_rwlock_init(&rwlock_, 0) != 0) {
     LOG4CXX_ERROR(logger_, "Failed to initialize rwlock");
   }
 }
 
-RWLock::~RWLock() {
-  if (kNotAcquired != status_) {
-    LOG4CXX_ERROR(logger_, "RWLock is acquired");
-  }
+sync_primitives::RWLock::Impl::~Impl() {
   if (pthread_rwlock_destroy(&rwlock_) != 0) {
     LOG4CXX_ERROR(logger_, "Failed to destroy rwlock");
   }
 }
 
-bool RWLock::AcquireForReading() {
-  if (kNotAcquired != status_) {
-    LOG4CXX_WARN(logger_, "RWLock is already acquired");
-	return false;
-  }
+bool sync_primitives::RWLock::Impl::AcquireForReading() {
   if (pthread_rwlock_rdlock(&rwlock_) != 0) {
     LOG4CXX_WARN(logger_, "Failed to acquire rwlock for reading");
     return false;
   }
-  status_ = kAcquiredForReading;
   return true;
 }
 
-bool RWLock::TryAcquireForReading() {
-  if (kNotAcquired != status_) {
-    LOG4CXX_WARN(logger_, "RWLock is already acquired");
-	return false;
-  }
+bool sync_primitives::RWLock::Impl::TryAcquireForReading() {
   if (pthread_rwlock_tryrdlock(&rwlock_) != 0) {
     LOG4CXX_WARN(logger_, "Failed to acquire rwlock for reading");
     return false;
   }
-  status_ = kAcquiredForReading;
   return true;
 }
 
-bool RWLock::AcquireForWriting() {
-  if (kNotAcquired != status_) {
-    LOG4CXX_WARN(logger_, "RWLock is already acquired");
-	return false;
-  }
+bool sync_primitives::RWLock::Impl::AcquireForWriting() {
   if (pthread_rwlock_wrlock(&rwlock_) != 0) {
     LOG4CXX_WARN(logger_, "Failed to acquire rwlock for writing");
     return false;
   }
-  status_ = kAcquiredForWriting;
   return true;
 }
 
-bool RWLock::TryAcquireForWriting() {
-  if (kNotAcquired != status_) {
-    LOG4CXX_WARN(logger_, "RWLock is already acquired");
-	return false;
-  }
+bool sync_primitives::RWLock::Impl::TryAcquireForWriting() {
   if (pthread_rwlock_trywrlock(&rwlock_) != 0) {
     LOG4CXX_WARN(logger_, "Failed to acquire rwlock for writing");
     return false;
   }
-  status_ = kAcquiredForWriting;
   return true;
 }
 
-bool RWLock::Release() {
-  if (kNotAcquired == status_) {
-    LOG4CXX_WARN(logger_, "RWLock is not acquired");
-	return false;
-  }
+bool sync_primitives::RWLock::Impl::Release() {
   if (pthread_rwlock_unlock(&rwlock_) != 0) {
     LOG4CXX_ERROR(logger_, "Failed to release rwlock");
     return false;
   }
-  status_ = kNotAcquired;
   return true;
 }
-
-}  // namespace sync_primitives
-
-#endif // OS_POSIX
