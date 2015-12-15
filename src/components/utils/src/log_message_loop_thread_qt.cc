@@ -86,7 +86,7 @@ void LogMessageHandler::Handle(const LogMessage message) {
       break;
     }
     default: {
-      assert(false && "Unsupported log level");
+      NOTREACHED();
     }
   }
 

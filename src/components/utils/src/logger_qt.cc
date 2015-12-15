@@ -66,7 +66,7 @@ bool logger::init_logger(const std::string&) {
   static QFile log_file(kLogFileName);
 
   if (log_file.open(QIODevice::WriteOnly | QIODevice::Append | QIODevice::Text)) {
-    assert(!log_file_ptr);
+    DCHECK(!log_file_ptr);
     log_file_ptr = &log_file;
   } else {
     fprintf(stderr, "Logging initialization has failed. Failed to open log file for writing.\n");
@@ -87,7 +87,7 @@ void logger::deinit_logger() {
   CREATE_LOGGERPTR_LOCAL(logger_, "Logger");
   LOG4CXX_DEBUG(logger_, "Logger deinitialization");
 
-  assert(log_file_ptr);
+  DCHECK(log_file_ptr);
   if (log_file_ptr) {
     log_file_ptr ->close();
     log_file_ptr = NULL;
