@@ -50,34 +50,34 @@ void LogMessageHandler::Handle(const LogMessage message) {
 
   std::string type_str;
   switch (message.level) {
-    case 0: {
+    case LOGLEVEL_TRACE: {
       // Qt doesn't have the trace method
       log_func = &QMessageLogger::debug;
       type_str = "TRACE";
       break;
     }
-    case 1: {
+    case LOGLEVEL_DEBUG: {
       log_func = &QMessageLogger::debug;
       type_str = "DEBUG";
       break;
     }
-    case 2: {
+    case LOGLEVEL_INFO: {
       log_func = &QMessageLogger::info;
       type_str = "INFO ";
       break;
     }
-    case 3: {
+    case LOGLEVEL_WARN: {
       log_func = &QMessageLogger::warning;
       type_str = "WARN ";
       break;
     }
-    case 4: {
+    case LOGLEVEL_ERROR: {
       // Qt doesn't have the error method
       log_func = &QMessageLogger::critical;
       type_str = "ERROR";
       break;
     }
-    case 5: {
+    case LOGLEVEL_FATAL: {
       log_func = &QMessageLogger::fatal;
       type_str = "FATAL";
       break;

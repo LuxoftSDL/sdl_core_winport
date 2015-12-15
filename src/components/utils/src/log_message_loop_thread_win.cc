@@ -41,43 +41,34 @@
 namespace logger {
 
 void LogMessageHandler::Handle(const LogMessage message) {
-  WORD log_type;
   std::string type_str;
   switch (message.level) {
-    case 0: {
-      log_type = EVENTLOG_INFORMATION_TYPE;
+    case LOGLEVEL_TRACE: {
       type_str = "TRACE";
       break;
     }
-    case 1: {
-      log_type = EVENTLOG_INFORMATION_TYPE;
+    case LOGLEVEL_DEBUG: {
       type_str = "DEBUG";
       break;
     }
-    case 2: {
-      log_type = EVENTLOG_INFORMATION_TYPE;
+    case LOGLEVEL_INFO: {
       type_str = "INFO ";
       break;
     }
-    case 3: {
-      log_type = EVENTLOG_WARNING_TYPE;
+    case LOGLEVEL_WARN: {
       type_str = "WARN ";
       break;
     }
-    case 4: {
-      log_type = EVENTLOG_ERROR_TYPE;
+    case LOGLEVEL_ERROR: {
       type_str = "ERROR";
       break;
     }
-    case 5: {
-      log_type = EVENTLOG_ERROR_TYPE;
+    case LOGLEVEL_FATAL: {
       type_str = "FATAL";
       break;
     }
     default: {
-      log_type = EVENTLOG_INFORMATION_TYPE;
-      type_str = "TRACE";
-      break;
+      NOTREACHED();
     }
   }
 

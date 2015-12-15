@@ -108,7 +108,7 @@ void logger::set_logs_enabled(bool state) {
 
 bool logger::push_log(
   const std::string& logger,
-  const uint32_t level,
+  const LogLevel level,
   const std::string& entry,
   unsigned long line_number,
   const char* file_name,

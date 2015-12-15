@@ -63,7 +63,7 @@ typedef struct {
 #elif defined(WIN_NATIVE)
 typedef struct {
   std::string logger;
-  uint32_t level;
+  LogLevel level;
   SYSTEMTIME time;
   std::string entry;
   unsigned long line_number;
@@ -75,7 +75,7 @@ typedef struct {
 #elif defined(QT_PORT)
 struct LogMessage {
   std::string logger;
-  uint32_t level;
+  LogLevel level;
   QDateTime time;
   std::string entry;
   unsigned long line_number;

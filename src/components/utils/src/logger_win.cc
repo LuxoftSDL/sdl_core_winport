@@ -37,7 +37,7 @@ namespace {
   bool is_logs_enabled = false;
   logger::LogMessageLoopThread* message_loop_thread = NULL;
 
-  uint32_t log_level = 0;
+  logger::LogLevel log_level = logger::LOGLEVEL_TRACE;
   FILE* output_file = NULL;
 }
 
@@ -74,7 +74,7 @@ void set_logs_enabled(bool state) {
 }
 
 bool push_log(const std::string& logger,
-              uint32_t level,
+              LogLevel level,
               SYSTEMTIME time,
               const std::string& entry,
               unsigned long line_number,

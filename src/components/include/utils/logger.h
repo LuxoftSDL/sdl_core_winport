@@ -127,11 +127,24 @@ do { \
 #undef LOG4CXX_FATAL
 #define LOG4CXX_FATAL(logger_var, message) LOG_WITH_LEVEL(logger_var, ::log4cxx::Level::getFatal(), message)
 
-#elif defined(WIN_NATIVE)
+#else
+
+namespace logger {
+  enum LogLevel {
+    LOGLEVEL_TRACE,
+    LOGLEVEL_DEBUG,
+    LOGLEVEL_INFO,
+    LOGLEVEL_WARN,
+    LOGLEVEL_ERROR,
+    LOGLEVEL_FATAL
+  };
+} // namespace logger
+
+#if defined(WIN_NATIVE)
 
 namespace logger {
   bool push_log(const std::string& logger,
-                uint32_t level,
+                LogLevel level,
                 SYSTEMTIME time,
                 const std::string& entry,
                 unsigned long line_number,
@@ -171,11 +184,11 @@ class AutoTrace {
       line_number_(line_number),
       file_name_(file_name),
       function_name_(function_name) {
-    LOG_WITH_LEVEL_EXT(logger_, 0, "Enter", line_number_, file_name_, function_name_);
+    LOG_WITH_LEVEL_EXT(logger_, LOGLEVEL_TRACE, "Enter", line_number_, file_name_, function_name_);
   };
 
   ~AutoTrace() {
-    LOG_WITH_LEVEL_EXT(logger_, 0, "Exit", line_number_, file_name_, function_name_);
+    LOG_WITH_LEVEL_EXT(logger_, LOGLEVEL_TRACE, "Exit", line_number_, file_name_, function_name_);
   };
 
  private:
@@ -190,32 +203,38 @@ class AutoTrace {
 #define LOG4CXX_IS_TRACE_ENABLED(logger_var) true
 
 #undef LOG4CXX_TRACE
-#define LOG4CXX_TRACE(logger_var, message) LOG_WITH_LEVEL(logger_var, 0, message, __LINE__)
+#define LOG4CXX_TRACE(logger_var, message) \
+    LOG_WITH_LEVEL(logger_var, logger::LOGLEVEL_TRACE, message, __LINE__)
 
 #define LOG4CXX_AUTO_TRACE(logger_var) \
     logger::AutoTrace auto_trace(logger_var, __LINE__, __FILE__, __FUNCTION__);
 
 #undef LOG4CXX_DEBUG
-#define LOG4CXX_DEBUG(logger_var, message) LOG_WITH_LEVEL(logger_var, 1, message, __LINE__)
+#define LOG4CXX_DEBUG(logger_var, message) \
+    LOG_WITH_LEVEL(logger_var, logger::LOGLEVEL_DEBUG, message, __LINE__)
 
 #undef LOG4CXX_INFO
-#define LOG4CXX_INFO(logger_var, message) LOG_WITH_LEVEL(logger_var, 2, message, __LINE__)
+#define LOG4CXX_INFO(logger_var, message) \
+    LOG_WITH_LEVEL(logger_var, logger::LOGLEVEL_INFO, message, __LINE__)
 
 #undef LOG4CXX_WARN
-#define LOG4CXX_WARN(logger_var, message) LOG_WITH_LEVEL(logger_var, 3, message, __LINE__)
+#define LOG4CXX_WARN(logger_var, message) \
+    LOG_WITH_LEVEL(logger_var, logger::LOGLEVEL_WARN, message, __LINE__)
 
 #undef LOG4CXX_ERROR
-#define LOG4CXX_ERROR(logger_var, message) LOG_WITH_LEVEL(logger_var, 4, message, __LINE__)
+#define LOG4CXX_ERROR(logger_var, message) \
+    LOG_WITH_LEVEL(logger_var, logger::LOGLEVEL_ERROR, message, __LINE__)
 
 #undef LOG4CXX_FATAL
-#define LOG4CXX_FATAL(logger_var, message) LOG_WITH_LEVEL(logger_var, 5, message, __LINE__)
+#define LOG4CXX_FATAL(logger_var, message) \
+    LOG_WITH_LEVEL(logger_var, logger::LOGLEVEL_FATAL, message, __LINE__)
 
 #elif defined(QT_PORT) // logging macroses for the Qt case
 
 namespace logger {
   bool push_log(
     const std::string& logger,
-    const uint32_t level,
+    const LogLevel level,
     const std::string& entry,
     unsigned long line_number,
     const char* file_name,
@@ -241,27 +260,35 @@ do {                                                                \
 } while (false)
 
 #undef LOG4CXX_TRACE
-#define LOG4CXX_TRACE(logger_var, message) LOG_WITH_LEVEL(logger_var, 0, message, __LINE__)
+#define LOG4CXX_TRACE(logger_var, message) \
+    LOG_WITH_LEVEL(logger_var, logger::LOGLEVEL_TRACE, message, __LINE__)
 
 #define LOG4CXX_AUTO_TRACE_WITH_NAME_SPECIFIED(logger_var, auto_trace)
 #define LOG4CXX_AUTO_TRACE(logger_var)
 
 #undef LOG4CXX_DEBUG
-#define LOG4CXX_DEBUG(logger_var, message) LOG_WITH_LEVEL(logger_var, 1, message, __LINE__)
+#define LOG4CXX_DEBUG(logger_var, message) \
+    LOG_WITH_LEVEL(logger_var, logger::LOGLEVEL_DEBUG, message, __LINE__)
 
 #undef LOG4CXX_INFO
-#define LOG4CXX_INFO(logger_var, message) LOG_WITH_LEVEL(logger_var, 2, message, __LINE__)
+#define LOG4CXX_INFO(logger_var, message) \
+    LOG_WITH_LEVEL(logger_var, logger::LOGLEVEL_INFO, message, __LINE__)
 
 #undef LOG4CXX_WARN
-#define LOG4CXX_WARN(logger_var, message) LOG_WITH_LEVEL(logger_var, 3, message, __LINE__)
+#define LOG4CXX_WARN(logger_var, message) \
+    LOG_WITH_LEVEL(logger_var, logger::LOGLEVEL_WARN, message, __LINE__)
 
 #undef LOG4CXX_ERROR
-#define LOG4CXX_ERROR(logger_var, message) LOG_WITH_LEVEL(logger_var, 4, message, __LINE__)
+#define LOG4CXX_ERROR(logger_var, message) \
+    LOG_WITH_LEVEL(logger_var, logger::LOGLEVEL_ERROR, message, __LINE__)
 
 #undef LOG4CXX_FATAL
-#define LOG4CXX_FATAL(logger_var, message) LOG_WITH_LEVEL(logger_var, 5, message, __LINE__)
+#define LOG4CXX_FATAL(logger_var, message) \
+    LOG_WITH_LEVEL(logger_var, logger::LOGLEVEL_FATAL, message, __LINE__)
 
-#endif // end of cases when logging is enabled
+#endif // QT_PORT
+
+#endif // OS_POSIX
 
 #else  // ENABLE_LOG is OFF
 
