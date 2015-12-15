@@ -36,10 +36,7 @@
 
 #include "utils/macro.h"
 #include "utils/log_message_loop_thread.h"
-
-#ifdef max
-#undef max
-#endif
+#include "utils/file_system.h"
 
 namespace logger {
 
@@ -89,21 +86,12 @@ void LogMessageHandler::Handle(const LogMessage message) {
               message.time.wHour, message.time.wMinute,
               message.time.wSecond, message.time.wMilliseconds);
 
-  std::string file_name_str(message.file_name);
-  size_t slash_pos =
-    file_name_str.find_last_of("/", file_name_str.length());
-  size_t back_slash_pos =
-    file_name_str.find_last_of("\\", file_name_str.length());
-  file_name_str = file_name_str.substr(
-    std::max(slash_pos != std::string::npos ? slash_pos + 1 : 0,
-             back_slash_pos != std::string::npos ? back_slash_pos + 1 : 0));
-
   std::stringstream entry;
   entry << type_str
         << " [" << time_buf << "]"
         << " [" << message.thread_id << "]"
         << " [" << message.logger << "] "
-        << file_name_str << ":"
+        << file_system::RetrieveFileNameFromPath(message.file_name) << ":"
         << message.line_number << " "
         << message.function_name << ": "
         << message.entry;

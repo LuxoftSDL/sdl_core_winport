@@ -292,6 +292,14 @@ std::string ConcatPath(const std::string& str1,
                        const std::string& str2,
                        const std::string& str3);
 
+/**
+  * @brief Retrieves file name from path by
+  * removing all before last path delimiter
+  * @param path Path to process
+  * @return File name without path
+  */
+std::string RetrieveFileNameFromPath(const std::string& path);
+
 }  // namespace file_system
 
 #endif  // SRC_COMPONENTS_UTILS_INCLUDE_UTILS_FILE_SYSTEM_H_
