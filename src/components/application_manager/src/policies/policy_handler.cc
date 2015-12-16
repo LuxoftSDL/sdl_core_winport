@@ -38,7 +38,7 @@
 #if defined(OS_POSIX)
 #include <dlfcn.h>
 #elif defined(OS_WINDOWS)
-#include <windows.h>
+#include "utils/winhdr.h"
 #endif
 
 #include "application_manager/smart_object_keys.h"

@@ -31,12 +31,6 @@
 #ifndef SRC_COMPONENTS_SMART_OBJECTS_INCLUDE_SMART_OBJECTS_ERRORS_H_
 #define SRC_COMPONENTS_SMART_OBJECTS_INCLUDE_SMART_OBJECTS_ERRORS_H_
 
-// AN: We have to undefine system (Windows) ERROR definition here
-// to avoid conflict with ERROR enum entry
-#ifdef ERROR
-#undef ERROR
-#endif
-
 namespace NsSmartDeviceLink {
 namespace NsSmartObjects {
 namespace Errors {

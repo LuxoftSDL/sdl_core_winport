@@ -30,8 +30,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 #if defined(OS_WINDOWS)
-#include <windows.h>
-#include <winsock2.h>
+#include "utils/winhdr.h"
 
 #ifdef MSG_NOSIGNAL
 #undef MSG_NOSIGNAL

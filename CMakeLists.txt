@@ -260,7 +260,6 @@ endif()
 
 if (${CMAKE_SYSTEM_NAME} MATCHES "Windows")
   add_definitions(-DOS_WINDOWS)
-  add_definitions(-DWIN32_LEAN_AND_MEAN)
   if(QT_PORT)
     add_definitions(-DQT_PORT)
   else()

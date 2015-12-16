@@ -31,12 +31,12 @@
  */
 #if defined(OS_WINDOWS)
 
-#include <windows.h>
 #include <errno.h>
 #include <limits.h>
 #include <stddef.h>
 #include <signal.h>
 
+#include "utils/winhdr.h"
 #include "utils/threads/thread.h"
 #include "utils/atomic.h"
 #include "utils/threads/thread_delegate.h"

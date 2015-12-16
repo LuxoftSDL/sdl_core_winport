@@ -9,7 +9,7 @@
 
 #ifdef _WIN32
 
-#include <windows.h>
+#include "utils/winhdr.h"
 
 #else
 

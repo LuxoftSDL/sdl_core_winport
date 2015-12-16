@@ -28,8 +28,7 @@
 #ifdef _WIN32
 
 #include <stdint.h>
-#include <winsock2.h>
-#include <windows.h>
+#include "utils/winhdr.h"
 
 #if defined(_MSC_VER)
 #define snprintf _snprintf_s

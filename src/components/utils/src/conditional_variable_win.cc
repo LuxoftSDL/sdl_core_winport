@@ -31,8 +31,7 @@
  */
 #if defined(OS_WINDOWS)
 
-#include <windows.h>
-
+#include "utils/winhdr.h"
 #include "utils/conditional_variable.h"
 #include "utils/lock.h"
 #include "utils/logger.h"

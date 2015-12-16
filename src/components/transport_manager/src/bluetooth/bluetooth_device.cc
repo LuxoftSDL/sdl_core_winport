@@ -40,10 +40,6 @@
 #include <bluetooth/sdp.h>
 #include <bluetooth/sdp_lib.h>
 #include <bluetooth/rfcomm.h>
-#else
-#ifdef max
-#undef max
-#endif
 #endif
 
 #include <errno.h>

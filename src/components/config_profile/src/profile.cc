@@ -47,14 +47,6 @@
 #include <openssl/ssl.h>
 #endif  // ENABLE_SECURITY
 
-#ifdef min
-#undef min
-#endif
-
-#ifdef max
-#undef max
-#endif
-
 namespace {
 #define LOG_UPDATED_VALUE(value, key, section) {\
   LOG4CXX_INFO(logger_, "Setting value '" << value\

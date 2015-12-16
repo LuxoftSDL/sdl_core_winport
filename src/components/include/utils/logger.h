@@ -43,7 +43,7 @@
 #include <log4cxx/logger.h>
 #include <log4cxx/spi/loggingevent.h>
 #elif defined(WIN_NATIVE)
-#include <windows.h>
+#include "utils/winhdr.h"
 #elif defined(QT_PORT)
 // Qt includes goes here
 #else

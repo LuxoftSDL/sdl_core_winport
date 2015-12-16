@@ -40,10 +40,9 @@
 #include <fstream>
 #include <iostream>
 #include <stdio.h>
-#include "security_manager/security_manager.h"
 
+#include "security_manager/security_manager.h"
 #include "utils/logger.h"
-#include "utils/atomic.h"
 #include "utils/macro.h"
 #include "utils/scope_guard.h"
 #include "config_profile/profile.h"

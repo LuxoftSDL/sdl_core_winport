@@ -35,17 +35,13 @@
 #include <unistd.h>
 #elif defined(OS_WINDOWS)
 #include <io.h>
-#include <windows.h>
 #endif
+
 #include <iomanip>
-
-#include <libusb/libusb.h>
-
 #include <sstream>
 
 #include "transport_manager/transport_adapter/transport_adapter_impl.h"
 #include "transport_manager/usb/libusb/usb_connection.h"
-
 #include "utils/logger.h"
 
 namespace transport_manager {

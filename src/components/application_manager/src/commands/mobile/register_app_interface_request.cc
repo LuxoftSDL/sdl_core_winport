@@ -36,7 +36,7 @@
 #if defined(OS_POSIX)
 #include <unistd.h>
 #elif defined(OS_WINDOWS)
-#include <windows.h>
+#include "utils/winhdr.h"
 #endif
 
 #include <algorithm>
