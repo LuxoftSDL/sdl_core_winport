@@ -36,12 +36,15 @@
 #ifndef SRC_COMPONENTS_TRANSPORT_MANAGER_INCLUDE_TRANSPORT_MANAGER_USB_LIBUSB_USB_HANDLER_H_
 #define SRC_COMPONENTS_TRANSPORT_MANAGER_INCLUDE_TRANSPORT_MANAGER_USB_LIBUSB_USB_HANDLER_H_
 
-#include "libusb/libusb.h"
+#if defined(OS_WINDOWS)
+#include "utils/winhdr.h"
+#endif
+
+#include <libusb/libusb.h>
 
 #include "transport_manager/transport_adapter/transport_adapter.h"
 #include "transport_manager/usb/libusb/platform_usb_device.h"
 #include "transport_manager/usb/usb_control_transfer.h"
-
 #include "utils/threads/thread.h"
 
 class Thread;

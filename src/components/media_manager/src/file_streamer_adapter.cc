@@ -85,8 +85,7 @@ void FileStreamerAdapter::FileStreamer::Disconnect() {
     delete file_stream_;
     file_stream_ = NULL;
   }
-  // TODO: (malirod) uncomment. Prevents QT build
-  // file_system::DeleteFile(file_name_);
+  file_system::DeleteFile(file_name_);
 }
 
 bool FileStreamerAdapter::FileStreamer::Send(

@@ -32,9 +32,9 @@
 #if defined(OS_WINDOWS)
 
 #include <time.h>
-#include <windows.h>
 #include <stdint.h>
 
+#include "utils/winhdr.h"
 #include "utils/date_time.h"
 
 namespace {

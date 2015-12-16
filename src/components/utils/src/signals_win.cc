@@ -32,8 +32,8 @@
 #if defined(OS_WINDOWS)
 
 #include <csignal>
-#include <windows.h>
 
+#include "utils/winhdr.h"
 #include "utils/signals.h"
 
 namespace utils {

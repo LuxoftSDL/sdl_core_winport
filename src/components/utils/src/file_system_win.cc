@@ -33,17 +33,16 @@
 
 #include <sys/types.h>
 #include <sys/stat.h>
-#include <windows.h>
-#include <winbase.h>
 #include <direct.h>
 #include <io.h>
-#include "Shlwapi.h"
 // TODO(VS): lint error: Streams are highly discouraged.
 #include <sstream>
 #include <fstream>
 #include <cstddef>
 #include <algorithm>
 
+#include "utils/winhdr.h"
+#include "Shlwapi.h"
 #include "utils/file_system.h"
 #include "utils/string_utils.h"
 

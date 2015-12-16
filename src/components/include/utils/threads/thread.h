@@ -36,7 +36,7 @@
 #if defined(OS_POSIX)
 #include <pthread.h>
 #elif defined(OS_WINDOWS)
-#include <windows.h>
+#include "utils/winhdr.h"
 #else
 #error "Thread is not defined for this platform"
 #endif

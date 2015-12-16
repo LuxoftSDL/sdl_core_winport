@@ -33,6 +33,10 @@
 #ifndef SRC_COMPONENTS_SECURITY_MANAGER_INCLUDE_SECURITY_MANAGER_CRYPTO_MANAGER_IMPL_H_
 #define SRC_COMPONENTS_SECURITY_MANAGER_INCLUDE_SECURITY_MANAGER_CRYPTO_MANAGER_IMPL_H_
 
+#if defined(OS_WINDOWS)
+#include "utils/winhdr.h"
+#endif
+
 #include <stdint.h>
 #include <openssl/bio.h>
 #include <openssl/ssl.h>

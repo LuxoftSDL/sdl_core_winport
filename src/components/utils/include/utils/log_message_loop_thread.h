@@ -39,7 +39,7 @@
 #if defined(LOG4CXX_LOGGER)
 #include <log4cxx/logger.h>
 #elif defined(WIN_NATIVE)
-#include <windows.h>
+#include "utils/winhdr.h"
 #elif defined(QT_PORT)
 #include <QDateTime>
 #else

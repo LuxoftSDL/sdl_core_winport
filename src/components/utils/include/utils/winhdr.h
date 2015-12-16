@@ -32,12 +32,34 @@
 #ifndef SRC_COMPONENTS_INCLUDE_UTILS_WINHDR_H_
 #define SRC_COMPONENTS_INCLUDE_UTILS_WINHDR_H_
 
+#define WIN32_LEAN_AND_MEAN
+
+#include <windows.h>
 #include <winsock2.h>
 #include <ws2tcpip.h>
 #include <wspiapi.h>
-#include <windows.h>
 #include <Mstcpip.h>
 #include <psapi.h>
 #include <Wtsapi32.h>
+
+#ifdef min
+#undef min
+#endif
+
+#ifdef max
+#undef max
+#endif
+
+#ifdef CreateFile
+#undef CreateFile
+#endif
+
+#ifdef DeleteFile
+#undef DeleteFile
+#endif
+
+#ifdef ERROR
+#undef ERROR
+#endif
 
 #endif // SRC_COMPONENTS_INCLUDE_UTILS_WINHDR_H_

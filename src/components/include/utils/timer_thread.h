@@ -47,14 +47,6 @@
 #include "utils/threads/thread.h"
 #include "utils/threads/thread_delegate.h"
 
-#ifdef min
-#undef min
-#endif
-
-#ifdef max
-#undef max
-#endif
-
 namespace timer {
 // TODO(AKutsan): Remove this logger after bugfix
 CREATE_LOGGERPTR_GLOBAL(logger_, "Utils")

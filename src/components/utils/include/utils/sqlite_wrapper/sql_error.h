@@ -35,10 +35,6 @@
 
 #include <string>
 
-#ifdef ERROR
-#undef ERROR
-#endif
-
 namespace utils {
 namespace dbms {
 

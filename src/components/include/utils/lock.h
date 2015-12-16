@@ -36,7 +36,7 @@
 #include <pthread.h>
 #include <sched.h>
 #elif defined(OS_WINDOWS)
-#include <windows.h>
+#include "utils/winhdr.h"
 #else
 #error "Lock is not defined for this platform"
 #endif

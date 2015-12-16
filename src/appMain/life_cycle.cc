@@ -32,8 +32,7 @@
 #include <csignal>
 
 #ifdef OS_WINDOWS
-#include <windows.h>
-#include <winsock2.h>
+#include "utils/winhdr.h"
 #endif
 
 #include "utils/logger.h"

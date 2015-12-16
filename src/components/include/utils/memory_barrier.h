@@ -36,7 +36,7 @@
 #if defined(__QNXNTO__)
 #include <sys/cpuinline.h>
 #elif defined(OS_WINDOWS)
-#include <windows.h>
+#include "utils/winhdr.h"
 #endif
 
 namespace utils {

@@ -33,10 +33,14 @@
 #ifndef SRC_COMPONENTS_TRANSPORT_MANAGER_INCLUDE_TRANSPORT_MANAGER_USB_LIBUSB_USB_CONNECTION_H_
 #define SRC_COMPONENTS_TRANSPORT_MANAGER_INCLUDE_TRANSPORT_MANAGER_USB_LIBUSB_USB_CONNECTION_H_
 
+#if defined(OS_WINDOWS)
+#include "utils/winhdr.h"
+#endif
+
+#include <libusb/libusb.h>
 #include <list>
 
 #include "utils/lock.h"
-
 #include "transport_manager/transport_adapter/connection.h"
 #include "transport_manager/transport_adapter/transport_adapter_controller.h"
 #include "transport_manager/usb/common.h"
