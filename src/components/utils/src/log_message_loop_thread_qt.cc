@@ -31,59 +31,59 @@
  */
 #include <string>
 #include <cstdint>
-
 #include <QtDebug>
 
 #include "utils/macro.h"
 #include "utils/log_message_loop_thread.h"
+#include "utils/file_system.h"
 
 namespace logger {
 
 void LogMessageHandler::Handle(const LogMessage message) {
   QMessageLogger qlogger(
-    message.file.c_str(),
-    message.line,
-    NULL,
-    message.logger_name.c_str());
+    message.file_name,
+    message.line_number,
+    message.function_name,
+    message.logger.c_str());
 
   void (QMessageLogger:: * log_func) (const char*, ...) const = 0;
 
   std::string type_str;
   switch (message.level) {
-    case 0: {
+    case LOGLEVEL_TRACE: {
       // Qt doesn't have the trace method
       log_func = &QMessageLogger::debug;
       type_str = "TRACE";
       break;
     }
-    case 1: {
+    case LOGLEVEL_DEBUG: {
       log_func = &QMessageLogger::debug;
       type_str = "DEBUG";
       break;
     }
-    case 2: {
+    case LOGLEVEL_INFO: {
       log_func = &QMessageLogger::info;
-      type_str = "INFO";
+      type_str = "INFO ";
       break;
     }
-    case 3: {
+    case LOGLEVEL_WARN: {
       log_func = &QMessageLogger::warning;
-      type_str = "WARN";
+      type_str = "WARN ";
       break;
     }
-    case 4: {
+    case LOGLEVEL_ERROR: {
       // Qt doesn't have the error method
       log_func = &QMessageLogger::critical;
       type_str = "ERROR";
       break;
     }
-    case 5: {
+    case LOGLEVEL_FATAL: {
       log_func = &QMessageLogger::fatal;
       type_str = "FATAL";
       break;
     }
     default: {
-      assert(false && "Unsupported log level");
+      NOTREACHED();
     }
   }
 
@@ -92,11 +92,14 @@ void LogMessageHandler::Handle(const LogMessage message) {
   // will be the same for all messages. So the question is next, how to inject correct thread id
   // to the qlogger.
   (qlogger.*log_func)(
-    "%5s [%s][%d][%s] %s",
+    "%s [%s][%d][%s] %s:%d %s: %s",
     type_str.c_str(),
     message.time.toString("yyyy:MM:dd hh:mm:ss.zzz").toStdString().c_str(),
     message.thread_id,
-    message.logger_name.c_str(),
+    message.logger.c_str(),
+    file_system::RetrieveFileNameFromPath(message.file_name).c_str(),
+    message.line_number,
+    message.function_name,
     message.entry.c_str());
 }
 

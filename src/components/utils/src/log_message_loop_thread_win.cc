@@ -30,52 +30,45 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 #include <string>
+#include <sstream>
 #include <cstdint>
 #include <windows.h>
 
 #include "utils/macro.h"
 #include "utils/log_message_loop_thread.h"
+#include "utils/file_system.h"
 
 namespace logger {
 
 void LogMessageHandler::Handle(const LogMessage message) {
-  WORD log_type;
   std::string type_str;
   switch (message.level) {
-    case 0: {
-      log_type = EVENTLOG_INFORMATION_TYPE;
+    case LOGLEVEL_TRACE: {
       type_str = "TRACE";
       break;
     }
-    case 1: {
-      log_type = EVENTLOG_INFORMATION_TYPE;
+    case LOGLEVEL_DEBUG: {
       type_str = "DEBUG";
       break;
     }
-    case 2: {
-      log_type = EVENTLOG_INFORMATION_TYPE;
+    case LOGLEVEL_INFO: {
       type_str = "INFO ";
       break;
     }
-    case 3: {
-      log_type = EVENTLOG_WARNING_TYPE;
+    case LOGLEVEL_WARN: {
       type_str = "WARN ";
       break;
     }
-    case 4: {
-      log_type = EVENTLOG_ERROR_TYPE;
+    case LOGLEVEL_ERROR: {
       type_str = "ERROR";
       break;
     }
-    case 5: {
-      log_type = EVENTLOG_ERROR_TYPE;
+    case LOGLEVEL_FATAL: {
       type_str = "FATAL";
       break;
     }
     default: {
-      log_type = EVENTLOG_INFORMATION_TYPE;
-      type_str = "TRACE";
-      break;
+      NOTREACHED();
     }
   }
 
@@ -84,34 +77,24 @@ void LogMessageHandler::Handle(const LogMessage message) {
               message.time.wHour, message.time.wMinute,
               message.time.wSecond, message.time.wMilliseconds);
 
-  char thread_buf[8];
-  _snprintf_s(thread_buf, sizeof(thread_buf), "%i", message.thread);
-
-  const std::string entry =
-      type_str + " [" + time_buf + "]" +
-      " [" + thread_buf + "]" +
-      " [" + message.logger_name + "] " + message.entry;
-
-  // AN: This functionality is disabled until
-  // Windows Event Logging will be approved by customer
-  /*ReportEvent(message.logger_handle,
-              log_type,
-              0,
-              0,
-              NULL,
-              1,
-              0,
-              (LPCSTR*)message.entry.c_str(),
-              NULL);*/
+  std::stringstream entry;
+  entry << type_str
+        << " [" << time_buf << "]"
+        << " [" << message.thread_id << "]"
+        << " [" << message.logger << "] "
+        << file_system::RetrieveFileNameFromPath(message.file_name) << ":"
+        << message.line_number << " "
+        << message.function_name << ": "
+        << message.entry;
 
   // dump log string to console
-  printf(entry.c_str());
+  printf(entry.str().c_str());
   printf("\n");
   // dump log string to file
-  if (message.file) {
-    fprintf(message.file, entry.c_str());
-    fprintf(message.file, "\n");
-    fflush(message.file);
+  if (message.output_file) {
+    fprintf(message.output_file, entry.str().c_str());
+    fprintf(message.output_file, "\n");
+    fflush(message.output_file);
   }
 }
 

@@ -29,30 +29,28 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-#if defined(OS_WINDOWS)
-
 #include "utils/logger.h"
 #include "utils/log_message_loop_thread.h"
+#include "config_profile/profile.h"
 
 namespace {
   bool is_logs_enabled = false;
   logger::LogMessageLoopThread* message_loop_thread = NULL;
 
-  uint32_t log_level = 0;
-  HANDLE logger_handle = NULL;
+  logger::LogLevel log_level = logger::LOGLEVEL_TRACE;
   FILE* output_file = NULL;
 }
 
 namespace logger {
 
-bool init_logger(const std::string& file_name) {
-  logger_handle = RegisterEventSource(NULL, TEXT("SDL"));
+bool init_logger(const std::string& ini_file_name) {
   output_file = fopen("SmartDeviceLink.log", "a");
 
   if (!message_loop_thread) {
     message_loop_thread = new LogMessageLoopThread();
   }
-  set_logs_enabled(true);
+  set_logs_enabled(
+    profile::Profile::instance()->logs_enabled());
   return true;
 }
 
@@ -65,7 +63,6 @@ void deinit_logger() {
   message_loop_thread = NULL;
 
   fclose(output_file);
-  DeregisterEventSource(logger_handle);
 }
 
 bool logs_enabled() {
@@ -77,9 +74,12 @@ void set_logs_enabled(bool state) {
 }
 
 bool push_log(const std::string& logger,
-              uint32_t level,
+              LogLevel level,
               SYSTEMTIME time,
-              const std::string& entry) {
+              const std::string& entry,
+              unsigned long line_number,
+              const char* file_name,
+              const char* function_name) {
   if (!logs_enabled()) {
     return false;
   }
@@ -87,7 +87,8 @@ bool push_log(const std::string& logger,
     return false;
   }
   LogMessage message =
-      { logger_handle, logger, level, time, entry,
+      { logger, level, time, entry,
+        line_number, file_name, function_name,
         static_cast<uint32_t>(GetCurrentThreadId()), output_file };
   message_loop_thread->PostMessage(message);
   return true;
@@ -100,5 +101,3 @@ SYSTEMTIME time_now() {
 }
 
 } // namespace logger
-
-#endif // OS_WINDOWS

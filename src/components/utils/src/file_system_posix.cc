@@ -479,4 +479,12 @@ std::string file_system::ConcatPath(const std::string& str1,
   return ConcatPath(ConcatPath(str1, str2), str3);
 }
 
+std::string file_system::RetrieveFileNameFromPath(const std::string& path) {
+  size_t slash_pos = path.find_last_of("/", path.length());
+  size_t back_slash_pos = path.find_last_of("\\", path.length());
+  return path.substr(std::max(
+    slash_pos != std::string::npos ? slash_pos + 1 : 0,
+    back_slash_pos != std::string::npos ? back_slash_pos + 1 : 0));
+}
+
 #endif // OS_POSIX

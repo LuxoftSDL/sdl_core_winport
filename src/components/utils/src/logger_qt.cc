@@ -29,8 +29,6 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-#if defined(QT_PORT)
-
 #include <QThread>
 #include <QDateTime>
 #include <QFile>
@@ -38,6 +36,7 @@
 
 #include "utils/logger.h"
 #include "utils/log_message_loop_thread.h"
+#include "config_profile/profile.h"
 
 namespace {
 
@@ -67,7 +66,7 @@ bool logger::init_logger(const std::string&) {
   static QFile log_file(kLogFileName);
 
   if (log_file.open(QIODevice::WriteOnly | QIODevice::Append | QIODevice::Text)) {
-    assert(!log_file_ptr);
+    DCHECK(!log_file_ptr);
     log_file_ptr = &log_file;
   } else {
     fprintf(stderr, "Logging initialization has failed. Failed to open log file for writing.\n");
@@ -79,7 +78,8 @@ bool logger::init_logger(const std::string&) {
   if (!message_loop_thread) {
     message_loop_thread = new LogMessageLoopThread();
   }
-  set_logs_enabled(true);
+  set_logs_enabled(
+    profile::Profile::instance()->logs_enabled());
   return true;
 }
 
@@ -87,7 +87,7 @@ void logger::deinit_logger() {
   CREATE_LOGGERPTR_LOCAL(logger_, "Logger");
   LOG4CXX_DEBUG(logger_, "Logger deinitialization");
 
-  assert(log_file_ptr);
+  DCHECK(log_file_ptr);
   if (log_file_ptr) {
     log_file_ptr ->close();
     log_file_ptr = NULL;
@@ -108,10 +108,11 @@ void logger::set_logs_enabled(bool state) {
 
 bool logger::push_log(
   const std::string& logger,
-  const uint32_t level,
+  const LogLevel level,
   const std::string& entry,
-  const char* file,
-  const unsigned long line) {
+  unsigned long line_number,
+  const char* file_name,
+  const char* function_name) {
   if (!logs_enabled()) {
     return false;
   }
@@ -121,13 +122,12 @@ bool logger::push_log(
     level,
     QDateTime::currentDateTime(),
     entry,
-    reinterpret_cast<uint32_t>(QThread::currentThreadId()),
-    file,
-    line};
+    line_number,
+    file_name,
+    function_name,
+    reinterpret_cast<uint32_t>(QThread::currentThreadId()) };
 
   message_loop_thread->PostMessage(message);
 
   return true;
 }
-
-#endif // OS_WINDOWS

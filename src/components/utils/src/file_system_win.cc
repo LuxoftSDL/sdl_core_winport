@@ -49,6 +49,10 @@
 
 #pragma comment(lib,"Shlwapi.lib")
 
+#ifdef max
+#undef max
+#endif
+
 uint64_t file_system::GetAvailableDiskSpace(const std::string& path) {
   DWORD sectors_per_cluster;
   DWORD bytes_per_sector;
@@ -437,6 +441,14 @@ std::string file_system::ConcatPath(const std::string& str1,
                                     const std::string& str2,
                                     const std::string& str3) {
   return ConcatPath(ConcatPath(str1, str2), str3);
+}
+
+std::string file_system::RetrieveFileNameFromPath(const std::string& path) {
+  size_t slash_pos = path.find_last_of("/", path.length());
+  size_t back_slash_pos = path.find_last_of("\\", path.length());
+  return path.substr(std::max(
+    slash_pos != std::string::npos ? slash_pos + 1 : 0,
+    back_slash_pos != std::string::npos ? back_slash_pos + 1 : 0));
 }
 
 #endif // OS_WINDOWS

@@ -29,10 +29,9 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-#if defined(OS_POSIX)
-
 #include "utils/logger.h"
 #include "utils/log_message_loop_thread.h"
+#include "config_profile/profile.h"
 
 namespace {
   bool is_logs_enabled = false;
@@ -41,12 +40,13 @@ namespace {
 
 namespace logger {
 
-bool init_logger(const std::string& file_name) {
-  log4cxx::PropertyConfigurator::configure(file_name);
+bool init_logger(const std::string& ini_file_name) {
+  log4cxx::PropertyConfigurator::configure(ini_file_name);
   if (!message_loop_thread) {
     message_loop_thread = new LogMessageLoopThread();
   }
-  set_logs_enabled(true);
+  set_logs_enabled(
+    profile::Profile::instance()->logs_enabled());
   return true;
 }
 
@@ -69,7 +69,7 @@ void set_logs_enabled(bool state) {
 bool push_log(log4cxx::LoggerPtr logger,
               log4cxx::LevelPtr level,
               const std::string& entry,
-              log4cxx_time_t time_stamp,
+              log4cxx_time_t time,
               const log4cxx::spi::LocationInfo& location,
               const log4cxx::LogString& thread_name) {
   if (!logs_enabled()) {
@@ -78,11 +78,9 @@ bool push_log(log4cxx::LoggerPtr logger,
   if (!logger->isEnabledFor(level)) {
     return false;
   }
-  LogMessage message = { logger, level, entry, time_stampm location, thread_name };
+  LogMessage message = { logger, level, entry, time, location, thread_name };
   message_loop_thread->PostMessage(message);
   return true;
 }
 
 } // namespace logger
-
-#endif // OS_POSIX

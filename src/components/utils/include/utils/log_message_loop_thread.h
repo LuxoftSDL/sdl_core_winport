@@ -38,7 +38,7 @@
 
 #if defined(LOG4CXX_LOGGER)
 #include <log4cxx/logger.h>
-#elif defined (OS_WINDOWS) && !defined(QT_PORT)
+#elif defined(WIN_NATIVE)
 #include <windows.h>
 #elif defined(QT_PORT)
 #include <QDateTime>
@@ -55,30 +55,33 @@ namespace logger {
 typedef struct {
   log4cxx::LoggerPtr logger;
   log4cxx::LevelPtr level;
+  log4cxx_time_t time;
   std::string entry;
-  log4cxx_time_t time_stamp;
   log4cxx::spi::LocationInfo location;
   log4cxx::LogString thread_name;
 } LogMessage;
-#elif defined(OS_WINDOWS) && !defined(QT_PORT)
+#elif defined(WIN_NATIVE)
 typedef struct {
-  HANDLE      logger_handle;
-  std::string logger_name;
-  uint32_t    level;
-  SYSTEMTIME  time;
+  std::string logger;
+  LogLevel level;
+  SYSTEMTIME time;
   std::string entry;
-  uint32_t    thread;
-  FILE*       file;
+  unsigned long line_number;
+  const char* file_name;
+  const char* function_name;
+  uint32_t thread_id;
+  FILE* output_file;
 } LogMessage;
 #elif defined(QT_PORT)
 struct LogMessage {
-  std::string logger_name;
-  uint32_t level;
+  std::string logger;
+  LogLevel level;
   QDateTime time;
   std::string entry;
+  unsigned long line_number;
+  const char* file_name;
+  const char* function_name;
   uint32_t thread_id;
-  std::string file;
-  unsigned long line;
 };
 #else
 #error Unsupported case for the LogMessage
