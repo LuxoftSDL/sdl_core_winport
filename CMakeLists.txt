@@ -39,7 +39,7 @@ set (PROJECT smartDeviceLinkCore)
 # appropriate task will be resolved (SDLWIN-48)
 set (HMI "web" CACHE STRING "HMI type")
 option(HMI2 "Use Qt HMI" OFF)
-option(EXTENDED_MEDIA_MODE "Turn on and off extended Madia Manager features relates to PulseAudio A2DP and GStreamer" OFF)
+option(EXTENDED_MEDIA_MODE "Turn on and off extended Media Manager features relates to PulseAudio A2DP and GStreamer" ON)
 option(BUILD_SHARED_LIBS "Build all libraries as shared (if ON) or static (if OFF)" OFF)
 option(BUILD_BT_SUPPORT "Bluetooth support" OFF)
 option(BUILD_USB_SUPPORT "libusb support" ON)
@@ -264,20 +264,19 @@ if (${CMAKE_SYSTEM_NAME} MATCHES "Windows")
     add_definitions(-DQT_PORT)
   else()
     add_definitions(-DWIN_NATIVE)
+    # AN: Temporary set WIN_NATIVE option to ON
+    # until cmd files refactoring will be done.
+    # WIN_NATIVE option should be passed from cmd
+    set(WIN_NATIVE ON)
   endif()
 else()
   add_definitions(-DOS_POSIX)
   add_definitions(-DLOG4CXX_LOGGER)
 endif()
 
-if (EXTENDED_MEDIA_MODE)
-add_definitions(-DEXTENDED_MEDIA_MODE)
-# required to find 'glibconfig.h'
-find_package(PkgConfig)
-pkg_check_modules(GLIB2 REQUIRED glib-2.0)
-add_definitions(${GLIB2_CFLAGS})
+if(EXTENDED_MEDIA_MODE)
+    add_definitions(-DEXTENDED_MEDIA_MODE)
 endif()
-
 
 # --- Interface generator
 
