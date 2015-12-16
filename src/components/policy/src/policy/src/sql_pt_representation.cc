@@ -1563,12 +1563,7 @@ bool SQLPTRepresentation::SetIsDefault(const std::string& app_id,
 }
 
 void SQLPTRepresentation::RemoveDB() const {
-#ifdef OS_WINDOWS
-	LPCSTR path(db_->get_path().c_str());
-	DeleteFile(path);
-#else
   file_system::DeleteFile(db_->get_path());
-#endif
 }
 
 bool SQLPTRepresentation::IsDBVersionActual() const {
