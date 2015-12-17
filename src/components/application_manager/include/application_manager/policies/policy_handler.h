@@ -38,12 +38,6 @@
 #include <set>
 #include <vector>
 
-#if defined(OS_POSIX)
-#include <dlfcn.h>
-#elif defined(OS_WINDOWS)
-#include "utils/winhdr.h"
-#endif
-
 #include "policy/policy_manager.h"
 #include "application_manager/policies/policy_event_observer.h"
 #include "application_manager/policies/delegates/statistics_delegate.h"
@@ -57,6 +51,7 @@
 #include "application_manager/policies/policy_handler_observer.h"
 #include "utils/threads/async_runner.h"
 #include "application_manager/application_manager_impl.h"
+#include "utils/shared_library.h"
 
 namespace Json {
 class Value;
@@ -461,14 +456,9 @@ private:
   PolicyHandler();
   bool SaveSnapshot(const BinaryMessage& pt_string, std::string& snap_path);
   static PolicyHandler* instance_;
-  static const std::string kLibrary;
   mutable sync_primitives::RWLock policy_manager_lock_;
   utils::SharedPtr<PolicyManager> policy_manager_;
-#if defined(OS_POSIX)
-  void* dl_handle_;
-#elif defined(OS_WINDOWS)
-  HMODULE dl_handle_;
-#endif
+  utils::SharedLibrary policy_library_;
   AppIds last_used_app_ids_;
   utils::SharedPtr<PolicyEventObserver> event_observer_;
   uint32_t last_activated_app_id_;

@@ -29,18 +29,10 @@
  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  POSSIBILITY OF SUCH DAMAGE.
  */
-
-#include "application_manager/policies/policy_handler.h"
-
 #include <algorithm>
 #include <vector>
 
-#if defined(OS_POSIX)
-#include <dlfcn.h>
-#elif defined(OS_WINDOWS)
-#include "utils/winhdr.h"
-#endif
-
+#include "application_manager/policies/policy_handler.h"
 #include "application_manager/smart_object_keys.h"
 #include "application_manager/policies/delegates/app_permission_delegate.h"
 #include "application_manager/application_manager_impl.h"
@@ -62,8 +54,11 @@ namespace policy {
 using namespace application_manager;
 
 namespace {
+
   using namespace mobile_apis;
+
   typedef std::map<RequestType::eType, std::string> RequestTypeMap;
+
   RequestTypeMap typeToString;
 
   void InitRequestTypeMap() {
@@ -110,6 +105,7 @@ namespace {
     typeToString.insert(
         std::make_pair(RequestType::FOTA, std::string("FOTA")));
   }
+
   std::string RequestTypeToString(RequestType::eType type) {
     if (typeToString.empty()) {
       InitRequestTypeMap();
@@ -120,7 +116,10 @@ namespace {
     }
     return "";
   }
-}
+
+const char* const kPolicyLibraryName = "Policy";
+
+} // namespace
 
 #define POLICY_LIB_CHECK(return_value) {\
   sync_primitives::AutoReadLock lock(policy_manager_lock_); \
@@ -282,16 +281,11 @@ private:
 };
 
 PolicyHandler* PolicyHandler::instance_ = NULL;
-#if defined(OS_POSIX)
-const std::string PolicyHandler::kLibrary = "libPolicy.so";
-#elif defined(OS_WINDOWS)
-const std::string PolicyHandler::kLibrary = "Policy.dll";
-#endif
 
 PolicyHandler::PolicyHandler()
 
   : AsyncRunner("PolicyHandler async runner thread"),
-    dl_handle_(0),
+    policy_library_(),
     last_activated_app_id_(0),
     app_to_device_link_lock_(true),
     statistic_manager_impl_(new StatisticManagerImpl()) {
@@ -310,14 +304,9 @@ bool PolicyHandler::LoadPolicyLibrary() {
     policy_manager_ = NULL;
     return NULL;
   }
-#if defined(OS_POSIX)
-  dl_handle_ = dlopen(kLibrary.c_str(), RTLD_LAZY);
-  char* error_string = dlerror();
-  if (error_string == NULL) {
-#elif defined(OS_WINDOWS)
-  dl_handle_ = LoadLibrary(kLibrary.c_str());
-  if (dl_handle_ != NULL) {
-#endif
+
+  policy_library_.Load(kPolicyLibraryName);
+  if (policy_library_.IsLoaded()) {
     if (CreateManager()) {
       policy_manager_->set_listener(this);
       event_observer_= new PolicyEventObserver(this);
@@ -334,27 +323,21 @@ bool PolicyHandler::PolicyEnabled() {
 
 bool PolicyHandler::CreateManager() {
   typedef PolicyManager* (*CreateManager)(const std::string&, uint16_t, uint16_t);
+  DCHECK_OR_RETURN(policy_library_.IsLoaded(), false);
+  CreateManager create_manager =
+    reinterpret_cast<CreateManager>(policy_library_.GetSymbol("CreateManager"));
+  if (create_manager) {
 #if defined(OS_POSIX)
-  CreateManager create_manager =
-      reinterpret_cast<CreateManager>(dlsym(dl_handle_, "CreateManager"));
-  char* error_string = dlerror();
-  if (error_string == NULL) {
     policy_manager_ = create_manager();
-  } else {
-    LOG4CXX_WARN(logger_, error_string);
-  }
 #elif defined(OS_WINDOWS)
-  CreateManager create_manager =
-      reinterpret_cast<CreateManager>(GetProcAddress(dl_handle_, "CreateManager"));
-  if (create_manager != NULL) {
     policy_manager_ = create_manager(
-        profile::Profile::instance()->app_storage_folder(),
-        profile::Profile::instance()->attempts_to_open_policy_db(),
-        profile::Profile::instance()->open_attempt_timeout_ms());
+      profile::Profile::instance()->app_storage_folder(),
+      profile::Profile::instance()->attempts_to_open_policy_db(),
+      profile::Profile::instance()->open_attempt_timeout_ms());
+#endif
   } else {
     LOG4CXX_WARN(logger_, "Policy library loading error. Cannot get proc address");
   }
-#endif
   return policy_manager_.valid();
 }
 
@@ -862,14 +845,8 @@ bool PolicyHandler::UnloadPolicyLibrary() {
   if (policy_manager_) {
     policy_manager_.reset();
   }
-  if (dl_handle_) {
-#if defined(OS_POSIX)
-    ret = (dlclose(dl_handle_) == 0);
-#elif defined(OS_WINDOWS)
-    ret = FreeLibrary(dl_handle_);
-#endif
-    dl_handle_ = 0;
-  }
+
+  policy_library_.Unload();
   LOG4CXX_TRACE(logger_, "exit");
   return ret;
 }
