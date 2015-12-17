@@ -63,7 +63,7 @@ if(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
         list(APPEND src
           ${UTILS_SRC_DIR}/logger_qt.cc
           ${UTILS_SRC_DIR}/log_message_loop_thread_qt.cc
-          ${UTILS_SRC_DIR}/shared_library_win.cc
+          ${UTILS_SRC_DIR}/shared_library_qt.cc
         )
       else()
         list(APPEND src

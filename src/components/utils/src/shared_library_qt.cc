@@ -29,37 +29,39 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-#ifndef SRC_COMPONENTS_UTILS_INCLUDE_UTILS_SHARED_LIBRARY_H_
-#define SRC_COMPONENTS_UTILS_INCLUDE_UTILS_SHARED_LIBRARY_H_
+#include "utils/shared_library.h"
 
-#if defined(QT_PORT)
-#include <QLibrary>
-#endif
+utils::SharedLibrary::SharedLibrary()
+  : library_() {
+}
 
-namespace utils {
+utils::SharedLibrary::SharedLibrary(const char* library_name)
+  : library_() {
+  Load(library_name);
+}
 
-class SharedLibrary {
- public:
-  SharedLibrary();
-  SharedLibrary(const char* library_name);
+void utils::SharedLibrary::Load(const char* library_name) {
+  if (library_.isLoaded()) {
+    return;
+  }
+  library_.setFileName(library_name);
+  library_.load();
+}
 
-  void Load(const char* library_name);
+void utils::SharedLibrary::Unload() {
+  library_.unload();
+}
 
-  void Unload();
+bool utils::SharedLibrary::IsLoaded() const {
+  return library_.isLoaded();
+}
 
-  bool IsLoaded() const;
+void* utils::SharedLibrary::GetSymbol(const char* name) {
+  void* result = NULL;
+  result = library_.resolve(name);
+  return result;
+}
 
-  void* GetSymbol(const char* name);
-
-  bool HasSymbol(const char* name);
- private:
-#if defined(QT_PORT)
-  QLibrary library_;
-#else
-  Impl* handle_;
-#endif
-};
-
-}  // namespace utils
-
-#endif // SRC_COMPONENTS_UTILS_INCLUDE_UTILS_SHARED_LIBRARY_H_
+bool utils::SharedLibrary::HasSymbol(const char* name) {
+  return GetSymbol(name) == NULL;
+}
