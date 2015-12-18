@@ -43,7 +43,7 @@ class SharedLibrary {
   SharedLibrary();
   SharedLibrary(const char* library_name);
 
-  void Load(const char* library_name);
+  bool Load(const char* library_name);
 
   void Unload();
 

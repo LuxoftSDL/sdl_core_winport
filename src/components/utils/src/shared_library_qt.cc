@@ -40,12 +40,13 @@ utils::SharedLibrary::SharedLibrary(const char* library_name)
   Load(library_name);
 }
 
-void utils::SharedLibrary::Load(const char* library_name) {
+bool utils::SharedLibrary::Load(const char* library_name) {
   if (library_.isLoaded()) {
-    return;
+    return true;
   }
   library_.setFileName(library_name);
   library_.load();
+  return IsLoaded();
 }
 
 void utils::SharedLibrary::Unload() {

@@ -50,12 +50,13 @@ utils::SharedLibrary::SharedLibrary(const char* library_name)
   Load(library_name);
 }
 
-void utils::SharedLibrary::Load(const char* library_name) {
+bool utils::SharedLibrary::Load(const char* library_name) {
   if (handle_) {
-    return;
+    return true;
   }
   std::string platform_name = kLibPrefix + library_name + kLibSuffix;
   handle_ = LoadLibrary(platform_name.c_str());
+  return IsLoaded();
 }
 
 void utils::SharedLibrary::Unload() {
