@@ -35,7 +35,7 @@
 
 #include <errno.h>
 #include <sys/types.h>
-
+#include "utils/winhdr.h"
 #include <ws2bth.h>
 #include <BluetoothAPIs.h>
 #include <sstream>
@@ -81,19 +81,7 @@ void BluetoothTransportAdapter::Store() const {
     Json::Value device_dictionary;
     device_dictionary["name"] = bluetooth_device->name();
     char address[18];
-
-	DWORD addrSize = sizeof(struct sockaddr_storage);
-	int addr_size = sizeof(struct sockaddr_storage);
-	int ret_val = WSAAddressToString((LPSOCKADDR)&bluetooth_device->address(),
-									  addr_size,
-									  NULL,
-									  address,
-									  &addrSize);
-	if (ret_val != 0){
-		LOG4CXX_ERROR(logger_, "WSAAddressToString() failed with error code" << WSAGetLastError());
-	}
-
-
+  	sprintf(address, "%ws", bluetooth_device->address().szName);
     device_dictionary["address"] = std::string(address);
     Json::Value applications_dictionary;
     ApplicationList app_ids = bluetooth_device->GetApplicationList();
@@ -131,42 +119,49 @@ bool BluetoothTransportAdapter::Restore() {
     const Json::Value device_dictionary = *i;
     std::string name = device_dictionary["name"].asString();
     std::string address_record = device_dictionary["address"].asString();
-	BTH_ADDR address;
-
-	std::wstringstream w_address_record;
-	w_address_record << address_record.c_str();
-	int address_size = sizeof(struct sockaddr_storage);
-	int ret_val = WSAStringToAddress((LPSTR)w_address_record.str().c_str(),
-									 AF_INET, 
+	  SOCKADDR_BTH address;
+	  std::wstringstream w_address_record;
+	  w_address_record << address_record.c_str();
+	  int address_size = sizeof(struct sockaddr_storage);
+	  int ret_val = WSAStringToAddress((LPSTR)w_address_record.str().c_str(),
+									 AF_BTH,
 									 NULL,
 									 (LPSOCKADDR)&address,
 									 &address_size);
-	if (ret_val != 0){
-		LOG4CXX_ERROR(logger_, "WSAStringToAddress() failed with error code" << WSAGetLastError());
-	}
+	  if (ret_val != 0){
+		   LOG4CXX_ERROR(logger_, "WSAStringToAddress() failed with error code" << WSAGetLastError());
+	  }
 
     RfcommChannelVector rfcomm_channels;
     const Json::Value applications_dictionary = device_dictionary["applications"];
     for (Json::Value::const_iterator j = applications_dictionary.begin();
          j != applications_dictionary.end(); ++j) {
-      const Json::Value application_dictionary = *j;
-      std::string rfcomm_channel_record =
-        application_dictionary["rfcomm_channel"].asString();
-      uint8_t rfcomm_channel =
-        static_cast<uint8_t>(atoi(rfcomm_channel_record.c_str()));
-      rfcomm_channels.push_back(rfcomm_channel);
+       const Json::Value application_dictionary = *j;
+       std::string rfcomm_channel_record =
+       application_dictionary["rfcomm_channel"].asString();
+       uint8_t rfcomm_channel =
+       static_cast<uint8_t>(atoi(rfcomm_channel_record.c_str()));
+       rfcomm_channels.push_back(rfcomm_channel);
     }
-    BluetoothDevice* bluetooth_device =
-      new BluetoothDevice(address, name.c_str(), rfcomm_channels);
-    DeviceSptr device(bluetooth_device);
-    AddDevice(device);
-    for (RfcommChannelVector::const_iterator j =
+	  BLUETOOTH_DEVICE_INFO  bluetooth_dev_info = { 0 };
+	  bluetooth_dev_info.dwSize = sizeof(BLUETOOTH_DEVICE_INFO);
+	  bluetooth_dev_info.Address.ullLong = address.btAddr;
+	  bluetooth_dev_info.ulClassofDevice = 0;
+	  bluetooth_dev_info.fConnected = false;
+	  bluetooth_dev_info.fRemembered = false;
+	  bluetooth_dev_info.fAuthenticated = false;
+
+	  BluetoothDevice* bluetooth_device = 
+			 new BluetoothDevice(bluetooth_dev_info, name.c_str(), rfcomm_channels);
+     DeviceSptr device(bluetooth_device);
+     AddDevice(device);
+     for (RfcommChannelVector::const_iterator j =
            rfcomm_channels.begin(); j != rfcomm_channels.end(); ++j) {
-      ApplicationHandle app_handle =
+       ApplicationHandle app_handle =
         *j; // for Bluetooth device app_handle is just RFCOMM channel
-      if (Error::OK != Connect(device->unique_device_id(), app_handle)) {
-        errors_occured = true;
-      }
+       if (Error::OK != Connect(device->unique_device_id(), app_handle)) {
+         errors_occured = true;
+       }
     }
   }
   bool result = !errors_occured;

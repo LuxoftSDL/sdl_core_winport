@@ -133,7 +133,7 @@ class BluetoothDeviceScanner : public DeviceScanner {
    */
 #ifdef OS_WINDOWS
   std::vector<RfcommChannelVector> DiscoverSmartDeviceLinkRFCOMMChannels(
-	  const std::vector<BTH_ADDR*>& device_addresses);
+	  const std::vector<BLUETOOTH_DEVICE_INFO>& device_addresses);
 #else
   std::vector<RfcommChannelVector> DiscoverSmartDeviceLinkRFCOMMChannels(
     const std::vector<bdaddr_t>& device_addresses);
@@ -144,7 +144,7 @@ class BluetoothDeviceScanner : public DeviceScanner {
    * @return true - if search was OK, false if it failed
    */
 #ifdef OS_WINDOWS
-  bool DiscoverSmartDeviceLinkRFCOMMChannels(const BTH_ADDR& device_address,
+  bool DiscoverSmartDeviceLinkRFCOMMChannels(const BLUETOOTH_DEVICE_INFO& device_address,
 	  RfcommChannelVector* discovered);
 #else
   bool DiscoverSmartDeviceLinkRFCOMMChannels(const bdaddr_t& device_address,
@@ -169,7 +169,7 @@ class BluetoothDeviceScanner : public DeviceScanner {
    * @param[out] discovered_devices List of created BluetoothDevice objects to fill
    */
 #ifdef OS_WINDOWS
-  void CheckSDLServiceOnDevices(const std::vector<BTH_ADDR*>& bd_address,
+  void CheckSDLServiceOnDevices(const std::vector<BLUETOOTH_DEVICE_INFO>& bd_address,
 	  int device_handle,
 	  DeviceVector* discovered_devices);
 #else
@@ -186,7 +186,7 @@ class BluetoothDeviceScanner : public DeviceScanner {
   sync_primitives::ConditionalVariable device_scan_requested_cv_;
 
 #ifdef OS_WINDOWS
-  std::vector<BTH_ADDR*> paired_devices_;
+  std::vector<BLUETOOTH_DEVICE_INFO> paired_devices_;
 #else
   std::vector<bdaddr_t> paired_devices_;
 #endif
@@ -200,7 +200,7 @@ class BluetoothDeviceScanner : public DeviceScanner {
 #ifdef OS_POSIX
   uuid_t smart_device_link_service_uuid_;
 #elif defined(OS_WINDOWS)
-  WSAQUERYSET smart_device_link_service_uuid_;
+  GUID smart_device_link_service_uuid_;
 #endif
 
   const bool auto_repeat_search_;

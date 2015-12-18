@@ -162,7 +162,7 @@ set (HEADERS
 
 if(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
   if(NOT QT_PORT)
-    list(APPEND LIBRARIES sqlite3 bthprops)
+    list(APPEND LIBRARIES sqlite3 bthprops Ws2_32)
     link_directories(${SQLITE_LIB_DIRECTORY})
   endif()
   link_directories (${OPENSSL_LIB_DIRECTORY})

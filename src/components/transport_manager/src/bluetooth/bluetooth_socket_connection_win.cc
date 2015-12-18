@@ -33,17 +33,7 @@
 
 #include "transport_manager/bluetooth/bluetooth_socket_connection.h"
 
-#ifdef OS_POSIX
-#include <unistd.h>
-#include <bluetooth/bluetooth.h>
-#include <bluetooth/hci.h>
-#include <bluetooth/hci_lib.h>
-#include <bluetooth/sdp.h>
-#include <bluetooth/sdp_lib.h>
-#include <bluetooth/rfcomm.h>
-#elif defined (OS_WINDOWS)
 #include <io.h>
-#endif
 
 #include "transport_manager/bluetooth/bluetooth_device.h"
 #include "transport_manager/transport_adapter/transport_adapter_controller.h"
@@ -85,8 +75,8 @@ bool BluetoothSocketConnection::Establish(ConnectError** error) {
   memset(&remoteSocketAddress, 0, sizeof(remoteSocketAddress));
   remoteSocketAddress.addressFamily = AF_BTH;
 
-  memcpy(&remoteSocketAddress.btAddr, &bluetooth_device->address(),
-	  sizeof(BTH_ADDR));
+  remoteSocketAddress.btAddr = bluetooth_device->address().Address.ullLong;
+  remoteSocketAddress.serviceClassId = RFCOMM_PROTOCOL_UUID;
   remoteSocketAddress.port = rfcomm_channel;
 
   SOCKET rfcomm_socket;
@@ -103,7 +93,7 @@ bool BluetoothSocketConnection::Establish(ConnectError** error) {
       LOG4CXX_TRACE(logger_, "exit with FALSE");
       return false;
     }
-    connect_status = ::connect(rfcomm_socket,
+    connect_status = connect(rfcomm_socket,
                                (struct sockaddr*) &remoteSocketAddress,
                                sizeof(remoteSocketAddress));
     if (0 == connect_status) {
@@ -124,7 +114,7 @@ bool BluetoothSocketConnection::Establish(ConnectError** error) {
   if (0 != connect_status) {
     LOG4CXX_DEBUG(logger_,
                   "Failed to Connect to remote device " << BluetoothDevice::GetUniqueDeviceId(
-                    remoteSocketAddress.rc_bdaddr) << " for session " << this);
+				  bluetooth_device->address()) << " for session " << this);
     *error = new ConnectError();
     LOG4CXX_TRACE(logger_, "exit with FALSE");
     return false;
