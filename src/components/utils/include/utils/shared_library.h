@@ -56,7 +56,7 @@ class SharedLibrary {
 #if defined(QT_PORT)
   QLibrary library_;
 #else
-  Impl* handle_;
+  void* handle_;
 #endif
 };
 
