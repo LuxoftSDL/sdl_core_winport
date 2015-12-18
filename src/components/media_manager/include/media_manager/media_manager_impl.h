@@ -50,9 +50,6 @@ class MediaManagerImpl : public MediaManager,
   public:
     virtual ~MediaManagerImpl();
 
-    virtual void PlayA2DPSource(int32_t application_key);
-    virtual void StopA2DPSource(int32_t application_key);
-
     virtual void StartMicrophoneRecording(int32_t application_key,
                                           const std::string& outputFileName,
                                           int32_t duration);
@@ -76,7 +73,6 @@ class MediaManagerImpl : public MediaManager,
     virtual void Init();
 
     protocol_handler::ProtocolHandler* protocol_handler_;
-    MediaAdapter*                      a2dp_player_;
 
     MediaAdapterImpl*                  from_mic_recorder_;
     MediaListenerPtr                   from_mic_listener_;

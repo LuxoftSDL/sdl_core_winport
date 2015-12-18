@@ -116,7 +116,6 @@ else()
             ${GLIB_glib_2_INCLUDE_DIR}
         )
         set(default_sources
-            ${COMPONENTS_DIR}/media_manager/src/audio/a2dp_source_player_adapter.cc
             ${COMPONENTS_DIR}/media_manager/src/audio/from_mic_recorder_adapter.cc
             ${COMPONENTS_DIR}/media_manager/src/audio/from_mic_to_file_recorder_thread.cc
             ${COMPONENTS_DIR}/media_manager/src/audio/socket_audio_streamer_adapter.cc
