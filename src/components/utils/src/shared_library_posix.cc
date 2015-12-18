@@ -54,7 +54,7 @@ bool utils::SharedLibrary::Load(const char* library_name) {
   if (handle_) {
     return true;
   }
-  std::string platform_name = kLibPrefix + library_name + kLibSuffix;
+  const std::string platform_name = kLibPrefix + library_name + kLibSuffix;
   handle_ = dlopen(platform_name.c_str(), RTLD_LAZY);
   return IsLoaded();
 }
