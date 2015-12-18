@@ -63,5 +63,5 @@ void* utils::SharedLibrary::GetSymbol(const char* name) {
 }
 
 bool utils::SharedLibrary::HasSymbol(const char* name) {
-  return GetSymbol(name) == NULL;
+  return GetSymbol(name) != NULL;
 }
