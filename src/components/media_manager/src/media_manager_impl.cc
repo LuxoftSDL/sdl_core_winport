@@ -43,7 +43,6 @@
 #include "utils/logger.h"
 #include "utils/helpers.h"
 #if defined(EXTENDED_MEDIA_MODE)
-#include "media_manager/audio/a2dp_source_player_adapter.h"
 #include "media_manager/audio/from_mic_recorder_adapter.h"
 #endif
 #include "media_manager/video/socket_video_streamer_adapter.h"
@@ -62,17 +61,11 @@ CREATE_LOGGERPTR_GLOBAL(logger_, "MediaManagerImpl")
 
 MediaManagerImpl::MediaManagerImpl()
   : protocol_handler_(NULL)
-  , a2dp_player_(NULL)
   , from_mic_recorder_(NULL) {
   Init();
 }
 
 MediaManagerImpl::~MediaManagerImpl() {
-  if (a2dp_player_) {
-    delete a2dp_player_;
-    a2dp_player_ = NULL;
-  }
-
   if (from_mic_recorder_) {
     delete from_mic_recorder_;
     from_mic_recorder_ = NULL;
@@ -84,8 +77,7 @@ void MediaManagerImpl::Init() {
   LOG4CXX_INFO(logger_, "MediaManagerImpl::Init()");
 
 #if defined(EXTENDED_MEDIA_MODE)
-  LOG4CXX_INFO(logger_, "Called Init with default configuration.");
-  a2dp_player_ = new A2DPSourcePlayerAdapter();
+  LOG4CXX_INFO(logger_, "Called Init with extended configuration");
   from_mic_recorder_ = new FromMicRecorderAdapter();
 #endif
 
@@ -116,20 +108,6 @@ void MediaManagerImpl::Init() {
   if (streamer_[ServiceType::kAudio]) {
     streamer_[ServiceType::kAudio]->AddListener(
         streamer_listener_[ServiceType::kAudio]);
-  }
-}
-
-void MediaManagerImpl::PlayA2DPSource(int32_t application_key) {
-  LOG4CXX_AUTO_TRACE(logger_);
-  if (a2dp_player_) {
-    a2dp_player_->StartActivity(application_key);
-  }
-}
-
-void MediaManagerImpl::StopA2DPSource(int32_t application_key) {
-  LOG4CXX_AUTO_TRACE(logger_);
-  if (a2dp_player_) {
-    a2dp_player_->StopActivity(application_key);
   }
 }
 

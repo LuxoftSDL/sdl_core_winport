@@ -77,43 +77,8 @@ TEST_F(MediaManagerTest, RecordMicrophoneStream) {
   mediaManager->stopMicrophoneRecording();*/
 }
 
-TEST_F(MediaManagerTest, AddAndPlayStream) {
-  media_manager::MediaManager* mediaManager =
-    media_manager::MediaManagerImpl::instance();
-
-  const useconds_t sleeptime = 100;
-
-  mediaManager->PlayA2DPSource(1);
-  LOG4CXX_INFO(logger_, ".Playing stream");
-
-  usleep(sleeptime);
-
-  mediaManager->StopA2DPSource(1);
-
-  usleep(sleeptime);
-
-  mediaManager->PlayA2DPSource(1);
-
-  usleep(sleeptime);
-
-  mediaManager->StopA2DPSource(1);
-
-  usleep(sleeptime);
-
-  mediaManager->PlayA2DPSource(1);
-
-  usleep(sleeptime);
-
-  mediaManager->StopA2DPSource(1);
-
-  usleep(sleeptime);
-
-  mediaManager->StopA2DPSource(1);
-}
-
 }  //  namespace media_manager_test
 }  //  namespace components
 }  //  namespace test
 
 #endif  // SRC_COMPONENTS_AUDIO_MANAGER_INCLUDE_AUDIO_MANAGER_AUDIO_MANAGER_IMPL_TEST_H_
-
