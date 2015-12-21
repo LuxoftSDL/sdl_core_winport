@@ -4,7 +4,7 @@ setlocal EnableDelayedExpansion
 if [%1]==[] goto usage
 
 set BUILD_TYPE=%1
-set LIBS_DIR="%SDL_ROOT%\src\3rd_party"
+set LIBS_DIR="%SDL_ROOT%\src\3rd_party-static"
 set OPENSSL_SRC_DIR_NAME=openssl-1.0.2
 set OPENSSL_SRC_DIR=%LIBS_DIR%\%OPENSSL_SRC_DIR_NAME%
 set OPENSSL_BUILD_DIR=%BUILD_DIR%\openssl_win_%BUILD_TYPE%
