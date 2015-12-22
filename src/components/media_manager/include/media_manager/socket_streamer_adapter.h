@@ -66,8 +66,8 @@ class SocketStreamerAdapter : public StreamerAdapter {
     int32_t     port_;
     std::string header_;
 
-    utils::Socket socket_;
-    utils::Socket send_socket_;
+    utils::TcpServerSocket server_socket_;
+    utils::TcpSocketConnection client_socket_;
     bool          is_first_frame_;
   };
 };
