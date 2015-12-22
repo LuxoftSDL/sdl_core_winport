@@ -585,21 +585,25 @@ void TransportManagerImpl::OnDeviceListUpdated(TransportAdapter* ta) {
   LOG4CXX_DEBUG(logger_, "DEVICE_LIST_UPDATED " << device_list.size());
   for (DeviceList::const_iterator it = device_list.begin();
        it != device_list.end(); ++it) {
-    device_to_adapter_map_lock_.AcquireForWriting();
-    device_to_adapter_map_.insert(std::make_pair(*it, ta));
-    device_to_adapter_map_lock_.ReleaseForWriting();
+    {
+      sync_primitives::AutoWriteLock lock(device_to_adapter_map_lock_);
+      device_to_adapter_map_.insert(std::make_pair(*it, ta));
+    }
     DeviceHandle device_handle = converter_.UidToHandle(*it);
     DeviceInfo info(device_handle, *it, ta->DeviceName(*it), ta->GetConnectionType());
     RaiseEvent(&TransportManagerListener::OnDeviceFound, info);
   }
   UpdateDeviceList(ta);
   std::vector<DeviceInfo> device_infos;
-  device_list_lock_.AcquireForReading();
-  for (DeviceInfoList::const_iterator it = device_list_.begin();
-       it != device_list_.end(); ++it) {
-    device_infos.push_back(it->second);
+
+  {
+    sync_primitives::AutoReadLock lock(device_list_lock_);
+    for (DeviceInfoList::const_iterator it = device_list_.begin();
+         it != device_list_.end(); ++it) {
+      device_infos.push_back(it->second);
+    }
   }
-  device_list_lock_.ReleaseForReading();
+
   RaiseEvent(&TransportManagerListener::OnDeviceListUpdated, device_infos);
   LOG4CXX_TRACE(logger_, "exit");
 }
@@ -652,19 +656,19 @@ void TransportManagerImpl::Handle(TransportAdapterEvent event) {
       break;
     }
     case TransportAdapterListenerImpl::EventTypeEnum::ON_DISCONNECT_DONE: {
-      connections_lock_.AcquireForReading();
-      ConnectionInternal* connection =
-          GetConnection(event.device_uid, event.application_id);
+      ConnectionInternal* connection = NULL;
+      ConnectionUID id = 0;
+      {
+        sync_primitives::AutoReadLock lock(connections_lock_);
+        connection = GetConnection(event.device_uid, event.application_id);
+        id = connection->id;
+      }
       if (NULL == connection) {
         LOG4CXX_ERROR(logger_, "Connection not found");
         LOG4CXX_DEBUG(logger_,
                       "event_type = ON_DISCONNECT_DONE && NULL == connection");
-        connections_lock_.ReleaseForReading();
         break;
       }
-      const ConnectionUID id = connection->id;
-      connections_lock_.ReleaseForReading();
-
       RaiseEvent(&TransportManagerListener::OnConnectionClosed, id);
       RemoveConnection(id);
       LOG4CXX_DEBUG(logger_, "event_type = ON_DISCONNECT_DONE");
@@ -762,19 +766,19 @@ void TransportManagerImpl::Handle(TransportAdapterEvent event) {
     }
     case TransportAdapterListenerImpl::EventTypeEnum::ON_RECEIVED_FAIL: {
       LOG4CXX_DEBUG(logger_, "Event ON_RECEIVED_FAIL");
-      connections_lock_.AcquireForReading();
-      ConnectionInternal* connection =
-          GetConnection(event.device_uid, event.application_id);
+      ConnectionInternal* connection = NULL;
+      ConnectionUID connection_id = 0;
+      {
+        sync_primitives::AutoReadLock lock(connections_lock_);
+        connection = GetConnection(event.device_uid, event.application_id);
+        connection_id = connection->id;
+      }
       if (connection == NULL) {
         LOG4CXX_ERROR(logger_, "Connection ('" << event.device_uid << ", "
                       << event.application_id
                       << ") not found");
-        connections_lock_.ReleaseForReading();
         break;
       }
-      ConnectionUID connection_id = connection->id;
-      connections_lock_.ReleaseForReading();
-
       RaiseEvent(&TransportManagerListener::OnTMMessageReceiveFailed,
                  connection_id, *static_cast<DataReceiveError*>(event.event_error.get()));
       LOG4CXX_DEBUG(logger_, "event_type = ON_RECEIVED_FAIL");
@@ -785,18 +789,19 @@ void TransportManagerImpl::Handle(TransportAdapterEvent event) {
       break;
     }
     case TransportAdapterListenerImpl::EventTypeEnum::ON_UNEXPECTED_DISCONNECT: {
-      connections_lock_.AcquireForReading();
-      ConnectionInternal* connection =
-          GetConnection(event.device_uid, event.application_id);
+      ConnectionInternal* connection = NULL;
+      ConnectionUID id = 0;
+      {
+        sync_primitives::AutoReadLock lock(connections_lock_);
+        connection = GetConnection(event.device_uid, event.application_id);
+        id = connection->id;
+      }
       if (connection) {
-        const ConnectionUID id = connection->id;
-        connections_lock_.ReleaseForReading();
         RaiseEvent(&TransportManagerListener::OnUnexpectedDisconnect,
                    id,
                    *static_cast<CommunicationError*>(event.event_error.get()));
         RemoveConnection(id);
       } else {
-        connections_lock_.ReleaseForReading();
         LOG4CXX_ERROR(logger_, "Connection ('" << event.device_uid << ", "
                       << event.application_id
                       << ") not found");
