@@ -92,6 +92,9 @@ CryptoManagerImpl::CryptoManagerImpl()
     OpenSSL_add_all_algorithms();
     SSL_library_init();
   }
+  memset(&expiration_time_, 0, sizeof(expiration_time_));
+  // the minimum value for day of month is 1, otherwise exception will be thrown
+  expiration_time_.tm_mday = 1;
 }
 
 CryptoManagerImpl::~CryptoManagerImpl() {
