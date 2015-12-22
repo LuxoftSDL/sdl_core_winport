@@ -35,6 +35,15 @@
 #include "utils/winhdr.h"
 #include "utils/pipe.h"
 
+namespace std {
+
+template<>
+void swap<utils::Pipe>(utils::Pipe& lhs, utils::Pipe& rhs) {
+  lhs.Swap(rhs);
+}
+
+} // namespace std
+
 namespace utils {
 
 class Pipe::Impl {
