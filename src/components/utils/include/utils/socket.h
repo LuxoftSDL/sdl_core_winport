@@ -36,57 +36,57 @@
 #include "utils/macro.h"
 
 #if defined(_MSC_VER)
+#include "utils/winhdr.h"
 typedef SSIZE_T ssize_t;
 #endif
 
 namespace utils {
 
-class Socket {
+class TcpSocketConnection {
  public:
-  Socket();
-  ~Socket();
+  class Impl;
 
-  Socket(Socket& rh);
-  Socket& operator=(Socket& rh);
+  TcpSocketConnection();
 
-  bool Valid() const;
+  TcpSocketConnection(TcpSocketConnection& rhs);
 
-  bool Create(int af, int type, int protocol);
+  TcpSocketConnection& operator=(TcpSocketConnection& rhs);
+
+  explicit TcpSocketConnection(Impl* impl);
+
+  ~TcpSocketConnection();
+
+  ssize_t Send(const char* buffer, std::size_t size);
+
   bool Close();
 
-  bool SetOptions(
-    int level, int optname,
-    const char* optval, size_t optlen);
-
-  bool Bind(
-    const struct sockaddr* addr, size_t addrlen);
-
-  bool Listen(int backlog);
-
-  Socket Accept(
-    struct sockaddr* addr, size_t* addrlen);
-
-  ssize_t Send(
-    const char* buf, size_t length, int flags);
-
-  void Swap(Socket& rh);
-
+  bool IsValid() const;
  private:
-  class Impl;
-  explicit Socket(Impl* impl);
+  void Swap(TcpSocketConnection& rhs);
 
   Impl* impl_;
 };
 
-}  // namespace utils
+class TcpServerSocket {
+ public:
+  TcpServerSocket();
 
-namespace std {
+  ~TcpServerSocket();
 
-template<>
-void swap<utils::Socket>(utils::Socket& lhs, utils::Socket& rhs) {
-  lhs.Swap(rhs);
-}
+  bool IsListening() const;
 
-}  // namespace std
+  bool Close();
+
+  bool Listen(const std::string& address, int port, int backlog);
+
+  TcpSocketConnection Accept();
+
+ private:
+  class Impl;
+
+  Impl* impl_;
+};
+
+} // namespace utils
 
 #endif // SRC_COMPONENTS_UTILS_INCLUDE_UTILS_SOCKET_H_

@@ -36,191 +36,262 @@
 
 #include "utils/socket.h"
 
-namespace utils {
+#include <algorithm>
 
-class Socket::Impl {
- public:
+#include "utils/winhdr.h"
+#include "utils/socket.h"
+
+CREATE_LOGGERPTR_GLOBAL(logger_ptr, "Utils.TcpSocket")
+
+namespace {
+
+  bool CloseSocket(int& socket) {
+    LOG4CXX_AUTO_TRACE(logger_ptr);
+    if (NULL == socket) {
+      LOG4CXX_DEBUG(logger_ptr, "Socket " << socket << " is not valid. Skip closing.");
+      return true;
+    }
+    if (-1 != close(socket)) {
+      LOG4CXX_DEBUG(logger_ptr, "Failed to close socket "
+        << socket << ": " << errno);
+      return false;
+    }
+    socket = NULL;
+    return true;
+  }
+
+} // namespace
+
+////////////////////////////////////////////////////////////////////////////////
+/// utils::TcpSocketConnection::Impl
+////////////////////////////////////////////////////////////////////////////////
+
+class utils::TcpSocketConnection::Impl {
+public:
   Impl();
-  explicit Impl(int socket);
+
+  explicit Impl(int tcp_socket);
+
   ~Impl();
 
-  Impl(Impl& rh);
-  Impl& operator=(Impl& rh);
+  ssize_t Send(const char* buffer, std::size_t size);
 
-  bool Valid() const;
-
-  bool Create(int af, int type, int protocol);
   bool Close();
 
-  bool SetOptions(
-    int level, int optname, const char* optval, size_t optlen);
-
-  bool Bind(
-    const struct sockaddr* addr, size_t addrlen);
-
-  bool Listen(int backlog);
-
-  Socket Accept(
-    struct sockaddr* addr, size_t* addrlen);
-
-  ssize_t Send(
-    const char* buf, size_t length, int flags);
-
- private:
-  int socket_;
+  bool IsValid() const;
+private:
+  int tcp_socket_;
 };
 
-} // namespace utils
-
-utils::Socket::Socket()
-  : impl_(new Socket::Impl()) {
+utils::TcpSocketConnection::Impl::Impl()
+  : tcp_socket_(NULL) {
 }
 
-utils::Socket::~Socket() {
+utils::TcpSocketConnection::Impl::Impl(int tcp_socket)
+  : tcp_socket_(tcp_socket) {
+}
+
+utils::TcpSocketConnection::Impl::~Impl() {
+  Close();
+}
+
+ssize_t
+utils::TcpSocketConnection::Impl::Send(const char* buffer, std::size_t size) {
+  LOG4CXX_AUTO_TRACE(logger_ptr);
+  if (!IsValid()) {
+    return -1;
+  }
+  const int flags = MSG_NOSIGNAL;
+  int result = send(tcp_socket_, buffer, size, flags);
+  if (-1 == result) {
+    LOG4CXX_ERROR(logger_ptr, "Failed to send data: " << errno);
+    return -1;
+  }
+  return result;
+}
+
+bool
+utils::TcpSocketConnection::Impl::Close() {
+  return CloseSocket(tcp_socket_);
+}
+
+bool
+utils::TcpSocketConnection::Impl::IsValid() const {
+  return tcp_socket_ != NULL;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+/// utils::TcpSocketConnection
+////////////////////////////////////////////////////////////////////////////////
+
+utils::TcpSocketConnection::TcpSocketConnection()
+  : impl_(new Impl()) {
+}
+
+utils::TcpSocketConnection::TcpSocketConnection(Impl* impl)
+  : impl_(impl) {
+  DCHECK(impl_);
+}
+
+utils::TcpSocketConnection::~TcpSocketConnection() {
   delete impl_;
 }
 
-utils::Socket::Socket(Socket& rh) {
-  impl_ = new Socket::Impl();
-  *impl_ = *rh.impl_;
+utils::TcpSocketConnection::TcpSocketConnection(TcpSocketConnection& rhs) {
+  Swap(rhs);
 }
 
-utils::Socket& utils::Socket::operator=(Socket& rh) {
-  if (this != &rh) {
-    Socket tmp(rh);
-    this->Swap(tmp);
+utils::TcpSocketConnection&
+utils::TcpSocketConnection::operator=(TcpSocketConnection& rhs) {
+  if (this != &rhs) {
+    Swap(rhs);
   }
   return *this;
 }
 
-bool utils::Socket::Valid() const {
-  return impl_->Valid();
+void
+utils::TcpSocketConnection::Swap(TcpSocketConnection& rhs) {
+  using std::swap;
+  swap(impl_, rhs.impl_);
 }
 
-bool utils::Socket::Create(int af, int type, int protocol) {
-  return impl_->Create(af, type, protocol);
+ssize_t utils::TcpSocketConnection::Send(const char* buffer, std::size_t size) {
+  return impl_->Send(buffer, size);
 }
 
-bool utils::Socket::Close() {
+bool utils::TcpSocketConnection::Close() {
   return impl_->Close();
 }
 
-bool utils::Socket::SetOptions(
-  int level, int optname, const char* optval, size_t optlen) {
-  return impl_->SetOptions(level, optname, optval, optlen);
+bool utils::TcpSocketConnection::IsValid() const {
+  return impl_->IsValid();
 }
 
-bool utils::Socket::Bind(
-  const struct sockaddr* addr, size_t addrlen) {
-  return impl_->Bind(addr, addrlen);
+////////////////////////////////////////////////////////////////////////////////
+/// utils::ServerTcpSocket::Impl
+////////////////////////////////////////////////////////////////////////////////
+
+class utils::TcpServerSocket::Impl {
+public:
+  explicit Impl();
+
+  ~Impl();
+
+  bool IsListening() const;
+
+  bool Close();
+
+  bool Listen(const std::string& address, int port, int backlog);
+
+  TcpSocketConnection Accept();
+
+  ssize_t Send(const char* buf, size_t length);
+private:
+  SOCKET server_socket_;
+
+  bool is_listening_;
+};
+
+utils::TcpServerSocket::Impl::Impl()
+  : server_socket_(NULL)
+  , is_listening_(false) {
 }
 
-bool utils::Socket::Listen(int backlog) {
-  return impl_->Listen(backlog);
-}
-
-utils::Socket utils::Socket::Accept(
-  struct sockaddr* addr, size_t* addrlen) {
-  return impl_->Accept(addr, addrlen);
-}
-
-ssize_t utils::Socket::Send(
-  const char* buf, size_t length, int flags) {
-  return impl_->Send(buf, length, flags);
-}
-
-utils::Socket::Socket(Socket::Impl* impl)
-  : impl_(impl) {
-}
-
-void utils::Socket::Swap(Socket& rh) {
-  std::swap(this->impl_, rh.impl_);
-}
-
-utils::Socket::Impl::Impl(): socket_(NULL) {
-}
-
-utils::Socket::Impl::Impl(int socket)
-  : socket_(socket <= 0 ? NULL : socket) {
-}
-
-utils::Socket::Impl::~Impl() {
+utils::TcpServerSocket::Impl::~Impl() {
   Close();
 }
 
-utils::Socket::Impl::Impl(Impl& rh)
-  : socket_(rh.socket_) {
-  rh.socket_ = NULL;
+bool utils::TcpServerSocket::Impl::IsListening() const {
+  return server_socket_ && is_listening_;
 }
 
-utils::Socket::Impl& utils::Socket::Impl::operator=(Impl& rh) {
-  Close();
-  socket_ = rh.socket_;
-  rh.socket_ = NULL;
-  return *this;
+bool utils::TcpServerSocket::Impl::Close() {
+  return CloseSocket(server_socket_);
 }
 
-bool utils::Socket::Impl::Valid() const {
-  return socket_ != NULL;
-}
-
-bool utils::Socket::Impl::Create(int af, int type, int protocol) {
-  if (!Close()) {
+bool utils::TcpServerSocket::Impl::Listen(
+  const std::string& address, int port, int backlog) {
+  LOG4CXX_AUTO_TRACE(logger_ptr);
+  if (IsListening()) {
+    LOG4CXX_ERROR(logger_ptr, "Cannot listen. Already listeneing.");
     return false;
   }
-  socket_ = socket(af, type, protocol);
-  if (-1 == socket_) {
-    socket_ = NULL;
+
+  server_socket_ = socket(AF_INET, SOCK_STREAM, 0);
+  if (-1 == server_socket_) {
+    LOG4CXX_ERROR(logger_ptr, "Failed to create server socket: " << errno);
+    server_socket_ = NULL;
     return false;
   }
+
+  char optval = 1;
+  if (-1 == setsockopt(
+    server_socket_, SOL_SOCKET, SO_REUSEADDR, &optval, sizeof(optval))) {
+    LOG4CXX_ERROR(logger_ptr, "Unable to set sockopt: " << errno);
+    server_socket_ = NULL;
+    return false;
+  }
+
+  struct sockaddr_in server_address = { 0 };
+  server_address.sin_addr.s_addr = inet_addr(address.c_str());
+  server_address.sin_family = AF_INET;
+  server_address.sin_port = htons(port);
+
+  if (-1 == bind(
+    server_socket_, reinterpret_cast<struct sockaddr*>(&server_address), sizeof(server_address))) {
+    LOG4CXX_ERROR(logger_ptr, "Unable to bind: " << errno);
+    server_socket_ = NULL;
+    return false;
+  }
+
+  if (-1 == listen(server_socket_, backlog)) {
+    LOG4CXX_ERROR(logger_ptr, "Unable to listen: " << errno);
+    server_socket_ = NULL;
+    return false;
+  }
+
+  is_listening_ = true;
   return true;
 }
 
-bool utils::Socket::Impl::Close() {
-  if (NULL == socket_) {
-    return true;
+utils::TcpSocketConnection utils::TcpServerSocket::Impl::Accept() {
+  LOG4CXX_AUTO_TRACE(logger_ptr);
+
+  struct sockaddr client_addr = { 0 };
+  int client_addr_length = sizeof(client_addr);
+  SOCKET client_socket = accept(server_socket_, &client_addr, &client_addr_length);
+  if (-1 == client_socket) {
+    LOG4CXX_ERROR(logger_ptr, "Failed to accept client socket: " << errno);
+    return utils::TcpSocketConnection();
   }
-  if (-1 != close(socket_)) {
-    return false;
-  }
-  socket_ = NULL;
-  return true;
+  return TcpSocketConnection(
+    new TcpSocketConnection::Impl(client_socket));
 }
 
-bool utils::Socket::Impl::SetOptions(
-  int level, int optname, const char* optval, size_t optlen) {
-  if (NULL == socket_ || -1 == setsockopt(
-      socket_, level, optname, (const char*)&optval, optlen)) {
-    return false;
-  }
-  return true;
+////////////////////////////////////////////////////////////////////////////////
+/// utils::TcpServerSocket
+////////////////////////////////////////////////////////////////////////////////
+
+utils::TcpServerSocket::TcpServerSocket()
+  : impl_(new TcpServerSocket::Impl()) {
 }
 
-bool utils::Socket::Impl::Bind(
-  const struct sockaddr* addr, size_t addrlen) {
-  if (NULL == socket_ || -1 == bind(socket_, addr, addrlen)) {
-    return false;
-  }
-  return true;
+utils::TcpServerSocket::~TcpServerSocket() {
+  delete impl_;
 }
 
-bool utils::Socket::Impl::Listen(int backlog) {
-  if (NULL == socket_ || -1 == listen(socket_, backlog)) {
-    return false;
-  }
-  return true;
+bool utils::TcpServerSocket::IsListening() const {
+  return impl_->IsListening();
 }
 
-utils::Socket utils::Socket::Impl::Accept(
-  struct sockaddr* addr, size_t* addrlen) {
-  return utils::Socket(
-    new utils::Socket::Impl(accept(socket_, addr, (int*)addrlen)));
+bool utils::TcpServerSocket::Close() {
+  return impl_->Close();
 }
 
-ssize_t utils::Socket::Impl::Send(
-  const char* buf, size_t length, int flags) {
-  if (NULL == socket_) {
-    return -1;
-  }
-  return send(socket_, buf, length, flags);
+bool utils::TcpServerSocket::Listen(const std::string& address, int port, int backlog) {
+  return impl_->Listen(address, port, backlog);
+}
+
+utils::TcpSocketConnection utils::TcpServerSocket::Accept() {
+  return impl_->Accept();
 }
