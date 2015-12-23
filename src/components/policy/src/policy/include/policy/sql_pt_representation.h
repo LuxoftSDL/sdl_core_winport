@@ -57,25 +57,15 @@ public:
     : utils::dbms::SQLQuery(db)
   {}
 
+  using utils::dbms::SQLQuery::Bind;
+
   template<class T>
   void Bind(int pos, const rpc::Optional<T>& opt_val) {
     if (opt_val.is_initialized()) {
-      utils::dbms::SQLQuery::Bind(pos, *opt_val);
+      Bind(pos, *opt_val);
+    } else {
+      Bind(pos);
     }
-    else {
-      utils::dbms::SQLQuery::Bind(pos);
-    }
-  }
-
-  // two functions bellow are neccessary in order to allow proper
-  // overloading resolution
-  template<class T>
-  void Bind(int pos, const T& val) {
-    utils::dbms::SQLQuery::Bind(pos, val);
-  }
-
-  void Bind(int pos) {
-    utils::dbms::SQLQuery::Bind(pos);
   }
 };
 
