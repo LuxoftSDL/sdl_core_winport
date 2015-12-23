@@ -58,8 +58,23 @@
 #undef DeleteFile
 #endif
 
+#ifdef QT_PORT
+#ifdef RemoveDirectory
+#undef RemoveDirectory
+#endif
+
+#ifdef MoveFile
+#undef MoveFile
+#endif
+#endif
+
 #ifdef ERROR
 #undef ERROR
 #endif
 
+#pragma warning( disable : 4482 )// Disabled MSVS warning c4482. /W1 (level 1)
+#pragma warning( disable : 4200 )//Disabled MSVS warning c4200. /W2 (level 2)
+#pragma warning( disable : 4250 )//Disabled MSVS warning c4250. /W2 (level 2)
+#pragma warning( disable : 4373 )//Disabled MSVS warning c4373. /W2 (level 3)
+// Compiler warnings: https://msdn.microsoft.com/en-us/library/79wf64bc(v=vs.100).aspx
 #endif // SRC_COMPONENTS_INCLUDE_UTILS_WINHDR_H_
