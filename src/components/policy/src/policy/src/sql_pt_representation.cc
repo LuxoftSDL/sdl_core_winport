@@ -758,8 +758,7 @@ bool SQLPTRepresentation::SaveFunctionalGroupings(
     // to avoid ambiguity.
     query.Bind(0, static_cast<int64_t>(id));
     query.Bind(1, it->first);
-    it->second.user_consent_prompt.is_initialized() ?
-    query.Bind(2, *(it->second.user_consent_prompt)) : query.Bind(2);
+    query.Bind(2, it->second.user_consent_prompt);
 
     if (!query.Exec() || !query.Reset()) {
       LOG4CXX_WARN(logger_, "Incorrect insert into functional groups");
@@ -885,8 +884,7 @@ bool SQLPTRepresentation::SaveSpecificAppPolicy(
   app_query.Bind(2, app.second.is_null());
   app_query.Bind(3, *app.second.memory_kb);
   app_query.Bind(4, static_cast<int64_t>(*app.second.heart_beat_timeout_ms));
-  app.second.certificate.is_initialized() ?
-  app_query.Bind(5, *app.second.certificate) : app_query.Bind(5);
+  app_query.Bind(5, app.second.certificate);
   if (!app_query.Exec() || !app_query.Reset()) {
     LOG4CXX_WARN(logger_, "Incorrect insert into application.");
     return false;
@@ -1056,15 +1054,10 @@ bool SQLPTRepresentation::SaveModuleConfig(
   query.Bind(2, config.exchange_after_x_kilometers);
   query.Bind(3, config.exchange_after_x_days);
   query.Bind(4, config.timeout_after_x_seconds);
-
-  config.certificate.is_initialized() ?
-  query.Bind(5, *(config.certificate)) : query.Bind(5);
-  config.vehicle_make.is_initialized() ?
-  query.Bind(6, *(config.vehicle_make)) : query.Bind(6);
-  config.vehicle_model.is_initialized() ?
-  query.Bind(7, *(config.vehicle_model)) : query.Bind(7);
-  config.vehicle_year.is_initialized() ?
-  query.Bind(8, *(config.vehicle_year)) : query.Bind(8);
+  query.Bind(5, config.certificate);
+  query.Bind(6, config.vehicle_make);
+  query.Bind(7, config.vehicle_model);
+  query.Bind(8, config.vehicle_year);
 
   if (!query.Exec()) {
     LOG4CXX_WARN(logger_, "Incorrect update module config");
