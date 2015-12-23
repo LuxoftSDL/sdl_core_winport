@@ -6,7 +6,7 @@
 if(EXISTS $ENV{SDL_GSTREAMER_DIR})
     set(GSTREAMER_DIR $ENV{SDL_GSTREAMER_DIR})
 else()
-    message("Could not find GSTREAMER (Check SDL_GSTREAMER_DIR environment variable)")
+    message(FATAL_ERROR "Could not find GSTREAMER (Check SDL_GSTREAMER_DIR environment variable)")
 endif()
 
 set(GSTREAMER_INCLUDE_DIR
