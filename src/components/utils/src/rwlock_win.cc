@@ -30,7 +30,6 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 #include "utils/winhdr.h"
-#include "utils/lock.h"
 #include "utils/rwlock.h"
 #include "utils/logger.h"
 
@@ -43,17 +42,14 @@ class RWLock::Impl {
   Impl();
   ~Impl();
 
-  bool AcquireForReading();
+  void AcquireForReading();
   bool TryAcquireForReading();
+  void AcquireForWriting();
   bool TryAcquireForWriting();
-  bool AcquireForWriting();
-  bool Release();
+  void ReleaseForReading();
+  void ReleaseForWriting();
 
  private:
-  enum RWLockStatus { kNotAcquired, kAcquiredForReading, kAcquiredForWriting };
-
-  RWLockStatus status_;
-  Lock         status_lock_;
   SRWLOCK      rwlock_;
 
   DISALLOW_COPY_AND_ASSIGN(Impl);
@@ -69,82 +65,65 @@ sync_primitives::RWLock::~RWLock() {
   delete impl_;
 }
 
-bool sync_primitives::RWLock::AcquireForReading() {
-  return impl_->AcquireForReading();
+void sync_primitives::RWLock::AcquireForReading() {
+  impl_->AcquireForReading();
 }
 
 bool sync_primitives::RWLock::TryAcquireForReading() {
   return impl_->TryAcquireForReading();
 }
 
-bool sync_primitives::RWLock::AcquireForWriting() {
-  return impl_->AcquireForWriting();
+void sync_primitives::RWLock::AcquireForWriting() {
+  impl_->AcquireForWriting();
 }
 
 bool sync_primitives::RWLock::TryAcquireForWriting() {
   return impl_->TryAcquireForWriting();
 }
 
-bool sync_primitives::RWLock::Release() {
-  return impl_->Release();
+void sync_primitives::RWLock::ReleaseForReading() {
+  impl_->ReleaseForReading();
 }
 
-sync_primitives::RWLock::Impl::Impl()
-  : status_(kNotAcquired) {
+void sync_primitives::RWLock::ReleaseForWriting() {
+  impl_->ReleaseForWriting();
+}
+
+sync_primitives::RWLock::Impl::Impl() {
   InitializeSRWLock(&rwlock_);
 }
 
 sync_primitives::RWLock::Impl::~Impl() {
-  sync_primitives::AutoLock lock(status_lock_);
-  if (kNotAcquired != status_) {
-    LOG4CXX_ERROR(logger_, "RWLock is acquired");
-  }
 }
 
-bool sync_primitives::RWLock::Impl::AcquireForReading() {
-  sync_primitives::AutoLock lock(status_lock_);
+void sync_primitives::RWLock::Impl::AcquireForReading() {
   AcquireSRWLockShared(&rwlock_);
-  status_ = kAcquiredForReading;
-  return true;
 }
 
 bool sync_primitives::RWLock::Impl::TryAcquireForReading() {
-  sync_primitives::AutoLock lock(status_lock_);
   if (!TryAcquireSRWLockShared(&rwlock_)) {
     LOG4CXX_WARN(logger_, "Failed to acquire rwlock for reading");
     return false;
   }
-  status_ = kAcquiredForReading;
   return true;
 }
 
-bool sync_primitives::RWLock::Impl::AcquireForWriting() {
-  sync_primitives::AutoLock lock(status_lock_);
+void sync_primitives::RWLock::Impl::AcquireForWriting() {
   AcquireSRWLockExclusive(&rwlock_);
-  status_ = kAcquiredForWriting;
-  return true;
 }
 
 bool sync_primitives::RWLock::Impl::TryAcquireForWriting() {
-  sync_primitives::AutoLock lock(status_lock_);
   if (!TryAcquireSRWLockExclusive(&rwlock_)) {
     LOG4CXX_WARN(logger_, "Failed to acquire rwlock for writing");
     return false;
   }
-  status_ = kAcquiredForWriting;
   return true;
 }
 
-bool sync_primitives::RWLock::Impl::Release() {
-  sync_primitives::AutoLock lock(status_lock_);
-  if (kAcquiredForReading == status_) {
-    ReleaseSRWLockShared(&rwlock_);
-  } else if (kAcquiredForWriting == status_) {
-    ReleaseSRWLockExclusive(&rwlock_);
-  } else {
-    LOG4CXX_WARN(logger_, "RWLock is not acquired");
-    return false;
-  }
-  status_ = kNotAcquired;
-  return true;
+void sync_primitives::RWLock::Impl::ReleaseForReading() {
+  ReleaseSRWLockShared(&rwlock_);
+}
+
+void sync_primitives::RWLock::Impl::ReleaseForWriting() {
+  ReleaseSRWLockExclusive(&rwlock_);
 }
