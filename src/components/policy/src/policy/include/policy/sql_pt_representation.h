@@ -37,6 +37,7 @@
 #include <vector>
 #include "policy/pt_representation.h"
 #include "rpc_base/rpc_base.h"
+#include "utils/sql_wrapper.h"
 #include "./types.h"
 
 namespace policy_table = rpc::policy_table_interface_base;
@@ -49,6 +50,34 @@ class SQLDatabase;
 
 
 namespace policy {
+
+class Query : public utils::dbms::SQLQuery {
+public:
+  Query(utils::dbms::SQLDatabase* db)
+    : utils::dbms::SQLQuery(db)
+  {}
+
+  template<class T>
+  void Bind(int pos, const rpc::Optional<T>& opt_val) {
+    if (opt_val.is_initialized()) {
+      utils::dbms::SQLQuery::Bind(pos, *opt_val);
+    }
+    else {
+      utils::dbms::SQLQuery::Bind(pos);
+    }
+  }
+
+  // two functions bellow are neccessary in order to allow proper
+  // overloading resolution
+  template<class T>
+  void Bind(int pos, const T& val) {
+    utils::dbms::SQLQuery::Bind(pos, val);
+  }
+
+  void Bind(int pos) {
+    utils::dbms::SQLQuery::Bind(pos);
+  }
+};
 
 class SQLPTRepresentation : public virtual PTRepresentation {
   public:
