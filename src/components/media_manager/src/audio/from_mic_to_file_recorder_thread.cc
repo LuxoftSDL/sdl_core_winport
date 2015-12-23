@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014, Ford Motor Company
+ * Copyright (c) 2014-2015, Ford Motor Company
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -29,15 +29,52 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-
 #include "media_manager/audio/from_mic_to_file_recorder_thread.h"
+
+#if defined(OS_POSIX)
 #include <unistd.h>
+#elif defined(OS_WINDOWS)
+#include "utils/threads/thread.h"
+#endif
+
 #include <sstream>
 #include "utils/logger.h"
 
-namespace media_manager {
-
 CREATE_LOGGERPTR_GLOBAL(logger_, "FromMicToFileRecorderThread")
+
+namespace {
+
+  gboolean HandleBusMessage(GstBus* bus, GstMessage* message, gpointer data) {
+    GMainLoop* loop = static_cast<GMainLoop*>(data);
+    switch (GST_MESSAGE_TYPE(message)) {
+      case GST_MESSAGE_EOS: {
+        LOG4CXX_INFO(logger_, "End of stream");
+
+        g_main_loop_quit(loop);
+        break;
+      }
+      case GST_MESSAGE_ERROR: {
+        gchar* debug;
+        GError* error;
+
+        gst_message_parse_error(message, &error, &debug);
+        g_free(debug);
+
+        LOG4CXX_ERROR(logger_, error->message);
+        g_error_free(error);
+
+        g_main_loop_quit(loop);
+        break;
+      }
+      default:
+        break;
+    }
+    return true;
+  }
+
+}  // namespace
+
+namespace media_manager {
 
 GMainLoop* FromMicToFileRecorderThread::loop = NULL;
 
@@ -156,10 +193,7 @@ void FromMicToFileRecorderThread::threadMain() {
 
   // Set up error handling
   bus = gst_pipeline_get_bus(GST_PIPELINE(pipeline));
-  gst_bus_add_watch(bus,
-                    reinterpret_cast<int32_t (*)(_GstBus*, _GstMessage*, void*)>
-                    (recvmsg),
-                    NULL);
+  gst_bus_add_watch(bus, HandleBusMessage, NULL);
   gst_object_unref(bus);
 
   // Create all of the elements to be added to the pipeline
@@ -245,7 +279,7 @@ FromMicToFileRecorderThread::SleepThreadDelegate::SleepThreadDelegate(GstTimeout
 void FromMicToFileRecorderThread::SleepThreadDelegate::threadMain() {
   LOG4CXX_TRACE(logger_, "Sleep for " << timeout_.duration << " seconds");
 
-  sleep(timeout_.duration);
+  threads::sleep(timeout_.duration * 1000);
 
   if (NULL != loop) {
     if (g_main_loop_is_running(loop)) {

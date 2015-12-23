@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014, Ford Motor Company
+ * Copyright (c) 2014-2015, Ford Motor Company
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -34,7 +34,6 @@
 #include "media_manager/media_manager_impl.h"
 #include "media_manager/audio/from_mic_recorder_listener.h"
 #include "media_manager/streamer_listener.h"
-#include "application_manager/message_helper.h"
 #include "application_manager/application.h"
 #include "application_manager/application_manager_impl.h"
 #include "application_manager/application_impl.h"
