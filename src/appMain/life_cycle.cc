@@ -406,10 +406,10 @@ void LifeCycle::Run() {
 void LifeCycle::StopComponents() {
   LOG4CXX_AUTO_TRACE(logger_);
 
+  app_manager_->Stop();
   hmi_handler_->set_message_observer(NULL);
   connection_handler_->set_connection_handler_observer(NULL);
   protocol_handler_->RemoveProtocolObserver(app_manager_);
-  app_manager_->Stop();
 
   LOG4CXX_INFO(logger_, "Stopping Protocol Handler");
   protocol_handler_->RemoveProtocolObserver(media_manager_);
