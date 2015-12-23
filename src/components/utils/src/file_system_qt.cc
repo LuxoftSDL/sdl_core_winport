@@ -45,7 +45,6 @@
 #include <QUrl>
 
 #include <io.h>
-// TODO(VS): lint error: Streams are highly discouraged.
 #include <fstream>
 #include <cstddef>
 #include <algorithm>
@@ -56,18 +55,14 @@
 CREATE_LOGGERPTR_GLOBAL(logger_, "Utils")
 
 uint64_t file_system::GetAvailableDiskSpace(const std::string& path) {
- QStorageInfo * mstor = new QStorageInfo(QString(path.c_str()));
- qint64 b_aval = mstor->bytesAvailable();
- if (b_aval != 0) {
-    return static_cast<uint64_t>(b_aval);
-  } else {
-    return 0;
-  }
+ QStorageInfo mstor(QString(path.c_str()));
+ qint64 b_aval = mstor.bytesAvailable();
+ return static_cast<uint64_t>(b_aval);
 }
 
-int64_t file_system::FileSize(const std::string &path) {
+int64_t file_system::FileSize(const std::string& path) {
   if (file_system::FileExists(path)) {
-    return static_cast<uint64_t>(QFileInfo(QString(path.c_str())).size());
+    return static_cast<int64_t>(QFileInfo(QString(path.c_str())).size());
   }
   return 0;
 }
@@ -75,12 +70,11 @@ int64_t file_system::FileSize(const std::string &path) {
 size_t file_system::DirectorySize(const std::string& path) {
     quint64 size = 0;
      QFileInfo str_info(QString(path.c_str()));
-     if (str_info.isDir()){
+     if (str_info.isDir()) {
          QDir dir(QString(path.c_str()));
          QFileInfoList list = dir.entryInfoList(QDir::Files | QDir::Dirs |  QDir::Hidden | QDir::NoSymLinks | QDir::NoDotAndDotDot);
-         for (int i = 0; i < list.size(); ++i) {
-             QFileInfo fileInfo = list.at(i);
-             if(fileInfo.isDir()){
+         foreach (QFileInfo fileInfo, list) {
+             if(fileInfo.isDir()) {
                  size += DirectorySize(fileInfo.absoluteFilePath().toStdString());
              }
              else {
@@ -93,12 +87,10 @@ size_t file_system::DirectorySize(const std::string& path) {
 }
 
 std::string file_system::CreateDirectory(const std::string& name) {
-  if (!DirectoryExists(name)) {
      QDir dir;
-     if(dir.mkdir(QString(name.c_str()))){
+     if(dir.mkdir(QString(name.c_str()))) {
          return name;
      }
-  }
   return "";
 }
 
@@ -114,20 +106,12 @@ bool file_system::IsDirectory(const std::string& name) {
 
 bool file_system::DirectoryExists(const std::string& name) {
     QFileInfo checkFile(QString(name.c_str()));
-    if (checkFile.exists() && checkFile.isDir()) {
-           return true;
-       } else {
-           return false;
-       }
+    return checkFile.exists() && checkFile.isDir();
 }
 
 bool file_system::FileExists(const std::string& name) {
      QFileInfo checkFile(QString(name.c_str()));
-     if (checkFile.exists() && checkFile.isFile()) {
-            return true;
-        } else {
-            return false;
-        }
+     return checkFile.exists() && checkFile.isFile();
 }
 
 bool file_system::Write(
@@ -299,7 +283,6 @@ bool file_system::CreateFile(const std::string& path) {
   }
 }
 
-
 uint64_t file_system::GetFileModificationTime(const std::string& path) {
     QFileInfo f(QString(path.c_str()));
     return static_cast<uint64_t>(f.lastModified().toMSecsSinceEpoch());
@@ -310,7 +293,7 @@ bool file_system::CopyFile(const std::string& src,
   if (!FileExists(src) || FileExists(dst) || !CreateFile(dst)) {
     return false;
   }
-    return QFile::copy(QString(src.c_str()), QString(dst.c_str()));
+  return QFile::copy(QString(src.c_str()), QString(dst.c_str()));
 }
 
 bool file_system::MoveFile(const std::string& src,
@@ -326,7 +309,8 @@ bool file_system::MoveFile(const std::string& src,
 }
 
 std::string file_system::GetPathDelimiter() {
-  return "\\";
+
+  return QString(QDir::separator()).toStdString();
 }
 
 bool file_system::IsRelativePath(const std::string& path){

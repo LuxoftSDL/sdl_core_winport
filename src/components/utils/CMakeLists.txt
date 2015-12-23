@@ -38,8 +38,8 @@ include_directories (
 )
 
 if(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
-  if(${QT_PORT})
-     find_package(Qt5Core REQUIRED)
+  if(QT_PORT)
+     find_package(Qt5 REQUIRED Core)
      set ( inc  ${UTILS_INCLUDE_DIR}/utils/bitstream.h
                 ${UTILS_INCLUDE_DIR}/utils/file_system.h
                 ${UTILS_INCLUDE_DIR}/utils/gen_hash.h
@@ -89,22 +89,22 @@ if(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
             ${UTILS_SRC_DIR}/pipe_win.cc
     )
   endif()
-    if(ENABLE_LOG)
-      list(APPEND LIBRARIES ConfigProfile)
-      if(QT_PORT)
-        list(APPEND src
-          ${UTILS_SRC_DIR}/logger_qt.cc
-          ${UTILS_SRC_DIR}/log_message_loop_thread_qt.cc
-          ${UTILS_SRC_DIR}/shared_library_qt.cc
+  if(ENABLE_LOG)
+    list(APPEND LIBRARIES ConfigProfile)
+     if(QT_PORT)
+       list(APPEND src
+        ${UTILS_SRC_DIR}/logger_qt.cc
+        ${UTILS_SRC_DIR}/log_message_loop_thread_qt.cc
+        ${UTILS_SRC_DIR}/shared_library_qt.cc
         )
-      else()
+     else()
         list(APPEND src
-          ${UTILS_SRC_DIR}/logger_win.cc
-          ${UTILS_SRC_DIR}/log_message_loop_thread_win.cc
-          ${UTILS_SRC_DIR}/shared_library_win.cc
+        ${UTILS_SRC_DIR}/logger_win.cc
+        ${UTILS_SRC_DIR}/log_message_loop_thread_win.cc
+        ${UTILS_SRC_DIR}/shared_library_win.cc
         )
-      endif()
-    endif()
+     endif()
+  endif()
 
     string( REPLACE / \\ group ${inc} )
     source_group("Header Files" FILES ${inc} )
