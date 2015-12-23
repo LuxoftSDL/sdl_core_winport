@@ -116,7 +116,7 @@ if(EXTENDED_MEDIA_MODE)
             )
 
             list(APPEND LIBRARIES
-                ${GSTREAMER_LIBRARY}
+                ${GSTREAMER_LIBRARIES}
             )
         endif()
     else()
