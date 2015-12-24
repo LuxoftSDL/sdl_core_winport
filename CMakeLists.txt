@@ -210,7 +210,6 @@ endif()
 
 if(QT_PORT)
   set(CMAKE_AUTOMOC ON)
-  set(CMAKE_INCLUDE_CURRENT_DIR ON)
   find_package(Qt5 REQUIRED Core Network)
   include_directories(
     ${Qt5Core_INCLUDE_DIRS}
