@@ -67,6 +67,7 @@ if(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
             ${UTILS_SRC_DIR}/string_utils.cc
             ${UTILS_SRC_DIR}/socket_win.cc
             ${UTILS_SRC_DIR}/pipe_win.cc
+            ${UTILS_SRC_DIR}/shared_library_qt.cc
     )
 
   else(${QT_PORT}) #WIN_NATIVE
@@ -87,6 +88,7 @@ if(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
             ${UTILS_SRC_DIR}/string_utils.cc
             ${UTILS_SRC_DIR}/socket_win.cc
             ${UTILS_SRC_DIR}/pipe_win.cc
+            ${UTILS_SRC_DIR}/shared_library_win.cc
     )
   endif()
   if(ENABLE_LOG)
@@ -95,13 +97,11 @@ if(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
        list(APPEND src
         ${UTILS_SRC_DIR}/logger_qt.cc
         ${UTILS_SRC_DIR}/log_message_loop_thread_qt.cc
-        ${UTILS_SRC_DIR}/shared_library_qt.cc
         )
      else()
         list(APPEND src
         ${UTILS_SRC_DIR}/logger_win.cc
         ${UTILS_SRC_DIR}/log_message_loop_thread_win.cc
-        ${UTILS_SRC_DIR}/shared_library_win.cc
         )
      endif()
   endif()
