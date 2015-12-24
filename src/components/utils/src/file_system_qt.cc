@@ -73,7 +73,7 @@ size_t file_system::DirectorySize(const std::string& path) {
   if (str_info.isDir()) {
     QDir dir(QString(path.c_str()));
     QFileInfoList list = dir.entryInfoList(QDir::Files | QDir::Dirs |  QDir::Hidden 
-    QDir::NoSymLinks | QDir::NoDotAndDotDot);
+      QDir::NoSymLinks | QDir::NoDotAndDotDot);
     foreach (QFileInfo fileInfo, list) {
       if(fileInfo.isDir()) {
         size += DirectorySize(fileInfo.absoluteFilePath().toStdString());
