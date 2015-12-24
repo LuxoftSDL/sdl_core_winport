@@ -47,7 +47,7 @@ namespace {
       return true;
     }
     if (-1 != close(socket)) {
-      LOG4CXX_DEBUG(logger_ptr, "Failed to close socket "
+      LOG4CXX_WARN(logger_ptr, "Failed to close socket "
         << socket << ": " << errno);
       return false;
     }
@@ -94,6 +94,7 @@ ssize_t
 utils::TcpSocketConnection::Impl::Send(const char* buffer, std::size_t size) {
   LOG4CXX_AUTO_TRACE(logger_ptr);
   if (!IsValid()) {
+    LOG4CXX_ERROR(logger_ptr, "Failed to send data socket is not valid");
     return -1;
   }
   const int flags = MSG_NOSIGNAL;
