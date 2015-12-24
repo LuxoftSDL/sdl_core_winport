@@ -98,7 +98,6 @@ utils::TcpSocketConnection::Impl::Send(const char* buffer, std::size_t size) {
   int result = send(tcp_socket_, buffer, size, flags);
   if (SOCKET_ERROR == result) {
     LOG4CXX_ERROR(logger_ptr, "Failed to send data: " << WSAGetLastError());
-    return -1;
   }
   return result;
 }

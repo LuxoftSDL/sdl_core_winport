@@ -100,7 +100,6 @@ utils::TcpSocketConnection::Impl::Send(const char* buffer, std::size_t size) {
   int result = send(tcp_socket_, buffer, size, flags);
   if (-1 == result) {
     LOG4CXX_ERROR(logger_ptr, "Failed to send data: " << errno);
-    return -1;
   }
   return result;
 }
