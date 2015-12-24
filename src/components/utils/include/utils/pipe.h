@@ -33,6 +33,7 @@
 #define SRC_COMPONENTS_UTILS_INCLUDE_UTILS_PIPE_H_
 
 #include <cstdint>
+#include <string>
 #include "utils/macro.h"
 
 #if defined(_MSC_VER)
