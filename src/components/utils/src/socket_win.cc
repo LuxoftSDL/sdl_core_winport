@@ -60,7 +60,7 @@ bool CloseSocket(SOCKET& socket) {
 ////////////////////////////////////////////////////////////////////////////////
 
 class utils::TcpSocketConnection::Impl {
-public:
+ public:
   Impl();
 
   explicit Impl(SOCKET tcp_socket);
@@ -72,7 +72,7 @@ public:
   bool Close();
 
   bool IsValid() const;
-private:
+ private:
   SOCKET tcp_socket_;
 };
 
@@ -165,7 +165,7 @@ bool utils::TcpSocketConnection::IsValid() const {
 ////////////////////////////////////////////////////////////////////////////////
 
 class utils::TcpServerSocket::Impl {
-public:
+ public:
   explicit Impl();
 
   ~Impl();
@@ -179,7 +179,7 @@ public:
   TcpSocketConnection Accept();
 
   ssize_t Send(const char* buf, size_t length);
-private:
+ private:
   SOCKET server_socket_;
 
   bool is_listening_;
