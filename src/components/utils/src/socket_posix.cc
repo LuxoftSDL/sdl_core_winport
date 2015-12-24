@@ -182,7 +182,7 @@ public:
 
   ssize_t Send(const char* buf, size_t length);
 private:
-  SOCKET server_socket_;
+  int server_socket_;
 
   bool is_listening_;
 };
@@ -254,7 +254,7 @@ utils::TcpSocketConnection utils::TcpServerSocket::Impl::Accept() {
 
   struct sockaddr client_addr = { 0 };
   int client_addr_length = sizeof(client_addr);
-  SOCKET client_socket = accept(server_socket_, &client_addr, &client_addr_length);
+  int client_socket = accept(server_socket_, &client_addr, &client_addr_length);
   if (-1 == client_socket) {
     LOG4CXX_ERROR(logger_ptr, "Failed to accept client socket: " << errno);
     return utils::TcpSocketConnection();
