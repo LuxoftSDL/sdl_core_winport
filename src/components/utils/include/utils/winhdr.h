@@ -58,14 +58,12 @@
 #undef DeleteFile
 #endif
 
-#ifdef QT_PORT
 #ifdef RemoveDirectory
 #undef RemoveDirectory
 #endif
 
 #ifdef MoveFile
 #undef MoveFile
-#endif
 #endif
 
 #ifdef ERROR

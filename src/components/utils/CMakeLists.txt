@@ -70,7 +70,7 @@ if(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
             ${UTILS_SRC_DIR}/shared_library_qt.cc
     )
 
-  else(${QT_PORT}) #WIN_NATIVE
+  else(QT_PORT) #WIN_NATIVE
     file (GLOB inc ${UTILS_INCLUDE_DIR}/utils/*.h)
     set (src
             ${UTILS_SRC_DIR}/bitstream.cc
