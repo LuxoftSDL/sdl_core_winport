@@ -32,11 +32,6 @@
 #if defined(OS_WINDOWS)
 #include "utils/winhdr.h"
 
-#ifdef MSG_NOSIGNAL
-#undef MSG_NOSIGNAL
-#endif
-#define MSG_NOSIGNAL 0
-
 #elif defined(OS_POSIX)
 #include <sys/socket.h>
 #include <sys/types.h>
