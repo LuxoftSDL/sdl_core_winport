@@ -1,11 +1,11 @@
 @echo off
 setlocal EnableDelayedExpansion
 
-set CUSTOM_BUIL_DIR=%~1
-if "%CUSTOM_BUIL_DIR%"=="" (
-set BUILD_DIR="%SDL_ROOT%\build"
+set CUSTOM_BUILD_DIR=%~1
+if "!CUSTOM_BUILD_DIR!"=="" (
+  set BUILD_DIR="%SDL_ROOT%\build"
 ) else (
-  set BUILD_DIR=%CUSTOM_BUIL_DIR%
+  set BUILD_DIR=!CUSTOM_BUILD_DIR!
 )
 set SDL_BUILD_DIR="!BUILD_DIR!\%SDL_BUILD%"
 if not exist !SDL_BUILD_DIR! mkdir !SDL_BUILD_DIR!
