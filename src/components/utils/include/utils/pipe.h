@@ -67,15 +67,6 @@ class Pipe {
   Impl* impl_;
 };
 
-}  // namespace utils
-
-namespace std {
-
-template<>
-void swap<utils::Pipe>(utils::Pipe& lhs, utils::Pipe& rhs) {
-  lhs.Swap(rhs);
-}
-
-}  // namespace std
+} // namespace utils
 
 #endif // SRC_COMPONENTS_UTILS_INCLUDE_UTILS_PIPE_H_
