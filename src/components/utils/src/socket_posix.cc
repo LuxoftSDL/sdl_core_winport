@@ -62,7 +62,7 @@ namespace {
 ////////////////////////////////////////////////////////////////////////////////
 
 class utils::TcpSocketConnection::Impl {
-public:
+ public:
   Impl();
 
   explicit Impl(int tcp_socket);
@@ -74,7 +74,7 @@ public:
   bool Close();
 
   bool IsValid() const;
-private:
+ private:
   int tcp_socket_;
 };
 
@@ -167,7 +167,7 @@ bool utils::TcpSocketConnection::IsValid() const {
 ////////////////////////////////////////////////////////////////////////////////
 
 class utils::TcpServerSocket::Impl {
-public:
+ public:
   explicit Impl();
 
   ~Impl();
@@ -181,7 +181,7 @@ public:
   TcpSocketConnection Accept();
 
   ssize_t Send(const char* buf, size_t length);
-private:
+ private:
   int server_socket_;
 
   bool is_listening_;
