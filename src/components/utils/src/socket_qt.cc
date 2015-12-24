@@ -77,11 +77,16 @@ utils::TcpSocketConnection::Impl::Send(const char* buffer, std::size_t size) {
     LOG4CXX_WARN(logger_ptr, "Cannot send. Socket is not valid.");
     return -1;
   }
-  QByteArray data(buffer, size);
 
+  QByteArray data(buffer, size);
   ssize_t result = tcp_socket_->write(data);
-  tcp_socket_->flush();
-  tcp_socket_->waitForBytesWritten();
+  if (result != -1) {
+    tcp_socket_->flush();
+    tcp_socket_->waitForBytesWritten();
+  } else {
+    LOG4CXX_WARN(logger_ptr, "Failed to send: "
+      << tcp_socket_->errorString().toStdString());
+  }
   return result;
 }
 
