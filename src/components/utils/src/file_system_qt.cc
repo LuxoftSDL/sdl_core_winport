@@ -72,7 +72,7 @@ size_t file_system::DirectorySize(const std::string& path) {
   QFileInfo str_info(QString(path.c_str()));
   if (str_info.isDir()) {
     QDir dir(QString(path.c_str()));
-    QFileInfoList list = dir.entryInfoList(QDir::Files | QDir::Dirs |  QDir::Hidden 
+    QFileInfoList list = dir.entryInfoList(QDir::Files | QDir::Dirs |  QDir::Hidden |
       QDir::NoSymLinks | QDir::NoDotAndDotDot);
     foreach (QFileInfo fileInfo, list) {
       if(fileInfo.isDir()) {
@@ -336,7 +336,7 @@ std::string file_system::ConcatPath(
 std::string file_system::ConcatPath(
     const std::string& str1,
     const std::string& str2,
-    std::string& str3){
+    const std::string& str3){
   return ConcatPath(ConcatPath(str1, str2), str3);
 }
 std::string file_system::RetrieveFileNameFromPath(const std::string& path){
