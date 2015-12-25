@@ -13,7 +13,7 @@ set SDL_BUILD=sdl_win_qt_x86
 set SDL_ROOT=%CD%
 
 
-call "%SDL_ROOT%\ms\common_setup.cmd"
+call "%SDL_ROOT%\ms\common_setup.cmd" %*
 if %errorlevel% == 2 exit /b 1
 
 call "%SDL_ROOT%\ms\openssl_setup.cmd" x86
