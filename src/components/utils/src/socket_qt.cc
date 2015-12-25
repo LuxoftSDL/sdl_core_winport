@@ -29,31 +29,13 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-#include <algorithm>
-
-#include "utils/winhdr.h"
 #include "utils/socket.h"
 
+#include <algorithm>
+
+#include <QtNetwork>
+
 CREATE_LOGGERPTR_GLOBAL(logger_ptr, "Utils.TcpSocket")
-
-namespace {
-
-bool CloseSocket(SOCKET& socket) {
-  LOG4CXX_AUTO_TRACE(logger_ptr);
-  if (NULL == socket) {
-    LOG4CXX_DEBUG(logger_ptr, "Socket " << socket << " is not valid. Skip closing.");
-    return true;
-  }
-  if (SOCKET_ERROR != closesocket(socket)) {
-    LOG4CXX_WARN(logger_ptr, "Failed to close socket "
-      << socket << ": " << WSAGetLastError());
-    return false;
-  }
-  socket = NULL;
-  return true;
-}
-
-} // namespace
 
 ////////////////////////////////////////////////////////////////////////////////
 /// utils::TcpSocketConnection::Impl
@@ -63,7 +45,7 @@ class utils::TcpSocketConnection::Impl {
  public:
   Impl();
 
-  explicit Impl(SOCKET tcp_socket);
+  explicit Impl(QTcpSocket* tcp_socket);
 
   ~Impl();
 
@@ -73,14 +55,14 @@ class utils::TcpSocketConnection::Impl {
 
   bool IsValid() const;
  private:
-  SOCKET tcp_socket_;
+  QTcpSocket* tcp_socket_;
 };
 
 utils::TcpSocketConnection::Impl::Impl()
   : tcp_socket_(NULL) {
 }
 
-utils::TcpSocketConnection::Impl::Impl(SOCKET tcp_socket)
+utils::TcpSocketConnection::Impl::Impl(QTcpSocket* tcp_socket)
   : tcp_socket_(tcp_socket) {
 }
 
@@ -92,20 +74,33 @@ ssize_t
 utils::TcpSocketConnection::Impl::Send(const char* buffer, std::size_t size) {
   LOG4CXX_AUTO_TRACE(logger_ptr);
   if (!IsValid()) {
-    LOG4CXX_ERROR(logger_ptr, "Failed to send data socket is not valid");
+    LOG4CXX_WARN(logger_ptr, "Cannot send. Socket is not valid.");
     return -1;
   }
-  const int flags = 0;
-  int result = send(tcp_socket_, buffer, size, flags);
-  if (SOCKET_ERROR == result) {
-    LOG4CXX_ERROR(logger_ptr, "Failed to send data: " << WSAGetLastError());
+
+  QByteArray data(buffer, size);
+  ssize_t result = tcp_socket_->write(data);
+  if (result != -1) {
+    tcp_socket_->flush();
+    tcp_socket_->waitForBytesWritten();
+  } else {
+    LOG4CXX_WARN(logger_ptr, "Failed to send: "
+      << tcp_socket_->errorString().toStdString());
   }
   return result;
 }
 
 bool
 utils::TcpSocketConnection::Impl::Close() {
-  return CloseSocket(tcp_socket_);
+  LOG4CXX_AUTO_TRACE(logger_ptr);
+  if (!IsValid()) {
+    LOG4CXX_DEBUG(logger_ptr, "Not valid. Exit Close");
+    return true;
+  }
+  tcp_socket_->close();
+  delete tcp_socket_;
+  tcp_socket_ = NULL;
+  return true;
 }
 
 bool
@@ -153,6 +148,7 @@ ssize_t utils::TcpSocketConnection::Send(const char* buffer, std::size_t size) {
 }
 
 bool utils::TcpSocketConnection::Close() {
+  LOG4CXX_AUTO_TRACE(logger_ptr);
   return impl_->Close();
 }
 
@@ -177,88 +173,72 @@ class utils::TcpServerSocket::Impl {
   bool Listen(const std::string& address, int port, int backlog);
 
   TcpSocketConnection Accept();
-
-  ssize_t Send(const char* buf, size_t length);
  private:
-  SOCKET server_socket_;
-
-  bool is_listening_;
+  QTcpServer* server_socket_;
 };
 
 utils::TcpServerSocket::Impl::Impl()
-  : server_socket_(NULL)
-  , is_listening_(false) {
+  : server_socket_(NULL) {
 }
 
 utils::TcpServerSocket::Impl::~Impl() {
+  LOG4CXX_AUTO_TRACE(logger_ptr);
   Close();
+  delete server_socket_;
 }
 
 bool utils::TcpServerSocket::Impl::IsListening() const {
-  return server_socket_ && is_listening_;
+  return server_socket_ && server_socket_->isListening();
 }
 
 bool utils::TcpServerSocket::Impl::Close() {
-  return CloseSocket(server_socket_);
+  server_socket_->close();
+  delete server_socket_;
+  server_socket_ = NULL;
+  return true;
 }
 
 bool utils::TcpServerSocket::Impl::Listen(
     const std::string& address, int port, int backlog) {
   LOG4CXX_AUTO_TRACE(logger_ptr);
-  if (IsListening()) {
-    LOG4CXX_ERROR(logger_ptr, "Cannot listen. Already listeneing.");
+  if (server_socket_) {
+    LOG4CXX_WARN(logger_ptr, "Cannot listen. server_socket_ is null");
     return false;
   }
 
-  server_socket_ = socket(AF_INET, SOCK_STREAM, 0);
-  if (INVALID_SOCKET == server_socket_) {
-    LOG4CXX_ERROR(logger_ptr, "Failed to create server socket: " << WSAGetLastError());
-    server_socket_ = NULL;
+  server_socket_ = new QTcpServer();
+
+  server_socket_->setMaxPendingConnections(backlog);
+
+  LOG4CXX_DEBUG(logger_ptr, "Start listening on "
+    << address << ":" << port);
+
+  if (!server_socket_->listen(QHostAddress(address.c_str()), port)) {
+    LOG4CXX_WARN(logger_ptr, "Failed to listen on " << address << ":" << port
+      << ". Error: " << server_socket_->errorString().toStdString());
     return false;
   }
 
-  char optval = 1;
-  if (SOCKET_ERROR == setsockopt(
-    server_socket_, SOL_SOCKET, SO_REUSEADDR, &optval, sizeof(optval))) {
-    LOG4CXX_ERROR(logger_ptr, "Unable to set sockopt: " << WSAGetLastError());
-    server_socket_ = NULL;
-    return false;
-  }
-
-  struct sockaddr_in server_address = { 0 };
-  server_address.sin_addr.s_addr = inet_addr(address.c_str());
-  server_address.sin_family = AF_INET;
-  server_address.sin_port = htons(port);
-
-  if (SOCKET_ERROR == bind(
-    server_socket_, reinterpret_cast<struct sockaddr*>(&server_address), sizeof(server_address))) {
-    LOG4CXX_ERROR(logger_ptr, "Unable to bind: " << WSAGetLastError());
-    server_socket_ = NULL;
-    return false;
-  }
-
-  if (SOCKET_ERROR == listen(server_socket_, backlog)) {
-    LOG4CXX_ERROR(logger_ptr, "Unable to listen: " << WSAGetLastError());
-    server_socket_ = NULL;
-    return false;
-  }
-
-  is_listening_ = true;
   return true;
 }
 
 utils::TcpSocketConnection utils::TcpServerSocket::Impl::Accept() {
   LOG4CXX_AUTO_TRACE(logger_ptr);
+  bool waited = server_socket_->waitForNewConnection(-1);
+  if (!waited) {
+    LOG4CXX_WARN(logger_ptr, "Failed to wait for the new connection: "
+      << server_socket_->errorString().toStdString());
+    return utils::TcpSocketConnection();
+  }
 
-  struct sockaddr client_addr = { 0 };
-  int client_addr_length = sizeof(client_addr);
-  SOCKET client_socket = accept(server_socket_, &client_addr, &client_addr_length);
-  if (SOCKET_ERROR == client_socket) {
-    LOG4CXX_ERROR(logger_ptr, "Failed to accept client socket: " << WSAGetLastError());
+  QTcpSocket* client_connection = server_socket_->nextPendingConnection();
+  if (!client_connection) {
+    LOG4CXX_WARN(logger_ptr, "Failed to get new connection: "
+      << server_socket_->errorString().toStdString());
     return utils::TcpSocketConnection();
   }
   return TcpSocketConnection(
-    new TcpSocketConnection::Impl(client_socket));
+    new TcpSocketConnection::Impl(client_connection));
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -281,7 +261,8 @@ bool utils::TcpServerSocket::Close() {
   return impl_->Close();
 }
 
-bool utils::TcpServerSocket::Listen(const std::string& address, int port, int backlog) {
+bool utils::TcpServerSocket::Listen(
+    const std::string& address, int port, int backlog) {
   return impl_->Listen(address, port, backlog);
 }
 

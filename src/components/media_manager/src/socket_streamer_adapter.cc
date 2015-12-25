@@ -32,11 +32,6 @@
 #if defined(OS_WINDOWS)
 #include "utils/winhdr.h"
 
-#ifdef MSG_NOSIGNAL
-#undef MSG_NOSIGNAL
-#endif
-#define MSG_NOSIGNAL 0
-
 #elif defined(OS_POSIX)
 #include <sys/socket.h>
 #include <sys/types.h>
@@ -70,6 +65,8 @@ SocketStreamerAdapter::SocketStreamer::SocketStreamer(
     ip_(ip),
     port_(port),
     header_(header),
+    server_socket_(),
+    client_socket_(),
     is_first_frame_(true) {
 }
 
@@ -79,39 +76,14 @@ SocketStreamerAdapter::SocketStreamer::~SocketStreamer() {
 bool SocketStreamerAdapter::SocketStreamer::Connect() {
   LOG4CXX_AUTO_TRACE(logger);
 
-  if (!socket_.Create(AF_INET, SOCK_STREAM, 0)) {
-    LOG4CXX_ERROR(logger, "Unable to create socket");
-    return false;
-  }
-
-  int32_t optval = 1;
-  if (!socket_.SetOptions(SOL_SOCKET, SO_REUSEADDR,
-                          reinterpret_cast<const char*>(&optval),
-                          sizeof optval)) {
-    LOG4CXX_ERROR(logger, "Unable to set sockopt");
-    return false;
-  }
-
-  struct sockaddr_in serv_addr = { 0 };
-  serv_addr.sin_addr.s_addr = inet_addr(ip_.c_str());
-  serv_addr.sin_family = AF_INET;
-  serv_addr.sin_port = htons(port_);
-  if (!socket_.Bind(reinterpret_cast<struct sockaddr*>(&serv_addr),
-                    sizeof(serv_addr))) {
-    LOG4CXX_ERROR(logger, "Unable to bind");
-    return false;
-  }
-
-  if (!socket_.Listen(5)) {
+  const int backlog = 5;
+  if (!server_socket_.Listen(ip_, port_, backlog)) {
     LOG4CXX_ERROR(logger, "Unable to listen");
     return false;
   }
 
-  struct sockaddr_in client_addr = { 0 };
-  size_t client_addr_length = sizeof(client_addr);
-  send_socket_ = socket_.Accept(
-    reinterpret_cast<struct sockaddr*>(&client_addr), &client_addr_length);
-  if (!send_socket_.Valid()) {
+  client_socket_ = server_socket_.Accept();
+  if (!client_socket_.IsValid()) {
     LOG4CXX_ERROR(logger, "Unable to accept");
     return false;
   }
@@ -123,8 +95,8 @@ bool SocketStreamerAdapter::SocketStreamer::Connect() {
 
 void SocketStreamerAdapter::SocketStreamer::Disconnect() {
   LOG4CXX_AUTO_TRACE(logger);
-  send_socket_.Close();
-  socket_.Close();
+  client_socket_.Close();
+  server_socket_.Close();
 }
 
 bool SocketStreamerAdapter::SocketStreamer::Send(
@@ -132,7 +104,7 @@ bool SocketStreamerAdapter::SocketStreamer::Send(
   LOG4CXX_AUTO_TRACE(logger);
   size_t ret;
   if (is_first_frame_) {
-    ret = send_socket_.Send(header_.c_str(), header_.size(), MSG_NOSIGNAL);
+    ret = client_socket_.Send(header_.c_str(), header_.size());
     if (ret != header_.size()) {
       LOG4CXX_ERROR(logger, "Unable to send data to socket");
       return false;
@@ -140,8 +112,9 @@ bool SocketStreamerAdapter::SocketStreamer::Send(
     is_first_frame_ = false;
   }
 
-  ret = send_socket_.Send(reinterpret_cast<const char*>(msg->data()),
-                          msg->data_size(), MSG_NOSIGNAL);
+  ret = client_socket_.Send(
+    reinterpret_cast<const char*>(msg->data()),
+    msg->data_size());
   if (-1 == ret) {
     LOG4CXX_ERROR(logger, "Unable to send data to socket");
     return false;

@@ -68,6 +68,7 @@ if(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
             ${UTILS_SRC_DIR}/socket_win.cc
             ${UTILS_SRC_DIR}/pipe_win.cc
             ${UTILS_SRC_DIR}/shared_library_qt.cc
+            ${UTILS_SRC_DIR}/socket_qt.cc
     )
 
   else(QT_PORT) #WIN_NATIVE
@@ -86,26 +87,25 @@ if(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
             ${UTILS_SRC_DIR}/threads/thread_delegate_win.cc
             ${UTILS_SRC_DIR}/threads/win_thread.cc
             ${UTILS_SRC_DIR}/string_utils.cc
-            ${UTILS_SRC_DIR}/socket_win.cc
             ${UTILS_SRC_DIR}/pipe_win.cc
             ${UTILS_SRC_DIR}/shared_library_win.cc
+            ${UTILS_SRC_DIR}/socket_win.cc
     )
   endif()
   if(ENABLE_LOG)
     list(APPEND LIBRARIES ConfigProfile)
      if(QT_PORT)
        list(APPEND src
-        ${UTILS_SRC_DIR}/logger_qt.cc
-        ${UTILS_SRC_DIR}/log_message_loop_thread_qt.cc
-        )
+         ${UTILS_SRC_DIR}/logger_qt.cc
+         ${UTILS_SRC_DIR}/log_message_loop_thread_qt.cc
+       )
      else()
         list(APPEND src
-        ${UTILS_SRC_DIR}/logger_win.cc
-        ${UTILS_SRC_DIR}/log_message_loop_thread_win.cc
+          ${UTILS_SRC_DIR}/logger_win.cc
+          ${UTILS_SRC_DIR}/log_message_loop_thread_win.cc
         )
      endif()
   endif()
-
     string( REPLACE / \\ group ${inc} )
     source_group("Header Files" FILES ${inc} )
     string( REPLACE / \\ group ${src} )
@@ -114,7 +114,7 @@ if(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
     add_library("Utils" ${src} ${inc})
     if(QT_PORT)
       add_subdirectory(./src/sql_qt_wrapper)
-      target_link_libraries("Utils" Qt5::Core ${LIBRARIES})
+      target_link_libraries("Utils" Qt5::Core Qt5::Network ${LIBRARIES})
     else()
       add_subdirectory(./src/sqlite_wrapper)
       target_link_libraries("Utils" ${LIBRARIES})    

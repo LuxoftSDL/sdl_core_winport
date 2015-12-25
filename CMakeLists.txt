@@ -210,8 +210,10 @@ endif()
 
 if(QT_PORT)
   set(CMAKE_AUTOMOC ON)
-  find_package(Qt5 REQUIRED Core)
-  include_directories(${Qt5Core_INCLUDE_DIRS})
+  find_package(Qt5 REQUIRED Core Network)
+  include_directories(
+    ${Qt5Core_INCLUDE_DIRS}
+    ${Qt5Network_INCLUDE_DIRS})
 endif ()
 
 
