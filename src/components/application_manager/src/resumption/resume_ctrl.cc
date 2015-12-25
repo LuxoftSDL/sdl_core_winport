@@ -279,7 +279,6 @@ bool ResumeCtrl::StartResumption(ApplicationSharedPtr application,
                 << " hmi_app_id = " << application->hmi_app_id()
                 << " policy_id = " << application->mobile_app_id()
                 << " received hash = " << hash);
-  SetupDefaultHMILevel(application);
   smart_objects::SmartObject saved_app;
   bool result = resumption_storage_->GetSavedApplication(application->mobile_app_id(),
       MessageHelper::GetDeviceMacAddressForHandle(application->device()),
@@ -294,7 +293,6 @@ bool ResumeCtrl::StartResumption(ApplicationSharedPtr application,
 }
 
 bool ResumeCtrl::StartResumptionOnlyHMILevel(ApplicationSharedPtr application) {
-  //sync_primitives::AutoLock lock(resumtion_lock_);
   LOG4CXX_AUTO_TRACE(logger_);
   if (!application) {
     LOG4CXX_WARN(logger_, "Application does not exist.");
@@ -304,13 +302,11 @@ bool ResumeCtrl::StartResumptionOnlyHMILevel(ApplicationSharedPtr application) {
                 << application->app_id()
                 << "with hmi_app_id " << application->hmi_app_id()
                 << ", policy_app_id " << application->mobile_app_id());
-  SetupDefaultHMILevel(application);
   smart_objects::SmartObject saved_app;
   bool result = resumption_storage_->GetSavedApplication(application->mobile_app_id(),
       MessageHelper::GetDeviceMacAddressForHandle(application->device()),
       saved_app);
   if (result) {
-    //sync_primitives::AutoUnlock unlock(lock);
     AddToResumptionTimerQueue(application->app_id());
   }
   LOG4CXX_INFO(logger_, "StartResumptionOnlyHMILevel::Result = "<<result);
