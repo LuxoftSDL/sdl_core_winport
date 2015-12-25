@@ -68,7 +68,7 @@ class BluetoothDevice : public Device {
    * @return string with device unique identifier.
    */
 #ifdef OS_WINDOWS
-	 static std::string GetUniqueDeviceId(const BTH_ADDR& device_address);
+	 static std::string GetUniqueDeviceId(const BLUETOOTH_DEVICE_INFO& device_address);
 #else
   static std::string GetUniqueDeviceId(const bdaddr_t& device_address);
 #endif
@@ -81,7 +81,7 @@ class BluetoothDevice : public Device {
    * @param rfcomm_channels List of RFCOMM channels where SmartDeviceLink service has been discovered.
    **/
 #ifdef OS_WINDOWS
-  BluetoothDevice(const BTH_ADDR& device_address, const char* device_name,
+  BluetoothDevice(const BLUETOOTH_DEVICE_INFO& device_address, const char* device_name,
 	  const RfcommChannelVector& rfcomm_channels);
 #else
   BluetoothDevice(const bdaddr_t& device_address, const char* device_name,
@@ -115,7 +115,7 @@ class BluetoothDevice : public Device {
    * @return Device bluetooth address.
    */
 #ifdef OS_WINDOWS
-  const BTH_ADDR & address() const {
+  const BLUETOOTH_DEVICE_INFO & address() const {
 	  return address_;
   }
 #else
@@ -128,7 +128,7 @@ class BluetoothDevice : public Device {
    * @brief Device bluetooth address.
    **/
 #ifdef OS_WINDOWS
-  BTH_ADDR address_;
+	 BLUETOOTH_DEVICE_INFO address_;
 #else
   bdaddr_t address_;
 #endif

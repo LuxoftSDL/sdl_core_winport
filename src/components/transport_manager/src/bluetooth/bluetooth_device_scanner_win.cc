@@ -35,36 +35,12 @@
 
 #include "transport_manager/bluetooth/bluetooth_device_scanner.h"
 
-#ifdef OS_WINDOWS
 #include <stdlib.h>
 #include <sys/types.h>
 #include <io.h>
 #include <BaseTsd.h>
 #include <fcntl.h>
 
-#define SDP_RECORD_SIZE   0x0000004f
-union {
-	CHAR buf[5000];
-	SOCKADDR_BTH _Unused_;
-} butuh;
-
-struct{
-	BTHNS_SETBLOB   b;
-	unsigned char   uca[SDP_RECORD_SIZE];
-} bigBlob;
-#else
-#include <bluetooth/bluetooth.h>
-#include <bluetooth/hci.h>
-#include <bluetooth/hci_lib.h>
-#include <bluetooth/sdp.h>
-#include <bluetooth/sdp_lib.h>
-#include <bluetooth/rfcomm.h>
-#include <errno.h>
-#include <sys/types.h>
-#include <sys/socket.h>
-#include <sys/time.h>
-#include <unistd.h>
-#endif
 #include <vector>
 #include <sstream>
 #include "transport_manager/bluetooth/bluetooth_transport_adapter.h"
@@ -73,128 +49,55 @@ struct{
 #include "utils/logger.h"
 #include "utils/threads/thread.h"
 
+namespace{
+BOOL __stdcall sdp_value_parser(ULONG uAttribId, LPBYTE pValueStream, ULONG cbStreamSize, LPVOID pvParam) {
+  SDP_ELEMENT_DATA element;
+  DWORD tmp = BluetoothSdpGetElementData(pValueStream, cbStreamSize, &element);
+  if (tmp == ERROR_SUCCESS) {
+     if (element.type == SDP_TYPE_SEQUENCE){
+        return FALSE;
+      }
+  }
+		return TRUE;
+}
+}// namespace
+
 namespace transport_manager {
 namespace transport_adapter {
 
 CREATE_LOGGERPTR_GLOBAL(logger_, "TransportManager")
 
-namespace {
-char* SplitToAddr(char* dev_list_entry) {
-  char* bl_address = strtok(dev_list_entry, "()");
-  if (bl_address != NULL) {
-    bl_address = strtok(NULL, "()");
-    return bl_address;
-  } else {
-    return NULL;
-  }
-}
-
-int FindPairedDevs(std::vector<BTH_ADDR*>* result) {
-  LOG4CXX_TRACE(logger_, "enter. result adress: " << result);
-  DCHECK(result != NULL);
-
-  const char* cmd = "bt-device -l";
-
-  FILE* pipe = _popen(cmd, "r");
-  if (!pipe) {
-    LOG4CXX_TRACE(logger_, "exit -1. Condition: !pipe");
-    return -1;
-  }
-  char* buffer = new char[1028];
-  size_t counter = 0;
-  while (fgets(buffer, 1028, pipe) != NULL) {
-    if (0 < counter++) {  //  skip first line
-      char* bt_address = SplitToAddr(buffer);
-      if (bt_address) {
-		  BTH_ADDR address;
-
-		std::wstringstream w_address_record;
-		w_address_record << bt_address;
-		int address_size = sizeof(struct sockaddr_storage);
-		int ret_val = WSAStringToAddress((LPSTR)w_address_record.str().c_str(),
-											AF_INET,
-											NULL,
-											(LPSOCKADDR)&address,
-											&address_size);
-		if (ret_val != 0){
-			LOG4CXX_ERROR(logger_, "WSAStringToAddress() failed with error code" << WSAGetLastError());
-		}
-
-        result->push_back(&address);
-      }
-    }
-    delete [] buffer;
-    buffer = new char[1028];
-  }
-  _pclose(pipe);
-  LOG4CXX_TRACE(logger_, "exit with 0");
-  return 0;
-}
-#ifdef OS_WINDOWS
-int __stdcall callback(ULONG uAttribId, LPBYTE pValueStream, ULONG cbStreamSize, LPVOID pvParam){
-	SDP_ELEMENT_DATA element;
-	if (BluetoothSdpGetElementData(pValueStream, cbStreamSize, &element) != ERROR_SUCCESS){
-
-		if (element.specificType == SDP_ST_UINT8){
-			return element.data.uint8;
-		}
-		else if (element.specificType == SDP_ST_INT8){
-			return element.data.int8;
-		}
-		else if (element.specificType == SDP_ST_UINT16){
-			return element.data.uint16;
-		}
-		else if (element.specificType == SDP_ST_INT16){
-			return element.data.int16;
-		}
-		else if (element.specificType == SDP_ST_UINT32){
-			return element.data.uint32;
-		}
-		else if (element.specificType == SDP_ST_INT32){
-			return element.data.int32;
-		}
-	}
-	return 0;
-}
-
-#endif
-}  //  namespace
-
 BluetoothDeviceScanner::BluetoothDeviceScanner(
   TransportAdapterController* controller, bool auto_repeat_search,
   int auto_repeat_pause_sec)
   : controller_(controller),
-    thread_(NULL),
-    shutdown_requested_(false),
-    ready_(true),
-    device_scan_requested_(false),
-    device_scan_requested_lock_(),
-    device_scan_requested_cv_(),
-    auto_repeat_search_(auto_repeat_search),
-    auto_repeat_pause_sec_(auto_repeat_pause_sec) {
-	BYTE smart_device_link_service_uuid_data[] = { 0x93, 0x6D, 0xA0, 0x1F,
-                                                    0x9A, 0xBD, 0x4D, 0x9D, 0x80, 0xC7, 0x02, 0xAF, 0x85, 0xC8, 0x22, 0xA8
-                                                  };
-	ULONG recordHandle = 0;
-	ULONG ulSdpVersion = BTH_SDP_VERSION;
-	BLOB blob;
-	bigBlob.b.pRecordHandle = (HANDLE *)&smart_device_link_service_uuid_data;
-	bigBlob.b.pSdpVersion = &ulSdpVersion;
-	bigBlob.b.ulRecordLength = SDP_RECORD_SIZE;
-	memcpy(bigBlob.b.pRecord, smart_device_link_service_uuid_data, SDP_RECORD_SIZE);
+   thread_(NULL),
+   shutdown_requested_(false),
+   ready_(true),
+   device_scan_requested_(false),
+   device_scan_requested_lock_(),
+   device_scan_requested_cv_(),
+   auto_repeat_search_(auto_repeat_search),
+   auto_repeat_pause_sec_(auto_repeat_pause_sec) {
+   BYTE smart_device_link_service_uuid_data[] = { 0x93, 0x6D, 0xA0, 0x1F,
+                                                    0x9A, 0xBD, 0x4D, 0x9D,
+                                                    0x80, 0xC7, 0x02, 0xAF,
+                                                    0x85, 0xC8, 0x22, 0xA8 };
+   smart_device_link_service_uuid_.Data1 = 
+                      smart_device_link_service_uuid_data[0] << 24 & 0xff000000 |
+											smart_device_link_service_uuid_data[1] << 16 & 0x00ff0000 |
+											smart_device_link_service_uuid_data[2] << 8 & 0x0000ff00 |
+											smart_device_link_service_uuid_data[3] & 0x000000ff;
+   smart_device_link_service_uuid_.Data2 = 
+                      smart_device_link_service_uuid_data[4] << 8 & 0xff00 |
+											smart_device_link_service_uuid_data[5] & 0x00ff;
+   smart_device_link_service_uuid_.Data3 = 
+                      smart_device_link_service_uuid_data[6] << 8 & 0xff00 |
+											smart_device_link_service_uuid_data[7] & 0x00ff;
 
-	blob.cbSize = sizeof(BTHNS_SETBLOB) + SDP_RECORD_SIZE - 1;
-	blob.pBlobData = (PBYTE)&bigBlob;
-
-	memset(&smart_device_link_service_uuid_, 0, sizeof(smart_device_link_service_uuid_));
-	smart_device_link_service_uuid_.dwSize = sizeof(smart_device_link_service_uuid_);
-	smart_device_link_service_uuid_.lpBlob = &blob;
-	smart_device_link_service_uuid_.dwNameSpace = NS_BTH;
-
-	if (WSASetService(&smart_device_link_service_uuid_, RNRSERVICE_REGISTER, 0) == SOCKET_ERROR)
-	{
-		LOG4CXX_ERROR(logger_,"WSASetService() failed with error code " << WSAGetLastError());
-	}
+   for (int i = 0; i < 8; i++) {
+      smart_device_link_service_uuid_.Data4[i] = smart_device_link_service_uuid_data[i + 8];
+   }
 
   thread_ = threads::CreateThread("BT Device Scaner",
                                   new  BluetoothDeviceScannerDelegate(this));
@@ -224,68 +127,46 @@ void BluetoothDeviceScanner::UpdateTotalDeviceList() {
 void BluetoothDeviceScanner::DoInquiry() {
   LOG4CXX_AUTO_TRACE(logger_);
   HANDLE device_handle;
-  LPWSAQUERYSET pwsaResults;
-  DWORD dwSize;
-  BTH_ADDR btAddr;
+ 
+  BLUETOOTH_DEVICE_SEARCH_PARAMS bluetooth_seraach_param;
+  BLUETOOTH_DEVICE_INFO bluetooth_dev_info;
+  HBLUETOOTH_DEVICE_FIND hdbluetooth_dev_find_res;
+  ZeroMemory(&bluetooth_seraach_param, sizeof(BLUETOOTH_DEVICE_SEARCH_PARAMS));
 
-  pwsaResults = (LPWSAQUERYSET)butuh.buf;
-  dwSize = sizeof(butuh.buf);
+  // set options for how we want to load our list of BT devices
+  bluetooth_seraach_param.dwSize = sizeof(BLUETOOTH_DEVICE_SEARCH_PARAMS);
+  bluetooth_seraach_param.fReturnAuthenticated = TRUE;
+  bluetooth_seraach_param.fReturnRemembered = TRUE;
+  bluetooth_seraach_param.fReturnConnected = TRUE;
+  bluetooth_seraach_param.fIssueInquiry = TRUE;
+  bluetooth_seraach_param.cTimeoutMultiplier = 4;
+  bluetooth_seraach_param.hRadio = NULL;
 
-  ZeroMemory(&smart_device_link_service_uuid_, sizeof(smart_device_link_service_uuid_));
-  smart_device_link_service_uuid_.dwSize = sizeof(smart_device_link_service_uuid_);
-  smart_device_link_service_uuid_.dwNameSpace = NS_BTH;
-  smart_device_link_service_uuid_.lpcsaBuffer = NULL;
-  if (WSALookupServiceBegin(&smart_device_link_service_uuid_, 0, &device_handle) != 0) {
-    LOG4CXX_INFO(logger_, "HCI device is not available");
-    shutdown_requested_ = true;
-    controller_->SearchDeviceFailed(SearchDeviceError());
-    return;
-  }
-  ZeroMemory(pwsaResults, sizeof(WSAQUERYSET));
-  pwsaResults->dwSize = sizeof(WSAQUERYSET);
-  pwsaResults->dwNameSpace = NS_BTH;
-  pwsaResults->lpBlob = NULL;
-
-  if (paired_devices_.empty()) {
-    LOG4CXX_INFO(logger_, "Searching for paired devices.");
-    if (-1 == FindPairedDevs(&paired_devices_)) {
-      LOG4CXX_ERROR(logger_, "Failed to retrieve list of paired devices.");
-      controller_->SearchDeviceFailed(SearchDeviceError());
-    }
-  }
-
-  LOG4CXX_INFO(logger_, "Check rfcomm channel on "
-               << paired_devices_.size() << " paired devices.");
-
-  paired_devices_with_sdl_.clear();
-  CheckSDLServiceOnDevices(paired_devices_, (int)device_handle,
-                           &paired_devices_with_sdl_);
-  UpdateTotalDeviceList();
-
-  LOG4CXX_INFO(logger_, "Starting hci_inquiry on device " << device_id);
-  std::vector < BTH_ADDR *> found_devices;
+  bluetooth_dev_info.dwSize = sizeof(bluetooth_dev_info);
+  std::vector < BLUETOOTH_DEVICE_INFO > found_devices;
   int number_of_devices = -1;
-  while (WSALookupServiceNext(device_handle, LUP_RETURN_NAME | LUP_RETURN_ADDR, &dwSize, pwsaResults) == 0){
-	  ++number_of_devices;
-	  found_devices[number_of_devices] = ((BTH_ADDR*)pwsaResults->lpcsaBuffer->RemoteAddr.lpSockaddr);
+  hdbluetooth_dev_find_res = BluetoothFindFirstDevice(&bluetooth_seraach_param,
+                             &bluetooth_dev_info);
+  if (hdbluetooth_dev_find_res) {
+     do {
+       found_devices.push_back(bluetooth_dev_info);
+	  } while (BluetoothFindNextDevice(hdbluetooth_dev_find_res, &bluetooth_dev_info));
+	  BluetoothFindDeviceClose(hdbluetooth_dev_find_res);
   }
-    found_devices_with_sdl_.clear();
-    CheckSDLServiceOnDevices(found_devices, (int)device_handle,
-                             &found_devices_with_sdl_);
+  found_devices_with_sdl_.clear();
+  CheckSDLServiceOnDevices(found_devices, (int)hdbluetooth_dev_find_res,
+      &found_devices_with_sdl_);
 
   UpdateTotalDeviceList();
   controller_->FindNewApplicationsRequest();
-
-  WSALookupServiceEnd(device_handle);
-
-  if (number_of_devices < 0) {
-    LOG4CXX_DEBUG(logger_, "number_of_devices < 0");
-    controller_->SearchDeviceFailed(SearchDeviceError());
+  if (found_devices.empty()) {
+      LOG4CXX_DEBUG(logger_, "number_of_devices < 0");
+      controller_->SearchDeviceFailed(SearchDeviceError());
   }
 }
 
 void BluetoothDeviceScanner::CheckSDLServiceOnDevices(
-	const std::vector<BTH_ADDR*>& bd_addresses, int device_handle,
+	const std::vector<BLUETOOTH_DEVICE_INFO>& bd_addresses, int device_handle,
   DeviceVector* discovered_devices) {
   LOG4CXX_TRACE(logger_, "enter. bd_addresses: " << &bd_addresses << ", device_handle: " <<
                 device_handle << ", discovered_devices: " << discovered_devices);
@@ -297,17 +178,17 @@ void BluetoothDeviceScanner::CheckSDLServiceOnDevices(
       continue;
     }
 
-	const BTH_ADDR& bd_address = *bd_addresses[i];
-    char deviceName[256];
-	char servInfo[NI_MAXSERV];
-	DWORD hci_read_remote_name_ret = getnameinfo((struct sockaddr *)device_handle, 
+   const BLUETOOTH_DEVICE_INFO bd_address = bd_addresses[i];
+   char deviceName[256];
+   char servInfo[NI_MAXSERV];
+   DWORD hci_read_remote_name_ret = getnameinfo((struct sockaddr *)device_handle, 
 												  sizeof(struct sockaddr),
 												  deviceName,
 												  NI_MAXHOST,
 												  servInfo, 
 												  NI_MAXSERV, NI_NUMERICSERV);
 
-    if (hci_read_remote_name_ret != 0) {
+   if (hci_read_remote_name_ret != 0) {
       LOG4CXX_ERROR_WITH_ERRNO(logger_, "hci_read_remote_name failed");
       strncpy(deviceName,
               BluetoothDevice::GetUniqueDeviceId(bd_address).c_str(),
@@ -328,7 +209,7 @@ void BluetoothDeviceScanner::CheckSDLServiceOnDevices(
 
 std::vector<BluetoothDeviceScanner::RfcommChannelVector>
 BluetoothDeviceScanner::DiscoverSmartDeviceLinkRFCOMMChannels(
-const std::vector<BTH_ADDR*>& device_addresses) {
+const std::vector<BLUETOOTH_DEVICE_INFO>& device_addresses) {
   LOG4CXX_TRACE(logger_, "enter device_addresses: " << &device_addresses);
   const size_t size = device_addresses.size();
   std::vector<RfcommChannelVector> result(size);
@@ -343,7 +224,7 @@ const std::vector<BTH_ADDR*>& device_addresses) {
         continue;
       }
       const bool final = DiscoverSmartDeviceLinkRFCOMMChannels(
-                           *device_addresses[i], &result[i]);
+                           device_addresses[i], &result[i]);
       if (final) {
         processed[i] = true;
         ++processed_count;
@@ -354,86 +235,72 @@ const std::vector<BTH_ADDR*>& device_addresses) {
     }
     Sleep(attempt_timeout);
   }
-  LOG4CXX_TRACE(logger_, "exit with vector<RfcommChannelVector>: size = " << result.size());
+  LOG4CXX_TRACE(logger_, "exit with vector<RfcommChannelVector>: size = " << 
+                  result.size());
   return result;
 }
 
 
 bool BluetoothDeviceScanner::DiscoverSmartDeviceLinkRFCOMMChannels(
-	const BTH_ADDR& device_address, RfcommChannelVector* channels) {
+	const BLUETOOTH_DEVICE_INFO& device_address, RfcommChannelVector* channels) {
 	LOG4CXX_TRACE(logger_, "enter. device_address: " << &device_address << ", channels: " <<
 		channels);
-	int iResult = 0;
-	int iRet;
+	WSAQUERYSET querySet;
+	WSAQUERYSET *pResults;
 	BLOB blob;
-	SOCKADDR_BTH socket_addres;
-	CSADDR_INFO socket_addres_info;
-	HANDLE hLookup1;
-	CHAR buf1[5000];
-	DWORD dwSize;
-	LPWSAQUERYSET pwsaResults1;
-	BTHNS_RESTRICTIONBLOB RBlob;
+	DWORD bufferLength1;
+	BYTE buffer[2000];
+	memset(&querySet, 0, sizeof(querySet));
+	querySet.dwSize = sizeof(querySet);
+	GUID protocol = RFCOMM_PROTOCOL_UUID;
+	querySet.lpServiceClassId = &protocol;
+	querySet.dwNameSpace = NS_BTH;
+	SOCKADDR_BTH remoteSocketAddress;
+	memset(&remoteSocketAddress, 0, sizeof(remoteSocketAddress));
+	remoteSocketAddress.addressFamily = AF_BTH;
 
-	memset(&RBlob, 0, sizeof(RBlob));
-	RBlob.type = SDP_SERVICE_SEARCH_ATTRIBUTE_REQUEST;
-	RBlob.numRange = 1;
-	RBlob.pRange[0].minAttribute = SDP_ATTRIB_PROTOCOL_DESCRIPTOR_LIST;
-	RBlob.pRange[0].maxAttribute = SDP_ATTRIB_PROTOCOL_DESCRIPTOR_LIST;
-	RBlob.uuids[0].uuidType = SDP_ST_UUID16;
-	RBlob.uuids[0].u.uuid16 = SerialPortServiceClassID_UUID16;
+	BTH_ADDR ba = device_address.Address.ullLong;
 
-	blob.cbSize = sizeof(RBlob);
-	blob.pBlobData = (BYTE *)&RBlob;
+	DWORD flags = LUP_FLUSHCACHE | LUP_RETURN_NAME | LUP_RETURN_TYPE |
+						LUP_RETURN_ADDR | LUP_RETURN_BLOB | LUP_RETURN_COMMENT | LUP_RES_SERVICE;
+	BTH_QUERY_SERVICE queryservice;
+	memset(&queryservice, 0, sizeof(BTH_QUERY_SERVICE));
+	memcpy(&queryservice.uuids, &smart_device_link_service_uuid_, sizeof(GUID));
+	queryservice.uuids[0].uuidType = SDP_ST_UUID128;
+	queryservice.type = SDP_SERVICE_SEARCH_REQUEST;
 
-	memset(&socket_addres, 0, sizeof(socket_addres));
-	socket_addres.btAddr = device_address;
-	socket_addres.addressFamily = AF_BTH;
+	blob.cbSize = sizeof(BTH_QUERY_SERVICE);
+	blob.pBlobData = (BYTE *)&queryservice;
+	querySet.dwSize = sizeof(WSAQUERYSET);
+	querySet.dwNameSpace = NS_BTH;
+	int addr_size = sizeof(struct sockaddr_storage);
+	DWORD addrSize = sizeof(struct sockaddr_storage);
+	char addressAsString[2000];
+	WSAAddressToString((LPSOCKADDR)&ba, addr_size, NULL, (LPSTR)addressAsString, &addrSize);
+	querySet.lpszContext = (LPSTR)addressAsString;
+	querySet.lpBlob = &blob;
 
-	memset(&socket_addres_info, 0, sizeof(socket_addres_info));
-	socket_addres_info.RemoteAddr.lpSockaddr = (SOCKADDR *)&socket_addres;
-	socket_addres_info.RemoteAddr.iSockaddrLength = sizeof(socket_addres);
-
-	memset(&smart_device_link_service_uuid_, 0, sizeof(smart_device_link_service_uuid_));
-	smart_device_link_service_uuid_.dwSize = sizeof(smart_device_link_service_uuid_);
-	smart_device_link_service_uuid_.dwNameSpace = NS_ALL;
-	smart_device_link_service_uuid_.lpBlob = &blob;
-	smart_device_link_service_uuid_.lpcsaBuffer = &socket_addres_info;
-
-	iRet = WSALookupServiceBegin(&smart_device_link_service_uuid_, 0, &hLookup1);
-	int proto = 0;
-	bool ready_push_to_channels = false;
-	if (iRet == 0){
-		pwsaResults1 = (LPWSAQUERYSET)buf1;
-		dwSize = sizeof(buf1);
-		memset(pwsaResults1, 0, sizeof(WSAQUERYSET));
-		pwsaResults1->dwSize = sizeof(WSAQUERYSET);
-		pwsaResults1->dwNameSpace = NS_BTH;
-		pwsaResults1->lpBlob = NULL;
-		while (WSALookupServiceNext(hLookup1, 0, &dwSize, pwsaResults1) != 0){
-			CSADDR_INFO * pCSAddr = (CSADDR_INFO *)pwsaResults1->lpcsaBuffer;
-
-			if (pwsaResults1->lpBlob)
-			{
-				BLOB * pBlob = (BLOB*)pwsaResults1->lpBlob;
-				if (ready_push_to_channels){
-					if (proto == RFCOMM_PROTOCOL_UUID16) {
-						uint8_t data = static_cast<uint8_t>(BluetoothSdpEnumAttributes(pBlob->pBlobData, pBlob->cbSize, callback, 0));
-						channels->push_back(data);
-					}
-				}
-				else{
-					proto = BluetoothSdpEnumAttributes(pBlob->pBlobData, pBlob->cbSize, callback, 0);
-				}
+	HANDLE hLookup;
+	int result = WSALookupServiceBegin(&querySet, flags, &hLookup);
+	if (result == 0) {
+		while (result == 0) {
+			bufferLength1 = sizeof(buffer);
+			pResults = (WSAQUERYSET *)&buffer;
+			result = WSALookupServiceNext(hLookup, flags, &bufferLength1, pResults);
+			if (result == 0) {
+				BLOB *pBlob = (BLOB*)pResults->lpBlob;
+				BluetoothSdpEnumAttributes(pBlob->pBlobData, pBlob->cbSize, sdp_value_parser, pBlob);
+				// Todo: need fix service discovery.
+				// on current moment Loopback is not supported by RFCOMM. 
+        //see -> https://msdn.microsoft.com/en-us/library/windows/desktop/aa362914(v=vs.85).aspx
+			}
+			else{
+				WSALookupServiceEnd(hLookup);
 			}
 		}
-		if (WSALookupServiceEnd(hLookup1) != 0){
-			LOG4CXX_ERROR(logger_, "BtServiceSearch(): WSALookupServiceEnd(hLookup1) failed with error code ", WSAGetLastError());
-		}
-	}
-	else{
-		LOG4CXX_ERROR(logger_, "BtServiceSearch(): WSALookupServiceBegin() failed with error code ", WSAGetLastError());
 	}
 
+  channels->push_back(1); //temporary work around 
   if (!channels->empty()) {
     LOG4CXX_INFO(logger_, "channels not empty");
     std::stringstream rfcomm_channels_string;

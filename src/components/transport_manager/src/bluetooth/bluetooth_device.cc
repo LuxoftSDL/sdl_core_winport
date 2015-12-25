@@ -80,23 +80,14 @@ bool BluetoothDevice::GetRfcommChannel(const ApplicationHandle app_handle,
 }
 
 #ifdef OS_WINDOWS
-std::string BluetoothDevice::GetUniqueDeviceId(const BTH_ADDR & device_address) {
+std::string BluetoothDevice::GetUniqueDeviceId(const BLUETOOTH_DEVICE_INFO& device_address) {
 #else
 std::string BluetoothDevice::GetUniqueDeviceId(const bdaddr_t& device_address) {
 #endif
-  LOG4CXX_TRACE(logger_, "enter. device_adress: " << &device_address);
+  LOG4CXX_TRACE(logger_, "enter. device_adress: " << device_address.Address.ullLong );
   char device_address_string[32];
 #ifdef OS_WINDOWS
-  DWORD addrSize = sizeof(struct sockaddr_storage);
-  int addr_size = sizeof(struct sockaddr_storage);
-  int ret_val = WSAAddressToString( (LPSOCKADDR)&device_address, 
-									 addr_size,
-									 NULL,
-									 device_address_string,
-									 &addrSize); 
-  if (ret_val != 0){
-	  LOG4CXX_ERROR(logger_, "WSAAddressToString() failed with error code" << WSAGetLastError());
-  }
+  sprintf(device_address_string, "%ws", device_address.szName);
 #else
   ba2str(&device_address, device_address_string);
 #endif
@@ -105,7 +96,7 @@ std::string BluetoothDevice::GetUniqueDeviceId(const bdaddr_t& device_address) {
 }
 
 #ifdef OS_WINDOWS
-BluetoothDevice::BluetoothDevice(const BTH_ADDR& device_address, const char* device_name,
+BluetoothDevice::BluetoothDevice(const BLUETOOTH_DEVICE_INFO& device_address, const char* device_name,
 	const RfcommChannelVector& rfcomm_channels)
 #else
 BluetoothDevice::BluetoothDevice(const bdaddr_t& device_address, const char* device_name,
@@ -124,8 +115,7 @@ bool BluetoothDevice::IsSameAs(const Device* other) const {
     dynamic_cast<const BluetoothDevice*>(other);
 
   if (0 != other_bluetooth_device) {
-    if (0
-        == memcmp(&address_, &other_bluetooth_device->address_,
+    if (0 == memcmp(&address_, &other_bluetooth_device->address_,
 #ifdef OS_WINDOWS
 		sizeof(BTH_ADDR))) {
 #else
