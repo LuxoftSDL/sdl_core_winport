@@ -1,3 +1,4 @@
 build/
 CMakeLists.txt.user
 src/3rd_party-static/openssl-1.0.2/
+*.pyc
