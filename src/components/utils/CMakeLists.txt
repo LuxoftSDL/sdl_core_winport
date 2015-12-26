@@ -56,7 +56,7 @@ if(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
             ${UTILS_SRC_DIR}/file_system_qt.cc
             ${UTILS_SRC_DIR}/lock_qt.cc
             ${UTILS_SRC_DIR}/rwlock_win.cc
-            ${UTILS_SRC_DIR}/date_time_win.cc
+            ${UTILS_SRC_DIR}/date_time_qt.cc
             ${UTILS_SRC_DIR}/system.cc
             ${UTILS_SRC_DIR}/signals_win.cc
             ${UTILS_SRC_DIR}/gen_hash.cc
