@@ -32,10 +32,17 @@
 #ifndef SRC_COMPONENTS_INCLUDE_UTILS_RWLOCK_H_
 #define SRC_COMPONENTS_INCLUDE_UTILS_RWLOCK_H_
 
+#if defined(QT_PORT)
+#include <QtCore>
+#endif
+
 #include "utils/macro.h"
 
 namespace sync_primitives {
 
+#if defined(QT_PORT)
+typedef QReadWriteLock PlatformRWLock;
+#endif
 /**
  * RW locks wrapper
  * Read-write locks permit concurrent reads and exclusive writes to a protected
@@ -125,9 +132,13 @@ class RWLock {
   void ReleaseForWriting();
 
  private:
+ #ifdef QT_PORT
+  impl::PlatformRWLock * rwlock_;
+ #else
   class Impl;
   Impl* impl_;
-
+#endif
+  
   DISALLOW_COPY_AND_ASSIGN(RWLock);
 };
 
