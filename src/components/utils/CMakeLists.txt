@@ -52,7 +52,7 @@ if(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
                 )
 
       set (src ${UTILS_SRC_DIR}/bitstream.cc
-           ${UTILS_SRC_DIR}/conditional_variable_win.cc
+           ${UTILS_SRC_DIR}/conditional_variable_qt.cc
             ${UTILS_SRC_DIR}/file_system_qt.cc
             ${UTILS_SRC_DIR}/lock_qt.cc
             ${UTILS_SRC_DIR}/rwlock_qt.cc

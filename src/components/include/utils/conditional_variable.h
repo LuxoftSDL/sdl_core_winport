@@ -36,6 +36,9 @@
 #include <pthread.h>
 #elif defined(OS_WINDOWS)
 #include "utils/winhdr.h"
+#if defined(QT_PORT)
+#include <QtCore>
+#endif
 #else
 #error "Condition variable is not defined for this platform"
 #endif
@@ -51,7 +54,11 @@ namespace impl {
 #if defined(OS_POSIX)
 typedef pthread_cond_t PlatformConditionalVariable;
 #elif defined(OS_WINDOWS)
+#if defined(WIN_NATIVE)
 typedef CONDITION_VARIABLE PlatformConditionalVariable;
+#elif defined (QT_PORT)
+typedef QWaitCondition PlatformConditionalVariable;
+#endif
 #else
 #error "Condition variable is not defined for this platform"
 #endif
@@ -92,8 +99,11 @@ class ConditionalVariable {
   WaitStatus WaitFor(AutoLock& auto_lock, int32_t milliseconds);
 
  private:
+#if defined (QT_PORT)
+  impl::PlatformConditionalVariable* cond_var_;
+#else
   impl::PlatformConditionalVariable cond_var_;
-
+#endif
  private:
   DISALLOW_COPY_AND_ASSIGN(ConditionalVariable);
 };
