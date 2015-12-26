@@ -37,6 +37,9 @@
 #include <sched.h>
 #elif defined(OS_WINDOWS)
 #include "utils/winhdr.h"
+#elif defined(QT_PORT)
+#include <QThread>
+#include <QMutex>
 #else
 #error "Lock is not defined for this platform"
 #endif
@@ -52,7 +55,11 @@ namespace impl {
 #if defined(OS_POSIX)
 typedef pthread_mutex_t PlatformMutex;
 #elif defined(OS_WINDOWS)
+#if defined(QT_PORT)
+typedef QMutex PlatformMutex;
+#else defined(WIN_NATIVE)
 typedef CRITICAL_SECTION PlatformMutex;
+#endif
 #else
 #error "Lock is not defined for this platform"
 #endif
@@ -67,9 +74,17 @@ class SpinMutex {
     }
     for (;;) {
 #if defined(OS_POSIX)
-      sched_yield();
+    sched_yield();
 #elif defined(OS_WINDOWS)
+<<<<<<< HEAD
       SwitchToThread();
+=======
+#if defined (WIN_NATIVE)
+    SwitchToThread();
+#elif defined(QT_PORT)    
+    QThread::yieldCurrentThread();
+#endif
+>>>>>>> e6cef03... Add Qt lock
 #endif
       if (state_ == 0 && atomic_post_set(&state_) == 0) {
         return;
@@ -118,7 +133,11 @@ class Lock {
   bool Try();
 
  private:
+#if defined(QT_PORT)
+  impl::PlatformMutex* mutex_;
+#else
   impl::PlatformMutex mutex_;
+#endif
 
 #ifndef NDEBUG
   /**
