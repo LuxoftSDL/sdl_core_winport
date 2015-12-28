@@ -198,6 +198,6 @@ TEST(SharedPtrTest, StressTest) {
       }
     }
   }
-  printf("%zu objects created, %zu pointers copied\n", objectCreated,
+  printf("%lu objects created, %lu pointers copied\n", objectCreated,
          pointersCopied);
 }
