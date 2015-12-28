@@ -103,6 +103,10 @@ int32_t main(int32_t argc, char** argv) {
   }
 
   PLATFORM_INIT(argc, argv);
+#ifdef QT_PORT
+  QThreadPool * pool = QThreadPool::globalInstance();
+  pool->setMaxThreadCount(MAX_THREADS);
+#endif
   // Logger initialization
   INIT_LOGGER();
 

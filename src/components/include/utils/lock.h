@@ -37,9 +37,10 @@
 #include <sched.h>
 #elif defined(OS_WINDOWS)
 #include "utils/winhdr.h"
-#elif defined(QT_PORT)
+#if defined(QT_PORT)
 #include <QThread>
 #include <QMutex>
+#endif
 #else
 #error "Lock is not defined for this platform"
 #endif

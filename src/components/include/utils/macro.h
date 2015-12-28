@@ -165,6 +165,7 @@ friend class test_case_name##_##test_name##_Test
 
 #if defined(QT_PORT)
 #define PLATFORM_INIT(argc, argv) QCoreApplication application(argc, argv)
+#define MAX_THREADS 25
 #else
 #define PLATFORM_INIT(argc, argv)
 #endif

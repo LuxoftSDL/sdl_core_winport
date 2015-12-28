@@ -43,12 +43,11 @@ const uint64_t kDeltaEpochInMicrosecs = 11644473600000000;
 namespace date_time {
 
 TimevalStruct DateTime::getCurrentTime() {
-  qint64 tmpres = 0;
-  QDateTime tmpres = DateTime::currentMSecsSinceEpoch();
+  qint64 tmpres = QDateTime::currentMSecsSinceEpoch();
   TimevalStruct tv;
 
   tmpres -= kDeltaEpochInMicrosecs;
-  // Finally change microseconds to seconds and place in the seconds value. 
+  // Finally change microseconds to seconds and place in the seconds value.
   // The modulus picks up the microseconds.
   tv.tv_sec = (long)(tmpres / 1000000UL);
   tv.tv_usec = (long)(tmpres % 1000000UL);
@@ -56,29 +55,30 @@ TimevalStruct DateTime::getCurrentTime() {
   return tv;
 }
 
-int64_t date_time::DateTime::getSecs(const TimevalStruct &time) {
+int64_t date_time::DateTime::getSecs(const TimevalStruct& time) {
   const TimevalStruct times = ConvertionUsecs(time);
   return static_cast<int64_t>(times.tv_sec);
 }
 
-int64_t DateTime::getmSecs(const TimevalStruct &time) {
+int64_t DateTime::getmSecs(const TimevalStruct& time) {
   const TimevalStruct times = ConvertionUsecs(time);
-  return static_cast<int64_t>(times.tv_sec) * MILLISECONDS_IN_SECOND
-      + times.tv_usec / MICROSECONDS_IN_MILLISECONDS;
+  return static_cast<int64_t>(times.tv_sec) * MILLISECONDS_IN_SECOND +
+         times.tv_usec / MICROSECONDS_IN_MILLISECONDS;
 }
 
-int64_t DateTime::getuSecs(const TimevalStruct &time) {
+int64_t DateTime::getuSecs(const TimevalStruct& time) {
   const TimevalStruct times = ConvertionUsecs(time);
-  return static_cast<int64_t>(times.tv_sec) * MILLISECONDS_IN_SECOND
-      * MICROSECONDS_IN_MILLISECONDS + times.tv_usec;
+  return static_cast<int64_t>(times.tv_sec) * MILLISECONDS_IN_SECOND *
+             MICROSECONDS_IN_MILLISECONDS +
+         times.tv_usec;
 }
 
 int64_t DateTime::calculateTimeSpan(const TimevalStruct& sinceTime) {
   return calculateTimeDiff(getCurrentTime(), sinceTime);
 }
 
-int64_t DateTime::calculateTimeDiff(const TimevalStruct &time1,
-                                    const TimevalStruct &time2){
+int64_t DateTime::calculateTimeDiff(const TimevalStruct& time1,
+                                    const TimevalStruct& time2) {
   const TimevalStruct times1 = ConvertionUsecs(time1);
   const TimevalStruct times2 = ConvertionUsecs(time2);
   TimevalStruct ret;
@@ -90,10 +90,10 @@ int64_t DateTime::calculateTimeDiff(const TimevalStruct &time1,
   return getmSecs(ret);
 }
 
-void DateTime::AddMilliseconds(TimevalStruct& time,
-                             uint32_t milliseconds) {
-  const uint32_t sec = milliseconds/MILLISECONDS_IN_SECOND;
-  const uint32_t usec = (milliseconds%MILLISECONDS_IN_SECOND)*MICROSECONDS_IN_MILLISECONDS;
+void DateTime::AddMilliseconds(TimevalStruct& time, uint32_t milliseconds) {
+  const uint32_t sec = milliseconds / MILLISECONDS_IN_SECOND;
+  const uint32_t usec =
+      (milliseconds % MILLISECONDS_IN_SECOND) * MICROSECONDS_IN_MILLISECONDS;
   time.tv_sec += sec;
   time.tv_usec += usec;
   time = ConvertionUsecs(time);
@@ -107,10 +107,9 @@ TimevalStruct DateTime::Sub(const TimevalStruct& time1,
 
   ret.tv_sec = times1.tv_sec - times2.tv_sec;
   ret.tv_usec = times1.tv_usec - times2.tv_usec;
-  if (ret.tv_usec < 0)
-  {
-     --ret.tv_sec;
-     ret.tv_usec += 1000000;
+  if (ret.tv_usec < 0) {
+    --ret.tv_sec;
+    ret.tv_usec += 1000000;
   }
   return ret;
 }
@@ -118,31 +117,33 @@ TimevalStruct DateTime::Sub(const TimevalStruct& time1,
 bool DateTime::Greater(const TimevalStruct& time1, const TimevalStruct& time2) {
   const TimevalStruct times1 = ConvertionUsecs(time1);
   const TimevalStruct times2 = ConvertionUsecs(time2);
-  return timercmp(&times1, &times2, >);
+  return timercmp(&times1, &times2, > );
 }
 
 bool DateTime::Less(const TimevalStruct& time1, const TimevalStruct& time2) {
   const TimevalStruct times1 = ConvertionUsecs(time1);
   const TimevalStruct times2 = ConvertionUsecs(time2);
-  return timercmp(&times1, &times2, <);
+  return timercmp(&times1, &times2, < );
 }
 
 bool DateTime::Equal(const TimevalStruct& time1, const TimevalStruct& time2) {
   const TimevalStruct times1 = ConvertionUsecs(time1);
   const TimevalStruct times2 = ConvertionUsecs(time2);
-  return !timercmp(&times1, &times2, !=);
+  return !timercmp(&times1, &times2, != );
 }
 
-TimeCompare date_time::DateTime::compareTime(const TimevalStruct &time1, const TimevalStruct &time2) {
+TimeCompare date_time::DateTime::compareTime(const TimevalStruct& time1,
+                                             const TimevalStruct& time2) {
   if (Greater(time1, time2)) return GREATER;
   if (Less(time1, time2)) return LESS;
   return EQUAL;
 }
 
-TimevalStruct date_time::DateTime::ConvertionUsecs(const TimevalStruct &time){
+TimevalStruct date_time::DateTime::ConvertionUsecs(const TimevalStruct& time) {
   if (time.tv_usec >= MICROSECONDS_IN_SECOND) {
     TimevalStruct time1;
-    time1.tv_sec = static_cast<int64_t>(time.tv_sec) + (time.tv_usec/MICROSECONDS_IN_SECOND);
+    time1.tv_sec = static_cast<int64_t>(time.tv_sec) +
+                   (time.tv_usec / MICROSECONDS_IN_SECOND);
     time1.tv_usec = static_cast<int64_t>(time.tv_usec) % MICROSECONDS_IN_SECOND;
     return time1;
   }
@@ -159,7 +160,7 @@ bool operator==(const TimevalStruct& time1, const TimevalStruct& time2) {
   return date_time::DateTime::Equal(time1, time2);
 }
 
-const TimevalStruct operator-(const TimevalStruct& time1, const TimevalStruct& time2) {
+const TimevalStruct operator-(const TimevalStruct& time1,
+                              const TimevalStruct& time2) {
   return date_time::DateTime::Sub(time1, time2);
 }
-

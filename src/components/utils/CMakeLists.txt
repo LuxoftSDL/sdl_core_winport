@@ -31,6 +31,7 @@
 
 set(UTILS_INCLUDE_DIR ${COMPONENTS_DIR}/utils/include)
 set(UTILS_SRC_DIR ${COMPONENTS_DIR}/utils/src)
+set(THREAD_INCLUDE_DIR ${COMPONENTS_DIR}/include/utils/threads/)
 
 include_directories (
   ${UTILS_INCLUDE_DIR}
@@ -61,16 +62,29 @@ if(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
             ${UTILS_SRC_DIR}/signals_win.cc
             ${UTILS_SRC_DIR}/gen_hash.cc
             ${UTILS_SRC_DIR}/threads/thread_validator.cc
-            ${UTILS_SRC_DIR}/threads/win_thread.cc
-            ${UTILS_SRC_DIR}/threads/thread_delegate_win.cc
+            ${UTILS_SRC_DIR}/threads/qthread.cc
+            ${UTILS_SRC_DIR}/threads/thread_delegate_qt.cc
             ${UTILS_SRC_DIR}/threads/async_runner.cc
             ${UTILS_SRC_DIR}/string_utils.cc
             ${UTILS_SRC_DIR}/pipe_win.cc
             ${UTILS_SRC_DIR}/shared_library_qt.cc
             ${UTILS_SRC_DIR}/socket_qt.cc
+            ${THREAD_INCLUDE_DIR}/thread.h
     )
-
-  else(QT_PORT) #WIN_NATIVE
+#    file(COPY ${THREAD_INCLUDE_DIR}/thread.h DESTINATION ${UTILS_SRC_DIR}/threads/)
+    EXECUTE_PROCESS(COMMAND ${CMAKE_COMMAND} -E copy_if_different 
+                  ${THREAD_INCLUDE_DIR}/thread.h
+                  ${UTILS_SRC_DIR}/threads/thread.h)
+    EXECUTE_PROCESS(COMMAND ${CMAKE_COMMAND} -E copy_if_different 
+                  ${THREAD_INCLUDE_DIR}/thread_delegate.h 
+                  ${UTILS_SRC_DIR}/threads/thread_delegate.h)
+                  
+#    file(COPY ${THREAD_INCLUDE_DIR}/thread_delegate.h DESTINATION ${UTILS_SRC_DIR}/threads/)    
+    SET(CMAKE_INCLUDE_CURRENT_DIR ON)    
+    qt5_generate_moc( qthread.cc moc_thread.cpp)
+    qt5_generate_moc( thread_delegate_qt.cc moc_thread_delegate.cpp)
+  
+  else() #WIN_NATIVE
     file (GLOB inc ${UTILS_INCLUDE_DIR}/utils/*.h)
     set (src
             ${UTILS_SRC_DIR}/bitstream.cc

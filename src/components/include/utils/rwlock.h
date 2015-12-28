@@ -41,7 +41,9 @@
 namespace sync_primitives {
 
 #if defined(QT_PORT)
-typedef QReadWriteLock PlatformRWLock;
+namespace impl{
+  typedef QReadWriteLock PlatformRWLock;
+}  // namespace impl
 #endif
 /**
  * RW locks wrapper
@@ -132,9 +134,9 @@ class RWLock {
   void ReleaseForWriting();
 
  private:
- #ifdef QT_PORT
+#ifdef QT_PORT
   impl::PlatformRWLock * rwlock_;
- #else
+#else
   class Impl;
   Impl* impl_;
 #endif
