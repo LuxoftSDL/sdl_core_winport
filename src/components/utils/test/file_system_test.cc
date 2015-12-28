@@ -1092,7 +1092,7 @@ TEST(FileSystemTest, GetAvailableDiskSpace) {
   EXPECT_TRUE(Write("./Test directory/test file", data));
 
   EXPECT_GE(available_space, GetAvailableDiskSpace("."));
-  EXPECT_TRUE(RemoveDirectory("./Test directory"));
+  EXPECT_TRUE(RemoveDirectory("./Test directory", true));
   EXPECT_FALSE(DirectoryExists("./Test directory"));
 }
 
@@ -1125,7 +1125,7 @@ TEST(FileSystemTest, DirectorySize) {
 
   EXPECT_TRUE(DeleteFile("./Test directory/test file"));
   EXPECT_EQ(0, DirectorySize("./Test directory"));
-  EXPECT_TRUE(RemoveDirectory("./Test directory"));
+  EXPECT_TRUE(RemoveDirectory("./Test directory", true));
   EXPECT_FALSE(DirectoryExists("./Test directory"));
 }
 

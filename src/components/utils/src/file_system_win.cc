@@ -240,10 +240,10 @@ void file_system::RemoveDirectoryContent(const std::string& directory_path) {
   do
   {
     if (FILE_ATTRIBUTE_DIRECTORY == ffd.dwFileAttributes) {
-      RemoveDirectory(ffd.cFileName);
-	} else {
-	  remove(ffd.cFileName);
-	}
+      RemoveDirectory(ffd.cFileName, true);
+	  } else {
+	    remove(ffd.cFileName);
+	  }
   }
   while (FindNextFile(find, &ffd) != 0);
 

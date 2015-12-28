@@ -161,8 +161,7 @@ bool DeleteFile(const std::string& name);
  * @param is_recursively true if you need delete directory recursively, otherwise false.
  * @return returns true if the directory is successfully deleted.
  */
-bool RemoveDirectory(const std::string& directory_path,
-                     bool is_recursively = true);
+bool RemoveDirectory(const std::string& directory_path, bool is_recursively);
 
 /**
   * @brief Check access rights
