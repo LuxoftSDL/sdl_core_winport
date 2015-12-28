@@ -184,7 +184,8 @@ set(ARCHIVE_OUTPUT_DIRECTORY ./bin)
 
 if(MSVC)
   if(QT_PORT)
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /MP /GF /GR /DWIN32 /D_CONSOLE /W3 /EHsc /Zi")# Add MSVS 2010 for Qt specific flags
+     # Add MSVS 2010 for Qt specific flags
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /MP /GF /GR /D_CRT_SECURE_NO_WARNINGS /D_CONSOLE /W3 /EHsc /wd4005 /wd4996 /nologo")
   else()
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /MP /GF /GR /W0 /EHsc /WX /Zc:wchar_t /favor:blend")# Add MSVS specific flags
     # 0 (MultiThreaded) == /MT
