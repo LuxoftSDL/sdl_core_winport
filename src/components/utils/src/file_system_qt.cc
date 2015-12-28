@@ -172,26 +172,26 @@ bool file_system::DeleteFile(const std::string& name) {
   return false;
 }
 
-void file_system::remove_directory_content(const std::string& directory_name) {
-  QDir dir(QString(directory_name.c_str()));
+void file_system::RemoveDirectoryContent(const std::string& directory_path) {
+  QDir dir(QString(directory_path.c_str()));
   dir.setNameFilters(QStringList() << "*.*");
   dir.setFilter(QDir::Files);
   foreach(QString dirFile, dir.entryList()){
     dir.remove(dirFile);
   }
-  dir.rmpath(QString(directory_name.c_str()));
+  dir.rmpath(QString(directory_path.c_str()));
 }
 
 bool file_system::RemoveDirectory(
-    const std::string& directory_name,
+    const std::string& directory_path,
     bool is_recursively) {
-  QDir dir(QString(directory_name.c_str()));
-  if (DirectoryExists(directory_name)
-      && IsAccessible(directory_name, W_OK)) {
+  QDir dir(QString(directory_path.c_str()));
+  if (DirectoryExists(directory_path)
+      && IsAccessible(directory_path, W_OK)) {
       if (is_recursively) {
         return dir.removeRecursively();
       }
-      return dir.rmdir(QString(directory_name.c_str()));
+      return dir.rmdir(QString(directory_path.c_str()));
   }
   return false;
 }

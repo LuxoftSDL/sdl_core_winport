@@ -224,12 +224,12 @@ bool file_system::DeleteFile(const std::string& name) {
   return false;
 }
 
-void file_system::remove_directory_content(const std::string& directory_name) {
-  if (!DirectoryExists(directory_name)) {
+void file_system::RemoveDirectoryContent(const std::string& directory_path) {
+  if (!DirectoryExists(directory_path)) {
     return;
   }
 
-  const std::string find_string = ConcatPath(directory_name, "*");
+  const std::string find_string = ConcatPath(directory_path, "*");
   WIN32_FIND_DATA ffd;
 
   HANDLE find = FindFirstFile(find_string.c_str(), &ffd);
@@ -250,14 +250,14 @@ void file_system::remove_directory_content(const std::string& directory_name) {
   FindClose(find);
 }
 
-bool file_system::RemoveDirectory(const std::string& directory_name,
+bool file_system::RemoveDirectory(const std::string& directory_path,
                                   bool is_recursively) {
-  if (DirectoryExists(directory_name)
-      && IsWritingAllowed(directory_name)) {
+  if (DirectoryExists(directory_path)
+      && IsWritingAllowed(directory_path)) {
     if (is_recursively) {
-      remove_directory_content(directory_name);
+      RemoveDirectoryContent(directory_path);
     }
-    return !_rmdir(directory_name.c_str());
+    return !_rmdir(directory_path.c_str());
   }
   return false;
 }

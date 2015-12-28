@@ -1150,7 +1150,7 @@ TEST(FileSystemTest, DeleteAllContentInDirectory) {
   EXPECT_TRUE(
       DirectoryExists("./Test directory/Test directory 2/Test directory 3"));
 
-  remove_directory_content("./Test directory");
+  RemoveDirectoryContent("./Test directory");
 
   // Directory does not include files and subdirectories
   EXPECT_FALSE(FileExists("./Test directory/test file"));

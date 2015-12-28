@@ -224,7 +224,7 @@ bool file_system::DeleteFile(const std::string& name) {
   return false;
 }
 
-void file_system::remove_directory_content(const std::string& directory_name) {
+void file_system::RemoveDirectoryContent(const std::string& directory_path) {
   int32_t return_code = 0;
   DIR* directory = NULL;
 #ifndef __QNXNTO__
@@ -233,12 +233,12 @@ void file_system::remove_directory_content(const std::string& directory_name) {
 #else
   char* direntbuffer =
       new char[offsetof(struct dirent, d_name) +
-               pathconf(directory_name.c_str(), _PC_NAME_MAX) + 1];
+               pathconf(directory_path.c_str(), _PC_NAME_MAX) + 1];
   struct dirent* dir_element = new(direntbuffer) dirent;
 #endif
   struct dirent* result = NULL;
 
-  directory = opendir(directory_name.c_str());
+  directory = opendir(directory_path.c_str());
 
   if (NULL != directory) {
     return_code = readdir_r(directory, dir_element, &result);
@@ -251,9 +251,9 @@ void file_system::remove_directory_content(const std::string& directory_name) {
       }
 
       std::string full_element_path =
-        ConcatPath(directory_name, result->d_name);
+        ConcatPath(directory_path, result->d_name);
       if (file_system::IsDirectory(full_element_path)) {
-        remove_directory_content(full_element_path);
+        RemoveDirectoryContent(full_element_path);
         rmdir(full_element_path.c_str());
       } else {
         remove(full_element_path.c_str());
@@ -267,15 +267,15 @@ void file_system::remove_directory_content(const std::string& directory_name) {
 #endif
 }
 
-bool file_system::RemoveDirectory(const std::string& directory_name,
+bool file_system::RemoveDirectory(const std::string& directory_path,
                                   bool is_recursively) {
-  if (DirectoryExists(directory_name)
-      && IsAccessible(directory_name, W_OK)) {
+  if (DirectoryExists(directory_path)
+      && IsAccessible(directory_path, W_OK)) {
     if (is_recursively) {
-      remove_directory_content(directory_name);
+      RemoveDirectoryContent(directory_path);
     }
 
-    return !rmdir(directory_name.c_str());
+    return !rmdir(directory_path.c_str());
   }
   return false;
 }
