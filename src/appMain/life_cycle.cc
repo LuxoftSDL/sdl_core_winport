@@ -42,7 +42,6 @@
 #include "resumption/last_state.h"
 
 #ifdef ENABLE_SECURITY
-#include <openssl/ssl.h>
 #include "security_manager/security_manager_impl.h"
 #include "security_manager/crypto_manager_impl.h"
 #include "application_manager/policies/policy_handler.h"
