@@ -402,7 +402,7 @@ void Array<T, minsize, maxsize>::ReportErrors(ValidationReport* report) const {
     const T& elem = this->operator [](i);
     if (!elem.is_valid()) {
       char elem_idx[32] = {};
-      snprintf(elem_idx, 32, "[%zu]", i);
+      snprintf(elem_idx, 32, "[%lu]", static_cast<unsigned long>(i));
       ValidationReport& elem_report =
           report->ReportSubobject(elem_idx);
       elem.ReportErrors(&elem_report);

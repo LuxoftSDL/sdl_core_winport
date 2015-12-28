@@ -1,34 +1,34 @@
 /*
-* Copyright (c) 2014, Ford Motor Company
-* All rights reserved.
-*
-* Redistribution and use in source and binary forms, with or without
-* modification, are permitted provided that the following conditions are met:
-*
-* Redistributions of source code must retain the above copyright notice, this
-* list of conditions and the following disclaimer.
-*
-* Redistributions in binary form must reproduce the above copyright notice,
-* this list of conditions and the following
-* disclaimer in the documentation and/or other materials provided with the
-* distribution.
-*
-* Neither the name of the Ford Motor Company nor the names of its contributors
-* may be used to endorse or promote products derived from this software
-* without specific prior written permission.
-*
-* THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
-* AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
-* IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
-* ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
-* LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
-* CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
-* SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
-* INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
-* CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
-* ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
-* POSSIBILITY OF SUCH DAMAGE.
-*/
+ * Copyright (c) 2015, Ford Motor Company
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *
+ * Redistributions of source code must retain the above copyright notice, this
+ * list of conditions and the following disclaimer.
+ *
+ * Redistributions in binary form must reproduce the above copyright notice,
+ * this list of conditions and the following
+ * disclaimer in the documentation and/or other materials provided with the
+ * distribution.
+ *
+ * Neither the name of the Ford Motor Company nor the names of its contributors
+ * may be used to endorse or promote products derived from this software
+ * without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+ * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+ * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+ * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+ * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ * POSSIBILITY OF SUCH DAMAGE.
+ */
 #include <csignal>
 
 #ifdef OS_WINDOWS
@@ -42,7 +42,6 @@
 #include "resumption/last_state.h"
 
 #ifdef ENABLE_SECURITY
-#include <openssl/ssl.h>
 #include "security_manager/security_manager_impl.h"
 #include "security_manager/crypto_manager_impl.h"
 #include "application_manager/policies/policy_handler.h"
@@ -406,26 +405,43 @@ void LifeCycle::Run() {
 void LifeCycle::StopComponents() {
   LOG4CXX_AUTO_TRACE(logger_);
 
-  app_manager_->Stop();
-  hmi_handler_->set_message_observer(NULL);
-  connection_handler_->set_connection_handler_observer(NULL);
-  protocol_handler_->RemoveProtocolObserver(app_manager_);
+  LOG4CXX_INFO(logger_, "Stopping Application Manager");
+  if (app_manager_) {
+    app_manager_->Stop();
+  }
+  if (hmi_handler_) {
+    hmi_handler_->set_message_observer(NULL);
+  }
+  if (connection_handler_) {
+    connection_handler_->set_connection_handler_observer(NULL);
+  }
+  if (protocol_handler_) {
+    protocol_handler_->RemoveProtocolObserver(app_manager_);
+  }
 
   LOG4CXX_INFO(logger_, "Stopping Protocol Handler");
-  protocol_handler_->RemoveProtocolObserver(media_manager_);
+  if (protocol_handler_) {
+    protocol_handler_->RemoveProtocolObserver(media_manager_);
 #ifdef ENABLE_SECURITY
-  protocol_handler_->RemoveProtocolObserver(security_manager_);
-  security_manager_->RemoveListener(app_manager_);
+    if (security_manager_) {
+      protocol_handler_->RemoveProtocolObserver(security_manager_);
+      security_manager_->RemoveListener(app_manager_);
+    }
 #endif  // ENABLE_SECURITY
-  protocol_handler_->Stop();
+    protocol_handler_->Stop();
+  }
 
   LOG4CXX_INFO(logger_, "Destroying Media Manager");
-  media_manager_->SetProtocolHandler(NULL);
+  if (media_manager_) {
+    media_manager_->SetProtocolHandler(NULL);
+  }
   media_manager::MediaManagerImpl::destroy();
 
   LOG4CXX_INFO(logger_, "Destroying Transport Manager.");
-  transport_manager_->Visibility(false);
-  transport_manager_->Stop();
+  if (transport_manager_) {
+    transport_manager_->Visibility(false);
+    transport_manager_->Stop();
+  }
   transport_manager::TransportManagerDefault::destroy();
 
   LOG4CXX_INFO(logger_, "Stopping Connection Handler.");
@@ -457,8 +473,8 @@ void LifeCycle::StopComponents() {
   if (dbus_adapter_) {
     if (hmi_handler_) {
       hmi_handler_->RemoveHMIMessageAdapter(dbus_adapter_);
-      hmi_message_handler::HMIMessageHandlerImpl::destroy();
     }
+    hmi_message_handler::HMIMessageHandlerImpl::destroy();
     if (dbus_adapter_thread_) {
       dbus_adapter_thread_->Stop();
       dbus_adapter_thread_->Join();
@@ -470,7 +486,9 @@ void LifeCycle::StopComponents() {
 
 #ifdef MESSAGEBROKER_HMIADAPTER
   if (mb_adapter_) {
-    hmi_handler_->RemoveHMIMessageAdapter(mb_adapter_);
+    if (hmi_handler_) {
+      hmi_handler_->RemoveHMIMessageAdapter(mb_adapter_);
+    }
     mb_adapter_->unregisterController();
     mb_adapter_->exitReceivingThread();
     if (mb_adapter_thread_) {
@@ -497,9 +515,13 @@ void LifeCycle::StopComponents() {
     mb_thread_->Join();
     delete mb_thread_;
   }
-  message_broker_server_->Close();
-  delete message_broker_server_;
-  message_broker_->stopMessageBroker();
+  if (message_broker_server_) {
+    message_broker_server_->Close();
+    delete message_broker_server_;
+  }
+  if (message_broker_) {
+    message_broker_->stopMessageBroker();
+  }
 
   networking::cleanup();
 #endif  // MESSAGEBROKER_HMIADAPTER
