@@ -2511,7 +2511,7 @@ bool MessageHelper::PrintSmartObject(const smart_objects::SmartObject& object) {
       for (size_t i = 0; i < object.length(); i++) {
         ++tab;
 
-        printf("\n%s%lu: ", tab_buffer.c_str(), i);
+        printf("\n%s%lu: ", tab_buffer.c_str(), static_cast<unsigned long>(i));
         if (!PrintSmartObject(object.getElement(i))) {
           printf("\n");
           return false;

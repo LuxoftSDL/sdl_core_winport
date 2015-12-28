@@ -198,6 +198,7 @@ TEST(SharedPtrTest, StressTest) {
       }
     }
   }
-  printf("%lu objects created, %lu pointers copied\n", objectCreated,
-         pointersCopied);
+  printf("%lu objects created, %lu pointers copied\n",
+    static_cast<unsigned long>(objectCreated),
+    static_cast<unsigned long>(pointersCopied));
 }
