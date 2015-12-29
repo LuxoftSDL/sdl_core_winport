@@ -95,8 +95,8 @@ size_t file_system::DirectorySize(const std::string& path) {
   do
   {
     if (FILE_ATTRIBUTE_DIRECTORY == ffd.dwFileAttributes) {
-      if (std::string(ffd.cFileName).compare(".") != 0 &&
-            std::string(ffd.cFileName).compare("..") != 0) {
+      if (strncmp(ffd.cFileName, ".", 1) != 0 &&
+            strncmp(ffd.cFileName, "..", 2) != 0) {
         size += DirectorySize(ffd.cFileName);
       }
     } else {
@@ -240,8 +240,8 @@ void file_system::RemoveDirectoryContent(const std::string& directory_path) {
   do
   {
     if (FILE_ATTRIBUTE_DIRECTORY == ffd.dwFileAttributes) {
-      if (std::string(ffd.cFileName).compare(".") != 0 &&
-            std::string(ffd.cFileName).compare("..") != 0) {
+      if (strncmp(ffd.cFileName, ".", 1) != 0 &&
+            strncmp(ffd.cFileName, "..", 2) != 0) {
         RemoveDirectory(ffd.cFileName, true);
       }
     } else {
