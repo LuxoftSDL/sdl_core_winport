@@ -167,7 +167,6 @@ void ThreadedSocketConnection::Finalize() {
   close(socket_);
 #elif defined(OS_WINDOWS)
   closesocket(socket_);
-  WSACleanup();
 #else
 #error Unsupported platform
 #endif
