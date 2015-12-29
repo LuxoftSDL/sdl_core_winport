@@ -2205,7 +2205,8 @@ void ApplicationManagerImpl::HeadUnitReset(
       policy::PolicyHandler::instance()->UnloadPolicyLibrary();
 
       resume_controller().StopSavePersistentDataTimer();
-      file_system::remove_directory_content(profile::Profile::instance()->app_storage_folder());
+      file_system::RemoveDirectoryContent(
+        profile::Profile::instance()->app_storage_folder());
       break;
     }
     case mobile_api::AppInterfaceUnregisteredReason::FACTORY_DEFAULTS: {

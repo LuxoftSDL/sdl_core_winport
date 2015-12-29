@@ -157,12 +157,11 @@ bool DeleteFile(const std::string& name);
 /**
  * @brief Removes directory.
  *
- * @param name path to directory.
+ * @param directory_path path to directory.
  * @param is_recursively true if you need delete directory recursively, otherwise false.
  * @return returns true if the directory is successfully deleted.
  */
-bool RemoveDirectory(const std::string& directory_name,
-                     bool is_recursively = true);
+bool RemoveDirectory(const std::string& directory_path, bool is_recursively);
 
 /**
   * @brief Check access rights
@@ -260,7 +259,12 @@ bool CopyFile(const std::string& src,
 */
 bool MoveFile(const std::string& src,
               const std::string& dst);
-void remove_directory_content(const std::string& directory_name);
+
+/**
+  * @brief Removes files and subdirectories of specified directory
+  * @param directory_path Path to directory
+  */
+void RemoveDirectoryContent(const std::string& directory_path);
 
 /**
   * @brief Checks if path is relative or not

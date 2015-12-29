@@ -95,8 +95,8 @@ size_t file_system::DirectorySize(const std::string& path) {
   do
   {
     if (FILE_ATTRIBUTE_DIRECTORY == ffd.dwFileAttributes) {
-      if (std::string(ffd.cFileName).compare(".") != 0 &&
-            std::string(ffd.cFileName).compare("..") != 0) {
+      if (strncmp(ffd.cFileName, ".", 1) != 0 &&
+            strncmp(ffd.cFileName, "..", 2) != 0) {
         size += DirectorySize(ffd.cFileName);
       }
     } else {
@@ -224,12 +224,12 @@ bool file_system::DeleteFile(const std::string& name) {
   return false;
 }
 
-void file_system::remove_directory_content(const std::string& directory_name) {
-  if (!DirectoryExists(directory_name)) {
+void file_system::RemoveDirectoryContent(const std::string& directory_path) {
+  if (!DirectoryExists(directory_path)) {
     return;
   }
 
-  const std::string find_string = ConcatPath(directory_name, "*");
+  const std::string find_string = ConcatPath(directory_path, "*");
   WIN32_FIND_DATA ffd;
 
   HANDLE find = FindFirstFile(find_string.c_str(), &ffd);
@@ -240,24 +240,27 @@ void file_system::remove_directory_content(const std::string& directory_name) {
   do
   {
     if (FILE_ATTRIBUTE_DIRECTORY == ffd.dwFileAttributes) {
-      RemoveDirectory(ffd.cFileName);
-	} else {
-	  remove(ffd.cFileName);
-	}
+      if (strncmp(ffd.cFileName, ".", 1) != 0 &&
+            strncmp(ffd.cFileName, "..", 2) != 0) {
+        RemoveDirectory(ffd.cFileName, true);
+      }
+    } else {
+      remove(ffd.cFileName);
+    }
   }
   while (FindNextFile(find, &ffd) != 0);
 
   FindClose(find);
 }
 
-bool file_system::RemoveDirectory(const std::string& directory_name,
+bool file_system::RemoveDirectory(const std::string& directory_path,
                                   bool is_recursively) {
-  if (DirectoryExists(directory_name)
-      && IsWritingAllowed(directory_name)) {
+  if (DirectoryExists(directory_path)
+      && IsWritingAllowed(directory_path)) {
     if (is_recursively) {
-      remove_directory_content(directory_name);
+      RemoveDirectoryContent(directory_path);
     }
-    return !_rmdir(directory_name.c_str());
+    return !_rmdir(directory_path.c_str());
   }
   return false;
 }
