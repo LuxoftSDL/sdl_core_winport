@@ -1,6 +1,13 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+"""
+Format all sources with clang-format. All *.cc and *h in the src dir
+are affected. Excluded from formatting sources in the "3rd_party" and
+in the "3rd_party-static" dirs. For the formatting used ".clang-format"
+in the project root.
+"""
+
 import os
 from utils import setup_working_dir, walk_dir, run_cmd
 import re
