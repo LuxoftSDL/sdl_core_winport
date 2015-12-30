@@ -48,13 +48,13 @@ namespace test {
 namespace components {
 namespace transport_manager {
 
-MockConnection::MockConnection(const ::transport_manager::DeviceUID& device_handle,
-                               const ApplicationHandle& app_handle,
-                               TransportAdapterController* controller)
-    : ThreadedSocketConnection(device_handle, app_handle, controller) {
-}
+MockConnection::MockConnection(
+    const ::transport_manager::DeviceUID& device_handle,
+    const ApplicationHandle& app_handle,
+    TransportAdapterController* controller)
+    : ThreadedSocketConnection(device_handle, app_handle, controller) {}
 
-bool MockConnection::Establish(ConnectError **error) {
+bool MockConnection::Establish(ConnectError** error) {
   int peer_sock = socket(AF_UNIX, SOCK_STREAM, 0);
   sockaddr_un my_addr;
   memset(&my_addr, 0, sizeof(my_addr));
@@ -62,8 +62,8 @@ bool MockConnection::Establish(ConnectError **error) {
   iss << "mockDevice" << device_handle() << "-" << application_handle();
   strcpy(my_addr.sun_path, iss.str().c_str());
   my_addr.sun_family = AF_UNIX;
-  int res = ::connect(peer_sock, reinterpret_cast<sockaddr*>(&my_addr),
-                      sizeof(my_addr));
+  int res = ::connect(
+      peer_sock, reinterpret_cast<sockaddr*>(&my_addr), sizeof(my_addr));
   if (res != -1) {
     set_socket(peer_sock);
     return true;
@@ -75,4 +75,3 @@ bool MockConnection::Establish(ConnectError **error) {
 }  // namespace transport_manager
 }  // namespace components
 }  // namespace test
-

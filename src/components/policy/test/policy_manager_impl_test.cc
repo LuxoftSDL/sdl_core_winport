@@ -96,23 +96,24 @@ class PolicyManagerImplTest : public ::testing::Test {
   }
 };
 
-TEST_F(PolicyManagerImplTest, RefreshRetrySequence_SetSecondsBetweenRetries_ExpectRetryTimeoutSequenceWithSameSeconds) {
-
-  //arrange
+TEST_F(
+    PolicyManagerImplTest,
+    RefreshRetrySequence_SetSecondsBetweenRetries_ExpectRetryTimeoutSequenceWithSameSeconds) {
+  // arrange
   std::vector<int> seconds;
   seconds.push_back(50);
   seconds.push_back(100);
   seconds.push_back(200);
 
-  //assert
+  // assert
   EXPECT_CALL(*cache_manager, TimeoutResponse()).WillOnce(Return(60));
-  EXPECT_CALL(*cache_manager, SecondsBetweenRetries(_)).WillOnce(
-      DoAll(SetArgReferee<0>(seconds), Return(true)));
+  EXPECT_CALL(*cache_manager, SecondsBetweenRetries(_))
+      .WillOnce(DoAll(SetArgReferee<0>(seconds), Return(true)));
 
-  //act
+  // act
   manager->RefreshRetrySequence();
 
-  //assert
+  // assert
   EXPECT_EQ(50, manager->NextRetryTimeout());
   EXPECT_EQ(100, manager->NextRetryTimeout());
   EXPECT_EQ(200, manager->NextRetryTimeout());
@@ -120,24 +121,22 @@ TEST_F(PolicyManagerImplTest, RefreshRetrySequence_SetSecondsBetweenRetries_Expe
 }
 
 TEST_F(PolicyManagerImplTest, DISABLED_GetUpdateUrl) {
-
-  EXPECT_CALL(*cache_manager, GetServiceUrls("7",_));
-  EXPECT_CALL(*cache_manager, GetServiceUrls("4",_));
+  EXPECT_CALL(*cache_manager, GetServiceUrls("7", _));
+  EXPECT_CALL(*cache_manager, GetServiceUrls("4", _));
 
   EndpointUrls ep_7;
 
   manager->GetServiceUrls("7", ep_7);
-  EXPECT_EQ("http://policies.telematics.ford.com/api/policies", ep_7[0].url[0] );
+  EXPECT_EQ("http://policies.telematics.ford.com/api/policies", ep_7[0].url[0]);
 
   EndpointUrls ep_4;
   manager->GetServiceUrls("4", ep_4);
   EXPECT_EQ("http://policies.ford.com/api/policies", ep_4[0].url[0]);
-
 }
 
-
 TEST_F(PolicyManagerImplTest, ResetPT) {
-  EXPECT_CALL(*cache_manager, ResetPT("filename")).WillOnce(Return(true))
+  EXPECT_CALL(*cache_manager, ResetPT("filename"))
+      .WillOnce(Return(true))
       .WillOnce(Return(false));
   EXPECT_CALL(*cache_manager, TimeoutResponse());
   EXPECT_CALL(*cache_manager, SecondsBetweenRetries(_));
@@ -146,24 +145,24 @@ TEST_F(PolicyManagerImplTest, ResetPT) {
   EXPECT_FALSE(manager->ResetPT("filename"));
 }
 
-TEST_F(PolicyManagerImplTest, CheckPermissions_SetHmiLevelFullForAlert_ExpectAllowedPermissions) {
-
-  //arrange
+TEST_F(PolicyManagerImplTest,
+       CheckPermissions_SetHmiLevelFullForAlert_ExpectAllowedPermissions) {
+  // arrange
   ::policy::CheckPermissionResult expected;
   expected.hmi_level_permitted = ::policy::kRpcAllowed;
   expected.list_of_allowed_params.push_back("speed");
   expected.list_of_allowed_params.push_back("gps");
 
-  //assert
-  EXPECT_CALL(*cache_manager, CheckPermissions("12345678", "FULL", "Alert", _)).
-      WillOnce(SetArgReferee<3>(expected));
+  // assert
+  EXPECT_CALL(*cache_manager, CheckPermissions("12345678", "FULL", "Alert", _))
+      .WillOnce(SetArgReferee<3>(expected));
 
-  //act
+  // act
   ::policy::RPCParams input_params;
   ::policy::CheckPermissionResult output;
   manager->CheckPermissions("12345678", "FULL", "Alert", input_params, output);
 
-  //assert
+  // assert
   EXPECT_EQ(::policy::kRpcAllowed, output.hmi_level_permitted);
 
   ASSERT_TRUE(!output.list_of_allowed_params.empty());
@@ -173,8 +172,7 @@ TEST_F(PolicyManagerImplTest, CheckPermissions_SetHmiLevelFullForAlert_ExpectAll
 }
 
 TEST_F(PolicyManagerImplTest, LoadPT_SetPT_PTIsLoaded) {
-
-  //arrange
+  // arrange
   Json::Value table(Json::objectValue);
   table["policy_table"] = Json::Value(Json::objectValue);
 
@@ -197,10 +195,10 @@ TEST_F(PolicyManagerImplTest, LoadPT_SetPT_PTIsLoaded) {
   module_config["endpoints"] = Json::Value(Json::objectValue);
   module_config["endpoints"]["0x00"] = Json::Value(Json::objectValue);
   module_config["endpoints"]["0x00"]["default"] = Json::Value(Json::arrayValue);
-  module_config["endpoints"]["0x00"]["default"][0] = Json::Value(
-      "http://ford.com/cloud/default");
-  module_config["notifications_per_minute_by_priority"] = Json::Value(
-      Json::objectValue);
+  module_config["endpoints"]["0x00"]["default"][0] =
+      Json::Value("http://ford.com/cloud/default");
+  module_config["notifications_per_minute_by_priority"] =
+      Json::Value(Json::objectValue);
   module_config["notifications_per_minute_by_priority"]["emergency"] =
       Json::Value(1);
   module_config["notifications_per_minute_by_priority"]["navigation"] =
@@ -209,10 +207,10 @@ TEST_F(PolicyManagerImplTest, LoadPT_SetPT_PTIsLoaded) {
       Json::Value(3);
   module_config["notifications_per_minute_by_priority"]["communication"] =
       Json::Value(4);
-  module_config["notifications_per_minute_by_priority"]["normal"] = Json::Value(
-      5);
-  module_config["notifications_per_minute_by_priority"]["none"] = Json::Value(
-      6);
+  module_config["notifications_per_minute_by_priority"]["normal"] =
+      Json::Value(5);
+  module_config["notifications_per_minute_by_priority"]["none"] =
+      Json::Value(6);
   module_config["vehicle_make"] = Json::Value("MakeT");
   module_config["vehicle_model"] = Json::Value("ModelT");
   module_config["vehicle_year"] = Json::Value("2014");
@@ -256,18 +254,17 @@ TEST_F(PolicyManagerImplTest, LoadPT_SetPT_PTIsLoaded) {
   policy_table::Table update(&table);
   update.SetPolicyTableType(rpc::policy_table_interface_base::PT_UPDATE);
 
-  //assert
+  // assert
   ASSERT_TRUE(IsValid(update));
 
-
-  //act
+  // act
   std::string json = table.toStyledString();
   ::policy::BinaryMessage msg(json.begin(), json.end());
 
-  utils::SharedPtr<policy_table::Table> snapshot = new policy_table::Table(
-      update.policy_table);
+  utils::SharedPtr<policy_table::Table> snapshot =
+      new policy_table::Table(update.policy_table);
 
-  //assert
+  // assert
   EXPECT_CALL(*cache_manager, GenerateSnapshot()).WillOnce(Return(snapshot));
   EXPECT_CALL(*cache_manager, ApplyUpdate(_)).WillOnce(Return(true));
   EXPECT_CALL(*listener, GetAppName("1234")).WillOnce(Return(""));
@@ -279,33 +276,30 @@ TEST_F(PolicyManagerImplTest, LoadPT_SetPT_PTIsLoaded) {
   EXPECT_TRUE(manager->LoadPT("file_pt_update.json", msg));
 }
 
-TEST_F(PolicyManagerImplTest, RequestPTUpdate_SetPT_GeneratedSnapshotAndPTUpdate) {
-
-  //arrange
-  ::utils::SharedPtr< ::policy_table::Table > p_table =
+TEST_F(PolicyManagerImplTest,
+       RequestPTUpdate_SetPT_GeneratedSnapshotAndPTUpdate) {
+  // arrange
+  ::utils::SharedPtr< ::policy_table::Table> p_table =
       new ::policy_table::Table();
 
-  //assert
+  // assert
   EXPECT_CALL(*cache_manager, GenerateSnapshot()).WillOnce(Return(p_table));
 
-  //act
+  // act
   manager->RequestPTUpdate();
 }
-
 
 TEST_F(PolicyManagerImplTest, DISABLED_AddApplication) {
   // TODO(AOleynik): Implementation of method should be changed to avoid
   // using of snapshot
-  //manager->AddApplication("12345678");
+  // manager->AddApplication("12345678");
 }
 
 TEST_F(PolicyManagerImplTest, DISABLED_GetPolicyTableStatus) {
   // TODO(AOleynik): Test is not finished, to be continued
-  //manager->GetPolicyTableStatus();
+  // manager->GetPolicyTableStatus();
 }
-
-
 }
 // namespace policy
-}// namespace components
-}// namespace test
+}  // namespace components
+}  // namespace test

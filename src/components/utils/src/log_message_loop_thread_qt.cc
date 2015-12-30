@@ -40,13 +40,12 @@
 namespace logger {
 
 void LogMessageHandler::Handle(const LogMessage message) {
-  QMessageLogger qlogger(
-    message.file_name,
-    message.line_number,
-    message.function_name,
-    message.logger.c_str());
+  QMessageLogger qlogger(message.file_name,
+                         message.line_number,
+                         message.function_name,
+                         message.logger.c_str());
 
-  void (QMessageLogger:: * log_func) (const char*, ...) const = 0;
+  void (QMessageLogger::*log_func)(const char*, ...) const = 0;
 
   std::string type_str;
   switch (message.level) {
@@ -82,25 +81,26 @@ void LogMessageHandler::Handle(const LogMessage message) {
       type_str = "FATAL";
       break;
     }
-    default: {
-      NOTREACHED();
-    }
+    default: { NOTREACHED(); }
   }
 
-  // TODO: (malirod) Don't format manually but use QT_MESSAGE_PATTERN or qSetMessagePattern.
-  // Unresolved problem: message is written in the separate thread, thus thread id in the log
-  // will be the same for all messages. So the question is next, how to inject correct thread id
+  // TODO: (malirod) Don't format manually but use QT_MESSAGE_PATTERN or
+  // qSetMessagePattern.
+  // Unresolved problem: message is written in the separate thread, thus thread
+  // id in the log
+  // will be the same for all messages. So the question is next, how to inject
+  // correct thread id
   // to the qlogger.
   (qlogger.*log_func)(
-    "%s [%s][%d][%s] %s:%d %s: %s",
-    type_str.c_str(),
-    message.time.toString("yyyy:MM:dd hh:mm:ss.zzz").toStdString().c_str(),
-    message.thread_id,
-    message.logger.c_str(),
-    file_system::RetrieveFileNameFromPath(message.file_name).c_str(),
-    message.line_number,
-    message.function_name,
-    message.entry.c_str());
+      "%s [%s][%d][%s] %s:%d %s: %s",
+      type_str.c_str(),
+      message.time.toString("yyyy:MM:dd hh:mm:ss.zzz").toStdString().c_str(),
+      message.thread_id,
+      message.logger.c_str(),
+      file_system::RetrieveFileNameFromPath(message.file_name).c_str(),
+      message.line_number,
+      message.function_name,
+      message.entry.c_str());
 }
 
-} // namespace logger
+}  // namespace logger

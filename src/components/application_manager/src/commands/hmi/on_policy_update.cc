@@ -37,11 +37,9 @@ namespace application_manager {
 namespace commands {
 
 OnPolicyUpdate::OnPolicyUpdate(const MessageSharedPtr& message)
-  : NotificationFromHMI(message) {
-}
+    : NotificationFromHMI(message) {}
 
-OnPolicyUpdate::~OnPolicyUpdate() {
-}
+OnPolicyUpdate::~OnPolicyUpdate() {}
 
 void OnPolicyUpdate::Run() {
   LOG4CXX_AUTO_TRACE(logger_);

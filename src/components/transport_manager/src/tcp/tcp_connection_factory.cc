@@ -46,8 +46,7 @@ CREATE_LOGGERPTR_GLOBAL(logger_, "TransportManager")
 
 TcpConnectionFactory::TcpConnectionFactory(
     TransportAdapterController* controller)
-    : controller_(controller) {
-}
+    : controller_(controller) {}
 
 TransportAdapter::Error TcpConnectionFactory::Init() {
   return TransportAdapter::OK;
@@ -60,8 +59,8 @@ TransportAdapter::Error TcpConnectionFactory::CreateConnection(
       logger_,
       "DeviceUID: " << &device_uid << ", ApplicationHandle: " << &app_handle);
   TcpServerOiginatedSocketConnection* connection(
-      new TcpServerOiginatedSocketConnection(device_uid, app_handle,
-                                             controller_));
+      new TcpServerOiginatedSocketConnection(
+          device_uid, app_handle, controller_));
   controller_->ConnectionCreated(connection, device_uid, app_handle);
   if (connection->Start() == TransportAdapter::OK) {
     LOG4CXX_DEBUG(logger_, "TCP connection initialised");
@@ -72,15 +71,11 @@ TransportAdapter::Error TcpConnectionFactory::CreateConnection(
   }
 }
 
-void TcpConnectionFactory::Terminate() {
-}
+void TcpConnectionFactory::Terminate() {}
 
-bool TcpConnectionFactory::IsInitialised() const {
-  return true;
-}
+bool TcpConnectionFactory::IsInitialised() const { return true; }
 
-TcpConnectionFactory::~TcpConnectionFactory() {
-}
+TcpConnectionFactory::~TcpConnectionFactory() {}
 
 }  // namespace transport_adapter
 }  // namespace transport_manager

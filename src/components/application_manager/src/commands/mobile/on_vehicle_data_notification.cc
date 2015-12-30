@@ -42,12 +42,10 @@ namespace application_manager {
 namespace commands {
 
 OnVehicleDataNotification::OnVehicleDataNotification(
-  const MessageSharedPtr& message)
-  : CommandNotificationImpl(message) {
-}
+    const MessageSharedPtr& message)
+    : CommandNotificationImpl(message) {}
 
-OnVehicleDataNotification::~OnVehicleDataNotification() {
-}
+OnVehicleDataNotification::~OnVehicleDataNotification() {}
 
 void OnVehicleDataNotification::Run() {
   LOG4CXX_AUTO_TRACE(logger_);
@@ -58,10 +56,11 @@ void OnVehicleDataNotification::Run() {
   for (; vehicle_data.end() != it; ++it) {
     if (true == (*message_)[strings::msg_params].keyExists(it->first)) {
       const std::vector<utils::SharedPtr<Application>>& applications =
-            ApplicationManagerImpl::instance()->IviInfoUpdated(it->second,
-                (*message_)[strings::msg_params][it->first].asInt());
+          ApplicationManagerImpl::instance()->IviInfoUpdated(
+              it->second, (*message_)[strings::msg_params][it->first].asInt());
 
-      std::vector<utils::SharedPtr<Application>>::const_iterator it = applications.begin();
+      std::vector<utils::SharedPtr<Application>>::const_iterator it =
+          applications.begin();
       for (; applications.end() != it; ++it) {
         utils::SharedPtr<Application> app = *it;
         if (!app) {
@@ -69,10 +68,11 @@ void OnVehicleDataNotification::Run() {
           continue;
         }
 
-        LOG4CXX_INFO(
-          logger_,
-          "Send OnVehicleData PRNDL notification to " << app->name()
-          << " application id " << app->app_id());
+        LOG4CXX_INFO(logger_,
+                     "Send OnVehicleData PRNDL notification to "
+                         << app->name()
+                         << " application id "
+                         << app->app_id());
 
         (*message_)[strings::params][strings::connection_key] = app->app_id();
 

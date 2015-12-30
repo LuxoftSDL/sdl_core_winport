@@ -38,12 +38,10 @@ namespace application_manager {
 
 namespace commands {
 
-GetSystemInfoResponse::GetSystemInfoResponse(
-  const MessageSharedPtr& message): ResponseFromHMI(message) {
-}
+GetSystemInfoResponse::GetSystemInfoResponse(const MessageSharedPtr& message)
+    : ResponseFromHMI(message) {}
 
-GetSystemInfoResponse::~GetSystemInfoResponse() {
-}
+GetSystemInfoResponse::~GetSystemInfoResponse() {}
 
 void GetSystemInfoResponse::Run() {
   LOG4CXX_AUTO_TRACE(logger_);
@@ -56,8 +54,7 @@ void GetSystemInfoResponse::Run() {
   std::string language;
 
   if (hmi_apis::Common_Result::SUCCESS == code) {
-    ccpu_version =
-        (*message_)[strings::msg_params]["ccpu_version"].asString();
+    ccpu_version = (*message_)[strings::msg_params]["ccpu_version"].asString();
     wers_country_code =
         (*message_)[strings::msg_params]["wersCountryCode"].asString();
     uint32_t lang_code = (*message_)[strings::msg_params]["language"].asUInt();
@@ -65,7 +62,7 @@ void GetSystemInfoResponse::Run() {
         static_cast<hmi_apis::Common_Language::eType>(lang_code));
 
     HMICapabilities& hmi_capabilities =
-      ApplicationManagerImpl::instance()->hmi_capabilities();
+        ApplicationManagerImpl::instance()->hmi_capabilities();
     hmi_capabilities.set_ccpu_version(ccpu_version);
   } else {
     LOG4CXX_WARN(logger_, "GetSystemError returns an error code " << code);
@@ -73,17 +70,15 @@ void GetSystemInfoResponse::Run() {
     // We have to set preloaded flag as false in policy table on any response
     // of GetSystemInfo (SDLAQ-CRS-2365)
     const std::string empty_value;
-    policy::PolicyHandler::instance()->OnGetSystemInfo(empty_value,
-                                                       empty_value,
-                                                       empty_value);
+    policy::PolicyHandler::instance()->OnGetSystemInfo(
+        empty_value, empty_value, empty_value);
     return;
   }
 
   // We have to set preloaded flag as false in policy table on any response
   // of GetSystemInfo (SDLAQ-CRS-2365)
-  policy::PolicyHandler::instance()->OnGetSystemInfo(ccpu_version,
-                                                     wers_country_code,
-                                                     language);
+  policy::PolicyHandler::instance()->OnGetSystemInfo(
+      ccpu_version, wers_country_code, language);
 }
 
 }  // namespace commands

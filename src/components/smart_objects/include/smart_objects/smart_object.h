@@ -89,12 +89,14 @@ enum SmartType {
   SmartType_Array = 7,
 
   /**
-   * @brief Binary data value. Gives possibility for object to store binary data.
+   * @brief Binary data value. Gives possibility for object to store binary
+   *data.
    **/
   SmartType_Binary = 8,
 
   /**
-   * @brief Invalid value. Represents invalid object that cannot change his type.
+   * @brief Invalid value. Represents invalid object that cannot change his
+   *type.
    **/
   SmartType_Invalid = -1
 };
@@ -124,8 +126,10 @@ typedef std::vector<SmartObjectSPtr> SmartObjectList;
 /**
  * @brief Main SmartObject class
  *
- * This class act as Variant type from other languages and can be used as primitive type
- * like bool, int32_t, char, double, string and as complex type like array and map.
+ * This class act as Variant type from other languages and can be used as
+ *primitive type
+ * like bool, int32_t, char, double, string and as complex type like array and
+ *map.
  **/
 class SmartObject FINAL {
  public:
@@ -149,7 +153,7 @@ class SmartObject FINAL {
    *
    * @param pointer
    **/
-  template<typename UnknownType>
+  template <typename UnknownType>
   SmartObject(const UnknownType&);
 
   /**
@@ -673,7 +677,7 @@ class SmartObject FINAL {
    * @param  Other value to be compared with
    * @return bool Result of nequation
    **/
-  template<typename Type>
+  template <typename Type>
   bool operator!=(const Type& Other) const {
     return !(*this == Other);
   }
@@ -697,7 +701,8 @@ class SmartObject FINAL {
   /**
    * @brief Converts object to int32_t type
    *
-   * @return int32_t Converted value or invalid_int_value if conversion not possible
+   * @return int32_t Converted value or invalid_int_value if conversion not
+   *possible
    **/
   inline int64_t convert_int() const;
   /** @} */
@@ -719,7 +724,8 @@ class SmartObject FINAL {
   /**
    * @brief Converts object to char type
    *
-   * @return int32_t Converted value or invalid_char_value if conversion not possible
+   * @return int32_t Converted value or invalid_char_value if conversion not
+   *possible
    **/
   inline char convert_char() const;
   /** @} */
@@ -741,7 +747,8 @@ class SmartObject FINAL {
   /**
    * @brief Converts object to double type
    *
-   * @return int32_t Converted value or invalid_double_value if conversion not possible
+   * @return int32_t Converted value or invalid_double_value if conversion not
+   *possible
    **/
   inline double convert_double() const;
   /** @} */
@@ -763,7 +770,8 @@ class SmartObject FINAL {
   /**
    * @brief Converts object to bool type
    *
-   * @return int32_t Converted value or invalid_bool_value if conversion not possible
+   * @return int32_t Converted value or invalid_bool_value if conversion not
+   *possible
    **/
   inline bool convert_bool() const;
   /** @} */
@@ -795,7 +803,8 @@ class SmartObject FINAL {
   /**
    * @brief Converts object to string type
    *
-   * @return int32_t Converted value or invalid_string_value if conversion not possible
+   * @return int32_t Converted value or invalid_string_value if conversion not
+   *possible
    **/
   inline std::string convert_string() const;
   /** @} */
@@ -817,7 +826,8 @@ class SmartObject FINAL {
   /**
    * @brief Converts object to binary type
    *
-   * @return int32_t Converted value or invalid_binary_value if conversion not possible
+   * @return int32_t Converted value or invalid_binary_value if conversion not
+   *possible
    **/
   inline SmartBinary convert_binary() const;
 

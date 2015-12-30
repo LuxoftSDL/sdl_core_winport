@@ -46,7 +46,8 @@ class HMIMessageAdapter : public HMIMessageSender {
  public:
   /**
    * \brief Constructor
-   * \param handler Pointer to implementation of HMIMessageHandler abstract class
+   * \param handler Pointer to implementation of HMIMessageHandler abstract
+   * class
    * to notify it about receiving message or error on sending message.
    */
   explicit HMIMessageAdapter(HMIMessageHandler* handler);
@@ -61,13 +62,12 @@ class HMIMessageAdapter : public HMIMessageSender {
    * \brief Interface for subscriptions.
    * Each class implementing interface should use it according to
    * standarts of transport for which it is to be an adapter.
-   * For example, Adapter for MessageBroker will use it to subscribe to notifications
+   * For example, Adapter for MessageBroker will use it to subscribe to
+   * notifications
    * from HMI.
    */
   virtual void SubscribeTo() = 0;
-  inline virtual HMIMessageHandler* handler() const {
-    return handler_;
-  }
+  inline virtual HMIMessageHandler* handler() const { return handler_; }
 
  private:
   /**

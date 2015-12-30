@@ -90,7 +90,6 @@ class SQLDatabase {
 
  protected:
  private:
-
   QSqlDatabase db_;
   /**
    * Lock for guarding connection to database
@@ -124,7 +123,6 @@ class SQLDatabase {
    * @return true if query was executed successfully
    */
   inline bool Exec(const std::string& query);
-
 };
 
 }  // namespace dbms

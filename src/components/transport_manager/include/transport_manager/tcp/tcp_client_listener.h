@@ -63,7 +63,8 @@ class TcpClientListener : public ClientConnectionListener {
    * @param enable_keepalive If true enables TCP keepalive on accepted
    *connections
    */
-  TcpClientListener(TransportAdapterController* controller, uint16_t port,
+  TcpClientListener(TransportAdapterController* controller,
+                    uint16_t port,
                     bool enable_keepalive);
 
   /**
@@ -74,7 +75,8 @@ class TcpClientListener : public ClientConnectionListener {
   /**
    * @brief Run TCP client listener.
    *
-   * @return Error information about possible reason of starting TCP listener listener failure.
+   * @return Error information about possible reason of starting TCP listener
+   * listener failure.
    */
   virtual TransportAdapter::Error Init();
 
@@ -124,6 +126,7 @@ class TcpClientListener : public ClientConnectionListener {
     explicit ListeningThreadDelegate(TcpClientListener* parent);
     virtual void threadMain();
     void exitThreadMain();
+
    private:
     TcpClientListener* parent_;
   };

@@ -40,10 +40,13 @@
  * \class security_manager::CryptoManager
  * \brief Class factory, producing instances of \ref SSLContext
  *
- * \fn security_manager::SSLContext *security_manager::CryptoManager::CreateSSLContext()
+ * \fn security_manager::SSLContext
+ * *security_manager::CryptoManager::CreateSSLContext()
  * \brief Creates an instance of \ref SSLContext class
  *
-  * \fn void security_manager::CryptoManager::ReleaseSSLContext(security_manager::SSLContext *context)
+  * \fn void
+ * security_manager::CryptoManager::ReleaseSSLContext(security_manager::SSLContext
+ * *context)
  * \brief Frees \ref SSLContext instance
  */
 
@@ -51,9 +54,9 @@ namespace security_manager {
 class SSLContext;
 
 enum Mode { CLIENT, SERVER };
-enum Protocol { SSLv3, TLSv1, TLSv1_1, TLSv1_2};
+enum Protocol { SSLv3, TLSv1, TLSv1_1, TLSv1_2 };
 
-class CryptoManager: public policy::PolicyHandlerObserver{
+class CryptoManager : public policy::PolicyHandlerObserver {
  public:
   /**
    * @brief Init allows to initialize cryptomanager with certain values.
@@ -62,11 +65,14 @@ class CryptoManager: public policy::PolicyHandlerObserver{
    *
    * @param protocol set the appropriate number of ssl protocol to use.
    *
-   * @param cert_data the stringified certificate data (certificate in PKCS12 format).
+   * @param cert_data the stringified certificate data (certificate in PKCS12
+   * format).
    *
-   * @param ciphers_list the cipher list which will be used during secure connectin.
+   * @param ciphers_list the cipher list which will be used during secure
+   * connectin.
    *
-   * @param verify_peer allows to distinguish if we need to verify the peers certificates
+   * @param verify_peer allows to distinguish if we need to verify the peers
+   * certificates
    *
    * @param ca_certificate_file location of CA file.
    *
@@ -77,18 +83,18 @@ class CryptoManager: public policy::PolicyHandlerObserver{
    */
   virtual bool Init(Mode mode,
                     Protocol protocol,
-                    const std::string &cert_data,
-                    const std::string &ciphers_list,
+                    const std::string& cert_data,
+                    const std::string& ciphers_list,
                     const bool verify_peer,
-                    const std::string &ca_certificate_file,
+                    const std::string& ca_certificate_file,
                     const size_t hours_before_update) = 0;
-  virtual SSLContext *CreateSSLContext() = 0;
+  virtual SSLContext* CreateSSLContext() = 0;
   virtual bool OnCertificateUpdated(const std::string& data) = 0;
-  virtual void ReleaseSSLContext(SSLContext *context) = 0;
+  virtual void ReleaseSSLContext(SSLContext* context) = 0;
   virtual std::string LastError() const = 0;
 
   virtual bool IsCertificateUpdateRequired() const = 0;
-  virtual ~CryptoManager() { }
+  virtual ~CryptoManager() {}
 };
 
 }  // namespace security_manager

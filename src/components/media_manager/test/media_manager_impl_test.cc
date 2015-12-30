@@ -40,16 +40,14 @@ namespace media_manager_test {
 CREATE_LOGGERPTR_GLOBAL(logger_, "MediaManagerImplTest")
 
 class MediaManagerTest : public ::testing::Test {
-  protected:
-    virtual void SetUp();
-    virtual void TearDown();
+ protected:
+  virtual void SetUp();
+  virtual void TearDown();
 };
 
-void MediaManagerTest::SetUp() {
-}
+void MediaManagerTest::SetUp() {}
 
-void MediaManagerTest::TearDown() {
-}
+void MediaManagerTest::TearDown() {}
 
 }  //  namespace media_manager_test
 }  //  namespace components

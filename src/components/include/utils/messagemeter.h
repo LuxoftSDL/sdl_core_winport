@@ -94,7 +94,7 @@ class MessageMeter {
 
 template <class Id>
 MessageMeter<Id>::MessageMeter()
-  : time_range_() {
+    : time_range_() {
   time_range_.tv_sec = 1;
   time_range_.tv_usec = 0;
 }
@@ -105,8 +105,7 @@ size_t MessageMeter<Id>::TrackMessage(const Id& id) {
 }
 
 template <class Id>
-size_t MessageMeter<Id>::TrackMessages(const Id& id,
-                                  const size_t count) {
+size_t MessageMeter<Id>::TrackMessages(const Id& id, const size_t count) {
   Timings& timings = timing_map_[id];
   const TimevalStruct current_time = date_time::DateTime::getCurrentTime();
   for (size_t i = 0; i < count; ++i) {
@@ -119,18 +118,16 @@ size_t MessageMeter<Id>::TrackMessages(const Id& id,
 template <class Id>
 size_t MessageMeter<Id>::Frequency(const Id& id) {
   typename TimingMap::iterator it = timing_map_.find(id);
-  if(it == timing_map_.end()) {
+  if (it == timing_map_.end()) {
     return 0u;
   }
   Timings& timings = it->second;
   if (timings.empty()) {
     return 0u;
   }
-  const TimevalStruct actual_begin_time =
-      date_time::DateTime::Sub(date_time::DateTime::getCurrentTime(),
-                               time_range_);
-  timings.erase(timings.begin(),
-                timings.upper_bound(actual_begin_time));
+  const TimevalStruct actual_begin_time = date_time::DateTime::Sub(
+      date_time::DateTime::getCurrentTime(), time_range_);
+  timings.erase(timings.begin(), timings.upper_bound(actual_begin_time));
   return timings.size();
 }
 

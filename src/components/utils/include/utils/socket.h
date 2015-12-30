@@ -62,6 +62,7 @@ class TcpSocketConnection {
   bool Close();
 
   bool IsValid() const;
+
  private:
   void Swap(TcpSocketConnection& rhs);
 
@@ -88,6 +89,6 @@ class TcpServerSocket {
   Impl* impl_;
 };
 
-} // namespace utils
+}  // namespace utils
 
-#endif // SRC_COMPONENTS_UTILS_INCLUDE_UTILS_SOCKET_H_
+#endif  // SRC_COMPONENTS_UTILS_INCLUDE_UTILS_SOCKET_H_

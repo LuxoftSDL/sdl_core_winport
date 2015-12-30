@@ -45,17 +45,14 @@ namespace NsSmartDeviceLink {
 namespace NsSmartObjects {
 
 CObjectSchemaItem::SMember::SMember()
-  : mSchemaItem(CAlwaysFalseSchemaItem::create()),
-    mIsMandatory(true) {
-}
+    : mSchemaItem(CAlwaysFalseSchemaItem::create()), mIsMandatory(true) {}
 
 CObjectSchemaItem::SMember::SMember(const ISchemaItemPtr SchemaItem,
                                     const bool IsMandatory)
-  : mSchemaItem(SchemaItem),
-    mIsMandatory(IsMandatory) {
-}
+    : mSchemaItem(SchemaItem), mIsMandatory(IsMandatory) {}
 
-utils::SharedPtr<CObjectSchemaItem> CObjectSchemaItem::create(const Members& members) {
+utils::SharedPtr<CObjectSchemaItem> CObjectSchemaItem::create(
+    const Members& members) {
   return new CObjectSchemaItem(members);
 }
 
@@ -66,7 +63,8 @@ Errors::eType CObjectSchemaItem::validate(const SmartObject& object) {
 
   std::set<std::string> object_keys = object.enumerate();
 
-  for (Members::const_iterator it = mMembers.begin(); it != mMembers.end(); ++it) {
+  for (Members::const_iterator it = mMembers.begin(); it != mMembers.end();
+       ++it) {
     const std::string& key = it->first;
     const SMember& member = it->second;
 
@@ -92,14 +90,14 @@ void CObjectSchemaItem::applySchema(SmartObject& Object) {
     return;
   }
 
-  for (SmartMap::const_iterator it = Object.map_begin(); it != Object.map_end(); ) {
+  for (SmartMap::const_iterator it = Object.map_begin();
+       it != Object.map_end();) {
     const std::string& key = it->first;
     if (mMembers.end() == mMembers.find(key)
         // FIXME(EZamakhov): Remove illegal usage of filed in AM
-        && key.compare(connection_key) != 0
-        && key.compare(binary_data) != 0
-        && key.compare(app_id) != 0
-        ) {
+        &&
+        key.compare(connection_key) != 0 && key.compare(binary_data) != 0 &&
+        key.compare(app_id) != 0) {
       ++it;
       // FIXME(DK): remove fake params. There are error responses with params
       // Object.erase(key);
@@ -109,7 +107,8 @@ void CObjectSchemaItem::applySchema(SmartObject& Object) {
   }
 
   SmartObject default_value;
-  for (Members::const_iterator it = mMembers.begin(); it != mMembers.end(); ++it) {
+  for (Members::const_iterator it = mMembers.begin(); it != mMembers.end();
+       ++it) {
     const std::string& key = it->first;
     const SMember& member = it->second;
     if (!Object.keyExists(key)) {
@@ -138,7 +137,8 @@ void CObjectSchemaItem::unapplySchema(SmartObject& Object) {
     }
   }
 
-  for (Members::const_iterator it = mMembers.begin(); it != mMembers.end(); ++it) {
+  for (Members::const_iterator it = mMembers.begin(); it != mMembers.end();
+       ++it) {
     const std::string& key = it->first;
     const SMember& member = it->second;
     if (Object.keyExists(key)) {
@@ -147,27 +147,26 @@ void CObjectSchemaItem::unapplySchema(SmartObject& Object) {
   }
 }
 
-void CObjectSchemaItem::BuildObjectBySchema(
-  const SmartObject& pattern_object, SmartObject& result_object) {
+void CObjectSchemaItem::BuildObjectBySchema(const SmartObject& pattern_object,
+                                            SmartObject& result_object) {
   result_object = SmartObject(SmartType_Map);
   const bool pattern_is_map = SmartType_Map == pattern_object.getType();
 
-  for (Members::const_iterator it = mMembers.begin(); it != mMembers.end(); ++it) {
+  for (Members::const_iterator it = mMembers.begin(); it != mMembers.end();
+       ++it) {
     const std::string& key = it->first;
     const SMember& member = it->second;
     const bool pattern_exists = pattern_is_map && pattern_object.keyExists(key);
     member.mSchemaItem->BuildObjectBySchema(
-          pattern_exists ? pattern_object.getElement(key) : SmartObject(),
-          result_object[key]);
+        pattern_exists ? pattern_object.getElement(key) : SmartObject(),
+        result_object[key]);
   }
 }
 
-size_t CObjectSchemaItem::GetMemberSize() {
-  return mMembers.size();
-}
+size_t CObjectSchemaItem::GetMemberSize() { return mMembers.size(); }
 
 CObjectSchemaItem::CObjectSchemaItem(const Members& members)
-  : mMembers(members) {}
+    : mMembers(members) {}
 
 }  // namespace NsSmartObjects
 }  // namespace NsSmartDeviceLink

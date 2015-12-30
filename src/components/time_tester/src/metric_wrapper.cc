@@ -3,9 +3,7 @@
 
 namespace time_tester {
 
-  MetricWrapper::MetricWrapper():
-    resources(NULL) {
-  }
+MetricWrapper::MetricWrapper() : resources(NULL) {}
 
 bool MetricWrapper::grabResources() {
   Clear();
@@ -39,8 +37,5 @@ void MetricWrapper::Clear() {
   }
 }
 
-MetricWrapper::~MetricWrapper() {
-  Clear();
-}
-
+MetricWrapper::~MetricWrapper() { Clear(); }
 }

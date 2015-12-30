@@ -34,9 +34,9 @@
 #include "config_profile/profile.h"
 
 namespace {
-  bool is_logs_enabled = false;
-  logger::LogMessageLoopThread* message_loop_thread = NULL;
-} //namespace
+bool is_logs_enabled = false;
+logger::LogMessageLoopThread* message_loop_thread = NULL;
+}  // namespace
 
 namespace logger {
 
@@ -45,8 +45,7 @@ bool init_logger(const std::string& ini_file_name) {
   if (!message_loop_thread) {
     message_loop_thread = new LogMessageLoopThread();
   }
-  set_logs_enabled(
-    profile::Profile::instance()->logs_enabled());
+  set_logs_enabled(profile::Profile::instance()->logs_enabled());
   return true;
 }
 
@@ -58,13 +57,9 @@ void deinit_logger() {
   delete message_loop_thread;
 }
 
-bool logs_enabled() {
-  return is_logs_enabled;
-}
+bool logs_enabled() { return is_logs_enabled; }
 
-void set_logs_enabled(bool state) {
-  is_logs_enabled = state;
-}
+void set_logs_enabled(bool state) { is_logs_enabled = state; }
 
 bool push_log(log4cxx::LoggerPtr logger,
               log4cxx::LevelPtr level,
@@ -78,9 +73,9 @@ bool push_log(log4cxx::LoggerPtr logger,
   if (!logger->isEnabledFor(level)) {
     return false;
   }
-  LogMessage message = { logger, level, entry, time, location, thread_name };
+  LogMessage message = {logger, level, entry, time, location, thread_name};
   message_loop_thread->PostMessage(message);
   return true;
 }
 
-} // namespace logger
+}  // namespace logger

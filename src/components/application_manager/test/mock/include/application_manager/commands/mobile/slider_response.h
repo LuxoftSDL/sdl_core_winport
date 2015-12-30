@@ -1,1 +1,2 @@
-../../../../../../include/application_manager/commands/mobile/slider_response.h
+../../../../../../ include / application_manager / commands / mobile /
+    slider_response.h

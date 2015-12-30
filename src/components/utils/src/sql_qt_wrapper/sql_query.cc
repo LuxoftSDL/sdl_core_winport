@@ -55,26 +55,21 @@ namespace {
 
 void PreparePullValue(QSqlQuery& query) {
   if (query.isActive() && !query.isValid()) {
-      query.next();
+    query.next();
   }
 }
 
-} // namespace
+}  // namespace
 
-SQLQuery::SQLQuery(SQLDatabase* db)
-  : query_(static_cast<QSqlDatabase>(*db)) {
-}
+SQLQuery::SQLQuery(SQLDatabase* db) : query_(static_cast<QSqlDatabase>(*db)) {}
 
-SQLQuery::~SQLQuery() {
-}
+SQLQuery::~SQLQuery() {}
 
 bool SQLQuery::Prepare(const std::string& query) {
   return query_.prepare(query.c_str());
 }
 
-bool SQLQuery::Exec() {
-  return query_.exec();
-}
+bool SQLQuery::Exec() { return query_.exec(); }
 
 bool SQLQuery::Next() {
   // According to the Qt documentation the `next()` without
@@ -87,13 +82,9 @@ bool SQLQuery::Next() {
   return query_.next();
 }
 
-bool SQLQuery::Reset() {
-  return true;
-}
+bool SQLQuery::Reset() { return true; }
 
-void SQLQuery::Finalize() {
-  query_.finish();
-}
+void SQLQuery::Finalize() { query_.finish(); }
 
 bool SQLQuery::Exec(const std::string& query) {
   QString qstr = QString::fromStdString(query);
@@ -101,8 +92,7 @@ bool SQLQuery::Exec(const std::string& query) {
   // in one string, so need to split queries and execute them one by one
   QStringList list = qstr.split(";", QString::SkipEmptyParts);
   foreach (QString q, list) {
-    if (!query_.exec(q))
-      return false;
+    if (!query_.exec(q)) return false;
   }
   return true;
 }
@@ -143,13 +133,9 @@ std::string SQLQuery::GetString(int pos) {
   return val.toString().toStdString();
 }
 
-std::string SQLQuery::query() const {
-  return query_.lastQuery().toStdString();
-}
+std::string SQLQuery::query() const { return query_.lastQuery().toStdString(); }
 
-bool SQLQuery::IsNull(int pos) const {
-  return query_.boundValue(pos).isNull();
-}
+bool SQLQuery::IsNull(int pos) const { return query_.boundValue(pos).isNull(); }
 
 void SQLQuery::Bind(int pos, int value) {
   query_.bindValue(pos, QVariant::fromValue(value));
@@ -175,9 +161,7 @@ void SQLQuery::Bind(int pos) {
   query_.bindValue(pos, QVariant(QVariant::String));
 }
 
-SQLError SQLQuery::LastError() const {
-  return SQLError(query_.lastError());
-}
+SQLError SQLQuery::LastError() const { return SQLError(query_.lastError()); }
 
 int64_t SQLQuery::LastInsertId() const {
   const QVariant val = query_.lastInsertId();

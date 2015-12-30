@@ -43,33 +43,21 @@ const int32_t CommandImpl::mobile_protocol_type_ = 0;
 const int32_t CommandImpl::protocol_version_ = 3;
 
 CommandImpl::CommandImpl(const MessageSharedPtr& message)
-    : message_(message),
-      default_timeout_(profile::Profile::instance()->default_timeout()),
-      allowed_to_terminate_(true) {
-}
+    : message_(message)
+    , default_timeout_(profile::Profile::instance()->default_timeout())
+    , allowed_to_terminate_(true) {}
 
-CommandImpl::~CommandImpl() {
-  CleanUp();
-}
+CommandImpl::~CommandImpl() { CleanUp(); }
 
-bool CommandImpl::CheckPermissions(){
-  return true;
-}
+bool CommandImpl::CheckPermissions() { return true; }
 
-bool CommandImpl::Init() {
-  return true;
-}
+bool CommandImpl::Init() { return true; }
 
-bool CommandImpl::CleanUp() {
-  return true;
-}
+bool CommandImpl::CleanUp() { return true; }
 
-void CommandImpl::Run() {
-}
+void CommandImpl::Run() {}
 
-uint32_t CommandImpl::default_timeout() const {
-  return default_timeout_;
-}
+uint32_t CommandImpl::default_timeout() const { return default_timeout_; }
 
 uint32_t CommandImpl::correlation_id() const {
   return (*message_)[strings::params][strings::correlation_id].asUInt();
@@ -83,9 +71,7 @@ uint32_t CommandImpl::connection_key() const {
   return (*message_)[strings::params][strings::connection_key].asUInt();
 }
 
-void CommandImpl::onTimeOut() {
-
-}
+void CommandImpl::onTimeOut() {}
 
 }  // namespace commands
 }  // namespace application_manager

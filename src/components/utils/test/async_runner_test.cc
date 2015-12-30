@@ -52,16 +52,12 @@ uint32_t check_value = 0;
 // ThreadDelegate successor
 class TestThreadDelegate : public ThreadDelegate {
  public:
-  void threadMain() {
-    ++check_value;
-  }
+  void threadMain() { ++check_value; }
 };
 
 class AsyncRunnerTest : public ::testing::Test {
  public:
-  AsyncRunnerTest()
-      : kDelegatesNum_(1),
-        asr_pt_(NULL) {
+  AsyncRunnerTest() : kDelegatesNum_(1), asr_pt_(NULL) {
     CreateAsyncRunner();
     CreateThreadsArray();
   }
@@ -75,8 +71,8 @@ class AsyncRunnerTest : public ::testing::Test {
   Lock test_lock_;
   uint32_t kDelegatesNum_;
   ConditionalVariable cond_var_;
-  TestThreadDelegate **delegates_;
-  AsyncRunner *asr_pt_;
+  TestThreadDelegate** delegates_;
+  AsyncRunner* asr_pt_;
 
   void CreateThreadsArray() {
     srand(std::time(NULL));
@@ -84,16 +80,10 @@ class AsyncRunnerTest : public ::testing::Test {
     delegates_ = new TestThreadDelegate*[kDelegatesNum_];
   }
 
-  void DeleteThreadsArray() {
-    delete[] delegates_;
-  }
+  void DeleteThreadsArray() { delete[] delegates_; }
 
-  void CreateAsyncRunner() {
-    asr_pt_ = new AsyncRunner("test");
-  }
-  void DeleteAsyncRunner() {
-    delete asr_pt_;
-  }
+  void CreateAsyncRunner() { asr_pt_ = new AsyncRunner("test"); }
+  void DeleteAsyncRunner() { delete asr_pt_; }
 };
 
 TEST_F(AsyncRunnerTest, ASyncRunManyDelegates_ExpectSuccessfulAllDelegatesRun) {
@@ -137,4 +127,3 @@ TEST_F(AsyncRunnerTest, RunManyDelegatesAndStop_ExpectSuccessfulDelegatesStop) {
 }  // namespace utils
 }  // namespace components
 }  // namespace test
-

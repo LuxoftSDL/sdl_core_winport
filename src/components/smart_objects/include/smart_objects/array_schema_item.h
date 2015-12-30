@@ -57,8 +57,10 @@ class CArraySchemaItem : public ISchemaItem {
    **/
   static utils::SharedPtr<CArraySchemaItem> create(
       const ISchemaItemPtr ElementSchemaItem = CAlwaysTrueSchemaItem::create(),
-      const TSchemaItemParameter<size_t>& MinSize = TSchemaItemParameter<size_t>(),
-      const TSchemaItemParameter<size_t>& MaxSize = TSchemaItemParameter<size_t>());
+      const TSchemaItemParameter<size_t>& MinSize =
+          TSchemaItemParameter<size_t>(),
+      const TSchemaItemParameter<size_t>& MaxSize =
+          TSchemaItemParameter<size_t>());
 
   /**
    * @brief Validate smart object.

@@ -42,41 +42,38 @@
 
 namespace policy {
 
-  class StatisticsDelegate: public threads::ThreadDelegate {
-      enum StatisticType{
-        INCREMENT_GLOBAL,
-        INCREMENT_APP,
-        SET,
-        ADD
-      };
-    public:
-      explicit StatisticsDelegate(usage_statistics::GlobalCounterId type);
+class StatisticsDelegate : public threads::ThreadDelegate {
+  enum StatisticType { INCREMENT_GLOBAL, INCREMENT_APP, SET, ADD };
 
-      StatisticsDelegate(const std::string& app_id,
-                        usage_statistics::AppCounterId type);
+ public:
+  explicit StatisticsDelegate(usage_statistics::GlobalCounterId type);
 
-      StatisticsDelegate(const std::string& app_id,
-                        usage_statistics::AppInfoId type,
-                        const std::string& value);
+  StatisticsDelegate(const std::string& app_id,
+                     usage_statistics::AppCounterId type);
 
-      StatisticsDelegate(const std::string& app_id,
-                        usage_statistics::AppStopwatchId type,
-                        int32_t timespan_seconds);
+  StatisticsDelegate(const std::string& app_id,
+                     usage_statistics::AppInfoId type,
+                     const std::string& value);
 
-      virtual void threadMain();
+  StatisticsDelegate(const std::string& app_id,
+                     usage_statistics::AppStopwatchId type,
+                     int32_t timespan_seconds);
 
-      virtual void exitThreadMain();
-    private:
-      StatisticType type_;
-      usage_statistics::GlobalCounterId global_counter_;
-      usage_statistics::AppCounterId app_counter_;
-      usage_statistics::AppInfoId app_info_;
-      usage_statistics::AppStopwatchId stop_watch_;
+  virtual void threadMain();
 
-      std::string app_id_;
-      std::string value_;
-      int32_t timespan_seconds_;
-  };
-} // namespace policy
+  virtual void exitThreadMain();
 
-#endif // SRC_COMPONENTS_APPLICATION_MANAGER_INCLUDE_APPLICATION_MANAGER_DELEGATES_STATISTICS_DELEGATE_H_
+ private:
+  StatisticType type_;
+  usage_statistics::GlobalCounterId global_counter_;
+  usage_statistics::AppCounterId app_counter_;
+  usage_statistics::AppInfoId app_info_;
+  usage_statistics::AppStopwatchId stop_watch_;
+
+  std::string app_id_;
+  std::string value_;
+  int32_t timespan_seconds_;
+};
+}  // namespace policy
+
+#endif  // SRC_COMPONENTS_APPLICATION_MANAGER_INCLUDE_APPLICATION_MANAGER_DELEGATES_STATISTICS_DELEGATE_H_

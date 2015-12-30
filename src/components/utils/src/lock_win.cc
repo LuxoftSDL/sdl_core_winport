@@ -45,18 +45,18 @@ CREATE_LOGGERPTR_GLOBAL(logger_, "Utils")
 
 Lock::Lock()
 #ifndef NDEBUG
-    : lock_taken_(0),
-      is_mutex_recursive_(false)
-#endif // NDEBUG
+    : lock_taken_(0)
+    , is_mutex_recursive_(false)
+#endif  // NDEBUG
 {
   Init(false);
 }
 
 Lock::Lock(bool is_recursive)
 #ifndef NDEBUG
-    : lock_taken_(0),
-      is_mutex_recursive_(is_recursive)
-#endif // NDEBUG
+    : lock_taken_(0)
+    , is_mutex_recursive_(is_recursive)
+#endif  // NDEBUG
 {
   Init(is_recursive);
 }
@@ -107,10 +107,8 @@ void Lock::AssertTakenAndMarkFree() {
 }
 #endif
 
-void Lock::Init(bool is_recursive) {
-  InitializeCriticalSection(&mutex_);
-}
+void Lock::Init(bool is_recursive) { InitializeCriticalSection(&mutex_); }
 
 }  // namespace sync_primitives
 
-#endif // OS_WINDOWS
+#endif  // OS_WINDOWS

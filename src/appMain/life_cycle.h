@@ -73,51 +73,51 @@ class SecurityManagerImpl;
 
 namespace main_namespace {
 class LifeCycle : public utils::Singleton<LifeCycle> {
-  public:
-    bool StartComponents();
-    /**
-    * Initialize MessageBroker component
-    * @return true if success otherwise false.
-    */
-    bool InitMessageSystem();
-    /**
-     * \brief Main loop
-     */
-    void Run();
-    void StopComponents();
+ public:
+  bool StartComponents();
+  /**
+  * Initialize MessageBroker component
+  * @return true if success otherwise false.
+  */
+  bool InitMessageSystem();
+  /**
+   * \brief Main loop
+   */
+  void Run();
+  void StopComponents();
 
-  private:
-    LifeCycle();
-    transport_manager::TransportManager* transport_manager_;
-    protocol_handler::ProtocolHandlerImpl* protocol_handler_;
-    connection_handler::ConnectionHandlerImpl* connection_handler_;
-    application_manager::ApplicationManagerImpl* app_manager_;
+ private:
+  LifeCycle();
+  transport_manager::TransportManager* transport_manager_;
+  protocol_handler::ProtocolHandlerImpl* protocol_handler_;
+  connection_handler::ConnectionHandlerImpl* connection_handler_;
+  application_manager::ApplicationManagerImpl* app_manager_;
 #ifdef ENABLE_SECURITY
-    security_manager::CryptoManager* crypto_manager_;
-    security_manager::SecurityManager* security_manager_;
+  security_manager::CryptoManager* crypto_manager_;
+  security_manager::SecurityManager* security_manager_;
 #endif  // ENABLE_SECURITY
-    hmi_message_handler::HMIMessageHandlerImpl* hmi_handler_;
-    hmi_message_handler::HMIMessageAdapter* hmi_message_adapter_;
-    media_manager::MediaManagerImpl* media_manager_;
+  hmi_message_handler::HMIMessageHandlerImpl* hmi_handler_;
+  hmi_message_handler::HMIMessageAdapter* hmi_message_adapter_;
+  media_manager::MediaManagerImpl* media_manager_;
 #ifdef TIME_TESTER
-    time_tester::TimeManager* time_tester_;
+  time_tester::TimeManager* time_tester_;
 #endif  // TIME_TESTER
 #ifdef DBUS_HMIADAPTER
-    hmi_message_handler::DBusMessageAdapter* dbus_adapter_;
-    System::Thread* dbus_adapter_thread_;
+  hmi_message_handler::DBusMessageAdapter* dbus_adapter_;
+  System::Thread* dbus_adapter_thread_;
 #endif  // DBUS_HMIADAPTER
 
 #ifdef MESSAGEBROKER_HMIADAPTER
-    hmi_message_handler::MessageBrokerAdapter* mb_adapter_;
-    NsMessageBroker::CMessageBroker* message_broker_;
-    NsMessageBroker::TcpServer* message_broker_server_;
-    System::Thread* mb_thread_;
-    System::Thread* mb_server_thread_;
-    System::Thread* mb_adapter_thread_;
+  hmi_message_handler::MessageBrokerAdapter* mb_adapter_;
+  NsMessageBroker::CMessageBroker* message_broker_;
+  NsMessageBroker::TcpServer* message_broker_server_;
+  System::Thread* mb_thread_;
+  System::Thread* mb_server_thread_;
+  System::Thread* mb_adapter_thread_;
 #endif  // MESSAGEBROKER_HMIADAPTER
 
-    FRIEND_BASE_SINGLETON_CLASS(LifeCycle);
-    DISALLOW_COPY_AND_ASSIGN(LifeCycle);
+  FRIEND_BASE_SINGLETON_CLASS(LifeCycle);
+  DISALLOW_COPY_AND_ASSIGN(LifeCycle);
 };
 
 }  //  namespace main_namespace

@@ -39,9 +39,7 @@ namespace resumption {
 
 CREATE_LOGGERPTR_GLOBAL(logger_, "ResumptionData")
 
-ResumptionData::ResumptionData():
-  resumption_lock_(true) {
-}
+ResumptionData::ResumptionData() : resumption_lock_(true) {}
 
 bool ResumptionData::Init() {
   LOG4CXX_AUTO_TRACE(logger_);
@@ -73,8 +71,8 @@ smart_objects::SmartObject ResumptionData::GetApplicationSubMenus(
   LOG4CXX_AUTO_TRACE(logger_);
 
   DCHECK(application.get());
-  smart_objects::SmartObject submenues_array = smart_objects::SmartObject(
-      smart_objects::SmartType_Array);
+  smart_objects::SmartObject submenues_array =
+      smart_objects::SmartObject(smart_objects::SmartType_Array);
 
   if (!application) {
     LOG4CXX_ERROR(logger_, "NULL Pointer App");
@@ -83,14 +81,14 @@ smart_objects::SmartObject ResumptionData::GetApplicationSubMenus(
   const DataAccessor<SubMenuMap> accessor = application->sub_menu_map();
   const SubMenuMap& sub_menus = accessor.GetData();
   SubMenuMap::const_iterator it = sub_menus.begin();
-  for (int i = 0;it != sub_menus.end(); ++it, ++i) {
+  for (int i = 0; it != sub_menus.end(); ++it, ++i) {
     submenues_array[i] = *(it->second);
   }
   return submenues_array;
 }
 
 smart_objects::SmartObject ResumptionData::GetApplicationInteractionChoiseSets(
-      app_mngr::ApplicationConstSharedPtr application) const {
+    app_mngr::ApplicationConstSharedPtr application) const {
   using namespace app_mngr;
   LOG4CXX_AUTO_TRACE(logger_);
 
@@ -98,9 +96,9 @@ smart_objects::SmartObject ResumptionData::GetApplicationInteractionChoiseSets(
   smart_objects::SmartObject interaction_choice_set_array =
       smart_objects::SmartObject(smart_objects::SmartType_Array);
   if (!application) {
-     LOG4CXX_ERROR(logger_, "NULL Pointer App");
-     return interaction_choice_set_array;
-   }
+    LOG4CXX_ERROR(logger_, "NULL Pointer App");
+    return interaction_choice_set_array;
+  }
   const DataAccessor<ChoiceSetMap> accessor = application->choice_set_map();
   const ChoiceSetMap& choices = accessor.GetData();
   ChoiceSetMap::const_iterator it = choices.begin();
@@ -111,7 +109,7 @@ smart_objects::SmartObject ResumptionData::GetApplicationInteractionChoiseSets(
 }
 
 smart_objects::SmartObject ResumptionData::GetApplicationGlobalProperties(
-      app_mngr::ApplicationConstSharedPtr application) const {
+    app_mngr::ApplicationConstSharedPtr application) const {
   using namespace app_mngr;
   LOG4CXX_AUTO_TRACE(logger_);
 
@@ -136,14 +134,14 @@ smart_objects::SmartObject ResumptionData::GetApplicationGlobalProperties(
   global_properties[strings::keyboard_properties] =
       PointerToSmartObj(application->keyboard_props());
   global_properties[strings::menu_title] =
-        PointerToSmartObj(application->menu_title());
+      PointerToSmartObj(application->menu_title());
   global_properties[strings::menu_icon] =
-          PointerToSmartObj(application->menu_icon());
+      PointerToSmartObj(application->menu_icon());
   return global_properties;
 }
 
 smart_objects::SmartObject ResumptionData::GetApplicationSubscriptions(
-        app_mngr::ApplicationConstSharedPtr application) const {
+    app_mngr::ApplicationConstSharedPtr application) const {
   using namespace app_mngr;
   LOG4CXX_AUTO_TRACE(logger_);
   DCHECK(application.get());
@@ -161,8 +159,10 @@ smart_objects::SmartObject ResumptionData::GetApplicationSubscriptions(
   const ButtonSubscriptions& button_subscriptions = button_accessor.GetData();
 
   LOG4CXX_DEBUG(logger_, "SubscribedButtons:" << button_subscriptions.size());
-  Append(button_subscriptions.begin(), button_subscriptions.end(),
-         strings::application_buttons, subscriptions);
+  Append(button_subscriptions.begin(),
+         button_subscriptions.end(),
+         strings::application_buttons,
+         subscriptions);
 
   DataAccessor<VehicleInfoSubscriptions> vi_accessor =
       application->SubscribedIVI();
@@ -170,8 +170,10 @@ smart_objects::SmartObject ResumptionData::GetApplicationSubscriptions(
   const VehicleInfoSubscriptions& vi_subscription = vi_accessor.GetData();
 
   LOG4CXX_DEBUG(logger_, "SubscribedIVI:" << vi_subscription.size());
-  Append(vi_subscription.begin(), vi_subscription.end(),
-         strings::application_vehicle_info, subscriptions);
+  Append(vi_subscription.begin(),
+         vi_subscription.end(),
+         strings::application_vehicle_info,
+         subscriptions);
   return subscriptions;
 }
 
@@ -180,8 +182,7 @@ smart_objects::SmartObject ResumptionData::GetApplicationFiles(
   using namespace app_mngr;
   LOG4CXX_AUTO_TRACE(logger_);
   DCHECK(application.get());
-  LOG4CXX_TRACE(logger_, "ENTER app_id:"
-                << application->app_id());
+  LOG4CXX_TRACE(logger_, "ENTER app_id:" << application->app_id());
 
   smart_objects::SmartObject files =
       smart_objects::SmartObject(smart_objects::SmartType_Array);
@@ -192,8 +193,9 @@ smart_objects::SmartObject ResumptionData::GetApplicationFiles(
 
   const AppFilesMap& app_files = application->getAppFiles();
   int i = 0;
-  for(AppFilesMap::const_iterator file_it = app_files.begin();
-      file_it != app_files.end(); file_it++) {
+  for (AppFilesMap::const_iterator file_it = app_files.begin();
+       file_it != app_files.end();
+       file_it++) {
     const AppFile& file = file_it->second;
     if (file.is_persistent) {
       smart_objects::SmartObject file_data =

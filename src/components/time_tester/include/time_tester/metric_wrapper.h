@@ -41,19 +41,20 @@ namespace time_tester {
 
 class MetricWrapper {
   utils::ResourseUsage* resources;
-  public:
-    MetricWrapper();
-    /*
-     * @brief get current cpu and memory info and store it as member
-     */
-    bool grabResources();
-    virtual std::string GetStyledString();
-    virtual ~MetricWrapper();
-  protected:
-    virtual Json::Value GetJsonMetric();
-    void Clear();
-};
 
+ public:
+  MetricWrapper();
+  /*
+   * @brief get current cpu and memory info and store it as member
+   */
+  bool grabResources();
+  virtual std::string GetStyledString();
+  virtual ~MetricWrapper();
+
+ protected:
+  virtual Json::Value GetJsonMetric();
+  void Clear();
+};
 
 }  // namespace time_tester
 #endif  // SRC_COMPONENTS_TIME_TESTER_INCLUDE_TIME_TESTER_MECTRIC_H_

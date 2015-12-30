@@ -1,1 +1,2 @@
-../../../../../../include/application_manager/commands/mobile/end_audio_pass_thru_response.h
+../../../../../../ include / application_manager / commands / mobile /
+    end_audio_pass_thru_response.h

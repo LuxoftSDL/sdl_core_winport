@@ -32,7 +32,6 @@
 #ifndef SRC_COMPONENTS_POLICY_TEST_POLICY_INCLUDE_MOCK_POLICY_LISTENER_H_
 #define SRC_COMPONENTS_POLICY_TEST_POLICY_INCLUDE_MOCK_POLICY_LISTENER_H_
 
-
 #include <string>
 
 #include "gmock/gmock.h"
@@ -56,30 +55,22 @@ class MockPolicyListener : public PolicyListener {
                     const Permissions& permissions));
   MOCK_METHOD1(OnPendingPermissionChange,
                void(const std::string& policy_app_id));
-  MOCK_METHOD1(OnUpdateStatusChanged,
-               void(const std::string& status));
+  MOCK_METHOD1(OnUpdateStatusChanged, void(const std::string& status));
   MOCK_METHOD1(OnCurrentDeviceIdUpdateRequired,
                std::string(const std::string& policy_app_id));
-  MOCK_METHOD0(OnSystemInfoUpdateRequired,
-               void());
-  MOCK_METHOD1(GetAppName,
-               std::string(const std::string& policy_app_id));
-  MOCK_METHOD0(OnUserRequestedUpdateCheckRequired,
-               void());
+  MOCK_METHOD0(OnSystemInfoUpdateRequired, void());
+  MOCK_METHOD1(GetAppName, std::string(const std::string& policy_app_id));
+  MOCK_METHOD0(OnUserRequestedUpdateCheckRequired, void());
   MOCK_METHOD2(OnDeviceConsentChanged,
-               void(const std::string& device_id,
-                    bool is_allowed));
-  MOCK_METHOD1(OnUpdateHMIAppType,
-               void(std::map<std::string, StringArray>));
-  MOCK_METHOD1(GetAvailableApps,
-               void(std::queue<std::string>&));
+               void(const std::string& device_id, bool is_allowed));
+  MOCK_METHOD1(OnUpdateHMIAppType, void(std::map<std::string, StringArray>));
+  MOCK_METHOD1(GetAvailableApps, void(std::queue<std::string>&));
   MOCK_METHOD3(OnSnapshotCreated,
                void(const BinaryMessage& pt_string,
                     const std::vector<int>& retry_seconds,
                     int timeout_exceed));
-  MOCK_METHOD0(CanUpdate,
-               bool());
-  MOCK_METHOD1(OnCertificateUpdated, void (const std::string&));
+  MOCK_METHOD0(CanUpdate, bool());
+  MOCK_METHOD1(OnCertificateUpdated, void(const std::string&));
 };
 
 }  // namespace policy

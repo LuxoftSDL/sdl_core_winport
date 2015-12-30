@@ -41,7 +41,6 @@ namespace commands {
 
 namespace hmi {
 
-
 /**
  * @brief OnPhoneCallNotification command class
  **/

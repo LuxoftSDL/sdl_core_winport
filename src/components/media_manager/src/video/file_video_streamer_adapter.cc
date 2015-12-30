@@ -36,10 +36,8 @@
 namespace media_manager {
 
 FileVideoStreamerAdapter::FileVideoStreamerAdapter()
-  : FileStreamerAdapter(profile::Profile::instance()->video_stream_file()) {
-}
+    : FileStreamerAdapter(profile::Profile::instance()->video_stream_file()) {}
 
-FileVideoStreamerAdapter::~FileVideoStreamerAdapter() {
-}
+FileVideoStreamerAdapter::~FileVideoStreamerAdapter() {}
 
 }  // namespace media_manager

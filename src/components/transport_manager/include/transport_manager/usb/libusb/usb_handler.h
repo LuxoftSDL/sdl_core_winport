@@ -108,7 +108,8 @@ class UsbHandler {
                                          void* data);
   friend int LIBUSB_CALL LeftCallback(libusb_context* context,
                                       libusb_device* device,
-                                      libusb_hotplug_event event, void* data);
+                                      libusb_hotplug_event event,
+                                      void* data);
 };
 
 }  // namespace transport_adapter

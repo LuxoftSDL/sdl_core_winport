@@ -49,27 +49,32 @@ QFile* log_file_ptr = NULL;
 
 logger::LogMessageLoopThread* message_loop_thread = NULL;
 
-void log_output_handler(QtMsgType, const QMessageLogContext&, const QString& msg) {
+void log_output_handler(QtMsgType,
+                        const QMessageLogContext&,
+                        const QString& msg) {
   // Log to console
   fprintf(stdout, "%s\n", msg.toLocal8Bit().constData());
   // Log to file
   if (log_file_ptr) {
-   QTextStream log_stream(log_file_ptr);
-   log_stream << msg.toLocal8Bit().constData() << endl;
+    QTextStream log_stream(log_file_ptr);
+    log_stream << msg.toLocal8Bit().constData() << endl;
   }
 }
 
-} // namespace
+}  // namespace
 
 bool logger::init_logger(const std::string&) {
   // TODO: (malirod) Use RAII to manage with log files
   static QFile log_file(kLogFileName);
 
-  if (log_file.open(QIODevice::WriteOnly | QIODevice::Append | QIODevice::Text)) {
+  if (log_file.open(QIODevice::WriteOnly | QIODevice::Append |
+                    QIODevice::Text)) {
     DCHECK(!log_file_ptr);
     log_file_ptr = &log_file;
   } else {
-    fprintf(stderr, "Logging initialization has failed. Failed to open log file for writing.\n");
+    fprintf(stderr,
+            "Logging initialization has failed. Failed to open log file for "
+            "writing.\n");
   }
 
   // Set qt custom log handler
@@ -78,8 +83,7 @@ bool logger::init_logger(const std::string&) {
   if (!message_loop_thread) {
     message_loop_thread = new LogMessageLoopThread();
   }
-  set_logs_enabled(
-    profile::Profile::instance()->logs_enabled());
+  set_logs_enabled(profile::Profile::instance()->logs_enabled());
   return true;
 }
 
@@ -89,7 +93,7 @@ void logger::deinit_logger() {
 
   DCHECK(log_file_ptr);
   if (log_file_ptr) {
-    log_file_ptr ->close();
+    log_file_ptr->close();
     log_file_ptr = NULL;
   }
 
@@ -98,34 +102,28 @@ void logger::deinit_logger() {
   message_loop_thread = NULL;
 }
 
-bool logger::logs_enabled() {
-  return is_logs_enabled;
-}
+bool logger::logs_enabled() { return is_logs_enabled; }
 
-void logger::set_logs_enabled(bool state) {
-  is_logs_enabled = state;
-}
+void logger::set_logs_enabled(bool state) { is_logs_enabled = state; }
 
-bool logger::push_log(
-  const std::string& logger,
-  const LogLevel level,
-  const std::string& entry,
-  unsigned long line_number,
-  const char* file_name,
-  const char* function_name) {
+bool logger::push_log(const std::string& logger,
+                      const LogLevel level,
+                      const std::string& entry,
+                      unsigned long line_number,
+                      const char* file_name,
+                      const char* function_name) {
   if (!logs_enabled()) {
     return false;
   }
 
-  LogMessage message = {
-    logger,
-    level,
-    QDateTime::currentDateTime(),
-    entry,
-    line_number,
-    file_name,
-    function_name,
-    reinterpret_cast<uint32_t>(QThread::currentThreadId()) };
+  LogMessage message = {logger,
+                        level,
+                        QDateTime::currentDateTime(),
+                        entry,
+                        line_number,
+                        file_name,
+                        function_name,
+                        reinterpret_cast<uint32_t>(QThread::currentThreadId())};
 
   message_loop_thread->PostMessage(message);
 

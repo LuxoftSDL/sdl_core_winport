@@ -37,11 +37,9 @@ namespace application_manager {
 namespace commands {
 
 OnPlayToneNotification::OnPlayToneNotification(const MessageSharedPtr& message)
-    : NotificationToHMI(message) {
-}
+    : NotificationToHMI(message) {}
 
-OnPlayToneNotification::~OnPlayToneNotification() {
-}
+OnPlayToneNotification::~OnPlayToneNotification() {}
 
 void OnPlayToneNotification::Run() {
   LOG4CXX_AUTO_TRACE(logger_);
@@ -52,4 +50,3 @@ void OnPlayToneNotification::Run() {
 }  // namespace commands
 
 }  // namespace application_manager
-

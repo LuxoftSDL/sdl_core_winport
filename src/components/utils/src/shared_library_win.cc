@@ -39,14 +39,11 @@ namespace {
 const std::string kLibPrefix = "";
 const std::string kLibSuffix = ".dll";
 
-} // namespace
+}  // namespace
 
-utils::SharedLibrary::SharedLibrary()
-  : handle_(NULL) {
-}
+utils::SharedLibrary::SharedLibrary() : handle_(NULL) {}
 
-utils::SharedLibrary::SharedLibrary(const char* library_name)
-  : handle_(NULL) {
+utils::SharedLibrary::SharedLibrary(const char* library_name) : handle_(NULL) {
   Load(library_name);
 }
 
@@ -61,19 +58,17 @@ bool utils::SharedLibrary::Load(const char* library_name) {
 
 void utils::SharedLibrary::Unload() {
   if (handle_) {
-    FreeLibrary((HMODULE) handle_);
+    FreeLibrary((HMODULE)handle_);
     handle_ = NULL;
   }
 }
 
-bool utils::SharedLibrary::IsLoaded() const {
-  return handle_ != NULL;
-}
+bool utils::SharedLibrary::IsLoaded() const { return handle_ != NULL; }
 
 void* utils::SharedLibrary::GetSymbol(const char* name) {
   void* result = NULL;
   if (handle_) {
-    result = (void*) GetProcAddress((HMODULE) handle_, name);
+    result = (void*)GetProcAddress((HMODULE)handle_, name);
   }
   return result;
 }

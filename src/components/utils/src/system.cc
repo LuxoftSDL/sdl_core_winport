@@ -30,15 +30,15 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 #ifdef __QNX__
-#  include <process.h>
+#include <process.h>
 #elif defined(OS_POSIX)
-#  include <sys/types.h>
-#  include <sys/wait.h>
-#  include <sys/stat.h>
-#  include <fcntl.h>
-#  include <unistd.h>
+#include <sys/types.h>
+#include <sys/wait.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+#include <unistd.h>
 #else
-#  include <fcntl.h>
+#include <fcntl.h>
 #endif  // __QNX__
 
 #include <algorithm>
@@ -54,13 +54,12 @@ namespace utils {
 CREATE_LOGGERPTR_LOCAL(logger_, "Utils")
 
 struct GetCString {
-  char * operator ()(const std::string& string) {
+  char* operator()(const std::string& string) {
     return const_cast<char*>(string.c_str());
   }
 };
 
-System::System(const std::string& command)
-    : command_(command) {
+System::System(const std::string& command) : command_(command) {
   argv_.push_back(command);
 }
 
@@ -74,23 +73,17 @@ System& System::Add(const std::string& arg) {
   return *this;
 }
 
-std::string System::command() const {
-  return command_;
-}
+std::string System::command() const { return command_; }
 
-std::vector<std::string> System::argv() const {
-  return argv_;
-}
+std::vector<std::string> System::argv() const { return argv_; }
 
-bool System::Execute() {
-  return Execute(false);
-}
+bool System::Execute() { return Execute(false); }
 
 #ifdef __QNX__
 
 bool System::Execute(bool wait) {
   size_t size = argv_.size();
-  char * *argv = new char*[size + 1];
+  char** argv = new char*[size + 1];
   std::transform(argv_.begin(), argv_.end(), argv, GetCString());
   argv[size] = NULL;
 
@@ -99,8 +92,9 @@ bool System::Execute(bool wait) {
   delete[] argv;
 
   if (ret == -1) {
-    LOG4CXX_ERROR(logger_, "Can't execute command: " << command_
-        << " Errno is: " << std::strerror(errno));
+    LOG4CXX_ERROR(logger_,
+                  "Can't execute command: " << command_ << " Errno is: "
+                                            << std::strerror(errno));
     return false;
   }
 
@@ -110,12 +104,10 @@ bool System::Execute(bool wait) {
 
   return true;
 }
-#elif defined (OS_WINDOWS)
-bool System::Execute(bool wait) {
-	return true;
-}
+#elif defined(OS_WINDOWS)
+bool System::Execute(bool wait) { return true; }
 
-#elif defined (OS_POSIX)
+#elif defined(OS_POSIX)
 
 bool System::Execute(bool wait) {
   // Create a child process.
@@ -143,7 +135,7 @@ bool System::Execute(bool wait) {
       dup2(fd_dev0, STDERR_FILENO);
 
       size_t size = argv_.size();
-      char * *argv = new char*[size + 1];
+      char** argv = new char*[size + 1];
       std::transform(argv_.begin(), argv_.end(), argv, GetCString());
       argv[size] = NULL;
 

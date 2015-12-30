@@ -37,12 +37,12 @@
 
 namespace std {
 
-template<>
+template <>
 void swap<utils::Pipe>(utils::Pipe& lhs, utils::Pipe& rhs) {
   lhs.Swap(rhs);
 }
 
-} // namespace std
+}  // namespace std
 
 namespace utils {
 
@@ -65,19 +65,15 @@ class Pipe::Impl {
   ssize_t Write(const char* buf, size_t length);
 
  private:
-  int         pipe_;
+  int pipe_;
   std::string name_;
 };
 
-} // namespace utils
+}  // namespace utils
 
-utils::Pipe::Pipe()
-  : impl_(new Pipe::Impl()) {
-}
+utils::Pipe::Pipe() : impl_(new Pipe::Impl()) {}
 
-utils::Pipe::~Pipe() {
-  delete impl_;
-}
+utils::Pipe::~Pipe() { delete impl_; }
 
 utils::Pipe::Pipe(Pipe& rh) {
   impl_ = new Pipe::Impl();
@@ -92,47 +88,32 @@ utils::Pipe& utils::Pipe::operator=(Pipe& rh) {
   return *this;
 }
 
-bool utils::Pipe::Valid() const {
-  return impl_->Valid();
-}
+bool utils::Pipe::Valid() const { return impl_->Valid(); }
 
 bool utils::Pipe::Create(const std::string& name) {
   return impl_->Create(name);
 }
 
-bool utils::Pipe::Open() {
-  return impl_->Open();
-}
+bool utils::Pipe::Open() { return impl_->Open(); }
 
-bool utils::Pipe::Close() {
-  return impl_->Close();
-}
+bool utils::Pipe::Close() { return impl_->Close(); }
 
 ssize_t utils::Pipe::Write(const char* buf, size_t length) {
   return impl_->Write(buf, length);
 }
 
-utils::Pipe::Pipe(Pipe::Impl* impl)
-  : impl_(impl) {
-}
+utils::Pipe::Pipe(Pipe::Impl* impl) : impl_(impl) {}
 
-void utils::Pipe::Swap(Pipe& rh) {
-  std::swap(this->impl_, rh.impl_);
-}
+void utils::Pipe::Swap(Pipe& rh) { std::swap(this->impl_, rh.impl_); }
 
-utils::Pipe::Impl::Impl(): pipe_(NULL) {
-}
+utils::Pipe::Impl::Impl() : pipe_(NULL) {}
 
 utils::Pipe::Impl::Impl(HANDLE pipe)
-  : pipe_(INVALID_HANDLE_VALUE == pipe ? NULL : pipe) {
-}
+    : pipe_(INVALID_HANDLE_VALUE == pipe ? NULL : pipe) {}
 
-utils::Pipe::Impl::~Impl() {
-  Close();
-}
+utils::Pipe::Impl::~Impl() { Close(); }
 
-utils::Pipe::Impl::Impl(Impl& rh)
-  : pipe_(rh.pipe_) {
+utils::Pipe::Impl::Impl(Impl& rh) : pipe_(rh.pipe_) {
   rh.pipe_ = NULL;
   rh.name_ = "";
 }
@@ -145,16 +126,13 @@ utils::Pipe::Impl& utils::Pipe::Impl::operator=(Impl& rh) {
   return *this;
 }
 
-bool utils::Pipe::Impl::Valid() const {
-  return pipe_ != NULL;
-}
+bool utils::Pipe::Impl::Valid() const { return pipe_ != NULL; }
 
 bool utils::Pipe::Impl::Create(const std::string& name) {
   if (!Close()) {
     return false;
   }
-  pipe_ = mkfifo(name.c_str(),
-                 S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
+  pipe_ = mkfifo(name.c_str(), S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
   if (INVALID_HANDLE_VALUE == pipe_) {
     pipe_ = NULL;
     return false;

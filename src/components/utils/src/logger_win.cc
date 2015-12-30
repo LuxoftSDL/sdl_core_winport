@@ -34,11 +34,11 @@
 #include "config_profile/profile.h"
 
 namespace {
-  bool is_logs_enabled = false;
-  logger::LogMessageLoopThread* message_loop_thread = NULL;
+bool is_logs_enabled = false;
+logger::LogMessageLoopThread* message_loop_thread = NULL;
 
-  logger::LogLevel log_level = logger::LOGLEVEL_TRACE;
-  FILE* output_file = NULL;
+logger::LogLevel log_level = logger::LOGLEVEL_TRACE;
+FILE* output_file = NULL;
 }
 
 namespace logger {
@@ -49,8 +49,7 @@ bool init_logger(const std::string& ini_file_name) {
   if (!message_loop_thread) {
     message_loop_thread = new LogMessageLoopThread();
   }
-  set_logs_enabled(
-    profile::Profile::instance()->logs_enabled());
+  set_logs_enabled(profile::Profile::instance()->logs_enabled());
   return true;
 }
 
@@ -65,13 +64,9 @@ void deinit_logger() {
   fclose(output_file);
 }
 
-bool logs_enabled() {
-  return is_logs_enabled;
-}
+bool logs_enabled() { return is_logs_enabled; }
 
-void set_logs_enabled(bool state) {
-  is_logs_enabled = state;
-}
+void set_logs_enabled(bool state) { is_logs_enabled = state; }
 
 bool push_log(const std::string& logger,
               LogLevel level,
@@ -86,10 +81,15 @@ bool push_log(const std::string& logger,
   if (level < log_level) {
     return false;
   }
-  LogMessage message =
-      { logger, level, time, entry,
-        line_number, file_name, function_name,
-        static_cast<uint32_t>(GetCurrentThreadId()), output_file };
+  LogMessage message = {logger,
+                        level,
+                        time,
+                        entry,
+                        line_number,
+                        file_name,
+                        function_name,
+                        static_cast<uint32_t>(GetCurrentThreadId()),
+                        output_file};
   message_loop_thread->PostMessage(message);
   return true;
 }
@@ -100,4 +100,4 @@ SYSTEMTIME time_now() {
   return time;
 }
 
-} // namespace logger
+}  // namespace logger

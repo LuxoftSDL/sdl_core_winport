@@ -45,9 +45,9 @@ namespace transport_manager {
 /**
  * @brief Default realization of transport_manager_impl class.
  */
-class TransportManagerDefault : public TransportManagerImpl,
-  public utils::Singleton<TransportManagerDefault> {
-
+class TransportManagerDefault
+    : public TransportManagerImpl,
+      public utils::Singleton<TransportManagerDefault> {
   /**
    * @brief Initialize transport manager.
    *

@@ -51,19 +51,21 @@ class MockTransportAdapter;
 
 class MockConnectionFactory : public ServerConnectionFactory {
  public:
-  MockConnectionFactory(MockTransportAdapter *adapter);
+  MockConnectionFactory(MockTransportAdapter* adapter);
   TransportAdapter::Error Init() { return TransportAdapter::OK; }
-  TransportAdapter::Error CreateConnection(const ::transport_manager::DeviceUID& device_handle,
-                                          const ApplicationHandle& app_handle);
+  TransportAdapter::Error CreateConnection(
+      const ::transport_manager::DeviceUID& device_handle,
+      const ApplicationHandle& app_handle);
   void Terminate() {}
   bool IsInitialised() const { return true; }
 
  private:
-  MockTransportAdapter *controller_;
+  MockTransportAdapter* controller_;
 };
 
 }  // namespace transport_manager
 }  // namespace components
 }  // namespace test
 
-#endif /* APPLINK_TEST_COMPONENTS_TRANSPORTMANAGER_INCLUDE_MOCKCONNECTIONFACTORY_H_ */
+#endif /* APPLINK_TEST_COMPONENTS_TRANSPORTMANAGER_INCLUDE_MOCKCONNECTIONFACTORY_H_ \
+          */

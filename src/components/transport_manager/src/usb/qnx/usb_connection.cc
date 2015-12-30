@@ -52,25 +52,24 @@ UsbConnection::UsbConnection(const DeviceUID& device_uid,
                              TransportAdapterController* controller,
                              const UsbHandlerSptr libusb_handler,
                              PlatformUsbDevice* device)
-    : device_uid_(device_uid),
-      app_handle_(app_handle),
-      controller_(controller),
-      libusb_handler_(libusb_handler),
-      usbd_device_(device->GetUsbdDevice()),
-      in_pipe_(NULL),
-      out_pipe_(NULL),
-      in_buffer_(NULL),
-      out_buffer_(NULL),
-      in_urb_(NULL),
-      out_urb_(NULL),
-      out_messages_(),
-      current_out_message_(),
-      out_messages_mutex_(),
-      bytes_sent_(0),
-      disconnecting_(false),
-      pending_in_transfer_(false),
-      pending_out_transfer_(false) {
-}
+    : device_uid_(device_uid)
+    , app_handle_(app_handle)
+    , controller_(controller)
+    , libusb_handler_(libusb_handler)
+    , usbd_device_(device->GetUsbdDevice())
+    , in_pipe_(NULL)
+    , out_pipe_(NULL)
+    , in_buffer_(NULL)
+    , out_buffer_(NULL)
+    , in_urb_(NULL)
+    , out_urb_(NULL)
+    , out_messages_()
+    , current_out_message_()
+    , out_messages_mutex_()
+    , bytes_sent_(0)
+    , disconnecting_(false)
+    , pending_in_transfer_(false)
+    , pending_out_transfer_(false) {}
 
 UsbConnection::~UsbConnection() {
   Finalise();
@@ -121,9 +120,10 @@ void UsbConnection::OnInTransfer(usbd_urb* urb) {
     LOG4CXX_ERROR(logger_, "Get in urb status failed: " << urb_status_rc);
     error = true;
   }
-  LOG4CXX_INFO(logger_, "USB in transfer, status " << std::hex << status
-                                                   << ", length " << std::dec
-                                                   << len);
+  LOG4CXX_INFO(logger_,
+               "USB in transfer, status " << std::hex << status << ", length "
+                                          << std::dec
+                                          << len);
 
   if (!error) {
     switch (status) {
@@ -139,18 +139,19 @@ void UsbConnection::OnInTransfer(usbd_urb* urb) {
 
   if (error) {
     LOG4CXX_ERROR(logger_, "USB in transfer failed");
-    controller_->DataReceiveFailed(device_uid_, app_handle_,
-                                   DataReceiveError());
+    controller_->DataReceiveFailed(
+        device_uid_, app_handle_, DataReceiveError());
   } else {
-    ::protocol_handler::RawMessagePtr msg(new protocol_handler::RawMessage(0, 0, in_buffer_, len));
+    ::protocol_handler::RawMessagePtr msg(
+        new protocol_handler::RawMessage(0, 0, in_buffer_, len));
     controller_->DataReceiveDone(device_uid_, app_handle_, msg);
   }
 
   pending_in_transfer_ = false;
   if (!disconnecting_) {
     if (!PostInTransfer()) {
-      controller_->ConnectionAborted(device_uid_, app_handle_,
-                                     CommunicationError());
+      controller_->ConnectionAborted(
+          device_uid_, app_handle_, CommunicationError());
       Disconnect();
     }
   }
@@ -173,8 +174,8 @@ bool UsbConnection::PostOutTransfer() {
   usbd_setup_bulk(out_urb_, URB_DIR_OUT, out_buffer_, len);
   LOG4CXX_INFO(logger_, "out transfer :" << len);
   pending_out_transfer_ = true;
-  const int io_rc = usbd_io(out_urb_, out_pipe_, OutTransferCallback, this,
-                            USBD_TIME_INFINITY);
+  const int io_rc = usbd_io(
+      out_urb_, out_pipe_, OutTransferCallback, this, USBD_TIME_INFINITY);
   if (EOK != io_rc) {
     pending_out_transfer_ = false;
     usbd_free(out_buffer_);
@@ -194,9 +195,10 @@ void UsbConnection::OnOutTransfer(usbd_urb* urb) {
     LOG4CXX_ERROR(logger_, "Get out urb status failed: " << urb_status_rc);
     error = true;
   }
-  LOG4CXX_INFO(logger_, "USB out transfer, status " << std::hex << status
-                                                    << ", length " << std::dec
-                                                    << len);
+  LOG4CXX_INFO(logger_,
+               "USB out transfer, status " << std::hex << status << ", length "
+                                           << std::dec
+                                           << len);
 
   if (!error) {
     switch (status) {
@@ -214,14 +216,15 @@ void UsbConnection::OnOutTransfer(usbd_urb* urb) {
 
   if (error) {
     LOG4CXX_ERROR(logger_, "USB out transfer failed");
-    controller_->DataSendFailed(device_uid_, app_handle_, current_out_message_,
-                                DataSendError());
+    controller_->DataSendFailed(
+        device_uid_, app_handle_, current_out_message_, DataSendError());
     PopOutMessage();
   } else {
     bytes_sent_ += len;
     if (bytes_sent_ == current_out_message_->data_size()) {
-      LOG4CXX_INFO(logger_, "USB out transfer, data sent: "
-                                << current_out_message_.get());
+      LOG4CXX_INFO(
+          logger_,
+          "USB out transfer, data sent: " << current_out_message_.get());
       controller_->DataSendDone(device_uid_, app_handle_, current_out_message_);
       PopOutMessage();
     }
@@ -234,7 +237,8 @@ void UsbConnection::OnOutTransfer(usbd_urb* urb) {
   }
 }
 
-TransportAdapter::Error UsbConnection::SendData(::protocol_handler::RawMessagePtr message) {
+TransportAdapter::Error UsbConnection::SendData(
+    ::protocol_handler::RawMessagePtr message) {
   if (disconnecting_) {
     return TransportAdapter::BAD_STATE;
   }
@@ -244,8 +248,8 @@ TransportAdapter::Error UsbConnection::SendData(::protocol_handler::RawMessagePt
   } else {
     current_out_message_ = message;
     if (!PostOutTransfer()) {
-      controller_->DataSendFailed(device_uid_, app_handle_, message,
-                                  DataSendError());
+      controller_->DataSendFailed(
+          device_uid_, app_handle_, message, DataSendError());
     }
   }
   return TransportAdapter::OK;
@@ -257,8 +261,10 @@ void UsbConnection::Finalise() {
   disconnecting_ = true;
   usbd_abort_pipe(in_pipe_);
   usbd_abort_pipe(out_pipe_);
-  for (std::list<protocol_handler::RawMessagePtr>::iterator it = out_messages_.begin();
-       it != out_messages_.end(); it = out_messages_.erase(it)) {
+  for (std::list<protocol_handler::RawMessagePtr>::iterator it =
+           out_messages_.begin();
+       it != out_messages_.end();
+       it = out_messages_.erase(it)) {
     controller_->DataSendFailed(device_uid_, app_handle_, *it, DataSendError());
   }
   while (pending_in_transfer_ || pending_out_transfer_) sched_yield();
@@ -290,8 +296,8 @@ bool UsbConnection::Init() {
   controller_->ConnectDone(device_uid_, app_handle_);
 
   if (!PostInTransfer()) {
-    controller_->ConnectionAborted(device_uid_, app_handle_,
-                                   CommunicationError());
+    controller_->ConnectionAborted(
+        device_uid_, app_handle_, CommunicationError());
     return true;
   }
 
@@ -315,21 +321,25 @@ bool UsbConnection::OpenEndpoints() {
   int cfg = 0;
   bool found = false;
   while (!found) {
-    config_desc =
-        usbd_parse_descriptors(usbd_device_, device_desc_node,
-                               USB_DESC_CONFIGURATION, cfg++, &cfg_desc_node);
+    config_desc = usbd_parse_descriptors(usbd_device_,
+                                         device_desc_node,
+                                         USB_DESC_CONFIGURATION,
+                                         cfg++,
+                                         &cfg_desc_node);
     if (config_desc == NULL) {
       break;
     }
-    LOG4CXX_INFO(logger_, "USB configuration "
-                              << static_cast<int>(config_desc->configuration
-                                                      .bConfigurationValue));
+    LOG4CXX_INFO(logger_,
+                 "USB configuration " << static_cast<int>(
+                     config_desc->configuration.bConfigurationValue));
     int iface = 0;
     usbd_desc_node* iface_desc_node;
     while (!found) {
-      iface_desc =
-          usbd_parse_descriptors(usbd_device_, cfg_desc_node,
-                                 USB_DESC_INTERFACE, iface++, &iface_desc_node);
+      iface_desc = usbd_parse_descriptors(usbd_device_,
+                                          cfg_desc_node,
+                                          USB_DESC_INTERFACE,
+                                          iface++,
+                                          &iface_desc_node);
       if (iface_desc == NULL) {
         break;
       }
@@ -338,11 +348,13 @@ bool UsbConnection::OpenEndpoints() {
 #endif
       const uint8_t interface_subclass =
           iface_desc->interface.bInterfaceSubClass;
-      LOG4CXX_INFO(logger_, "USB interface number "
-                                << static_cast<int>(interface_number)
-                                << ", subclass " << std::hex
-                                << static_cast<int>(interface_subclass)
-                                << std::dec);
+      LOG4CXX_INFO(logger_,
+                   "USB interface number "
+                       << static_cast<int>(interface_number)
+                       << ", subclass "
+                       << std::hex
+                       << static_cast<int>(interface_subclass)
+                       << std::dec);
       if (interface_subclass != 0xff) {
         continue;
       }
@@ -357,10 +369,12 @@ bool UsbConnection::OpenEndpoints() {
         if ((attributes & 0x03) == USB_ATTRIB_BULK) {
           const uint8_t endpoint_address =
               endpoint_desc->endpoint.bEndpointAddress;
-          LOG4CXX_INFO(logger_, "Endpoint with address "
-                                    << std::hex
-                                    << static_cast<int>(endpoint_address)
-                                    << std::dec << " found");
+          LOG4CXX_INFO(logger_,
+                       "Endpoint with address "
+                           << std::hex
+                           << static_cast<int>(endpoint_address)
+                           << std::dec
+                           << " found");
           if (endpoint_address & USB_ENDPOINT_IN) {
             if (NULL == in_endpoint_desc) {
               in_endpoint_desc = endpoint_desc;

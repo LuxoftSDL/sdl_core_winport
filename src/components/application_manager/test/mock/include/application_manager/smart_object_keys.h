@@ -1,1 +1,1 @@
-../../../../include/application_manager/smart_object_keys.h
+../../../../ include / application_manager / smart_object_keys.h

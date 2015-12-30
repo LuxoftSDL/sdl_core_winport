@@ -39,11 +39,10 @@
 
 namespace usage_statistics {
 
-GlobalCounter::GlobalCounter(utils::SharedPtr<usage_statistics::StatisticsManager> statistics_manager,
-                             GlobalCounterId counter_type)
-    : counter_type_(counter_type),
-      statistics_manager_(statistics_manager) {
-}
+GlobalCounter::GlobalCounter(
+    utils::SharedPtr<usage_statistics::StatisticsManager> statistics_manager,
+    GlobalCounterId counter_type)
+    : counter_type_(counter_type), statistics_manager_(statistics_manager) {}
 
 void GlobalCounter::operator++() const {
   if (statistics_manager_) {
@@ -51,13 +50,13 @@ void GlobalCounter::operator++() const {
   }
 }
 
-AppCounter::AppCounter(utils::SharedPtr<usage_statistics::StatisticsManager> statistics_manager,
-                       const std::string& app_id,
-                       AppCounterId counter_type)
-    : app_id_(app_id),
-      counter_type_(counter_type),
-      statistics_manager_(statistics_manager) {
-}
+AppCounter::AppCounter(
+    utils::SharedPtr<usage_statistics::StatisticsManager> statistics_manager,
+    const std::string& app_id,
+    AppCounterId counter_type)
+    : app_id_(app_id)
+    , counter_type_(counter_type)
+    , statistics_manager_(statistics_manager) {}
 
 void AppCounter::operator++() const {
   if (statistics_manager_) {
@@ -65,13 +64,13 @@ void AppCounter::operator++() const {
   }
 }
 
-AppInfo::AppInfo(utils::SharedPtr<usage_statistics::StatisticsManager> statistics_manager,
-                 const std::string& app_id,
-                 AppInfoId info_type)
-    : app_id_(app_id),
-      info_type_(info_type),
-      statistics_manager_(statistics_manager) {
-}
+AppInfo::AppInfo(
+    utils::SharedPtr<usage_statistics::StatisticsManager> statistics_manager,
+    const std::string& app_id,
+    AppInfoId info_type)
+    : app_id_(app_id)
+    , info_type_(info_type)
+    , statistics_manager_(statistics_manager) {}
 
 void AppInfo::Update(const std::string& new_info) const {
   if (statistics_manager_) {
@@ -79,25 +78,26 @@ void AppInfo::Update(const std::string& new_info) const {
   }
 }
 
-AppStopwatch::AppStopwatch(utils::SharedPtr<usage_statistics::StatisticsManager> statistics_manager,
-                           const std::string& app_id)
-    : app_id_(app_id),
-      stopwatch_type_(SECONDS_HMI_NONE),
-      statistics_manager_(statistics_manager),
-      timer_(new Timer("HMI levels timer",this, &AppStopwatch::WriteTime, true)),
-      time_out_(60) {
-}
+AppStopwatch::AppStopwatch(
+    utils::SharedPtr<usage_statistics::StatisticsManager> statistics_manager,
+    const std::string& app_id)
+    : app_id_(app_id)
+    , stopwatch_type_(SECONDS_HMI_NONE)
+    , statistics_manager_(statistics_manager)
+    , timer_(
+          new Timer("HMI levels timer", this, &AppStopwatch::WriteTime, true))
+    , time_out_(60) {}
 
-AppStopwatch::AppStopwatch(utils::SharedPtr<StatisticsManager> statistics_manager,
-                           const std::string& app_id,
-                           std::uint32_t time_out)
-  : app_id_(app_id),
-    stopwatch_type_(SECONDS_HMI_NONE),
-    statistics_manager_(statistics_manager),
-    timer_(new Timer("HMI levels timer",this, &AppStopwatch::WriteTime, true)),
-    time_out_(time_out) {
-
-}
+AppStopwatch::AppStopwatch(
+    utils::SharedPtr<StatisticsManager> statistics_manager,
+    const std::string& app_id,
+    std::uint32_t time_out)
+    : app_id_(app_id)
+    , stopwatch_type_(SECONDS_HMI_NONE)
+    , statistics_manager_(statistics_manager)
+    , timer_(
+          new Timer("HMI levels timer", this, &AppStopwatch::WriteTime, true))
+    , time_out_(time_out) {}
 
 AppStopwatch::~AppStopwatch() {
   if (NULL != timer_) {
@@ -108,7 +108,7 @@ AppStopwatch::~AppStopwatch() {
 
 void AppStopwatch::Start(AppStopwatchId stopwatch_type) {
   stopwatch_type_ = stopwatch_type;
-  timer_->start(time_out_ * date_time::DateTime::MILLISECONDS_IN_SECOND );
+  timer_->start(time_out_ * date_time::DateTime::MILLISECONDS_IN_SECOND);
 }
 
 void AppStopwatch::Switch(AppStopwatchId stopwatch_type) {

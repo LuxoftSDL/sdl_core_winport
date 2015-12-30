@@ -36,10 +36,9 @@
 namespace media_manager {
 
 PipeAudioStreamerAdapter::PipeAudioStreamerAdapter()
-  : PipeStreamerAdapter(profile::Profile::instance()->named_audio_pipe_path()) {
-}
+    : PipeStreamerAdapter(
+          profile::Profile::instance()->named_audio_pipe_path()) {}
 
-PipeAudioStreamerAdapter::~PipeAudioStreamerAdapter() {
-}
+PipeAudioStreamerAdapter::~PipeAudioStreamerAdapter() {}
 
 }  // namespace media_manager

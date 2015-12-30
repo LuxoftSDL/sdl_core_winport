@@ -1,1 +1,1 @@
-../../../../include/application_manager/usage_statistics.h
+../../../../ include / application_manager / usage_statistics.h

@@ -1,1 +1,2 @@
-../../../../../../include/application_manager/commands/mobile/change_registration_response.h
+../../../../../../ include / application_manager / commands / mobile /
+    change_registration_response.h

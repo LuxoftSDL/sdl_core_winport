@@ -39,19 +39,14 @@ namespace commands {
 namespace hmi {
 
 DialNumberRequest::DialNumberRequest(const MessageSharedPtr& message)
-    : RequestToHMI(message) {
-}
+    : RequestToHMI(message) {}
 
-DialNumberRequest::~DialNumberRequest() {
-}
+DialNumberRequest::~DialNumberRequest() {}
 
-void DialNumberRequest::Run() {
-  SendRequest();
-}
+void DialNumberRequest::Run() { SendRequest(); }
 
-} // namespace hmi
+}  // namespace hmi
 
 }  // namespace commands
 
 }  // namespace application_manager
-

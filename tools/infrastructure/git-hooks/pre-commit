@@ -1,0 +1,50 @@
+#!/bin/bash
+
+function POP_STASHED() {
+    # pop stashed changes if working directory wasn't clean
+    if [ -n "$IS_DIRTY" ]; then
+        git reset --hard HEAD > /dev/null
+        skipped=$(git ls-files -t | grep ^S | cut -d' ' -f2-)
+        git stash pop --index > /dev/null
+        echo "$skipped" | while read file; do git update-index --skip-worktree "$file"; done
+    fi
+}
+
+# determine working tree status
+IS_DIRTY=`[[ $(git diff --shortstat 2> /dev/null | tail -n1) != "" ]] && echo '*'`
+
+# stash not staged for commit changes
+if [ -n "$IS_DIRTY" ]; then
+    git stash save --keep-index
+    trap POP_STASHED EXIT
+fi
+
+STDIN=$(cat)
+THIS_SCRIPT=$(basename "$0") # Actual script path
+HOOK_TYPE=$(basename "$0") # what hook was invoked
+HOOK_DIR=$(dirname "$0") # where we should look for hooks
+
+# Default to exit 0
+# If any hook exits nonzero, we'll exit nonzero
+EXIT_STATUS=0
+
+HOOKS=$(find "$HOOK_DIR" -maxdepth 1 -name "$HOOK_TYPE-*" | sort)
+
+for HOOK_FILE in $HOOKS; do
+    # Make sure we don't somehow recurse
+    HOOK=$(basename "$HOOK_FILE")
+    if [ "$HOOK" == "$THIS_SCRIPT" ]; then continue; fi
+
+    echo "Running $HOOK ..."
+
+    # Invoke each found hook with identical
+    # standard input and arguments as we were
+    # called with.
+
+    if ! $(echo "$STDIN" | bash "$HOOK_FILE" "$@"); then
+        EXIT_STATUS=1
+        break
+    fi
+done
+
+exit "$EXIT_STATUS"

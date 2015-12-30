@@ -40,12 +40,13 @@
 
 namespace time_tester {
 
-class ProtocolHandlerMecticWrapper: public MetricWrapper {
+class ProtocolHandlerMecticWrapper : public MetricWrapper {
+ public:
+  utils::SharedPtr<protocol_handler::PHMetricObserver::MessageMetric>
+      message_metric;
 
-  public:
-    utils::SharedPtr<protocol_handler::PHMetricObserver::MessageMetric> message_metric;
-  protected:
-    virtual Json::Value GetJsonMetric();
+ protected:
+  virtual Json::Value GetJsonMetric();
 };
 }  // namespace time_tester
 #endif  // SRC_COMPONENTS_TIME_TESTER_INCLUDE_TIME_TESTER_PROTOCOL_HANDLER_MECTRIC_H_

@@ -39,11 +39,9 @@ namespace commands {
 
 OnIgnitionCycleOverNotification::OnIgnitionCycleOverNotification(
     const MessageSharedPtr& message)
-    : NotificationFromHMI(message) {
-}
+    : NotificationFromHMI(message) {}
 
-OnIgnitionCycleOverNotification::~OnIgnitionCycleOverNotification() {
-}
+OnIgnitionCycleOverNotification::~OnIgnitionCycleOverNotification() {}
 
 void OnIgnitionCycleOverNotification::Run() {
   LOG4CXX_AUTO_TRACE(logger_);
@@ -53,4 +51,3 @@ void OnIgnitionCycleOverNotification::Run() {
 }  // namespace commands
 
 }  // namespace application_manager
-

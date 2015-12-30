@@ -44,22 +44,19 @@ using namespace ::logger;
 CREATE_LOGGERPTR_GLOBAL(logger_, "AutoTraceTestLog");
 
 void Preconditions() {
-  //delete file with previous logs
+  // delete file with previous logs
   const char* file_name = "AutoTraceTestLogFile.log";
   std::remove(file_name);
 }
 
-void InitLogger() {
-  INIT_LOGGER();
-}
+void InitLogger() { INIT_LOGGER(); }
 
-void CreateDeleteAutoTrace(const std::string & testlog) {
+void CreateDeleteAutoTrace(const std::string& testlog) {
   LOG4CXX_AUTO_TRACE(logger_);
   LOG4CXX_DEBUG(logger_, testlog);
 }
 
-bool CheckTraceInFile(const std::string & testlog) {
-
+bool CheckTraceInFile(const std::string& testlog) {
   bool isLogFound = false;
   std::string line;
 
@@ -81,9 +78,7 @@ bool CheckTraceInFile(const std::string & testlog) {
   return isLogFound;
 }
 
-void DeinitLogger() {
-  DEINIT_LOGGER();
-}
+void DeinitLogger() { DEINIT_LOGGER(); }
 
 TEST(AutoTraceTest, Basic) {
   const std::string testlog =

@@ -55,22 +55,22 @@ using ::transport_manager::ApplicationHandle;
 
 class MockApplication {
  public:
-  const MockDevice *device;
+  const MockDevice* device;
   ApplicationHandle handle;
   pthread_t workerThread;
   pthread_cond_t ready_cond;
   pthread_mutex_t ready_mutex;
   int sockfd;
   bool active;
+
  private:
   std::string socket_name_;
+
  public:
   MockApplication(const MockDevice* device, ApplicationHandle id);
   void Start();
   void Stop();
-  const std::string &socket_name() const {
-    return socket_name_;
-  }
+  const std::string& socket_name() const { return socket_name_; }
 };
 
 }  // namespace transport_manager

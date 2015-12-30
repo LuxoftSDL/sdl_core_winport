@@ -52,4 +52,4 @@ bool SubscribeToFaultSignal(sighandler_t func) {
 
 }  //  namespace utils
 
-#endif // OS_WINDOWS
+#endif  // OS_WINDOWS

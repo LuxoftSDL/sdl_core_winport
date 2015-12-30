@@ -66,13 +66,9 @@ class DBusMessageControllerTest : public ::testing::Test {
   MockDBusMessageController* controller_;
   MockSubscriber* subscriber_;
 
-  static void SetUpTestCase() {
+  static void SetUpTestCase() {}
 
-  }
-
-  static void TearDownTestCase() {
-
-  }
+  static void TearDownTestCase() {}
 
   virtual void SetUp() {
     const std::string kService = "sdl.core.test_api";
@@ -89,12 +85,12 @@ class DBusMessageControllerTest : public ::testing::Test {
   }
 
   bool waitCond(int seconds) {
-    if (one_thread)
-      return true;
+    if (one_thread) return true;
     timespec elapsed;
     clock_gettime(CLOCK_REALTIME, &elapsed);
     elapsed.tv_sec += seconds;
-    return pthread_cond_timedwait(&test_cond, &test_mutex, &elapsed) != ETIMEDOUT;
+    return pthread_cond_timedwait(&test_cond, &test_mutex, &elapsed) !=
+           ETIMEDOUT;
   }
 };
 
@@ -110,12 +106,10 @@ TEST_F(DBusMessageControllerTest, Receive) {
 
 TEST_F(DBusMessageControllerTest, DISABLED_Send) {
   const std::string kText = "Test message for signal DBus";
-//  EXPECT_CALL(*subscriber_, Receive(kText)).Times(1);
+  //  EXPECT_CALL(*subscriber_, Receive(kText)).Times(1);
   controller_->Send(kText);
 }
 
 }  // namespace hmi_message_handler
 }  // namespace components
 }  // namespace test
-
-

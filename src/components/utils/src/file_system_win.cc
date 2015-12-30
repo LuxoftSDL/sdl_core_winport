@@ -46,7 +46,7 @@
 #include "utils/file_system.h"
 #include "utils/string_utils.h"
 
-#pragma comment(lib,"Shlwapi.lib")
+#pragma comment(lib, "Shlwapi.lib")
 
 #ifdef max
 #undef max
@@ -58,10 +58,10 @@ uint64_t file_system::GetAvailableDiskSpace(const std::string& path) {
   DWORD number_of_free_clusters;
 
   const BOOL res = GetDiskFreeSpace(path.c_str(),
-	                                &sectors_per_cluster,
-									&bytes_per_sector,
-									&number_of_free_clusters,
-									NULL);
+                                    &sectors_per_cluster,
+                                    &bytes_per_sector,
+                                    &number_of_free_clusters,
+                                    NULL);
   if (0 != res) {
     return number_of_free_clusters * sectors_per_cluster * bytes_per_sector;
   } else {
@@ -69,9 +69,9 @@ uint64_t file_system::GetAvailableDiskSpace(const std::string& path) {
   }
 }
 
-int64_t file_system::FileSize(const std::string &path) {
+int64_t file_system::FileSize(const std::string& path) {
   if (file_system::FileExists(path)) {
-    struct _stat file_info = { 0 };
+    struct _stat file_info = {0};
     _stat(path.c_str(), &file_info);
     return file_info.st_size;
   }
@@ -83,7 +83,7 @@ size_t file_system::DirectorySize(const std::string& path) {
   if (!DirectoryExists(path)) {
     return size;
   }
-  
+
   const std::string find_string = ConcatPath(path, "*");
   WIN32_FIND_DATA ffd;
 
@@ -92,11 +92,10 @@ size_t file_system::DirectorySize(const std::string& path) {
     return size;
   }
 
-  do
-  {
+  do {
     if (FILE_ATTRIBUTE_DIRECTORY == ffd.dwFileAttributes) {
       if (strncmp(ffd.cFileName, ".", 1) != 0 &&
-            strncmp(ffd.cFileName, "..", 2) != 0) {
+          strncmp(ffd.cFileName, "..", 2) != 0) {
         size += DirectorySize(ffd.cFileName);
       }
     } else {
@@ -144,7 +143,7 @@ bool file_system::CreateDirectoryRecursively(const std::string& path) {
 }
 
 bool file_system::IsDirectory(const std::string& name) {
-  struct _stat status = { 0 };
+  struct _stat status = {0};
   if (-1 == _stat(name.c_str(), &status)) {
     return false;
   }
@@ -154,20 +153,20 @@ bool file_system::IsDirectory(const std::string& name) {
 bool file_system::DirectoryExists(const std::string& name) {
   DWORD attrib = GetFileAttributes(name.c_str());
   return (attrib != INVALID_FILE_ATTRIBUTES &&
-         (attrib & FILE_ATTRIBUTE_DIRECTORY));
+          (attrib & FILE_ATTRIBUTE_DIRECTORY));
 }
 
 bool file_system::FileExists(const std::string& name) {
-  struct _stat status = { 0 };
+  struct _stat status = {0};
   if (-1 == _stat(name.c_str(), &status)) {
     return false;
   }
   return true;
 }
 
-bool file_system::Write(
-  const std::string& file_name, const std::vector<uint8_t>& data,
-  std::ios_base::openmode mode) {
+bool file_system::Write(const std::string& file_name,
+                        const std::vector<uint8_t>& data,
+                        std::ios_base::openmode mode) {
   std::ofstream file(file_name.c_str(), std::ios_base::binary | mode);
   if (file.is_open()) {
     for (uint32_t i = 0; i < data.size(); ++i) {
@@ -182,7 +181,7 @@ bool file_system::Write(
 std::ofstream* file_system::Open(const std::string& file_name,
                                  std::ios_base::openmode mode) {
   std::ofstream* file = new std::ofstream();
-  file->open( file_name.c_str(),std::ios_base::binary | mode);
+  file->open(file_name.c_str(), std::ios_base::binary | mode);
   if (file->is_open()) {
     return file;
   }
@@ -237,26 +236,23 @@ void file_system::RemoveDirectoryContent(const std::string& directory_path) {
     return;
   }
 
-  do
-  {
+  do {
     if (FILE_ATTRIBUTE_DIRECTORY == ffd.dwFileAttributes) {
       if (strncmp(ffd.cFileName, ".", 1) != 0 &&
-            strncmp(ffd.cFileName, "..", 2) != 0) {
+          strncmp(ffd.cFileName, "..", 2) != 0) {
         RemoveDirectory(ffd.cFileName, true);
       }
     } else {
       remove(ffd.cFileName);
     }
-  }
-  while (FindNextFile(find, &ffd) != 0);
+  } while (FindNextFile(find, &ffd) != 0);
 
   FindClose(find);
 }
 
 bool file_system::RemoveDirectory(const std::string& directory_path,
                                   bool is_recursively) {
-  if (DirectoryExists(directory_path)
-      && IsWritingAllowed(directory_path)) {
+  if (DirectoryExists(directory_path) && IsWritingAllowed(directory_path)) {
     if (is_recursively) {
       RemoveDirectoryContent(directory_path);
     }
@@ -278,8 +274,7 @@ bool file_system::IsReadingAllowed(const std::string& name) {
 }
 
 std::vector<std::string> file_system::ListFiles(
-  const std::string& directory_name) {
-
+    const std::string& directory_name) {
   std::vector<std::string> list_files;
   if (!DirectoryExists(directory_name)) {
     return list_files;
@@ -293,13 +288,11 @@ std::vector<std::string> file_system::ListFiles(
     return list_files;
   }
 
-  do
-  {
+  do {
     if (FILE_ATTRIBUTE_DIRECTORY != ffd.dwFileAttributes) {
       list_files.push_back(ffd.cFileName);
     }
-  }
-  while (FindNextFile(find, &ffd) != 0);
+  } while (FindNextFile(find, &ffd) != 0);
 
   FindClose(find);
   return list_files;
@@ -308,7 +301,7 @@ std::vector<std::string> file_system::ListFiles(
 bool file_system::WriteBinaryFile(const std::string& name,
                                   const std::vector<uint8_t>& contents) {
   using namespace std;
-  ofstream output(name.c_str(), ios_base::binary|ios_base::trunc);
+  ofstream output(name.c_str(), ios_base::binary | ios_base::trunc);
   output.write(reinterpret_cast<const char*>(&contents.front()),
                contents.size());
   return output.good();
@@ -387,8 +380,7 @@ uint64_t file_system::GetFileModificationTime(const std::string& path) {
   return static_cast<uint64_t>(info.st_mtime);
 }
 
-bool file_system::CopyFile(const std::string& src,
-                           const std::string& dst) {
+bool file_system::CopyFile(const std::string& src, const std::string& dst) {
   if (!FileExists(src) || FileExists(dst) || !CreateFile(dst)) {
     return false;
   }
@@ -400,8 +392,7 @@ bool file_system::CopyFile(const std::string& src,
   return true;
 }
 
-bool file_system::MoveFile(const std::string& src,
-                           const std::string& dst) {
+bool file_system::MoveFile(const std::string& src, const std::string& dst) {
   if (!CopyFile(src, dst)) {
     return false;
   }
@@ -425,15 +416,14 @@ void file_system::MakeAbsolutePath(std::string& path) {
   if (path.find("/") == 0) {
     offset = 1;
   }
-  const DWORD size = GetFullPathName(path.c_str() + offset, MAX_PATH, buffer, NULL);
+  const DWORD size =
+      GetFullPathName(path.c_str() + offset, MAX_PATH, buffer, NULL);
   if (size != 0) {
     path.assign(buffer);
   }
 }
 
-std::string file_system::GetPathDelimiter() {
-  return "\\";
-}
+std::string file_system::GetPathDelimiter() { return "\\"; }
 
 std::string file_system::ConcatPath(const std::string& str1,
                                     const std::string& str2) {
@@ -448,9 +438,9 @@ std::string file_system::ConcatPath(const std::string& str1,
 std::string file_system::RetrieveFileNameFromPath(const std::string& path) {
   size_t slash_pos = path.find_last_of("/", path.length());
   size_t back_slash_pos = path.find_last_of("\\", path.length());
-  return path.substr(std::max(
-    slash_pos != std::string::npos ? slash_pos + 1 : 0,
-    back_slash_pos != std::string::npos ? back_slash_pos + 1 : 0));
+  return path.substr(
+      std::max(slash_pos != std::string::npos ? slash_pos + 1 : 0,
+               back_slash_pos != std::string::npos ? back_slash_pos + 1 : 0));
 }
 
-#endif // OS_WINDOWS
+#endif  // OS_WINDOWS

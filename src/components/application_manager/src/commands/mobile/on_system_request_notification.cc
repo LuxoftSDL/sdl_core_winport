@@ -45,42 +45,42 @@ namespace mobile {
 
 OnSystemRequestNotification::OnSystemRequestNotification(
     const MessageSharedPtr& message)
-    : CommandNotificationImpl(message) {
-}
+    : CommandNotificationImpl(message) {}
 
-OnSystemRequestNotification::~OnSystemRequestNotification() {
-}
+OnSystemRequestNotification::~OnSystemRequestNotification() {}
 
 void OnSystemRequestNotification::Run() {
   LOG4CXX_AUTO_TRACE(logger_);
   using namespace application_manager;
   using namespace mobile_apis;
 
-  ApplicationSharedPtr app = ApplicationManagerImpl::instance()->
-                             application(connection_key());
+  ApplicationSharedPtr app =
+      ApplicationManagerImpl::instance()->application(connection_key());
 
   if (!app.valid()) {
-    LOG4CXX_ERROR(logger_, "Application with connection key "
-                  << connection_key() << " is not registered.");
+    LOG4CXX_ERROR(logger_,
+                  "Application with connection key " << connection_key()
+                                                     << " is not registered.");
     return;
   }
 
-  RequestType::eType request_type = static_cast<RequestType::eType>
-      ((*message_)[strings::msg_params][strings::request_type].asInt());
+  RequestType::eType request_type = static_cast<RequestType::eType>(
+      (*message_)[strings::msg_params][strings::request_type].asInt());
 
   if (!policy::PolicyHandler::instance()->IsRequestTypeAllowed(
-           app->mobile_app_id(), request_type)) {
-    LOG4CXX_WARN(logger_, "Request type "  << request_type
-                 <<" is not allowed by policies");
+          app->mobile_app_id(), request_type)) {
+    LOG4CXX_WARN(logger_,
+                 "Request type " << request_type
+                                 << " is not allowed by policies");
     return;
   }
 
   if (RequestType::PROPRIETARY == request_type) {
-  std::string filename =
-      (*message_)[strings::msg_params][strings::file_name].asString();
+    std::string filename =
+        (*message_)[strings::msg_params][strings::file_name].asString();
 
-  std::vector<uint8_t> binary_data;
-  file_system::ReadBinaryFile(filename, binary_data);
+    std::vector<uint8_t> binary_data;
+    file_system::ReadBinaryFile(filename, binary_data);
     (*message_)[strings::params][strings::binary_data] = binary_data;
     (*message_)[strings::msg_params][strings::file_type] = FileType::JSON;
   } else if (RequestType::HTTP == request_type) {
@@ -90,7 +90,7 @@ void OnSystemRequestNotification::Run() {
   SendNotification();
 }
 
-}  //namespace mobile
+}  // namespace mobile
 
 }  // namespace commands
 

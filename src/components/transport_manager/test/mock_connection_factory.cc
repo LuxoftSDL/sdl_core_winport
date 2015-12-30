@@ -30,7 +30,6 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-
 #include "include/mock_connection.h"
 #include "include/mock_connection_factory.h"
 
@@ -46,14 +45,14 @@ namespace test {
 namespace components {
 namespace transport_manager {
 
-MockConnectionFactory::MockConnectionFactory(MockTransportAdapter *controller)
+MockConnectionFactory::MockConnectionFactory(MockTransportAdapter* controller)
     : controller_(controller) {}
 
 TransportAdapter::Error MockConnectionFactory::CreateConnection(
     const ::transport_manager::DeviceUID& device_handle,
     const ApplicationHandle& app_handle) {
-
-  MockConnection *conn = new MockConnection(device_handle, app_handle, controller_);
+  MockConnection* conn =
+      new MockConnection(device_handle, app_handle, controller_);
   conn->Start();
   return TransportAdapter::OK;
 }

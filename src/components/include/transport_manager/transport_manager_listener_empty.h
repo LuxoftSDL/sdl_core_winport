@@ -55,37 +55,31 @@ class TransportManagerListenerEmpty : public TransportManagerListener {
    *
    * @param Container that holds information about devices.
    */
-  virtual void OnDeviceListUpdated(const std::vector<DeviceInfo>&) {
-  }
+  virtual void OnDeviceListUpdated(const std::vector<DeviceInfo>&) {}
 
-  virtual void OnFindNewApplicationsRequest() {
-  }
+  virtual void OnFindNewApplicationsRequest() {}
 
   /**
    * @brief Reaction to the event, when the device is found.
    *
    * @param device_info Variable that hold information about device.
    */
-  virtual void OnDeviceFound(const DeviceInfo& device_info) {
-  }
-  virtual void OnDeviceAdded(const DeviceInfo& device_info) {
-  }
-  virtual void OnDeviceRemoved(const DeviceInfo& device_info) {
-  }
+  virtual void OnDeviceFound(const DeviceInfo& device_info) {}
+  virtual void OnDeviceAdded(const DeviceInfo& device_info) {}
+  virtual void OnDeviceRemoved(const DeviceInfo& device_info) {}
 
   /**
    * @brief Reaction to the event, when scanning of devices is finished.
    */
-  virtual void OnScanDevicesFinished() {
-  }
+  virtual void OnScanDevicesFinished() {}
 
   /**
    * @brief Reaction to the event, when scanning of devices is failed.
    *
-   * @param error Error information about possible reason of scanning of devices failure.
+   * @param error Error information about possible reason of scanning of devices
+   * failure.
    */
-  virtual void OnScanDevicesFailed(const SearchDeviceError& error) {
-  }
+  virtual void OnScanDevicesFailed(const SearchDeviceError& error) {}
 
   /**
    * @brief Reaction to the event, when connection is established.
@@ -94,8 +88,7 @@ class TransportManagerListenerEmpty : public TransportManagerListener {
    * @param connection_id connection unique identifier.
    */
   virtual void OnConnectionEstablished(const DeviceInfo& device_info,
-                                       const ConnectionUID& connection_id) {
-  }
+                                       const ConnectionUID& connection_id) {}
 
   /**
    * @brief Reaction to the event, when connection to the device is failed.
@@ -104,20 +97,17 @@ class TransportManagerListenerEmpty : public TransportManagerListener {
    * @param error Error information about possible reason of connect failure.
    */
   virtual void OnConnectionFailed(const DeviceInfo& device_info,
-                                  const ConnectError& error) {
-  }
+                                  const ConnectError& error) {}
 
   /**
    * @brief Reaction to the event, when connection is closed.
    *
    * @param connection_id Connection unique identifier.
    */
-  virtual void OnConnectionClosed(ConnectionUID connection_id) {
-  }
+  virtual void OnConnectionClosed(ConnectionUID connection_id) {}
 
   virtual void OnUnexpectedDisconnect(ConnectionUID connection_id,
-                                      const CommunicationError& error) {
-  }
+                                      const CommunicationError& error) {}
 
   /**
    * @brief Reaction to the event, when connection close is failed.
@@ -126,8 +116,7 @@ class TransportManagerListenerEmpty : public TransportManagerListener {
    * @param error Error information about possible reason of failure.
    */
   virtual void OnConnectionClosedFailure(ConnectionUID connection_id,
-                                         const DisconnectError& error) {
-  }
+                                         const DisconnectError& error) {}
 
   /**
    * @brief Reaction to the event, when connection with the device is lost.
@@ -136,8 +125,7 @@ class TransportManagerListenerEmpty : public TransportManagerListener {
    * @param error Error information about possible reason of lost connection.
    */
   virtual void OnDeviceConnectionLost(const DeviceHandle& device,
-                                      const DisconnectDeviceError& error) {
-  }
+                                      const DisconnectDeviceError& error) {}
 
   /**
    * @brief Reaction to the event, when Disconnect is failed.
@@ -146,8 +134,7 @@ class TransportManagerListenerEmpty : public TransportManagerListener {
    * @param error Error information about possible reason of Disconnect failure.
    */
   virtual void OnDisconnectFailed(const DeviceHandle& device,
-                                  const DisconnectDeviceError& error) {
-  }
+                                  const DisconnectDeviceError& error) {}
 
   /**
    * @brief Reaction to the event, when transport manager received a massage.
@@ -155,34 +142,35 @@ class TransportManagerListenerEmpty : public TransportManagerListener {
    * @param message Smart pointer to the raw massage.
    * @param connection_id Connection unique identifier.
    */
-  virtual void OnTMMessageReceived(const ::protocol_handler::RawMessagePtr message) {
-  }
+  virtual void OnTMMessageReceived(
+      const ::protocol_handler::RawMessagePtr message) {}
 
   /**
-   * @brief Reaction to the event, when receiving of massage for transport manager is failed.
+   * @brief Reaction to the event, when receiving of massage for transport
+   * manager is failed.
    *
    * @param connection_id connection unique identifier.
    * @param error Error information about possible reason of failure.
    */
   virtual void OnTMMessageReceiveFailed(ConnectionUID connection_id,
-                                        const DataReceiveError& error) {
-  }
+                                        const DataReceiveError& error) {}
 
   /**
    * @brief Reaction to the event, when transport manager sent a massage.
    */
-  virtual void OnTMMessageSend(const ::protocol_handler::RawMessagePtr message) {
-  }
+  virtual void OnTMMessageSend(
+      const ::protocol_handler::RawMessagePtr message) {}
 
   /**
-   * @brief Reaction to the event, when sending of massage by transport manager is failed.
+   * @brief Reaction to the event, when sending of massage by transport manager
+   * is failed.
    *
    * @param error Error information about possible reason of failure.
    * @param message Smart pointer to the raw massage.
    */
-  virtual void OnTMMessageSendFailed(const DataSendError& error,
-                                     const ::protocol_handler::RawMessagePtr message) {
-  }
+  virtual void OnTMMessageSendFailed(
+      const DataSendError& error,
+      const ::protocol_handler::RawMessagePtr message) {}
 };
 }  // namespace transport_manager
 #endif  // SRC_COMPONENTS_INCLUDE_TRANSPORT_MANAGER_TRANSPORT_MANAGER_LISTENER_EMPTY_H_

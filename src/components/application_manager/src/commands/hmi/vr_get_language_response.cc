@@ -38,11 +38,9 @@ namespace application_manager {
 namespace commands {
 
 VRGetLanguageResponse::VRGetLanguageResponse(const MessageSharedPtr& message)
-    : ResponseFromHMI(message) {
-}
+    : ResponseFromHMI(message) {}
 
-VRGetLanguageResponse::~VRGetLanguageResponse() {
-}
+VRGetLanguageResponse::~VRGetLanguageResponse() {}
 
 void VRGetLanguageResponse::Run() {
   LOG4CXX_AUTO_TRACE(logger_);

@@ -1,1 +1,1 @@
-../../../../include/application_manager/mobile_command_factory.h
+../../../../ include / application_manager / mobile_command_factory.h

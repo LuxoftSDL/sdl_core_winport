@@ -216,7 +216,7 @@ class SQLQuery {
    * The SQL statement in SQLite
    */
   sqlite3_stmt* statement_;
-#endif // WIN_NATIVE
+#endif  // WIN_NATIVE
 
   /**
    * Lock for guarding statement

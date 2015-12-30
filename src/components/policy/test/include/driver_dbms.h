@@ -33,9 +33,9 @@
 #define SRC_COMPONENTS_POLICY_TEST_INCLUDE_DRIVER_DBMS_H_
 
 #ifdef __QNX__
-#  include <qdb/qdb.h>
+#include <qdb/qdb.h>
 #else  // __QNX__
-#  include <sqlite3.h>
+#include <sqlite3.h>
 #endif  // __QNX__
 
 namespace test {
@@ -45,23 +45,16 @@ namespace policy {
 #ifdef __QNX__
 class DBMS {
  public:
-  explicit DBMS(std::string db_name) : db_name_(db_name), conn_(0) {
-  }
-  ~DBMS() {
-    Close();
-  }
+  explicit DBMS(std::string db_name) : db_name_(db_name), conn_(0) {}
+  ~DBMS() { Close(); }
   bool Open() {
     conn_ = qdb_connect(db_name_.c_str(), 0);
     return conn_ != NULL;
   }
-  void Close() {
-    qdb_disconnect(conn_);
-  }
-  bool Exec(const char* query) {
-    return -1 != qdb_statement(conn_, query);
-  }
+  void Close() { qdb_disconnect(conn_); }
+  bool Exec(const char* query) { return -1 != qdb_statement(conn_, query); }
   int FetchOneInt(const char* query) {
-    int stmt = qdb_stmt_init(conn_, query, strlen(query)+1);
+    int stmt = qdb_stmt_init(conn_, query, strlen(query) + 1);
     qdb_stmt_exec(conn_, stmt, NULL, 0);
     qdb_result_t* res = qdb_getresult(conn_);
     void* ret = qdb_cell(res, 0, 0);
@@ -73,7 +66,7 @@ class DBMS {
     return value;
   }
   double FetchOneDouble(const char* query) {
-    int stmt = qdb_stmt_init(conn_, query, strlen(query)+1);
+    int stmt = qdb_stmt_init(conn_, query, strlen(query) + 1);
     qdb_stmt_exec(conn_, stmt, NULL, 0);
     qdb_result_t* res = qdb_getresult(conn_);
     void* ret = qdb_cell(res, 0, 0);
@@ -86,7 +79,7 @@ class DBMS {
     return value;
   }
   std::string FetchOneString(const char* query) {
-    int stmt = qdb_stmt_init(conn_, query, strlen(query)+1);
+    int stmt = qdb_stmt_init(conn_, query, strlen(query) + 1);
     qdb_stmt_exec(conn_, stmt, NULL, 0);
     qdb_result_t* res = qdb_getresult(conn_);
     void* ret = qdb_cell(res, 0, 0);
@@ -104,17 +97,12 @@ class DBMS {
   qdb_hdl_t* conn_;
 };
 
-#else  // __QNX__
+#else   // __QNX__
 class DBMS {
  public:
-  explicit DBMS(std::string file_name) : file_name_(file_name), conn_(0) {
-  }
-  ~DBMS() {
-    Close();
-  }
-  bool Open() {
-    return SQLITE_OK == sqlite3_open(file_name_.c_str(), &conn_);
-  }
+  explicit DBMS(std::string file_name) : file_name_(file_name), conn_(0) {}
+  ~DBMS() { Close(); }
+  bool Open() { return SQLITE_OK == sqlite3_open(file_name_.c_str(), &conn_); }
   void Close() {
     sqlite3_close(conn_);
     remove(file_name_.c_str());

@@ -56,9 +56,9 @@
 namespace transport_manager {
 
 typedef threads::MessageLoopThread<std::queue<protocol_handler::RawMessagePtr> >
-  RawMessageLoopThread;
+    RawMessageLoopThread;
 typedef threads::MessageLoopThread<std::queue<TransportAdapterEvent> >
-  TransportAdapterEventLoopThread;
+    TransportAdapterEventLoopThread;
 
 /**
  * @brief Implementation of transport manager.s
@@ -77,7 +77,7 @@ class TransportManagerImpl : public TransportManager,
   /**
    * @brief Structure that contains internal connection parameters
    */
-  struct ConnectionInternal: public Connection {
+  struct ConnectionInternal : public Connection {
     TransportManagerImpl* transport_manager;
     TransportAdapter* transport_adapter;
     typedef timer::TimerThread<ConnectionInternal> TimerInternal;
@@ -89,11 +89,13 @@ class TransportManagerImpl : public TransportManager,
 
     ConnectionInternal(TransportManagerImpl* transport_manager,
                        TransportAdapter* transport_adapter,
-                       const ConnectionUID& id, const DeviceUID& dev_id,
+                       const ConnectionUID& id,
+                       const DeviceUID& dev_id,
                        const ApplicationHandle& app_id,
                        const DeviceHandle& device_handle);
     void DisconnectFailedRoutine();
   };
+
  public:
   /**
    * @brief Destructor.
@@ -161,7 +163,8 @@ class TransportManagerImpl : public TransportManager,
    *
    * @return Code error.
    **/
-  virtual int SendMessageToDevice(const protocol_handler::RawMessagePtr message);
+  virtual int SendMessageToDevice(
+      const protocol_handler::RawMessagePtr message);
 
   /**
    * @brief Post event in the event queue.
@@ -226,19 +229,19 @@ class TransportManagerImpl : public TransportManager,
   void SetTimeMetricObserver(TMMetricObserver* observer);
 #endif  // TIME_TESTER
 
-
   /**
    * @brief Constructor.
    **/
   TransportManagerImpl();
 
  protected:
-#if defined (SDL_CPP11)
+#if defined(SDL_CPP11)
   template <class Proc, class... Args>
   void RaiseEvent(Proc proc, Args... args) {
     for (TransportManagerListenerList::iterator it =
              transport_manager_listener_.begin();
-         it != transport_manager_listener_.end(); ++it) {
+         it != transport_manager_listener_.end();
+         ++it) {
       ((*it)->*proc)(args...);
     }
   }
@@ -247,7 +250,8 @@ class TransportManagerImpl : public TransportManager,
   void RaiseEvent(Proc proc) {
     for (TransportManagerListenerList::iterator it =
              transport_manager_listener_.begin();
-         it != transport_manager_listener_.end(); ++it) {
+         it != transport_manager_listener_.end();
+         ++it) {
       ((*it)->*proc)();
     }
   }
@@ -256,7 +260,8 @@ class TransportManagerImpl : public TransportManager,
   void RaiseEvent(Proc proc, const Arg1& arg1) {
     for (TransportManagerListenerList::iterator it =
              transport_manager_listener_.begin();
-         it != transport_manager_listener_.end(); ++it) {
+         it != transport_manager_listener_.end();
+         ++it) {
       ((*it)->*proc)(arg1);
     }
   }
@@ -265,29 +270,39 @@ class TransportManagerImpl : public TransportManager,
   void RaiseEvent(Proc proc, const Arg1& arg1, const Arg2& arg2) {
     for (TransportManagerListenerList::iterator it =
              transport_manager_listener_.begin();
-         it != transport_manager_listener_.end(); ++it) {
+         it != transport_manager_listener_.end();
+         ++it) {
       ((*it)->*proc)(arg1, arg2);
     }
   }
 
   template <class Proc, class Arg1, class Arg2, class Arg3>
-  void RaiseEvent(Proc proc, const Arg1& arg1, const Arg2& arg2, const Arg3& arg3) {
+  void RaiseEvent(Proc proc,
+                  const Arg1& arg1,
+                  const Arg2& arg2,
+                  const Arg3& arg3) {
     for (TransportManagerListenerList::iterator it =
              transport_manager_listener_.begin();
-         it != transport_manager_listener_.end(); ++it) {
+         it != transport_manager_listener_.end();
+         ++it) {
       ((*it)->*proc)(arg1, arg2, arg3);
     }
   }
 
   template <class Proc, class Arg1, class Arg2, class Arg3, class Arg4>
-  void RaiseEvent(Proc proc, const Arg1& arg1, const Arg2& arg2, const Arg3& arg3, const Arg4& arg4) {
+  void RaiseEvent(Proc proc,
+                  const Arg1& arg1,
+                  const Arg2& arg2,
+                  const Arg3& arg3,
+                  const Arg4& arg4) {
     for (TransportManagerListenerList::iterator it =
              transport_manager_listener_.begin();
-         it != transport_manager_listener_.end(); ++it) {
+         it != transport_manager_listener_.end();
+         ++it) {
       ((*it)->*proc)(arg1, arg2, arg3, arg4);
     }
   }
-#endif // SDL_CPP11
+#endif  // SDL_CPP11
 
   /**
    * @brief Put massage in the container of massages.
@@ -336,14 +351,14 @@ class TransportManagerImpl : public TransportManager,
 
     DeviceHandle UidToHandle(const DeviceUID& dev_uid, bool& is_new) {
       {
-      sync_primitives::AutoReadLock lock(conversion_table_lock);
-      ConversionTable::iterator it = std::find(
-          conversion_table_.begin(), conversion_table_.end(), dev_uid);
-      if (it != conversion_table_.end()) {
-        is_new = false;
-        return std::distance(conversion_table_.begin(), it) +
-               1;  // handle begin since 1 (one)
-      }
+        sync_primitives::AutoReadLock lock(conversion_table_lock);
+        ConversionTable::iterator it = std::find(
+            conversion_table_.begin(), conversion_table_.end(), dev_uid);
+        if (it != conversion_table_.end()) {
+          is_new = false;
+          return std::distance(conversion_table_.begin(), it) +
+                 1;  // handle begin since 1 (one)
+        }
       }
       is_new = true;
       sync_primitives::AutoWriteLock lock(conversion_table_lock);
@@ -384,7 +399,7 @@ class TransportManagerImpl : public TransportManager,
   TransportAdapterEventLoopThread event_queue_;
 
   typedef std::vector<std::pair<const TransportAdapter*, DeviceInfo> >
-  DeviceInfoList;
+      DeviceInfoList;
   sync_primitives::RWLock device_list_lock_;
   DeviceInfoList device_list_;
 
@@ -398,12 +413,15 @@ class TransportManagerImpl : public TransportManager,
       ConnectionUID id,
       std::map<ConnectionUID, std::pair<unsigned int, unsigned char*> >&
           container,
-      unsigned char* data, unsigned int data_size);
-  bool GetFrameSize(unsigned char* data, unsigned int data_size,
+      unsigned char* data,
+      unsigned int data_size);
+  bool GetFrameSize(unsigned char* data,
+                    unsigned int data_size,
                     unsigned int& frame_size);
   bool GetFrame(std::map<ConnectionUID,
-                std::pair<unsigned int, unsigned char*> >& container,
-                ConnectionUID id, unsigned int frame_size,
+                         std::pair<unsigned int, unsigned char*> >& container,
+                ConnectionUID id,
+                unsigned int frame_size,
                 unsigned char** frame);
 
   void OnDeviceListUpdated(TransportAdapter* ta);

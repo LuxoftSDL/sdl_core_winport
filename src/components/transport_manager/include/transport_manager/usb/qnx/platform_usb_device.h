@@ -52,7 +52,8 @@ class PlatformUsbDevice {
   std::string GetManufacturer() const;
   std::string GetProductName() const;
   std::string GetSerialNumber() const;
-  PlatformUsbDevice(usbd_device_instance_t* instance, usbd_device* device,
+  PlatformUsbDevice(usbd_device_instance_t* instance,
+                    usbd_device* device,
                     const usbd_device_descriptor_t& device_descriptor);
   const usbd_device_instance_t& GetDeviceInstance() {
     return usbd_device_instance_;

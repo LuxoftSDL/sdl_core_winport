@@ -52,7 +52,6 @@ class TransportAdapterController;
  */
 class BluetoothSocketConnection : public ThreadedSocketConnection {
  public:
-
   /**
    * @brief Constructor.
    *
@@ -68,8 +67,8 @@ class BluetoothSocketConnection : public ThreadedSocketConnection {
    * @brief Destructor.
    */
   virtual ~BluetoothSocketConnection();
- protected:
 
+ protected:
   /**
    * @brief Establish connection.
    *

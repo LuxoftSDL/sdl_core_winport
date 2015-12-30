@@ -1,6 +1,6 @@
 /*
  * \file mock_device.h
- * \brief 
+ * \brief
  *
  * Copyright (c) 2013, Ford Motor Company
  * All rights reserved.
@@ -55,24 +55,22 @@ namespace components {
 namespace transport_manager {
 
 class MockDevice : public ::transport_manager::transport_adapter::Device {
-
   pthread_mutex_t device_started_mutex;
   std::vector<MockApplication> applications_;
   int applications_cnt_;
-  TransportAdapterController *controller_;
+  TransportAdapterController* controller_;
+
  public:
-  MockDevice(const std::string& name, const std::string& id,
-             TransportAdapterController * controller)
-      : Device(name, id),
-        applications_cnt_(0),
-        controller_(controller) {
-  }
+  MockDevice(const std::string& name,
+             const std::string& id,
+             TransportAdapterController* controller)
+      : Device(name, id), applications_cnt_(0), controller_(controller) {}
   const ApplicationHandle addApplication();
   void Start();
   void Stop();
   bool IsSameAs(const Device* other) const;
   ApplicationList GetApplicationList() const;
-  bool operator == (const MockDevice &other);
+  bool operator==(const MockDevice& other);
 };
 
 }  // namespace transport_manager

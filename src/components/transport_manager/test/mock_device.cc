@@ -46,16 +46,16 @@ const ApplicationHandle MockDevice::addApplication() {
 
 void MockDevice::Start() {
   for (std::vector<MockApplication>::iterator it = applications_.begin();
-      it != applications_.end();
-      ++it) {
+       it != applications_.end();
+       ++it) {
     it->Start();
   }
 }
 
 void MockDevice::Stop() {
   for (std::vector<MockApplication>::iterator it = applications_.begin();
-      it != applications_.end();
-      ++it) {
+       it != applications_.end();
+       ++it) {
     it->Stop();
   }
 }
@@ -71,12 +71,11 @@ static ApplicationHandle get_handle(const MockApplication& app) {
 ApplicationList MockDevice::GetApplicationList() const {
   ApplicationList rc(applications_.size());
   std::transform(
-      applications_.begin(), applications_.end(), rc.begin(),
-      &get_handle);
+      applications_.begin(), applications_.end(), rc.begin(), &get_handle);
   return rc;
 }
 
-bool MockDevice::operator ==(const MockDevice& other) {
+bool MockDevice::operator==(const MockDevice& other) {
   return IsSameAs(&other);
 }
 

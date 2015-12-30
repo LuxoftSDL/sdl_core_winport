@@ -37,17 +37,12 @@ namespace application_manager {
 namespace commands {
 
 OnUpdateDeviceList::OnUpdateDeviceList(const MessageSharedPtr& message)
-    : NotificationFromHMI(message) {
-}
+    : NotificationFromHMI(message) {}
 
-OnUpdateDeviceList::~OnUpdateDeviceList() {
-}
+OnUpdateDeviceList::~OnUpdateDeviceList() {}
 
-void OnUpdateDeviceList::Run() {
-  LOG4CXX_AUTO_TRACE(logger_);
-}
+void OnUpdateDeviceList::Run() { LOG4CXX_AUTO_TRACE(logger_); }
 
 }  // namespace commands
 
 }  // namespace application_manager
-

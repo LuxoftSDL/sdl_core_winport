@@ -54,9 +54,9 @@ class Device {
    * @param unique_device_id device unique identifier.
    **/
   Device(const std::string& name, const DeviceUID& unique_device_id)
-    : name_(name),
-      unique_device_id_(unique_device_id),
-      keep_on_disconnect_(false) {}
+      : name_(name)
+      , unique_device_id_(unique_device_id)
+      , keep_on_disconnect_(false) {}
   /**
    * @brief Destructor.
    **/
@@ -76,25 +76,19 @@ class Device {
 
   virtual ApplicationList GetApplicationList() const = 0;
 
-  virtual void Stop() { }
+  virtual void Stop() {}
 
-  inline const DeviceUID& unique_device_id() const {
-    return unique_device_id_;
-  }
+  inline const DeviceUID& unique_device_id() const { return unique_device_id_; }
 
   /**
    * @brief Return name of device.
    */
-  inline const std::string& name() const {
-    return name_;
-  }
+  inline const std::string& name() const { return name_; }
 
   /**
    * @brief Get @link keep_on_disconnect_ @endlink value
    */
-  inline bool keep_on_disconnect() const {
-    return keep_on_disconnect_;
-  }
+  inline bool keep_on_disconnect() const { return keep_on_disconnect_; }
 
   /**
    * @brief Set @link keep_on_disconnect_ @endlink value
@@ -116,12 +110,13 @@ class Device {
   DeviceUID unique_device_id_;
 
   /**
-   * @brief If true, device will remain in list even if all its connections finished.
+   * @brief If true, device will remain in list even if all its connections
+   *finished.
    **/
   bool keep_on_disconnect_;
 };
 typedef utils::SharedPtr<Device> DeviceSptr;
-typedef std::vector<DeviceSptr>  DeviceVector;
+typedef std::vector<DeviceSptr> DeviceVector;
 }  // namespace transport_adapter
 }  // namespace transport_manager
 #endif  // SRC_COMPONENTS_INCLUDE_TRANSPORT_MANAGER_TRANSPORT_ADAPTER_DEVICE_H_

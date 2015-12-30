@@ -44,11 +44,9 @@ namespace application_manager {
 namespace commands {
 
 SetIconRequest::SetIconRequest(const MessageSharedPtr& message)
-    : CommandRequestImpl(message) {
-}
+    : CommandRequestImpl(message) {}
 
-SetIconRequest::~SetIconRequest() {
-}
+SetIconRequest::~SetIconRequest() {}
 
 void SetIconRequest::Run() {
   LOG4CXX_AUTO_TRACE(logger_);
@@ -66,8 +64,9 @@ void SetIconRequest::Run() {
       (*message_)[strings::msg_params][strings::sync_file_name].asString();
 
   std::string full_file_path = file_system::ConcatPath(
-    profile::Profile::instance()->app_storage_folder(),
-    app->folder_name(), sync_file_name);
+      profile::Profile::instance()->app_storage_folder(),
+      app->folder_name(),
+      sync_file_name);
 
   if (!file_system::FileExists(full_file_path)) {
     LOG4CXX_ERROR(logger_, "No such file " << full_file_path);
@@ -75,22 +74,22 @@ void SetIconRequest::Run() {
     return;
   }
 
-  smart_objects::SmartObject msg_params = smart_objects::SmartObject(
-      smart_objects::SmartType_Map);
+  smart_objects::SmartObject msg_params =
+      smart_objects::SmartObject(smart_objects::SmartType_Map);
 
   msg_params[strings::app_id] = app->app_id();
-  msg_params[strings::sync_file_name] = smart_objects::SmartObject(
-      smart_objects::SmartType_Map);
+  msg_params[strings::sync_file_name] =
+      smart_objects::SmartObject(smart_objects::SmartType_Map);
 
-// Panasonic requres unchanged path value without encoded special characters
-  const std::string full_file_path_for_hmi = file_system::ConvertPathForURL(
-      full_file_path);
+  // Panasonic requres unchanged path value without encoded special characters
+  const std::string full_file_path_for_hmi =
+      file_system::ConvertPathForURL(full_file_path);
 
   msg_params[strings::sync_file_name][strings::value] = full_file_path_for_hmi;
 
   // TODO(VS): research why is image_type hardcoded
   msg_params[strings::sync_file_name][strings::image_type] =
-      static_cast<int32_t> (SetIconRequest::ImageType::DYNAMIC);
+      static_cast<int32_t>(SetIconRequest::ImageType::DYNAMIC);
 
   // for further use in on_event function
   (*message_)[strings::msg_params][strings::sync_file_name] =
@@ -115,9 +114,10 @@ void SetIconRequest::on_event(const event_engine::Event& event) {
         ApplicationSharedPtr app =
             ApplicationManagerImpl::instance()->application(connection_key());
 
-        const std::string path = (*message_)[strings::msg_params]
-                                            [strings::sync_file_name]
-                                            [strings::value].asString();
+        const std::string path =
+            (*message_)[strings::msg_params][strings::sync_file_name]
+                       [strings::value]
+                           .asString();
         app->set_app_icon_path(path);
 
         LOG4CXX_INFO(logger_,

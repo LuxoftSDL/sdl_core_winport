@@ -41,7 +41,6 @@
 
 namespace file_system {
 
-
 /**
  * @brief Get available disc space.
  *
@@ -158,7 +157,8 @@ bool DeleteFile(const std::string& name);
  * @brief Removes directory.
  *
  * @param directory_path path to directory.
- * @param is_recursively true if you need delete directory recursively, otherwise false.
+ * @param is_recursively true if you need delete directory recursively,
+ * otherwise false.
  * @return returns true if the directory is successfully deleted.
  */
 bool RemoveDirectory(const std::string& directory_path, bool is_recursively);
@@ -212,8 +212,7 @@ bool WriteBinaryFile(const std::string& name,
   * @param result read data
   * @return returns true if the operation is successfully.
   */
-bool ReadBinaryFile(const std::string& name,
-                    std::vector<uint8_t>& result);
+bool ReadBinaryFile(const std::string& name, std::vector<uint8_t>& result);
 
 bool ReadFile(const std::string& name, std::string& result);
 
@@ -247,8 +246,7 @@ uint64_t GetFileModificationTime(const std::string& path);
   * @param dst Destination file path
   * @return if result success return true
 */
-bool CopyFile(const std::string& src,
-              const std::string& dst);
+bool CopyFile(const std::string& src, const std::string& dst);
 
 /**
   * @brief Move file from source to destination
@@ -257,8 +255,7 @@ bool CopyFile(const std::string& src,
   * @param dst Destination file path
   * @return if result success return true
 */
-bool MoveFile(const std::string& src,
-              const std::string& dst);
+bool MoveFile(const std::string& src, const std::string& dst);
 
 /**
   * @brief Removes files and subdirectories of specified directory
@@ -290,8 +287,7 @@ std::string GetPathDelimiter();
   * @param str Strings to be concatenated
   * @return Concatenated path string
   */
-std::string ConcatPath(const std::string& str1,
-                       const std::string& str2);
+std::string ConcatPath(const std::string& str1, const std::string& str2);
 std::string ConcatPath(const std::string& str1,
                        const std::string& str2,
                        const std::string& str3);

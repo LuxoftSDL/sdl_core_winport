@@ -37,11 +37,7 @@
 
 namespace threads {
 
-enum ThreadState {
-  kInit = 0,
-  kStarted = 1,
-  kStopReq = 2
-};
+enum ThreadState { kInit = 0, kStarted = 1, kStopReq = 2 };
 
 class Thread;
 
@@ -51,10 +47,7 @@ class Thread;
  */
 class ThreadDelegate {
  public:
-  ThreadDelegate()
-      : state_(kInit),
-        thread_(NULL) {
-  }
+  ThreadDelegate() : state_(kInit), thread_(NULL) {}
   /**
    * \brief Thread procedure.
    */
@@ -70,11 +63,9 @@ class ThreadDelegate {
 
   virtual ~ThreadDelegate();
 
-  Thread* thread() const {
-    return thread_;
-  }
+  Thread* thread() const { return thread_; }
 
-  void set_thread(Thread *thread);
+  void set_thread(Thread* thread);
 
   bool ImproveState(unsigned int to) {
     state_lock_.Lock();
@@ -85,9 +76,7 @@ class ThreadDelegate {
     return state_ == to;
   }
 
-  unsigned int state() const {
-    return state_;
-  }
+  unsigned int state() const { return state_; }
 
  private:
   volatile unsigned int state_;

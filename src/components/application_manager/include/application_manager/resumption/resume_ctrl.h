@@ -58,10 +58,8 @@ namespace resumption {
  * @brief Contains logic for storage/restore data of applications.
  */
 
-class ResumeCtrl: public app_mngr::event_engine::EventObserver {
-
+class ResumeCtrl : public app_mngr::event_engine::EventObserver {
  public:
-
   /**
    * @brief allows to create ResumeCtrl object
    */
@@ -171,8 +169,7 @@ class ResumeCtrl: public app_mngr::event_engine::EventObserver {
    * @param application that is need to be restored
    * @return true if it was saved, otherwise return false
    */
-  bool StartResumptionOnlyHMILevel(
-      app_mngr::ApplicationSharedPtr application);
+  bool StartResumptionOnlyHMILevel(app_mngr::ApplicationSharedPtr application);
 
   /**
    * @brief Check if there are all files need for resumption
@@ -226,9 +223,7 @@ class ResumeCtrl: public app_mngr::event_engine::EventObserver {
   /**
    * @brief Updates flag for saving application data
    */
-  void ApplicationsDataUpdated() {
-    is_data_saved_ = false;
-  }
+  void ApplicationsDataUpdated() { is_data_saved_ = false; }
 
   /**
    * @brief Resume HMI Level and audio streaming state if needed
@@ -268,8 +263,8 @@ class ResumeCtrl: public app_mngr::event_engine::EventObserver {
    * returns false
    */
   bool Init();
- private:
 
+ private:
   /**
    * @brief restores saved data of application
    * @param application contains application for which restores data
@@ -329,10 +324,10 @@ class ResumeCtrl: public app_mngr::event_engine::EventObserver {
   void AddSubscriptions(app_mngr::ApplicationSharedPtr application,
                         const smart_objects::SmartObject& saved_app);
 
-
   bool CheckIgnCycleRestrictions(const smart_objects::SmartObject& saved_app);
 
-  bool DisconnectedJustBeforeIgnOff(const smart_objects::SmartObject& saved_app);
+  bool DisconnectedJustBeforeIgnOff(
+      const smart_objects::SmartObject& saved_app);
 
   bool CheckAppRestrictions(app_mngr::ApplicationConstSharedPtr application,
                             const smart_objects::SmartObject& saved_app);
@@ -362,13 +357,13 @@ class ResumeCtrl: public app_mngr::event_engine::EventObserver {
    * timestamp and application from correlationID
    */
   struct ResumingApp {
-    uint32_t old_session_key; // session key is the same as app_id
+    uint32_t old_session_key;  // session key is the same as app_id
     app_mngr::ApplicationSharedPtr app;
   };
 
   struct TimeStampComparator {
-    bool operator() (const application_timestamp& lhs,
-                     const application_timestamp& rhs) const{
+    bool operator()(const application_timestamp& lhs,
+                    const application_timestamp& rhs) const {
       return lhs.second < rhs.second;
     }
   };
@@ -406,9 +401,8 @@ class ResumeCtrl: public app_mngr::event_engine::EventObserver {
    * @param use_events Process request events or not flag
    * @return TRUE on success, otherwise FALSE
    */
-  bool ProcessHMIRequest(
-      smart_objects::SmartObjectSPtr request = NULL,
-      bool use_events = false);
+  bool ProcessHMIRequest(smart_objects::SmartObjectSPtr request = NULL,
+                         bool use_events = false);
 
   /**
    * @brief Process list of HMI requests using ProcessHMIRequest method
@@ -427,16 +421,16 @@ class ResumeCtrl: public app_mngr::event_engine::EventObserver {
    *       wait for timer to resume HMI Level
    *
    */
-  mutable sync_primitives::Lock   queue_lock_;
-  timer::TimerThread<ResumeCtrl>  restore_hmi_level_timer_;
-  timer::TimerThread<ResumeCtrl>  save_persistent_data_timer_;
-  typedef std::list<uint32_t>     WaitingForTimerList;
-  WaitingForTimerList             waiting_for_timer_;
-  bool                            is_resumption_active_;
-  bool                            is_data_saved_;
-  time_t                          launch_time_;
-  utils::SharedPtr<ResumptionData>    resumption_storage_;
+  mutable sync_primitives::Lock queue_lock_;
+  timer::TimerThread<ResumeCtrl> restore_hmi_level_timer_;
+  timer::TimerThread<ResumeCtrl> save_persistent_data_timer_;
+  typedef std::list<uint32_t> WaitingForTimerList;
+  WaitingForTimerList waiting_for_timer_;
+  bool is_resumption_active_;
+  bool is_data_saved_;
+  time_t launch_time_;
+  utils::SharedPtr<ResumptionData> resumption_storage_;
 };
 
 }  // namespace resumption
-#endif // SRC_COMPONENTS_APPLICATION_MANAGER_INCLUDE_RESUME_CTRL_H
+#endif  // SRC_COMPONENTS_APPLICATION_MANAGER_INCLUDE_RESUME_CTRL_H

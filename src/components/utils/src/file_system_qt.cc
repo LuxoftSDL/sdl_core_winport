@@ -49,8 +49,8 @@
 #include <cstddef>
 #include <algorithm>
 
-#define R_OK    4
-#define W_OK    2
+#define R_OK 4
+#define W_OK 2
 
 CREATE_LOGGERPTR_GLOBAL(logger_, "Utils")
 
@@ -72,15 +72,15 @@ size_t file_system::DirectorySize(const std::string& path) {
   QFileInfo str_info(QString(path.c_str()));
   if (str_info.isDir()) {
     QDir dir(QString(path.c_str()));
-    QFileInfoList list = dir.entryInfoList(QDir::Files | QDir::Dirs |  QDir::Hidden |
-      QDir::NoSymLinks | QDir::NoDotAndDotDot);
+    QFileInfoList list =
+        dir.entryInfoList(QDir::Files | QDir::Dirs | QDir::Hidden |
+                          QDir::NoSymLinks | QDir::NoDotAndDotDot);
     foreach (QFileInfo fileInfo, list) {
-      if(fileInfo.isDir()) {
+      if (fileInfo.isDir()) {
         size += DirectorySize(fileInfo.absoluteFilePath().toStdString());
       } else {
         size += fileInfo.size();
       }
-
     }
   }
   return static_cast<size_t>(size);
@@ -88,7 +88,7 @@ size_t file_system::DirectorySize(const std::string& path) {
 
 std::string file_system::CreateDirectory(const std::string& name) {
   QDir dir;
-  if(dir.mkdir(QString(name.c_str()))) {
+  if (dir.mkdir(QString(name.c_str()))) {
     return name;
   }
   return "";
@@ -114,9 +114,9 @@ bool file_system::FileExists(const std::string& name) {
   return checkFile.exists() && checkFile.isFile();
 }
 
-bool file_system::Write(
-  const std::string& file_name, const std::vector<uint8_t>& data,
-  std::ios_base::openmode mode) {
+bool file_system::Write(const std::string& file_name,
+                        const std::vector<uint8_t>& data,
+                        std::ios_base::openmode mode) {
   QByteArray text(reinterpret_cast<uint8_t>(data.data()), data.size());
   QFile file(QString(file_name.c_str()));
   file.open(QIODevice::WriteOnly | static_cast<QIODevice::OpenModeFlag>(mode));
@@ -128,11 +128,10 @@ bool file_system::Write(
   return false;
 }
 
-std::ofstream* file_system::Open(
-    const std::string& file_name,
-    std::ios_base::openmode mode) {
+std::ofstream* file_system::Open(const std::string& file_name,
+                                 std::ios_base::openmode mode) {
   std::ofstream* file = new std::ofstream();
-  file->open( file_name.c_str(),std::ios_base::binary | mode);
+  file->open(file_name.c_str(), std::ios_base::binary | mode);
   if (file->is_open()) {
     return file;
   }
@@ -141,10 +140,9 @@ std::ofstream* file_system::Open(
   return NULL;
 }
 
-bool file_system::Write(
-    std::ofstream* const file_stream,
-    const uint8_t* data,
-    uint32_t data_size) {
+bool file_system::Write(std::ofstream* const file_stream,
+                        const uint8_t* data,
+                        uint32_t data_size) {
   bool result = false;
   if (file_stream) {
     for (size_t i = 0; i < data_size; ++i) {
@@ -176,36 +174,32 @@ void file_system::RemoveDirectoryContent(const std::string& directory_path) {
   QDir dir(QString(directory_path.c_str()));
   dir.setNameFilters(QStringList() << "*.*");
   dir.setFilter(QDir::Files);
-  foreach(QString dirFile, dir.entryList()){
-    dir.remove(dirFile);
-  }
+  foreach (QString dirFile, dir.entryList()) { dir.remove(dirFile); }
   dir.rmpath(QString(directory_path.c_str()));
 }
 
-bool file_system::RemoveDirectory(
-    const std::string& directory_path,
-    bool is_recursively) {
+bool file_system::RemoveDirectory(const std::string& directory_path,
+                                  bool is_recursively) {
   QDir dir(QString(directory_path.c_str()));
-  if (DirectoryExists(directory_path)
-      && IsAccessible(directory_path, W_OK)) {
-      if (is_recursively) {
-        return dir.removeRecursively();
-      }
-      return dir.rmdir(QString(directory_path.c_str()));
+  if (DirectoryExists(directory_path) && IsAccessible(directory_path, W_OK)) {
+    if (is_recursively) {
+      return dir.removeRecursively();
+    }
+    return dir.rmdir(QString(directory_path.c_str()));
   }
   return false;
 }
 
 bool file_system::IsAccessible(const std::string& name, int32_t how) {
   QFileInfo qFileInfo(QString(name.c_str()));
-  switch(how){
-    case(W_OK):
+  switch (how) {
+    case (W_OK):
       return qFileInfo.isWritable();
-    case(R_OK):
+    case (R_OK):
       return qFileInfo.isReadable();
     default:
       return false;
-   }
+  }
 }
 
 bool file_system::IsWritingAllowed(const std::string& name) {
@@ -224,25 +218,21 @@ std::vector<std::string> file_system::ListFiles(
   }
   QDir dir(QString(directory_name.c_str()));
   QStringList list_files = dir.entryList(QDir::Files);
-  foreach( QString str, list_files) {
-    listFiles.push_back(str.toStdString());
-  }
+  foreach (QString str, list_files) { listFiles.push_back(str.toStdString()); }
   return listFiles;
 }
 
-bool file_system::WriteBinaryFile(
-    const std::string& name,
-    const std::vector<uint8_t>& contents) {
+bool file_system::WriteBinaryFile(const std::string& name,
+                                  const std::vector<uint8_t>& contents) {
   using namespace std;
-  ofstream output(name.c_str(), ios_base::binary|ios_base::trunc);
+  ofstream output(name.c_str(), ios_base::binary | ios_base::trunc);
   output.write(reinterpret_cast<const char*>(&contents.front()),
-    contents.size());
+               contents.size());
   return output.good();
 }
 
-bool file_system::ReadBinaryFile(
-    const std::string& name,
-    std::vector<uint8_t>& result) {
+bool file_system::ReadBinaryFile(const std::string& name,
+                                 std::vector<uint8_t>& result) {
   if (!FileExists(name) || !IsAccessible(name, R_OK)) {
     return false;
   }
@@ -289,18 +279,14 @@ uint64_t file_system::GetFileModificationTime(const std::string& path) {
   return static_cast<uint64_t>(f.lastModified().toMSecsSinceEpoch());
 }
 
-bool file_system::CopyFile(
-    const std::string& src,
-    const std::string& dst) {
+bool file_system::CopyFile(const std::string& src, const std::string& dst) {
   if (!FileExists(src) || FileExists(dst) || !CreateFile(dst)) {
     return false;
   }
   return QFile::copy(QString(src.c_str()), QString(dst.c_str()));
 }
 
-bool file_system::MoveFile(
-    const std::string& src,
-    const std::string& dst) {
+bool file_system::MoveFile(const std::string& src, const std::string& dst) {
   if (!CopyFile(src, dst)) {
     return false;
   }
@@ -312,34 +298,31 @@ bool file_system::MoveFile(
 }
 
 std::string file_system::GetPathDelimiter() {
-
   return QString(QDir::separator()).toStdString();
 }
 
-bool file_system::IsRelativePath(const std::string& path){
+bool file_system::IsRelativePath(const std::string& path) {
   return QDir::isRelativePath(path.c_str());
 }
 
-void file_system::MakeAbsolutePath(std::string& path){
+void file_system::MakeAbsolutePath(std::string& path) {
   if (!IsRelativePath(path)) {
     return;
   }
   path = ConcatPath(CurrentWorkingDirectory(), path);
 }
 
-std::string file_system::ConcatPath(
-    const std::string& str1,
-    const std::string& str2){
+std::string file_system::ConcatPath(const std::string& str1,
+                                    const std::string& str2) {
   return str1 + GetPathDelimiter() + str2;
 }
 
-std::string file_system::ConcatPath(
-    const std::string& str1,
-    const std::string& str2,
-    const std::string& str3){
+std::string file_system::ConcatPath(const std::string& str1,
+                                    const std::string& str2,
+                                    const std::string& str3) {
   return ConcatPath(ConcatPath(str1, str2), str3);
 }
-std::string file_system::RetrieveFileNameFromPath(const std::string& path){
+std::string file_system::RetrieveFileNameFromPath(const std::string& path) {
   QFile fname(path.c_str());
   QFileInfo file_info(fname.fileName());
   return file_info.fileName().toStdString();

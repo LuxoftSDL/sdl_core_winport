@@ -42,7 +42,7 @@
 #include "utils/threads/thread_delegate.h"
 #include "utils/logger.h"
 
-const size_t THREAD_NAME_SIZE = 15; 
+const size_t THREAD_NAME_SIZE = 15;
 
 namespace threads {
 
@@ -58,7 +58,7 @@ void sleep(uint32_t ms) {
 }
 
 /* Parameter is not actual for Windows platform */
-size_t Thread::kMinStackSize = 0; 
+size_t Thread::kMinStackSize = 0;
 
 void Thread::cleanup(void* arg) {
   LOG4CXX_AUTO_TRACE(logger_);
@@ -93,10 +93,12 @@ void* Thread::threadFunc(void* arg) {
   while (!thread->finalized_) {
     LOG4CXX_DEBUG(logger_, "Thread #" << GetCurrentThreadId() << " iteration");
     thread->run_cond_.Wait(thread->state_lock_);
-    LOG4CXX_DEBUG(
-        logger_,
-        "Thread #" << GetCurrentThreadId() << " execute. " << "stopped_ = "
-		<< thread->stopped_ << "; finalized_ = " << thread->finalized_);
+    LOG4CXX_DEBUG(logger_,
+                  "Thread #" << GetCurrentThreadId() << " execute. "
+                             << "stopped_ = "
+                             << thread->stopped_
+                             << "; finalized_ = "
+                             << thread->finalized_);
     if (!thread->stopped_ && !thread->finalized_) {
       thread->isThreadRunning_ = true;
 
@@ -119,32 +121,26 @@ void* Thread::threadFunc(void* arg) {
 }
 
 void Thread::SetNameForId(const PlatformThreadHandle& thread_id,
-                          std::string name) {
-}
+                          std::string name) {}
 
 Thread::Thread(const char* name, ThreadDelegate* delegate)
-    : name_(name ? name : "undefined"),
-      delegate_(delegate),
-      handle_(NULL),
-      thread_options_(),
-      isThreadRunning_(0),
-      stopped_(false),
-      finalized_(false),
-      thread_created_(false) {
-}
+    : name_(name ? name : "undefined")
+    , delegate_(delegate)
+    , handle_(NULL)
+    , thread_options_()
+    , isThreadRunning_(0)
+    , stopped_(false)
+    , finalized_(false)
+    , thread_created_(false) {}
 
-bool Thread::start() {
-  return start(thread_options_);
-}
+bool Thread::start() { return start(thread_options_); }
 
 void Thread::cleanup() {
   sync_primitives::AutoLock auto_lock(state_lock_);
   cleanup(this);
 }
 
-PlatformThreadHandle Thread::CurrentId() {
-  return GetCurrentThread();
-}
+PlatformThreadHandle Thread::CurrentId() { return GetCurrentThread(); }
 
 bool Thread::start(const ThreadOptions& options) {
   LOG4CXX_AUTO_TRACE(logger_);
@@ -162,9 +158,9 @@ bool Thread::start(const ThreadOptions& options) {
   }
 
   if (isThreadRunning_) {
-    LOG4CXX_TRACE(
-        logger_,
-        "EXIT thread "<< name_ << " #" << handle_ << " is already running");
+    LOG4CXX_TRACE(logger_,
+                  "EXIT thread " << name_ << " #" << handle_
+                                 << " is already running");
     return true;
   }
 
@@ -172,8 +168,8 @@ bool Thread::start(const ThreadOptions& options) {
 
   if (!thread_created_) {
     // state_lock 1
-	handle_ = ::CreateThread(
-		NULL, stack_size(), (LPTHREAD_START_ROUTINE)&threadFunc, this, 0, NULL);
+    handle_ = ::CreateThread(
+        NULL, stack_size(), (LPTHREAD_START_ROUTINE)&threadFunc, this, 0, NULL);
     if (NULL != handle_) {
       LOG4CXX_DEBUG(logger_, "Created thread: " << name_);
       // state_lock 0
@@ -181,16 +177,12 @@ bool Thread::start(const ThreadOptions& options) {
       state_cond_.Wait(auto_lock);
       thread_created_ = true;
     } else {
-      LOG4CXX_ERROR(
-          logger_,
-          "Couldn't create thread " << name_);
+      LOG4CXX_ERROR(logger_, "Couldn't create thread " << name_);
     }
   }
   stopped_ = false;
   run_cond_.NotifyOne();
-  LOG4CXX_DEBUG(
-      logger_,
-      "Thread " << name_ << " #" << handle_ << " started");
+  LOG4CXX_DEBUG(logger_, "Thread " << name_ << " #" << handle_ << " started");
   return NULL != handle_;
 }
 
@@ -200,8 +192,8 @@ void Thread::stop() {
 
   stopped_ = true;
 
-  LOG4CXX_DEBUG(logger_, "Stopping thread #" << handle_
-                << " \"" << name_ << " \"");
+  LOG4CXX_DEBUG(logger_,
+                "Stopping thread #" << handle_ << " \"" << name_ << " \"");
 
   if (delegate_ && isThreadRunning_) {
     delegate_->exitThreadMain();
@@ -243,10 +235,8 @@ Thread* CreateThread(const char* name, ThreadDelegate* delegate) {
   return thread;
 }
 
-void DeleteThread(Thread* thread) {
-  delete thread;
-}
+void DeleteThread(Thread* thread) { delete thread; }
 
 }  // namespace threads
 
-#endif // OS_WINDOWS
+#endif  // OS_WINDOWS

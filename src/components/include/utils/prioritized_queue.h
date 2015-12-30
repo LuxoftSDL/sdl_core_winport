@@ -45,27 +45,21 @@ namespace utils {
  * Template queue class that gives out messages respecting their priority
  * Message class must have size_t PriorityOrder() method implemented
  */
-template < typename M >
+template <typename M>
 class PrioritizedQueue {
  public:
   typedef M value_type;
   // std::map guarantees it's contents is sorted by key
   typedef std::map<size_t, std::queue<value_type> > QueuesMap;
-  PrioritizedQueue()
-    : total_size_(0) {
-  }
+  PrioritizedQueue() : total_size_(0) {}
   // All api mimics usual std queue interface
   void push(const value_type& message) {
     size_t message_priority = message.PriorityOrder();
     queues_[message_priority].push(message);
     ++total_size_;
   }
-  size_t size() const {
-    return total_size_;
-  }
-  bool empty() const {
-    return queues_.empty();
-  }
+  size_t size() const { return total_size_; }
+  bool empty() const { return queues_.empty(); }
   void swap(PrioritizedQueue<M>& x) {
     std::swap(queues_, x.queues_);
     std::swap(total_size_, x.total_size_);
@@ -83,11 +77,11 @@ class PrioritizedQueue {
       queues_.erase(last);
     }
   }
+
  private:
   QueuesMap queues_;
   size_t total_size_;
 };
-
 }
 
 #endif  // SRC_COMPONENTS_UTILS_INCLUDE_UTILS_

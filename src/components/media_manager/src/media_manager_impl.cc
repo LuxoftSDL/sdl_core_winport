@@ -59,8 +59,7 @@ using timer::TimerThread;
 CREATE_LOGGERPTR_GLOBAL(logger_, "MediaManagerImpl")
 
 MediaManagerImpl::MediaManagerImpl()
-  : protocol_handler_(NULL)
-  , from_mic_recorder_(NULL) {
+    : protocol_handler_(NULL), from_mic_recorder_(NULL) {
   Init();
 }
 
@@ -110,25 +109,24 @@ void MediaManagerImpl::Init() {
   }
 }
 
-void MediaManagerImpl::StartMicrophoneRecording(
-  int32_t application_key,
-  const std::string& output_file,
-  int32_t duration) {
-  LOG4CXX_INFO(logger_, "MediaManagerImpl::StartMicrophoneRecording to "
-               << output_file);
+void MediaManagerImpl::StartMicrophoneRecording(int32_t application_key,
+                                                const std::string& output_file,
+                                                int32_t duration) {
+  LOG4CXX_INFO(logger_,
+               "MediaManagerImpl::StartMicrophoneRecording to " << output_file);
   application_manager::ApplicationSharedPtr app =
-    application_manager::ApplicationManagerImpl::instance()->
-      application(application_key);
+      application_manager::ApplicationManagerImpl::instance()->application(
+          application_key);
   std::string file_path = file_system::ConcatPath(
-    profile::Profile::instance()->app_storage_folder(), output_file);
+      profile::Profile::instance()->app_storage_folder(), output_file);
   from_mic_listener_ = new FromMicRecorderListener(file_path);
 #if defined(EXTENDED_MEDIA_MODE)
   if (from_mic_recorder_) {
     from_mic_recorder_->AddListener(from_mic_listener_);
     (static_cast<FromMicRecorderAdapter*>(from_mic_recorder_))
-    ->set_output_file(file_path);
+        ->set_output_file(file_path);
     (static_cast<FromMicRecorderAdapter*>(from_mic_recorder_))
-    ->set_duration(duration);
+        ->set_duration(duration);
     from_mic_recorder_->StartActivity(application_key);
   }
 #else
@@ -136,8 +134,7 @@ void MediaManagerImpl::StartMicrophoneRecording(
     LOG4CXX_INFO(logger_, "File " << output_file << " exists, removing");
     if (file_system::DeleteFile(file_path)) {
       LOG4CXX_INFO(logger_, "File " << output_file << " removed");
-    }
-    else {
+    } else {
       LOG4CXX_WARN(logger_, "Could not remove file " << output_file);
     }
   }
@@ -148,13 +145,12 @@ void MediaManagerImpl::StartMicrophoneRecording(
   if (file_system::ReadBinaryFile(record_file_source, buf)) {
     if (file_system::Write(file_path, buf)) {
       LOG4CXX_INFO(logger_,
-        "File " << record_file_source << " copied to " << output_file);
-    }
-    else {
+                   "File " << record_file_source << " copied to "
+                           << output_file);
+    } else {
       LOG4CXX_WARN(logger_, "Could not write to file " << output_file);
     }
-  }
-  else {
+  } else {
     LOG4CXX_WARN(logger_, "Could not read file " << record_file_source);
   }
 #endif
@@ -197,7 +193,7 @@ void MediaManagerImpl::StopStreaming(
 }
 
 void MediaManagerImpl::SetProtocolHandler(
-  protocol_handler::ProtocolHandler* protocol_handler) {
+    protocol_handler::ProtocolHandler* protocol_handler) {
   protocol_handler_ = protocol_handler;
 }
 
@@ -212,7 +208,7 @@ void MediaManagerImpl::OnMessageReceived(
   const ServiceType service_type = message->service_type();
 
   if (Compare<ServiceType, NEQ, ALL>(
-        service_type, ServiceType::kMobileNav, ServiceType::kAudio)) {
+          service_type, ServiceType::kMobileNav, ServiceType::kAudio)) {
     LOG4CXX_DEBUG(logger_, "Unsupported service type in MediaManager");
     return;
   }
@@ -222,7 +218,8 @@ void MediaManagerImpl::OnMessageReceived(
 
   if (!app_mgr->CanAppStream(streaming_app_id, service_type)) {
     app_mgr->ForbidStreaming(streaming_app_id);
-    LOG4CXX_ERROR(logger_, "The application trying to stream when it should not.");
+    LOG4CXX_ERROR(logger_,
+                  "The application trying to stream when it should not.");
     return;
   }
 
@@ -234,14 +231,12 @@ void MediaManagerImpl::OnMessageReceived(
 }
 
 void MediaManagerImpl::OnMobileMessageSent(
-  const ::protocol_handler::RawMessagePtr message) {
-}
+    const ::protocol_handler::RawMessagePtr message) {}
 
 void MediaManagerImpl::FramesProcessed(int32_t application_key,
                                        int32_t frame_number) {
   if (protocol_handler_) {
-    protocol_handler_->SendFramesNumber(application_key,
-                                        frame_number);
+    protocol_handler_->SendFramesNumber(application_key, frame_number);
   }
 }
 

@@ -54,16 +54,17 @@ namespace transport_manager {
 
 class MockTransportAdapter;
 
-class MockConnection : public ThreadedSocketConnection{
+class MockConnection : public ThreadedSocketConnection {
  public:
   MockConnection(const ::transport_manager::DeviceUID& device_handle,
                  const ApplicationHandle& app_handle,
                  TransportAdapterController* adapter);
-  bool Establish(ConnectError **error);
+  bool Establish(ConnectError** error);
 };
 
 }  // namespace transport_manager
 }  // namespace components
 }  // namespace test
 
-#endif /* APPLINK_TEST_COMPONENTS_TRANSPORTMANAGER_INCLUDE_MOCKCONNECTION_H_ */
+#endif /* APPLINK_TEST_COMPONENTS_TRANSPORTMANAGER_INCLUDE_MOCKCONNECTION_H_ \
+          */

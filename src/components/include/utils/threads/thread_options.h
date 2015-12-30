@@ -51,23 +51,18 @@ class ThreadOptions {
    * @param is_joinable - is thread joinable?
    */
   explicit ThreadOptions(size_t stack_size = 0, bool is_joinable = true)
-      : stack_size_(stack_size),
-        is_joinable_(is_joinable) {
-  }
+      : stack_size_(stack_size), is_joinable_(is_joinable) {}
 
   /**
    * Dtor.
    */
-  virtual ~ThreadOptions() {
-  }
+  virtual ~ThreadOptions() {}
 
   /**
    * Copy ctor.
    * @param options - new options.
    */
-  ThreadOptions(const ThreadOptions& options) {
-    *this = options;
-  }
+  ThreadOptions(const ThreadOptions& options) { *this = options; }
 
   /**
    * Assign operator.
@@ -84,21 +79,15 @@ class ThreadOptions {
    * Stack size.
    * @return Stack size for thread.
    */
-  size_t stack_size() const {
-    return stack_size_;
-  }
+  size_t stack_size() const { return stack_size_; }
 
   /**
    * Is thread joinable?
    * @return - Returns true if the thread is joinable.
    */
-  bool is_joinable() const {
-    return is_joinable_;
-  }
+  bool is_joinable() const { return is_joinable_; }
 
-  void is_joinable(bool val) {
-    is_joinable_ = val;
-  }
+  void is_joinable(bool val) { is_joinable_ = val; }
 
  protected:
   size_t stack_size_;

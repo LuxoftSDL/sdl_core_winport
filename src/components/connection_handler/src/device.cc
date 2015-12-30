@@ -46,31 +46,24 @@ namespace connection_handler {
 CREATE_LOGGERPTR_GLOBAL(logger_, "ConnectionHandler")
 
 Device::Device(DeviceHandle device_handle,
-               const std::string &user_friendly_name,
-               const std::string &mac_address, const std::string& connection_type)
-    : device_handle_(device_handle),
-      user_friendly_name_(user_friendly_name),
-      mac_address_(mac_address),
-      connection_type_(connection_type){
-    LOG4CXX_INFO(logger_, "Device MAC address is: " << mac_address_);
-    mac_address_ = encryption::MakeHash(mac_address);
-    LOG4CXX_INFO(logger_, "Device MAC address hash is: " << mac_address_);
+               const std::string& user_friendly_name,
+               const std::string& mac_address,
+               const std::string& connection_type)
+    : device_handle_(device_handle)
+    , user_friendly_name_(user_friendly_name)
+    , mac_address_(mac_address)
+    , connection_type_(connection_type) {
+  LOG4CXX_INFO(logger_, "Device MAC address is: " << mac_address_);
+  mac_address_ = encryption::MakeHash(mac_address);
+  LOG4CXX_INFO(logger_, "Device MAC address hash is: " << mac_address_);
 }
 
-DeviceHandle Device::device_handle() const {
-    return device_handle_;
-}
+DeviceHandle Device::device_handle() const { return device_handle_; }
 
-std::string Device::user_friendly_name() const {
-    return user_friendly_name_;
-}
+std::string Device::user_friendly_name() const { return user_friendly_name_; }
 
-std::string Device::mac_address() const {
-  return mac_address_;
-}
+std::string Device::mac_address() const { return mac_address_; }
 
-std::string Device::connection_type() const {
-  return connection_type_;
-}
+std::string Device::connection_type() const { return connection_type_; }
 
 }  // namespace connection_handler

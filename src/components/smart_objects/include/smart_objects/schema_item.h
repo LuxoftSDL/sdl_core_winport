@@ -96,8 +96,8 @@ class ISchemaItem {
    * @param pattern_object pattern object
    * @param result_object object to build
    */
-  virtual void BuildObjectBySchema(
-      const SmartObject& pattern_object, SmartObject& result_object);
+  virtual void BuildObjectBySchema(const SmartObject& pattern_object,
+                                   SmartObject& result_object);
 
   /**
    * @brief Get value param, depends of children
@@ -106,7 +106,7 @@ class ISchemaItem {
    */
   virtual size_t GetMemberSize();
 
-  virtual ~ISchemaItem() { }
+  virtual ~ISchemaItem() {}
 };
 typedef utils::SharedPtr<ISchemaItem> ISchemaItemPtr;
 }  // namespace NsSmartObjects

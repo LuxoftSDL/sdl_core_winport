@@ -39,18 +39,16 @@
 
 namespace logger {
 
-AutoTrace::AutoTrace(
-  log4cxx::LoggerPtr logger,
-  const log4cxx::spi::LocationInfo& location) :
-  logger_(logger), location_(location) {
+AutoTrace::AutoTrace(log4cxx::LoggerPtr logger,
+                     const log4cxx::spi::LocationInfo& location)
+    : logger_(logger), location_(location) {
   if (logger_->isTraceEnabled()) {
     push_log(logger_,
              ::log4cxx::Level::getTrace(),
              "Enter",
              apr_time_now(),
              location_,
-             ::log4cxx::spi::LoggingEvent::getCurrentThreadName()
-    );
+             ::log4cxx::spi::LoggingEvent::getCurrentThreadName());
   }
 }
 
@@ -60,9 +58,9 @@ AutoTrace::~AutoTrace() {
              ::log4cxx::Level::getTrace(),
              "Exit",
              apr_time_now(),
-             location_, // the location corresponds rather to creation of autotrace object than to deletion
-             ::log4cxx::spi::LoggingEvent::getCurrentThreadName()
-    );
+             location_,  // the location corresponds rather to creation of
+                         // autotrace object than to deletion
+             ::log4cxx::spi::LoggingEvent::getCurrentThreadName());
   }
 }
 

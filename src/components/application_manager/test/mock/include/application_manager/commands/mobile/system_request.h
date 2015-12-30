@@ -1,1 +1,2 @@
-../../../../../../include/application_manager/commands/mobile/system_request.h
+../../../../../../ include / application_manager / commands / mobile /
+    system_request.h

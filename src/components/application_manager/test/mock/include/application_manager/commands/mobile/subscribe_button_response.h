@@ -1,1 +1,2 @@
-../../../../../../include/application_manager/commands/mobile/subscribe_button_response.h
+../../../../../../ include / application_manager / commands / mobile /
+    subscribe_button_response.h

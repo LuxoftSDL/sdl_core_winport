@@ -49,21 +49,19 @@ namespace time_tester {
 
 CREATE_LOGGERPTR_GLOBAL(logger_, "TimeManager")
 
-TimeManager::TimeManager():
-  thread_(NULL),
-  streamer_(NULL),
-  app_observer(this),
-  tm_observer(this),
-  ph_observer(this) {
-    ip_ = profile::Profile::instance()->server_address();
-    port_ = profile::Profile::instance()->time_testing_port();
-    streamer_ = new Streamer(this);
-    thread_ = threads::CreateThread("TimeManager", streamer_ );
+TimeManager::TimeManager()
+    : thread_(NULL)
+    , streamer_(NULL)
+    , app_observer(this)
+    , tm_observer(this)
+    , ph_observer(this) {
+  ip_ = profile::Profile::instance()->server_address();
+  port_ = profile::Profile::instance()->time_testing_port();
+  streamer_ = new Streamer(this);
+  thread_ = threads::CreateThread("TimeManager", streamer_);
 }
 
-TimeManager::~TimeManager() {
-  Stop();
-}
+TimeManager::~TimeManager() { Stop(); }
 
 void TimeManager::Init(protocol_handler::ProtocolHandlerImpl* ph) {
   LOG4CXX_AUTO_TRACE(logger_);
@@ -73,8 +71,10 @@ void TimeManager::Init(protocol_handler::ProtocolHandlerImpl* ph) {
     return;
   }
 
-  application_manager::ApplicationManagerImpl::instance()->SetTimeMetricObserver(&app_observer);
-  transport_manager::TransportManagerDefault::instance()->SetTimeMetricObserver(&tm_observer);
+  application_manager::ApplicationManagerImpl::instance()
+      ->SetTimeMetricObserver(&app_observer);
+  transport_manager::TransportManagerDefault::instance()->SetTimeMetricObserver(
+      &tm_observer);
   ph->SetTimeMetricObserver(&ph_observer);
   thread_->start(threads::ThreadOptions());
 }
@@ -86,23 +86,19 @@ void TimeManager::Stop() {
 }
 
 void TimeManager::SendMetric(utils::SharedPtr<MetricWrapper> metric) {
-  if ((NULL != streamer_ )&& streamer_->is_client_connected_) {
+  if ((NULL != streamer_) && streamer_->is_client_connected_) {
     streamer_->PushMessage(metric);
   }
 }
 
-TimeManager::Streamer::Streamer(
-  TimeManager* const server)
-  : is_client_connected_(false),
-    server_(server),
-    server_socket_fd_(0),
-    client_socket_fd_(0),
-    stop_flag_(false) {
-}
+TimeManager::Streamer::Streamer(TimeManager* const server)
+    : is_client_connected_(false)
+    , server_(server)
+    , server_socket_fd_(0)
+    , client_socket_fd_(0)
+    , stop_flag_(false) {}
 
-TimeManager::Streamer::~Streamer() {
-  Stop();
-}
+TimeManager::Streamer::~Streamer() { Stop(); }
 
 void TimeManager::Streamer::threadMain() {
   LOG4CXX_AUTO_TRACE(logger_);
@@ -156,13 +152,16 @@ void TimeManager::Streamer::Start() {
   }
 
   int32_t optval = 1;
-  if (-1 == setsockopt(server_socket_fd_, SOL_SOCKET, SO_REUSEADDR,
-                       &optval, sizeof optval)) {
+  if (-1 == setsockopt(server_socket_fd_,
+                       SOL_SOCKET,
+                       SO_REUSEADDR,
+                       &optval,
+                       sizeof optval)) {
     LOG4CXX_ERROR(logger_, "Unable to set sockopt");
     return;
   }
 
-  sockaddr_in serv_addr_ = { 0 };
+  sockaddr_in serv_addr_ = {0};
   serv_addr_.sin_addr.s_addr = inet_addr(server_->ip_.c_str());
   serv_addr_.sin_family = AF_INET;
   serv_addr_.sin_port = htons(server_->port_);
@@ -170,19 +169,20 @@ void TimeManager::Streamer::Start() {
   if (-1 == bind(server_socket_fd_,
                  reinterpret_cast<struct sockaddr*>(&serv_addr_),
                  sizeof(serv_addr_))) {
-    LOG4CXX_ERROR(logger_, "Unable to bind server "
-                  << server_->ip_.c_str() << ':' << server_->port_);
+    LOG4CXX_ERROR(logger_,
+                  "Unable to bind server " << server_->ip_.c_str() << ':'
+                                           << server_->port_);
     return;
   }
   if (-1 == listen(server_socket_fd_, 1)) {
-    LOG4CXX_ERROR(logger_, "Streamer listen error " << strerror(errno) );
+    LOG4CXX_ERROR(logger_, "Streamer listen error " << strerror(errno));
     return;
   }
 }
 
 void TimeManager::Streamer::ShutDownAndCloseSocket(int32_t socket_fd) {
   LOG4CXX_AUTO_TRACE(logger_);
-  if (0 < socket_fd){
+  if (0 < socket_fd) {
     LOG4CXX_INFO(logger_, "Shutdown socket");
     if (-1 == ::shutdown(socket_fd, SHUT_RDWR)) {
       LOG4CXX_ERROR(logger_, "Unable to shutdown socket");
@@ -219,7 +219,7 @@ bool TimeManager::Streamer::IsReady() const {
   FD_ZERO(&fds);
   FD_SET(client_socket_fd_, &fds);
   TimevalStruct tv = {0, 0};
-  tv.tv_sec = 5;                       // set a 5 second timeout
+  tv.tv_sec = 5;  // set a 5 second timeout
   tv.tv_usec = 0;
 
   const int retval = select(client_socket_fd_ + 1, 0, &fds, 0, &tv);
@@ -242,15 +242,15 @@ bool TimeManager::Streamer::Send(const std::string& msg) {
     return false;
   }
 
-  if (-1 == ::send(client_socket_fd_, msg.c_str(),
-                   msg.size(), MSG_NOSIGNAL)) {
+  if (-1 == ::send(client_socket_fd_, msg.c_str(), msg.size(), MSG_NOSIGNAL)) {
     LOG4CXX_ERROR(logger_, " Unable to send");
     return false;
   }
   return true;
 }
 
-void TimeManager::Streamer::PushMessage(utils::SharedPtr<MetricWrapper> metric) {
+void TimeManager::Streamer::PushMessage(
+    utils::SharedPtr<MetricWrapper> metric) {
   messages_.push(metric);
 }
 }  // namespace time_tester

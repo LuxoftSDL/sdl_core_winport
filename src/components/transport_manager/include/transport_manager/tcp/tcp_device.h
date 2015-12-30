@@ -61,12 +61,12 @@ namespace transport_adapter {
  */
 class TcpDevice : public Device {
  public:
-  /**
-   * @brief Constructor.
-   *
-   * @param in_addr Address.
-   * @param name Device Name.
-   **/
+/**
+ * @brief Constructor.
+ *
+ * @param in_addr Address.
+ * @param name Device Name.
+ **/
 #if defined(OS_WINDOWS)
   TcpDevice(const uint32_t& in_addr, const std::string& name);
 #else
@@ -130,11 +130,11 @@ class TcpDevice : public Device {
    */
   int GetApplicationPort(const ApplicationHandle app_handle) const;
 
-  /**
-   * @brief Return address.
-   *
-   * @return Address.
-   */
+/**
+ * @brief Return address.
+ *
+ * @return Address.
+ */
 #if defined(OS_WINDOWS)
   uint32_t in_addr() const {
 #else
