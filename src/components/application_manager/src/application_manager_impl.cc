@@ -2362,15 +2362,8 @@ void ApplicationManagerImpl::UnregisterAllApplications() {
   while (it != accessor.end()) {
     ApplicationSharedPtr app_to_remove = *it;
 
-#ifdef CUSTOMER_PASA
-    if (!is_ignition_off) {
-#endif  // CUSTOMER_PASA
-      MessageHelper::SendOnAppInterfaceUnregisteredNotificationToMobile(
-          app_to_remove->app_id(), unregister_reason_);
-#ifdef CUSTOMER_PASA
-    }
-#endif  // CUSTOMER_PASA
-
+    MessageHelper::SendOnAppInterfaceUnregisteredNotificationToMobile(
+        app_to_remove->app_id(), unregister_reason_);
     UnregisterApplication(app_to_remove->app_id(),
                           mobile_apis::Result::INVALID_ENUM,
                           is_ignition_off,
