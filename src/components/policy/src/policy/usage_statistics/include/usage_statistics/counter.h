@@ -42,9 +42,11 @@ namespace usage_statistics {
 
 class GlobalCounter {
  public:
-  GlobalCounter(utils::SharedPtr<usage_statistics::StatisticsManager> statistics_manager,
-                GlobalCounterId counter_type);
+  GlobalCounter(
+      utils::SharedPtr<usage_statistics::StatisticsManager> statistics_manager,
+      GlobalCounterId counter_type);
   void operator++() const;
+
  private:
   GlobalCounterId counter_type_;
   utils::SharedPtr<usage_statistics::StatisticsManager> statistics_manager_;
@@ -52,10 +54,12 @@ class GlobalCounter {
 
 class AppCounter {
  public:
-  AppCounter(utils::SharedPtr<usage_statistics::StatisticsManager> statistics_manager,
-             const std::string& app_id,
-             AppCounterId counter_type);
+  AppCounter(
+      utils::SharedPtr<usage_statistics::StatisticsManager> statistics_manager,
+      const std::string& app_id,
+      AppCounterId counter_type);
   void operator++() const;
+
  private:
   std::string app_id_;
   AppCounterId counter_type_;
@@ -64,10 +68,12 @@ class AppCounter {
 
 class AppInfo {
  public:
-  AppInfo(utils::SharedPtr<usage_statistics::StatisticsManager> statistics_manager,
-          const std::string& app_id,
-          AppInfoId info_type);
+  AppInfo(
+      utils::SharedPtr<usage_statistics::StatisticsManager> statistics_manager,
+      const std::string& app_id,
+      AppInfoId info_type);
   void Update(const std::string& new_info) const;
+
  private:
   std::string app_id_;
   AppInfoId info_type_;
@@ -76,15 +82,18 @@ class AppInfo {
 
 class AppStopwatch {
  public:
-  AppStopwatch(utils::SharedPtr<usage_statistics::StatisticsManager> statistics_manager,
-               const std::string& app_id);
-  AppStopwatch(utils::SharedPtr<usage_statistics::StatisticsManager> statistics_manager,
-               const std::string& app_id,
-               std::uint32_t time_out);
+  AppStopwatch(
+      utils::SharedPtr<usage_statistics::StatisticsManager> statistics_manager,
+      const std::string& app_id);
+  AppStopwatch(
+      utils::SharedPtr<usage_statistics::StatisticsManager> statistics_manager,
+      const std::string& app_id,
+      std::uint32_t time_out);
   ~AppStopwatch();
   void Start(AppStopwatchId stopwatch_type);
   void Switch(AppStopwatchId stopwatch_type);
   void WriteTime();
+
  private:
   // Fields
   std::string app_id_;

@@ -42,7 +42,6 @@ namespace utils {
 using namespace file_system;
 
 TEST(FileSystemTest, CreateDeleteDirectory) {
-
   ASSERT_FALSE(DirectoryExists("./Test directory"));
   // Directory creation
   CreateDirectory("./Test directory");
@@ -69,12 +68,12 @@ TEST(FileSystemTest, CreateDirectoryTwice) {
 
   // Directory removing
   EXPECT_TRUE(RemoveDirectory("./Test directory", false));
-  //try delete directory again
+  // try delete directory again
   EXPECT_FALSE(RemoveDirectory("./Test directory", false));
   EXPECT_FALSE(DirectoryExists("./Test directory"));
 }
 
-TEST(FileSystemTest,DeleteDirectoryRecursively) {
+TEST(FileSystemTest, DeleteDirectoryRecursively) {
   ASSERT_FALSE(DirectoryExists("./Test directory"));
   // Create directories
   CreateDirectory("./Test directory");
@@ -119,9 +118,8 @@ TEST(FileSystemTest, CreateDirectoryRecursivelyDeleteRecursively) {
 TEST(FileSystemTest, TwiceCreateDirectoryRecursivelyDeleteRecursivelyOnce) {
   ASSERT_FALSE(DirectoryExists("./Test directory"));
   // Create directories recursively
-  EXPECT_TRUE(
-      CreateDirectoryRecursively(
-          "./Test directory/Test directory 2/Test directory 3"));
+  EXPECT_TRUE(CreateDirectoryRecursively(
+      "./Test directory/Test directory 2/Test directory 3"));
 
   // Check that all directories are created
   EXPECT_TRUE(DirectoryExists("./Test directory"));
@@ -136,9 +134,8 @@ TEST(FileSystemTest, TwiceCreateDirectoryRecursivelyDeleteRecursivelyOnce) {
       IsDirectory("./Test directory/Test directory 2/Test directory 3"));
 
   // Create directories recursively second time
-  EXPECT_TRUE(
-      CreateDirectoryRecursively(
-          "./Test directory/Test directory 2/Test directory 3"));
+  EXPECT_TRUE(CreateDirectoryRecursively(
+      "./Test directory/Test directory 2/Test directory 3"));
 
   EXPECT_TRUE(DirectoryExists("./Test directory"));
 
@@ -167,7 +164,7 @@ TEST(FileSystemTest, CreateDeleteFile) {
 
   // Delete file
   EXPECT_TRUE(DeleteFile("./test file"));
-  //try delete file again
+  // try delete file again
   EXPECT_FALSE(DeleteFile("./test file"));
   EXPECT_FALSE(FileExists("./test file"));
 }
@@ -264,11 +261,11 @@ TEST(FileSystemTest, OpenFileWriteInFileStream) {
   delete test_file;
 
   // Read data from file
-  std::vector < uint8_t > result;
+  std::vector<uint8_t> result;
   EXPECT_TRUE(ReadBinaryFile("./test file", result));
   EXPECT_FALSE(result.empty());
 
-// Check data
+  // Check data
   for (uint i = 0; i < data_size; ++i) {
     EXPECT_EQ(data[i], result[i]);
   }
@@ -300,7 +297,7 @@ TEST(FileSystemTest, CannotWriteInClosedFileStream) {
   delete test_file;
 
   // Read data from file
-  std::vector < uint8_t > result;
+  std::vector<uint8_t> result;
   EXPECT_TRUE(ReadBinaryFile("./test file", result));
   EXPECT_TRUE(result.empty());
 
@@ -327,7 +324,7 @@ TEST(FileSystemTest, CreateWriteInFileStream_CreateFileAgain_FileRewritten) {
   Close(test_file);
   delete test_file;
 
-  std::vector < uint8_t > result;
+  std::vector<uint8_t> result;
   EXPECT_TRUE(ReadBinaryFile("./test file", result));
   EXPECT_FALSE(result.empty());
 
@@ -351,7 +348,7 @@ TEST(FileSystemTest, CreateFileStream_WriteInFile_FileStreamNotClosed) {
 
   // Write data in file
   uint32_t data_size = 4;
-  std::vector < uint8_t > data;
+  std::vector<uint8_t> data;
   for (uint i = 0; i < data_size; ++i) {
     data.push_back(i);
   }
@@ -363,7 +360,7 @@ TEST(FileSystemTest, CreateFileStream_WriteInFile_FileStreamNotClosed) {
   Close(test_file);
   delete test_file;
 
-  std::vector < uint8_t > result;
+  std::vector<uint8_t> result;
   EXPECT_TRUE(ReadBinaryFile("./test file", result));
   EXPECT_FALSE(result.empty());
 
@@ -371,7 +368,8 @@ TEST(FileSystemTest, CreateFileStream_WriteInFile_FileStreamNotClosed) {
   EXPECT_FALSE(FileExists("./test file"));
 }
 
-TEST(FileSystemTest, CreateFileStream_WriteInFileWriteInFileStream_FileIncludeLastData) {
+TEST(FileSystemTest,
+     CreateFileStream_WriteInFileWriteInFileStream_FileIncludeLastData) {
   ASSERT_FALSE(FileExists("./test file"));
 
   // Create and open file
@@ -380,7 +378,7 @@ TEST(FileSystemTest, CreateFileStream_WriteInFileWriteInFileStream_FileIncludeLa
 
   // Write data in file
   uint32_t data_size = 4;
-  std::vector < uint8_t > data;
+  std::vector<uint8_t> data;
   for (uint i = 0; i < data_size; ++i) {
     data.push_back(i);
   }
@@ -399,7 +397,7 @@ TEST(FileSystemTest, CreateFileStream_WriteInFileWriteInFileStream_FileIncludeLa
   Close(test_file);
 
   delete test_file;
-  std::vector < uint8_t > result;
+  std::vector<uint8_t> result;
   EXPECT_TRUE(ReadBinaryFile("./test file", result));
   EXPECT_FALSE(result.empty());
 
@@ -451,7 +449,7 @@ TEST(FileSystemTest, WriteInFilestreamTwice_FileRewritten) {
   delete test_file;
   delete test_file_2;
   // Check file
-  std::vector < uint8_t > result;
+  std::vector<uint8_t> result;
   EXPECT_TRUE(ReadBinaryFile("./test file", result));
   EXPECT_FALSE(result.empty());
   // Check data
@@ -503,7 +501,7 @@ TEST(FileSystemTest, WriteInFilestreamConsequentially_FileRewritten) {
   delete test_file;
   delete test_file_2;
   // Check file
-  std::vector < uint8_t > result;
+  std::vector<uint8_t> result;
   EXPECT_TRUE(ReadBinaryFile("./test file", result));
   EXPECT_FALSE(result.empty());
 
@@ -529,7 +527,7 @@ TEST(FileSystemTest, CreateFileTwiceWriteInFileTwice) {
   EXPECT_TRUE(FileExists("./test file"));
 
   uint32_t data_size = 4;
-  std::vector < uint8_t > data;
+  std::vector<uint8_t> data;
   for (uint i = 0; i < data_size; ++i) {
     data.push_back(i);
   }
@@ -540,7 +538,7 @@ TEST(FileSystemTest, CreateFileTwiceWriteInFileTwice) {
   EXPECT_TRUE(CreateFile("./test file"));
   EXPECT_TRUE(CreateFile("./test file"));
 
-  std::vector < uint8_t > data_2;
+  std::vector<uint8_t> data_2;
   for (uint i = 0; i < data_size; ++i) {
     data_2.push_back(i + data_size);
   }
@@ -549,7 +547,7 @@ TEST(FileSystemTest, CreateFileTwiceWriteInFileTwice) {
   EXPECT_TRUE(Write("./test file", data_2));
 
   // Check file
-  std::vector < uint8_t > result;
+  std::vector<uint8_t> result;
   EXPECT_TRUE(ReadBinaryFile("./test file", result));
   EXPECT_FALSE(result.empty());
 
@@ -574,21 +572,21 @@ TEST(FileSystemTest, WriteInFileTwiceFileRewritten) {
 
   // Write data in file
   uint32_t data_size = 4;
-  std::vector < uint8_t > data;
+  std::vector<uint8_t> data;
   for (uint i = 0; i < data_size; ++i) {
     data.push_back(i);
   }
   EXPECT_TRUE(Write("./test file", data));
 
   // Write data to file again
-  std::vector < uint8_t > data_2;
+  std::vector<uint8_t> data_2;
   for (uint i = 0; i < data_size; ++i) {
     data_2.push_back(i + data_size);
   }
   EXPECT_TRUE(Write("./test file", data_2));
 
   // Check file
-  std::vector < uint8_t > result;
+  std::vector<uint8_t> result;
   EXPECT_TRUE(ReadBinaryFile("./test file", result));
   EXPECT_FALSE(result.empty());
 
@@ -610,7 +608,7 @@ TEST(FileSystemTest, WriteDataInTheEndOfFile) {
   EXPECT_TRUE(FileExists("./test file"));
 
   int32_t data_size = 4;
-  std::vector < uint8_t > data;
+  std::vector<uint8_t> data;
   for (int i = 0; i < data_size; ++i) {
     data.push_back(i);
   }
@@ -619,7 +617,7 @@ TEST(FileSystemTest, WriteDataInTheEndOfFile) {
   EXPECT_TRUE(Write("./test file", data));
 
   // Write in file second time
-  std::vector < uint8_t > data_2;
+  std::vector<uint8_t> data_2;
   for (int i = 0; i < data_size; ++i) {
     data_2.push_back(i + data_size);
   }
@@ -628,11 +626,11 @@ TEST(FileSystemTest, WriteDataInTheEndOfFile) {
   EXPECT_TRUE(Write("./test file", data_2, std::ios_base::app));
 
   // Check file
-  std::vector < uint8_t > result;
+  std::vector<uint8_t> result;
   EXPECT_TRUE(ReadBinaryFile("./test file", result));
   EXPECT_FALSE(result.empty());
 
-  std::vector < uint8_t > data_check;
+  std::vector<uint8_t> data_check;
   for (int i = 0; i < 2 * data_size; ++i) {
     data_check.push_back(i);
   }
@@ -647,7 +645,8 @@ TEST(FileSystemTest, WriteDataInTheEndOfFile) {
   EXPECT_FALSE(FileExists("./test file"));
 }
 
-TEST(FileSystemTest, WriteInFileStream_WriteInFileInTheEndOfFile_FileIncludeBothData) {
+TEST(FileSystemTest,
+     WriteInFileStream_WriteInFileInTheEndOfFile_FileIncludeBothData) {
   ASSERT_FALSE(FileExists("./test file"));
 
   // Create and open file
@@ -656,7 +655,7 @@ TEST(FileSystemTest, WriteInFileStream_WriteInFileInTheEndOfFile_FileIncludeBoth
 
   // Write data in file
   uint32_t data_size = 4;
-  std::vector < uint8_t > data;
+  std::vector<uint8_t> data;
   for (uint i = 0; i < data_size; ++i) {
     data.push_back(i);
   }
@@ -669,7 +668,7 @@ TEST(FileSystemTest, WriteInFileStream_WriteInFileInTheEndOfFile_FileIncludeBoth
 
   delete test_file;
   // Write in file second time
-  std::vector < uint8_t > data_2;
+  std::vector<uint8_t> data_2;
   for (uint i = 0; i < data_size; ++i) {
     data_2.push_back(i + data_size);
   }
@@ -678,11 +677,11 @@ TEST(FileSystemTest, WriteInFileStream_WriteInFileInTheEndOfFile_FileIncludeBoth
   EXPECT_TRUE(Write("./test file", data_2, std::ios_base::app));
 
   // Check file
-  std::vector < uint8_t > result;
+  std::vector<uint8_t> result;
   EXPECT_TRUE(ReadBinaryFile("./test file", result));
   EXPECT_FALSE(result.empty());
 
-  std::vector < uint8_t > data_check;
+  std::vector<uint8_t> data_check;
   for (uint i = 0; i < 2 * data_size; ++i) {
     data_check.push_back(i);
   }
@@ -717,7 +716,7 @@ TEST(FileSystemTest, OpenFileStreamForRead_WriteInFileStream) {
   EXPECT_FALSE(test_file->is_open());
 
   // Read data from file
-  std::vector < uint8_t > result;
+  std::vector<uint8_t> result;
   EXPECT_TRUE(ReadBinaryFile("./test file", result));
   EXPECT_FALSE(result.empty());
 
@@ -738,7 +737,7 @@ TEST(FileSystemTest, OpenFileStreamForRead_WriteInFileStream) {
 TEST(FileSystemTest, WriteFileNotExists) {
   ASSERT_FALSE(FileExists("./test file"));
 
-  unsigned char tmp[] = { 't', 'e', 's', 't' };
+  unsigned char tmp[] = {'t', 'e', 's', 't'};
   std::vector<unsigned char> data(tmp, tmp + 4);
   EXPECT_TRUE(Write("./test file", data));
   // File now exists
@@ -751,7 +750,7 @@ TEST(FileSystemTest, WriteFileReadFile) {
   ASSERT_FALSE(FileExists("./test file"));
   EXPECT_TRUE(CreateFile("./test file"));
 
-  unsigned char tmp[] = { 't', 'e', 's', 't' };
+  unsigned char tmp[] = {'t', 'e', 's', 't'};
   std::vector<unsigned char> data(tmp, tmp + 4);
   EXPECT_TRUE(Write("./test file", data));
 
@@ -770,12 +769,12 @@ TEST(FileSystemTest, WriteBinaryDataReadBinaryFile) {
   ASSERT_FALSE(FileExists("./test file"));
   EXPECT_TRUE(CreateFile("./test file"));
 
-  uint8_t tmp[] = { 1, 2, 3, 4};
+  uint8_t tmp[] = {1, 2, 3, 4};
   std::vector<uint8_t> data(tmp, tmp + 4);
   EXPECT_TRUE(WriteBinaryFile("./test file", data));
 
   // Read data from file
-  std::vector < uint8_t > result;
+  std::vector<uint8_t> result;
   EXPECT_TRUE(ReadBinaryFile("./test file", result));
   EXPECT_FALSE(result.empty());
   EXPECT_EQ(data, result);
@@ -790,7 +789,7 @@ TEST(FileSystemTest, WriteBinaryDataTwice_FileRewritten) {
   EXPECT_TRUE(FileExists("./test file"));
 
   int32_t data_size = 4;
-  std::vector < uint8_t > data;
+  std::vector<uint8_t> data;
   for (int i = 0; i < data_size; ++i) {
     data.push_back(i);
   }
@@ -798,7 +797,7 @@ TEST(FileSystemTest, WriteBinaryDataTwice_FileRewritten) {
   EXPECT_TRUE(WriteBinaryFile("./test file", data));
 
   // Write in file second time
-  std::vector < uint8_t > data_2;
+  std::vector<uint8_t> data_2;
   for (int i = 0; i < data_size; ++i) {
     data_2.push_back(i + data_size);
   }
@@ -807,7 +806,7 @@ TEST(FileSystemTest, WriteBinaryDataTwice_FileRewritten) {
   EXPECT_TRUE(WriteBinaryFile("./test file", data_2));
 
   // Check file
-  std::vector < uint8_t > result;
+  std::vector<uint8_t> result;
   EXPECT_TRUE(ReadBinaryFile("./test file", result));
   EXPECT_FALSE(result.empty());
 
@@ -825,7 +824,7 @@ TEST(FileSystemTest, WriteBinaryDataFileNotExists) {
   ASSERT_FALSE(FileExists("./test file"));
 
   int32_t data_size = 4;
-  std::vector < uint8_t > data;
+  std::vector<uint8_t> data;
   for (int i = 0; i < data_size; ++i) {
     data.push_back(i);
   }
@@ -839,13 +838,13 @@ TEST(FileSystemTest, WriteBinaryDataFileNotExists) {
 TEST(FileSystemTest, WriteDataAsBinaryData) {
   ASSERT_FALSE(FileExists("./test file"));
 
-  unsigned char tmp[] = { 't', 'e', 's', 't' };
+  unsigned char tmp[] = {'t', 'e', 's', 't'};
   std::vector<unsigned char> data(tmp, tmp + 4);
   EXPECT_TRUE(WriteBinaryFile("./test file", data));
   ASSERT_TRUE(FileExists("./test file"));
 
   // Check file
-  std::vector < uint8_t > result;
+  std::vector<uint8_t> result;
   EXPECT_TRUE(ReadBinaryFile("./test file", result));
   EXPECT_FALSE(result.empty());
 
@@ -867,7 +866,7 @@ TEST(FileSystemTest, WriteEmptyData) {
   ASSERT_TRUE(FileExists("./test file"));
 
   // Check file
-  std::vector < uint8_t > result;
+  std::vector<uint8_t> result;
   EXPECT_TRUE(ReadBinaryFile("./test file", result));
   EXPECT_TRUE(result.empty());
 
@@ -884,7 +883,7 @@ TEST(FileSystemTest, WriteEmptyDataAsBinaryData) {
   ASSERT_TRUE(FileExists("./test file"));
 
   // Check file
-  std::vector < uint8_t > result;
+  std::vector<uint8_t> result;
   EXPECT_TRUE(ReadBinaryFile("./test file", result));
   EXPECT_TRUE(result.empty());
 
@@ -896,14 +895,14 @@ TEST(FileSystemTest, WriteBinaryData_WriteDataInTheEndOfFile) {
   ASSERT_FALSE(FileExists("./test file"));
 
   // Write binary file
-  unsigned char tmp[] = { 't', 'e', 's', 't' };
+  unsigned char tmp[] = {'t', 'e', 's', 't'};
   std::vector<unsigned char> data(tmp, tmp + 4);
   EXPECT_TRUE(WriteBinaryFile("./test file", data));
   ASSERT_TRUE(FileExists("./test file"));
 
   // Write in file second time
   int32_t data_size = 4;
-  std::vector < uint8_t > data_2;
+  std::vector<uint8_t> data_2;
   for (int i = 0; i < data_size; ++i) {
     data_2.push_back(i);
   }
@@ -912,7 +911,7 @@ TEST(FileSystemTest, WriteBinaryData_WriteDataInTheEndOfFile) {
   EXPECT_TRUE(Write("./test file", data_2, std::ios_base::app));
 
   // Check file
-  std::vector < uint8_t > result;
+  std::vector<uint8_t> result;
   EXPECT_TRUE(ReadBinaryFile("./test file", result));
   EXPECT_FALSE(result.empty());
 
@@ -934,7 +933,7 @@ TEST(FileSystemTest, CreateFile_WriteDataWithFlagOpenForReading) {
   EXPECT_TRUE(CreateFile("./test file"));
   // Write data in file
   int32_t data_size = 4;
-  std::vector < uint8_t > data;
+  std::vector<uint8_t> data;
   for (int i = 0; i < data_size; ++i) {
     data.push_back(i);
   }
@@ -942,7 +941,7 @@ TEST(FileSystemTest, CreateFile_WriteDataWithFlagOpenForReading) {
   EXPECT_TRUE(FileExists("./test file"));
 
   // Check file
-  std::vector < uint8_t > result;
+  std::vector<uint8_t> result;
   EXPECT_TRUE(ReadBinaryFile("./test file", result));
   EXPECT_FALSE(result.empty());
 
@@ -956,12 +955,13 @@ TEST(FileSystemTest, CreateFile_WriteDataWithFlagOpenForReading) {
   EXPECT_FALSE(FileExists("./test file"));
 }
 
-TEST(FileSystemTest, FileDoesNotCreated_WriteFileWithFlagOpenForReadingIsImpossible) {
+TEST(FileSystemTest,
+     FileDoesNotCreated_WriteFileWithFlagOpenForReadingIsImpossible) {
   ASSERT_FALSE(FileExists("./test file"));
 
   // Write data in file is impossible
   int32_t data_size = 4;
-  std::vector < uint8_t > data;
+  std::vector<uint8_t> data;
   for (int i = 0; i < data_size; ++i) {
     data.push_back(i);
   }
@@ -974,7 +974,7 @@ TEST(FileSystemTest, WriteFileGetSize) {
   EXPECT_TRUE(CreateFile("./test file"));
   EXPECT_EQ(0, FileSize("./test file"));
 
-  unsigned char tmp[] = { 't', 'e', 's', 't' };
+  unsigned char tmp[] = {'t', 'e', 's', 't'};
   std::vector<unsigned char> data(tmp, tmp + 4);
   EXPECT_TRUE(Write("./test file", data));
 
@@ -1007,7 +1007,7 @@ TEST(FileSystemTest, GetFileModificationTime) {
   uint64_t modif_time = GetFileModificationTime("./test file");
   EXPECT_LE(0, modif_time);
 
-  std::vector < uint8_t > data(1, 1);
+  std::vector<uint8_t> data(1, 1);
   EXPECT_TRUE(WriteBinaryFile("./test file", data));
 
   EXPECT_LE(0, GetFileModificationTime("./test file"));
@@ -1015,14 +1015,13 @@ TEST(FileSystemTest, GetFileModificationTime) {
 
   EXPECT_TRUE(DeleteFile("./test file"));
   EXPECT_FALSE(FileExists("./test file"));
-
 }
 
 TEST(FileSystemTest, ListFiles) {
   ASSERT_FALSE(DirectoryExists("./Test directory"));
   CreateDirectory("./Test directory");
 
-  std::vector < std::string > list;
+  std::vector<std::string> list;
   list = ListFiles("./Test directory");
   EXPECT_TRUE(list.empty());
 
@@ -1047,7 +1046,7 @@ TEST(FileSystemTest, ListFilesIncludeSubdirectory) {
   ASSERT_FALSE(DirectoryExists("./Test directory"));
   CreateDirectoryRecursively("./Test directory/Test directory 2/");
 
-  std::vector < std::string > list;
+  std::vector<std::string> list;
   list = ListFiles("./Test directory");
   EXPECT_FALSE(list.empty());
   EXPECT_EQ(1, list.size());
@@ -1061,7 +1060,7 @@ TEST(FileSystemTest, ListFilesDoesNotIncludeFilesInSubdirectory) {
   ASSERT_FALSE(DirectoryExists("./Test directory"));
   CreateDirectoryRecursively("./Test directory/Test directory 2/");
 
-  std::vector < std::string > list;
+  std::vector<std::string> list;
   list = ListFiles("./Test directory");
   EXPECT_FALSE(list.empty());
 
@@ -1080,14 +1079,13 @@ TEST(FileSystemTest, ListFilesDoesNotIncludeFilesInSubdirectory) {
 }
 
 TEST(FileSystemTest, GetAvailableDiskSpace) {
-
   // Get available disk space before directory with file creaction and after
   uint64_t available_space = GetAvailableDiskSpace(".");
   EXPECT_NE(0, available_space);
   ASSERT_FALSE(DirectoryExists("./Test directory"));
   CreateDirectory("./Test directory");
 
-  unsigned char tmp[] = { 't', 'e', 's', 't' };
+  unsigned char tmp[] = {'t', 'e', 's', 't'};
   std::vector<unsigned char> data(tmp, tmp + 4);
   EXPECT_TRUE(Write("./Test directory/test file", data));
 
@@ -1116,7 +1114,7 @@ TEST(FileSystemTest, DirectorySize) {
   // Get size of nonempty directory with empty file
   EXPECT_EQ(0, DirectorySize("./Test directory"));
 
-  unsigned char tmp[] = { 't', 'e', 's', 't' };
+  unsigned char tmp[] = {'t', 'e', 's', 't'};
   std::vector<unsigned char> data(tmp, tmp + 4);
 
   EXPECT_TRUE(Write("./Test directory/test file", data));
@@ -1160,7 +1158,7 @@ TEST(FileSystemTest, DeleteAllContentInDirectory) {
       DirectoryExists("./Test directory/Test directory 2/Test directory 3"));
   EXPECT_FALSE(DirectoryExists("./Test directory/Test directory 2"));
 
-  std::vector < std::string > list;
+  std::vector<std::string> list;
   list = ListFiles("./Test directory");
   EXPECT_TRUE(list.empty());
 

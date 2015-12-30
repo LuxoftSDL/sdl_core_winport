@@ -45,7 +45,6 @@
 
 namespace hmi_message_handler {
 
-
 namespace impl {
 /*
 * These dummy classes are here to locally impose strong typing on different
@@ -54,7 +53,7 @@ namespace impl {
 * TODO(ik): replace these with globally defined message types
 * when we have them.
 */
-struct MessageFromHmi: public MessageSharedPointer {
+struct MessageFromHmi : public MessageSharedPointer {
   MessageFromHmi() {}
   explicit MessageFromHmi(const MessageSharedPointer& message)
       : MessageSharedPointer(message) {}
@@ -62,7 +61,7 @@ struct MessageFromHmi: public MessageSharedPointer {
   size_t PriorityOrder() const { return (*this)->Priority().OrderingValue(); }
 };
 
-struct MessageToHmi: public MessageSharedPointer {
+struct MessageToHmi : public MessageSharedPointer {
   MessageToHmi() {}
   explicit MessageToHmi(const MessageSharedPointer& message)
       : MessageSharedPointer(message) {}
@@ -70,20 +69,19 @@ struct MessageToHmi: public MessageSharedPointer {
   size_t PriorityOrder() const { return (*this)->Priority().OrderingValue(); }
 };
 
-typedef threads::MessageLoopThread<
-    utils::PrioritizedQueue<MessageFromHmi> > FromHmiQueue;
-typedef threads::MessageLoopThread<
-    utils::PrioritizedQueue<MessageToHmi> > ToHmiQueue;
+typedef threads::MessageLoopThread<utils::PrioritizedQueue<MessageFromHmi> >
+    FromHmiQueue;
+typedef threads::MessageLoopThread<utils::PrioritizedQueue<MessageToHmi> >
+    ToHmiQueue;
 }
 
 class ToHMIThreadImpl;
 class FromHMIThreadImpl;
 
-class HMIMessageHandlerImpl
-    : public HMIMessageHandler,
-      public impl::FromHmiQueue::Handler,
-      public impl::ToHmiQueue::Handler,
-      public utils::Singleton<HMIMessageHandlerImpl> {
+class HMIMessageHandlerImpl : public HMIMessageHandler,
+                              public impl::FromHmiQueue::Handler,
+                              public impl::ToHmiQueue::Handler,
+                              public utils::Singleton<HMIMessageHandlerImpl> {
  public:
   ~HMIMessageHandlerImpl();
   void OnMessageReceived(MessageSharedPointer message);
@@ -96,15 +94,14 @@ class HMIMessageHandlerImpl
  private:
   HMIMessageHandlerImpl();
 
-
   // threads::MessageLoopThread<*>::Handler implementations
 
   // CALLED ON messages_from_hmi_ THREAD!
   virtual void Handle(const impl::MessageFromHmi message) OVERRIDE;
   // CALLED ON messages_to_hmi_ THREAD!
   virtual void Handle(const impl::MessageToHmi message) OVERRIDE;
- private:
 
+ private:
   HMIMessageObserver* observer_;
   mutable sync_primitives::Lock observer_locker_;
   std::set<HMIMessageAdapter*> message_adapters_;

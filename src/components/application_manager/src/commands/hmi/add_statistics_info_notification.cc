@@ -40,17 +40,15 @@ namespace commands {
 
 AddStatisticsInfoNotification::AddStatisticsInfoNotification(
     const MessageSharedPtr& message)
-    : NotificationFromHMI(message) {
-}
+    : NotificationFromHMI(message) {}
 
-AddStatisticsInfoNotification::~AddStatisticsInfoNotification() {
-}
+AddStatisticsInfoNotification::~AddStatisticsInfoNotification() {}
 
 void AddStatisticsInfoNotification::Run() {
   LOG4CXX_AUTO_TRACE(logger_);
 
   int type = (*message_)[strings::msg_params][hmi_notification::statistic_type]
-      .asInt();
+                 .asInt();
 
   policy::PolicyHandler::instance()->AddStatisticsInfo(type);
 }
@@ -58,4 +56,3 @@ void AddStatisticsInfoNotification::Run() {
 }  // namespace commands
 
 }  // namespace application_manager
-

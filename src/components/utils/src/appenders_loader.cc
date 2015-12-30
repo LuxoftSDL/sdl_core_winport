@@ -48,8 +48,6 @@ AppendersLoader::~AppendersLoader() {
   }
 }
 
-bool AppendersLoader::Loaded() const {
-  return handle_ != 0;
-}
+bool AppendersLoader::Loaded() const { return handle_ != 0; }
 
 }  // namespace utils

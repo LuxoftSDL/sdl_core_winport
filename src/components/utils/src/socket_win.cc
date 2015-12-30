@@ -41,19 +41,21 @@ namespace {
 bool CloseSocket(SOCKET& socket) {
   LOG4CXX_AUTO_TRACE(logger_ptr);
   if (NULL == socket) {
-    LOG4CXX_DEBUG(logger_ptr, "Socket " << socket << " is not valid. Skip closing.");
+    LOG4CXX_DEBUG(logger_ptr,
+                  "Socket " << socket << " is not valid. Skip closing.");
     return true;
   }
   if (SOCKET_ERROR != closesocket(socket)) {
-    LOG4CXX_WARN(logger_ptr, "Failed to close socket "
-      << socket << ": " << WSAGetLastError());
+    LOG4CXX_WARN(logger_ptr,
+                 "Failed to close socket " << socket << ": "
+                                           << WSAGetLastError());
     return false;
   }
   socket = NULL;
   return true;
 }
 
-} // namespace
+}  // namespace
 
 ////////////////////////////////////////////////////////////////////////////////
 /// utils::TcpSocketConnection::Impl
@@ -72,24 +74,20 @@ class utils::TcpSocketConnection::Impl {
   bool Close();
 
   bool IsValid() const;
+
  private:
   SOCKET tcp_socket_;
 };
 
-utils::TcpSocketConnection::Impl::Impl()
-  : tcp_socket_(NULL) {
-}
+utils::TcpSocketConnection::Impl::Impl() : tcp_socket_(NULL) {}
 
 utils::TcpSocketConnection::Impl::Impl(SOCKET tcp_socket)
-  : tcp_socket_(tcp_socket) {
-}
+    : tcp_socket_(tcp_socket) {}
 
-utils::TcpSocketConnection::Impl::~Impl() {
-  Close();
-}
+utils::TcpSocketConnection::Impl::~Impl() { Close(); }
 
-ssize_t
-utils::TcpSocketConnection::Impl::Send(const char* buffer, std::size_t size) {
+ssize_t utils::TcpSocketConnection::Impl::Send(const char* buffer,
+                                               std::size_t size) {
   LOG4CXX_AUTO_TRACE(logger_ptr);
   if (!IsValid()) {
     LOG4CXX_ERROR(logger_ptr, "Failed to send data socket is not valid");
@@ -103,13 +101,11 @@ utils::TcpSocketConnection::Impl::Send(const char* buffer, std::size_t size) {
   return result;
 }
 
-bool
-utils::TcpSocketConnection::Impl::Close() {
+bool utils::TcpSocketConnection::Impl::Close() {
   return CloseSocket(tcp_socket_);
 }
 
-bool
-utils::TcpSocketConnection::Impl::IsValid() const {
+bool utils::TcpSocketConnection::Impl::IsValid() const {
   return tcp_socket_ != NULL;
 }
 
@@ -117,33 +113,27 @@ utils::TcpSocketConnection::Impl::IsValid() const {
 /// utils::TcpSocketConnection
 ////////////////////////////////////////////////////////////////////////////////
 
-utils::TcpSocketConnection::TcpSocketConnection()
-  : impl_(new Impl()) {
-}
+utils::TcpSocketConnection::TcpSocketConnection() : impl_(new Impl()) {}
 
-utils::TcpSocketConnection::TcpSocketConnection(Impl* impl)
-  : impl_(impl) {
+utils::TcpSocketConnection::TcpSocketConnection(Impl* impl) : impl_(impl) {
   DCHECK(impl_);
 }
 
-utils::TcpSocketConnection::~TcpSocketConnection() {
-  delete impl_;
-}
+utils::TcpSocketConnection::~TcpSocketConnection() { delete impl_; }
 
 utils::TcpSocketConnection::TcpSocketConnection(TcpSocketConnection& rhs) {
   Swap(rhs);
 }
 
-utils::TcpSocketConnection&
-utils::TcpSocketConnection::operator=(TcpSocketConnection& rhs) {
+utils::TcpSocketConnection& utils::TcpSocketConnection::operator=(
+    TcpSocketConnection& rhs) {
   if (this != &rhs) {
     Swap(rhs);
   }
   return *this;
 }
 
-void
-utils::TcpSocketConnection::Swap(TcpSocketConnection& rhs) {
+void utils::TcpSocketConnection::Swap(TcpSocketConnection& rhs) {
   using std::swap;
   swap(impl_, rhs.impl_);
 }
@@ -152,13 +142,9 @@ ssize_t utils::TcpSocketConnection::Send(const char* buffer, std::size_t size) {
   return impl_->Send(buffer, size);
 }
 
-bool utils::TcpSocketConnection::Close() {
-  return impl_->Close();
-}
+bool utils::TcpSocketConnection::Close() { return impl_->Close(); }
 
-bool utils::TcpSocketConnection::IsValid() const {
-  return impl_->IsValid();
-}
+bool utils::TcpSocketConnection::IsValid() const { return impl_->IsValid(); }
 
 ////////////////////////////////////////////////////////////////////////////////
 /// utils::ServerTcpSocket::Impl
@@ -179,6 +165,7 @@ class utils::TcpServerSocket::Impl {
   TcpSocketConnection Accept();
 
   ssize_t Send(const char* buf, size_t length);
+
  private:
   SOCKET server_socket_;
 
@@ -186,13 +173,9 @@ class utils::TcpServerSocket::Impl {
 };
 
 utils::TcpServerSocket::Impl::Impl()
-  : server_socket_(NULL)
-  , is_listening_(false) {
-}
+    : server_socket_(NULL), is_listening_(false) {}
 
-utils::TcpServerSocket::Impl::~Impl() {
-  Close();
-}
+utils::TcpServerSocket::Impl::~Impl() { Close(); }
 
 bool utils::TcpServerSocket::Impl::IsListening() const {
   return server_socket_ && is_listening_;
@@ -202,8 +185,9 @@ bool utils::TcpServerSocket::Impl::Close() {
   return CloseSocket(server_socket_);
 }
 
-bool utils::TcpServerSocket::Impl::Listen(
-    const std::string& address, int port, int backlog) {
+bool utils::TcpServerSocket::Impl::Listen(const std::string& address,
+                                          int port,
+                                          int backlog) {
   LOG4CXX_AUTO_TRACE(logger_ptr);
   if (IsListening()) {
     LOG4CXX_ERROR(logger_ptr, "Cannot listen. Already listeneing.");
@@ -212,26 +196,29 @@ bool utils::TcpServerSocket::Impl::Listen(
 
   server_socket_ = socket(AF_INET, SOCK_STREAM, 0);
   if (INVALID_SOCKET == server_socket_) {
-    LOG4CXX_ERROR(logger_ptr, "Failed to create server socket: " << WSAGetLastError());
+    LOG4CXX_ERROR(logger_ptr,
+                  "Failed to create server socket: " << WSAGetLastError());
     server_socket_ = NULL;
     return false;
   }
 
   char optval = 1;
-  if (SOCKET_ERROR == setsockopt(
-    server_socket_, SOL_SOCKET, SO_REUSEADDR, &optval, sizeof(optval))) {
+  if (SOCKET_ERROR ==
+      setsockopt(
+          server_socket_, SOL_SOCKET, SO_REUSEADDR, &optval, sizeof(optval))) {
     LOG4CXX_ERROR(logger_ptr, "Unable to set sockopt: " << WSAGetLastError());
     server_socket_ = NULL;
     return false;
   }
 
-  struct sockaddr_in server_address = { 0 };
+  struct sockaddr_in server_address = {0};
   server_address.sin_addr.s_addr = inet_addr(address.c_str());
   server_address.sin_family = AF_INET;
   server_address.sin_port = htons(port);
 
-  if (SOCKET_ERROR == bind(
-    server_socket_, reinterpret_cast<struct sockaddr*>(&server_address), sizeof(server_address))) {
+  if (SOCKET_ERROR == bind(server_socket_,
+                           reinterpret_cast<struct sockaddr*>(&server_address),
+                           sizeof(server_address))) {
     LOG4CXX_ERROR(logger_ptr, "Unable to bind: " << WSAGetLastError());
     server_socket_ = NULL;
     return false;
@@ -250,15 +237,16 @@ bool utils::TcpServerSocket::Impl::Listen(
 utils::TcpSocketConnection utils::TcpServerSocket::Impl::Accept() {
   LOG4CXX_AUTO_TRACE(logger_ptr);
 
-  struct sockaddr client_addr = { 0 };
+  struct sockaddr client_addr = {0};
   int client_addr_length = sizeof(client_addr);
-  SOCKET client_socket = accept(server_socket_, &client_addr, &client_addr_length);
+  SOCKET client_socket =
+      accept(server_socket_, &client_addr, &client_addr_length);
   if (SOCKET_ERROR == client_socket) {
-    LOG4CXX_ERROR(logger_ptr, "Failed to accept client socket: " << WSAGetLastError());
+    LOG4CXX_ERROR(logger_ptr,
+                  "Failed to accept client socket: " << WSAGetLastError());
     return utils::TcpSocketConnection();
   }
-  return TcpSocketConnection(
-    new TcpSocketConnection::Impl(client_socket));
+  return TcpSocketConnection(new TcpSocketConnection::Impl(client_socket));
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -266,22 +254,19 @@ utils::TcpSocketConnection utils::TcpServerSocket::Impl::Accept() {
 ////////////////////////////////////////////////////////////////////////////////
 
 utils::TcpServerSocket::TcpServerSocket()
-  : impl_(new TcpServerSocket::Impl()) {
-}
+    : impl_(new TcpServerSocket::Impl()) {}
 
-utils::TcpServerSocket::~TcpServerSocket() {
-  delete impl_;
-}
+utils::TcpServerSocket::~TcpServerSocket() { delete impl_; }
 
 bool utils::TcpServerSocket::IsListening() const {
   return impl_->IsListening();
 }
 
-bool utils::TcpServerSocket::Close() {
-  return impl_->Close();
-}
+bool utils::TcpServerSocket::Close() { return impl_->Close(); }
 
-bool utils::TcpServerSocket::Listen(const std::string& address, int port, int backlog) {
+bool utils::TcpServerSocket::Listen(const std::string& address,
+                                    int port,
+                                    int backlog) {
   return impl_->Listen(address, port, backlog);
 }
 

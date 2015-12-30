@@ -1,1 +1,1 @@
-../../../../include/application_manager/hmi_capabilities.h
+../../../../ include / application_manager / hmi_capabilities.h

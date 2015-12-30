@@ -59,8 +59,8 @@ class TimeManager {
   void Init(protocol_handler::ProtocolHandlerImpl* ph);
   void Stop();
   void SendMetric(utils::SharedPtr<MetricWrapper> metric);
- private:
 
+ private:
   class Streamer : public threads::ThreadDelegate {
    public:
     explicit Streamer(TimeManager* const server);
@@ -70,10 +70,11 @@ class TimeManager {
     bool IsReady() const;
     void Start();
     void Stop();
-    bool Send(const std::string &msg);
+    bool Send(const std::string& msg);
     void PushMessage(utils::SharedPtr<MetricWrapper> metric);
     volatile bool is_client_connected_;
-    private:
+
+   private:
     void ShutDownAndCloseSocket(int32_t socket_fd);
     TimeManager* const server_;
     int32_t server_socket_fd_;

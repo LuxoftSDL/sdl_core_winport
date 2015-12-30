@@ -52,18 +52,17 @@ const uint32_t kMqueueMessageSize = 4095;
 
 CREATE_LOGGERPTR_GLOBAL(logger_, "AudioPassThruThread")
 
-AudioStreamSenderThread::AudioStreamSenderThread(
-  const std::string fileName, uint32_t session_key)
-  : session_key_(session_key),
-    fileName_(fileName),
-    shouldBeStoped_(false),
-    shouldBeStoped_lock_(),
-    shouldBeStoped_cv_() {
+AudioStreamSenderThread::AudioStreamSenderThread(const std::string fileName,
+                                                 uint32_t session_key)
+    : session_key_(session_key)
+    , fileName_(fileName)
+    , shouldBeStoped_(false)
+    , shouldBeStoped_lock_()
+    , shouldBeStoped_cv_() {
   LOG4CXX_AUTO_TRACE(logger_);
 }
 
-AudioStreamSenderThread::~AudioStreamSenderThread() {
-}
+AudioStreamSenderThread::~AudioStreamSenderThread() {}
 
 void AudioStreamSenderThread::threadMain() {
   LOG4CXX_AUTO_TRACE(logger_);
@@ -75,7 +74,6 @@ void AudioStreamSenderThread::threadMain() {
     shouldBeStoped_cv_.WaitFor(auto_lock, kAudioPassThruTimeout * 1000);
     sendAudioChunkToMobile();
   }
-
 }
 
 void AudioStreamSenderThread::sendAudioChunkToMobile() {
@@ -107,8 +105,8 @@ void AudioStreamSenderThread::sendAudioChunkToMobile() {
     offset_ = offset_ + to - from;
     std::vector<uint8_t> data(from, to);
 
-    application_manager::ApplicationManagerImpl::instance()->
-    SendAudioPassThroughNotification(session_key_, data);
+    application_manager::ApplicationManagerImpl::instance()
+        ->SendAudioPassThroughNotification(session_key_, data);
     binaryData.clear();
   }
 #if !defined(EXTENDED_MEDIA_MODE)
@@ -134,8 +132,6 @@ void AudioStreamSenderThread::exitThreadMain() {
   setShouldBeStopped(true);
 }
 
-uint32_t AudioStreamSenderThread::session_key() const {
-  return session_key_;
-}
+uint32_t AudioStreamSenderThread::session_key() const { return session_key_; }
 
 }  // namespace media_manager

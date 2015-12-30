@@ -46,4 +46,4 @@ void LogMessageHandler::Handle(const LogMessage message) {
                             message.thread_name);
 }
 
-} // namespace logger
+}  // namespace logger

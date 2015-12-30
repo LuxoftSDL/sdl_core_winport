@@ -43,12 +43,9 @@
 #include "transport_manager/bluetooth/bluetooth_transport_adapter.h"
 #endif
 
-
 #if defined(USB_SUPPORT)
 #include "transport_manager/usb/usb_aoa_adapter.h"
 #endif  // USB_SUPPORT
-
-
 
 namespace transport_manager {
 CREATE_LOGGERPTR_GLOBAL(logger_, "TransportManager")
@@ -56,7 +53,9 @@ CREATE_LOGGERPTR_GLOBAL(logger_, "TransportManager")
 int TransportManagerDefault::Init() {
   LOG4CXX_TRACE(logger_, "enter");
   if (E_SUCCESS != TransportManagerImpl::Init()) {
-    LOG4CXX_TRACE(logger_, "exit with E_TM_IS_NOT_INITIALIZED. Condition: E_SUCCESS != TransportManagerImpl::Init()");
+    LOG4CXX_TRACE(logger_,
+                  "exit with E_TM_IS_NOT_INITIALIZED. Condition: E_SUCCESS != "
+                  "TransportManagerImpl::Init()");
     return E_TM_IS_NOT_INITIALIZED;
   }
   transport_adapter::TransportAdapterImpl* ta;
@@ -72,8 +71,8 @@ int TransportManagerDefault::Init() {
   AddTransportAdapter(ta);
 #endif
 
-
-  uint16_t port = profile::Profile::instance()->transport_manager_tcp_adapter_port();
+  uint16_t port =
+      profile::Profile::instance()->transport_manager_tcp_adapter_port();
   ta = new transport_adapter::TcpTransportAdapter(port);
 #ifdef TIME_TESTER
   if (metric_observer_) {
@@ -81,7 +80,6 @@ int TransportManagerDefault::Init() {
   }
 #endif  // TIME_TESTER
   AddTransportAdapter(ta);
-
 
 #if defined(USB_SUPPORT)
   ta = new transport_adapter::UsbAoaAdapter();
@@ -93,15 +91,12 @@ int TransportManagerDefault::Init() {
   AddTransportAdapter(ta);
 #endif  // USB_SUPPORT
 
-
-
   LOG4CXX_TRACE(logger_, "exit with E_SUCCESS");
   return E_SUCCESS;
 }
 
 TransportManagerDefault::~TransportManagerDefault() {}
 
-TransportManagerDefault::TransportManagerDefault()
-    : TransportManagerImpl() {}
+TransportManagerDefault::TransportManagerDefault() : TransportManagerImpl() {}
 
 }  //  namespace transport_manager

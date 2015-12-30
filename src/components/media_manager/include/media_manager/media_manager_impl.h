@@ -45,44 +45,44 @@
 namespace media_manager {
 
 class MediaManagerImpl : public MediaManager,
-  public protocol_handler::ProtocolObserver,
-  public utils::Singleton<MediaManagerImpl> {
-  public:
-    virtual ~MediaManagerImpl();
+                         public protocol_handler::ProtocolObserver,
+                         public utils::Singleton<MediaManagerImpl> {
+ public:
+  virtual ~MediaManagerImpl();
 
-    virtual void StartMicrophoneRecording(int32_t application_key,
-                                          const std::string& outputFileName,
-                                          int32_t duration);
-    virtual void StopMicrophoneRecording(int32_t application_key);
+  virtual void StartMicrophoneRecording(int32_t application_key,
+                                        const std::string& outputFileName,
+                                        int32_t duration);
+  virtual void StopMicrophoneRecording(int32_t application_key);
 
-    virtual void StartStreaming(
-        int32_t application_key, protocol_handler::ServiceType service_type);
-    virtual void StopStreaming(
-        int32_t application_key, protocol_handler::ServiceType service_type);
+  virtual void StartStreaming(int32_t application_key,
+                              protocol_handler::ServiceType service_type);
+  virtual void StopStreaming(int32_t application_key,
+                             protocol_handler::ServiceType service_type);
 
-    virtual void SetProtocolHandler(
+  virtual void SetProtocolHandler(
       protocol_handler::ProtocolHandler* protocol_handler);
-    virtual void OnMessageReceived(
+  virtual void OnMessageReceived(
       const ::protocol_handler::RawMessagePtr message);
-    virtual void OnMobileMessageSent(
+  virtual void OnMobileMessageSent(
       const ::protocol_handler::RawMessagePtr message);
-    virtual void FramesProcessed(int32_t application_key, int32_t frame_number);
+  virtual void FramesProcessed(int32_t application_key, int32_t frame_number);
 
-  protected:
-    MediaManagerImpl();
-    virtual void Init();
+ protected:
+  MediaManagerImpl();
+  virtual void Init();
 
-    protocol_handler::ProtocolHandler* protocol_handler_;
+  protocol_handler::ProtocolHandler* protocol_handler_;
 
-    MediaAdapterImpl*                  from_mic_recorder_;
-    MediaListenerPtr                   from_mic_listener_;
+  MediaAdapterImpl* from_mic_recorder_;
+  MediaListenerPtr from_mic_listener_;
 
-    std::map<protocol_handler::ServiceType, MediaAdapterImplPtr> streamer_;
-    std::map<protocol_handler::ServiceType, MediaListenerPtr>    streamer_listener_;
+  std::map<protocol_handler::ServiceType, MediaAdapterImplPtr> streamer_;
+  std::map<protocol_handler::ServiceType, MediaListenerPtr> streamer_listener_;
 
-  private:
-    DISALLOW_COPY_AND_ASSIGN(MediaManagerImpl);
-    FRIEND_BASE_SINGLETON_CLASS(MediaManagerImpl);
+ private:
+  DISALLOW_COPY_AND_ASSIGN(MediaManagerImpl);
+  FRIEND_BASE_SINGLETON_CLASS(MediaManagerImpl);
 };
 
 }  //  namespace media_manager

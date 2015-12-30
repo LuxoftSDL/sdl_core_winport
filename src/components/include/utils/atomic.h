@@ -44,7 +44,7 @@
 #elif defined(__GNUG__)
 #define atomic_post_inc(ptr) __sync_fetch_and_add((ptr), 1)
 #elif defined(OS_WINDOWS)
-#define atomic_post_inc(ptr) (InterlockedIncrement ((ptr)) - 1)
+#define atomic_post_inc(ptr) (InterlockedIncrement((ptr)) - 1)
 #else
 #warning "atomic_post_inc() implementation is not atomic"
 #define atomic_post_inc(ptr) (*(ptr))++
@@ -55,7 +55,7 @@
 #elif defined(__GNUG__)
 #define atomic_post_dec(ptr) __sync_fetch_and_sub((ptr), 1)
 #elif defined(OS_WINDOWS)
-#define atomic_post_dec(ptr) (InterlockedDecrement ((ptr)) + 1)
+#define atomic_post_dec(ptr) (InterlockedDecrement((ptr)) + 1)
 #else
 #warning "atomic_post_dec() implementation is not atomic"
 #define atomic_post_dec(ptr) (*(ptr))--

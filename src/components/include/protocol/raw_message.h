@@ -54,8 +54,10 @@ class RawMessage {
    * \param dataSize Message size
    * \param payload_size Received data size
    */
-  RawMessage(uint32_t connection_key, uint32_t protocol_version,
-             const uint8_t *const data_param, uint32_t data_size,
+  RawMessage(uint32_t connection_key,
+             uint32_t protocol_version,
+             const uint8_t* const data_param,
+             uint32_t data_size,
              uint8_t type = ServiceType::kRpc,
              uint32_t payload_size = 0);
   /**
@@ -74,11 +76,11 @@ class RawMessage {
   /**
    * \brief Getter for message string data
    */
-  uint8_t *data() const;
+  uint8_t* data() const;
   /**
    * \brief Getter for message size
    */
- size_t data_size() const;
+  size_t data_size() const;
   /**
    * \brief Getter for actual data size
    */
@@ -91,9 +93,7 @@ class RawMessage {
   /**
    * \brief Type of service message belongs to
    */
-  ServiceType service_type() const {
-    return service_type_;
-  }
+  ServiceType service_type() const { return service_type_; }
   /**
    * \brief Specifies current state of message in queue.
    * if false message is "ready to be processed"
@@ -104,7 +104,7 @@ class RawMessage {
 
  private:
   uint32_t connection_key_;
-  uint8_t *data_;
+  uint8_t* data_;
   size_t data_size_;
   uint32_t protocol_version_;
   ServiceType service_type_;
@@ -112,6 +112,6 @@ class RawMessage {
   bool waiting_;
   DISALLOW_COPY_AND_ASSIGN(RawMessage);
 };
-typedef  utils::SharedPtr<RawMessage> RawMessagePtr;
+typedef utils::SharedPtr<RawMessage> RawMessagePtr;
 }  // namespace protocol_handler
 #endif  // SRC_COMPONENTS_INCLUDE_PROTOCOL_RAW_MESSAGE_H_

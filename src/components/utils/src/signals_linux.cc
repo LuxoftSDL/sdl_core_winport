@@ -68,4 +68,4 @@ bool SubscribeToFaultSignal(sighandler_t func) {
 
 }  //  namespace utils
 
-#endif // OS_POSIX
+#endif  // OS_POSIX

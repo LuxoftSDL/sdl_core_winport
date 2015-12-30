@@ -38,19 +38,17 @@
 #include "metric_wrapper.h"
 #include "application_manager_observer.h"
 
-
 namespace time_tester {
 
 class ApplicationManagerObserver;
 
-class ApplicationManagerMetricWrapper: public MetricWrapper {
+class ApplicationManagerMetricWrapper : public MetricWrapper {
+ public:
+  utils::SharedPtr<application_manager::AMMetricObserver::MessageMetric>
+      message_metric;
 
-  public:
-    utils::SharedPtr<application_manager::AMMetricObserver::MessageMetric> message_metric;
-
-  protected:
-    virtual Json::Value GetJsonMetric();
+ protected:
+  virtual Json::Value GetJsonMetric();
 };
-
 }
 #endif  // SRC_COMPONENTS_TIME_TESTER_INCLUDE_TIME_TESTER_APPLICATION_MANAGER_MECTRIC_WRAPPER_H_

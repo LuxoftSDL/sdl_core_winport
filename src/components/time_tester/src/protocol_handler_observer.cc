@@ -39,34 +39,36 @@ namespace time_tester {
 
 CREATE_LOGGERPTR_GLOBAL(logger_, "Utils")
 
-ProtocolHandlerObserver::ProtocolHandlerObserver(TimeManager *time_manager):
-  time_manager_(time_manager) {
-}
+ProtocolHandlerObserver::ProtocolHandlerObserver(TimeManager* time_manager)
+    : time_manager_(time_manager) {}
 
-void ProtocolHandlerObserver::StartMessageProcess(uint32_t message_id,
-                                                  const TimevalStruct &start_time) {
+void ProtocolHandlerObserver::StartMessageProcess(
+    uint32_t message_id, const TimevalStruct& start_time) {
   if (message_id == 0) {
     return;
   }
   if (time_starts.find(message_id) != time_starts.end()) {
-    LOG4CXX_INFO(logger_, "Message ID already wait for stop processing" << message_id);
+    LOG4CXX_INFO(logger_,
+                 "Message ID already wait for stop processing" << message_id);
     return;
   }
   time_starts[message_id] = start_time;
 }
 
-void ProtocolHandlerObserver::EndMessageProcess(utils::SharedPtr<MessageMetric> m) {
+void ProtocolHandlerObserver::EndMessageProcess(
+    utils::SharedPtr<MessageMetric> m) {
   uint32_t message_id = m->message_id;
-  std::map<uint32_t, TimevalStruct>::const_iterator it = time_starts.find(message_id);
+  std::map<uint32_t, TimevalStruct>::const_iterator it =
+      time_starts.find(message_id);
   if (it == time_starts.end()) {
     LOG4CXX_WARN(logger_, "Cant find start time for message" << message_id);
     return;
   }
-  m->begin= time_starts[message_id];
+  m->begin = time_starts[message_id];
   m->end = date_time::DateTime::getCurrentTime();
   ProtocolHandlerMecticWrapper* metric = new ProtocolHandlerMecticWrapper();
   metric->message_metric = m;
   metric->grabResources();
   time_manager_->SendMetric(metric);
 }
-}  //namespace time_tester
+}  // namespace time_tester

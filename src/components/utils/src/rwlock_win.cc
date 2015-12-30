@@ -50,20 +50,16 @@ class RWLock::Impl {
   void ReleaseForWriting();
 
  private:
-  SRWLOCK      rwlock_;
+  SRWLOCK rwlock_;
 
   DISALLOW_COPY_AND_ASSIGN(Impl);
 };
 
 }  // namespace sync_primitives
 
-sync_primitives::RWLock::RWLock()
-  : impl_(new RWLock::Impl) {
-}
+sync_primitives::RWLock::RWLock() : impl_(new RWLock::Impl) {}
 
-sync_primitives::RWLock::~RWLock() {
-  delete impl_;
-}
+sync_primitives::RWLock::~RWLock() { delete impl_; }
 
 void sync_primitives::RWLock::AcquireForReading() {
   impl_->AcquireForReading();
@@ -89,12 +85,9 @@ void sync_primitives::RWLock::ReleaseForWriting() {
   impl_->ReleaseForWriting();
 }
 
-sync_primitives::RWLock::Impl::Impl() {
-  InitializeSRWLock(&rwlock_);
-}
+sync_primitives::RWLock::Impl::Impl() { InitializeSRWLock(&rwlock_); }
 
-sync_primitives::RWLock::Impl::~Impl() {
-}
+sync_primitives::RWLock::Impl::~Impl() {}
 
 void sync_primitives::RWLock::Impl::AcquireForReading() {
   AcquireSRWLockShared(&rwlock_);

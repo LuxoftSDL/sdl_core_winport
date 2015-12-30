@@ -43,26 +43,26 @@ namespace commands {
  * @brief OnEmergencyEventNotification command class
  **/
 class OnEmergencyEventNotification : public NotificationFromHMI {
-  public:
-    /**
-     * @brief OnEmergencyEventNotification class constructor
-     *
-     * @param message Incoming SmartObject message
-     **/
-    explicit OnEmergencyEventNotification(const MessageSharedPtr& message);
+ public:
+  /**
+   * @brief OnEmergencyEventNotification class constructor
+   *
+   * @param message Incoming SmartObject message
+   **/
+  explicit OnEmergencyEventNotification(const MessageSharedPtr& message);
 
-    /**
-     * @brief OnEmergencyEventNotification class destructor
-     **/
-    virtual ~OnEmergencyEventNotification();
+  /**
+   * @brief OnEmergencyEventNotification class destructor
+   **/
+  virtual ~OnEmergencyEventNotification();
 
-    /**
-     * @brief Execute command
-     **/
-    virtual void Run();
+  /**
+   * @brief Execute command
+   **/
+  virtual void Run();
 
-  private:
-    DISALLOW_COPY_AND_ASSIGN(OnEmergencyEventNotification);
+ private:
+  DISALLOW_COPY_AND_ASSIGN(OnEmergencyEventNotification);
 };
 
 }  // namespace commands

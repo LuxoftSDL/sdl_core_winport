@@ -41,12 +41,10 @@ namespace components {
 namespace transport_manager {
 
 MockTransportAdapter::MockTransportAdapter()
-    : TransportAdapterImpl(new MockDeviceScanner(this),
-                        new MockConnectionFactory(this), NULL) {}
+    : TransportAdapterImpl(
+          new MockDeviceScanner(this), new MockConnectionFactory(this), NULL) {}
 
-void MockTransportAdapter::reset() {
-  get_device_scanner()->reset();
-}
+void MockTransportAdapter::reset() { get_device_scanner()->reset(); }
 
 MockDeviceScanner* MockTransportAdapter::get_device_scanner() const {
   return static_cast<MockDeviceScanner*>(device_scanner_);

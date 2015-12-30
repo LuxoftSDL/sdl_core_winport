@@ -1,1 +1,2 @@
-../../../../../../include/application_manager/commands/mobile/on_button_event_notification.h
+../../../../../../ include / application_manager / commands / mobile /
+    on_button_event_notification.h

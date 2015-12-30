@@ -11,34 +11,22 @@ SQLDatabase::SQLDatabase(const std::string& filename)
   db_ = QSqlDatabase::addDatabase("QSQLITE");
 }
 
-SQLDatabase::~SQLDatabase() {
-  Close();
-}
+SQLDatabase::~SQLDatabase() { Close(); }
 
 bool SQLDatabase::Open() {
   db_.setDatabaseName(databasename_.c_str());
   return db_.open();
 }
 
-void SQLDatabase::Close() {
-  db_.close();
-}
+void SQLDatabase::Close() { db_.close(); }
 
-bool SQLDatabase::BeginTransaction() {
-  return db_.transaction();
-}
+bool SQLDatabase::BeginTransaction() { return db_.transaction(); }
 
-bool SQLDatabase::CommitTransaction() {
-  return db_.commit();
-}
+bool SQLDatabase::CommitTransaction() { return db_.commit(); }
 
-bool SQLDatabase::RollbackTransaction() {
-  return db_.rollback();
-}
+bool SQLDatabase::RollbackTransaction() { return db_.rollback(); }
 
-SQLError SQLDatabase::LastError() const {
-  return SQLError(db_.lastError());
-}
+SQLError SQLDatabase::LastError() const { return SQLError(db_.lastError()); }
 
 bool SQLDatabase::HasErrors() const {
   return db_.lastError().type() != QSqlError::NoError;
@@ -48,25 +36,15 @@ void SQLDatabase::set_path(const std::string& path) {
   databasename_ = path + databasename_;
 }
 
-std::string SQLDatabase::get_path() const {
-  return databasename_;
-}
+std::string SQLDatabase::get_path() const { return databasename_; }
 
-bool SQLDatabase::IsReadWrite() {
-  return true;
-}
+bool SQLDatabase::IsReadWrite() { return true; }
 
-bool SQLDatabase::Backup() {
-  return true;
-}
+bool SQLDatabase::Backup() { return true; }
 
-SQLDatabase::operator QSqlDatabase() const {
-  return db_;
-}
+SQLDatabase::operator QSqlDatabase() const { return db_; }
 
-bool SQLDatabase::Exec(const std::string& query) {
-  return true;
-}
+bool SQLDatabase::Exec(const std::string& query) { return true; }
 
-} // namespace dbms
-} // namespace utils
+}  // namespace dbms
+}  // namespace utils

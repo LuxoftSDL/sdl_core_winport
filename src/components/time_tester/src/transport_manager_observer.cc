@@ -38,26 +38,29 @@
 
 namespace time_tester {
 
-TransportManagerObserver::TransportManagerObserver(TimeManager* time_manager):
-  time_manager_ (time_manager) {
-}
+TransportManagerObserver::TransportManagerObserver(TimeManager* time_manager)
+    : time_manager_(time_manager) {}
 
-void TransportManagerObserver::StartRawMsg(const protocol_handler::RawMessage* ptr) {
+void TransportManagerObserver::StartRawMsg(
+    const protocol_handler::RawMessage* ptr) {
   time_starts[ptr] = date_time::DateTime::getCurrentTime();
 }
 
-void TransportManagerObserver::StopRawMsg(const protocol_handler::RawMessage* ptr) {
-    std::map<const protocol_handler::RawMessage*, TimevalStruct>::const_iterator it;
-    it = time_starts.find(ptr);
-    if (it != time_starts.end()) {
-      TransportManagerMecticWrapper* m = new TransportManagerMecticWrapper();
-      m->message_metric = new transport_manager::TMMetricObserver::MessageMetric();
-      m->message_metric->begin = it->second;
-      m->message_metric->end = date_time::DateTime::getCurrentTime();
-      m->message_metric->data_size = ptr->data_size();
-      m->grabResources();
-      time_manager_->SendMetric(m);
-    }
+void TransportManagerObserver::StopRawMsg(
+    const protocol_handler::RawMessage* ptr) {
+  std::map<const protocol_handler::RawMessage*, TimevalStruct>::const_iterator
+      it;
+  it = time_starts.find(ptr);
+  if (it != time_starts.end()) {
+    TransportManagerMecticWrapper* m = new TransportManagerMecticWrapper();
+    m->message_metric =
+        new transport_manager::TMMetricObserver::MessageMetric();
+    m->message_metric->begin = it->second;
+    m->message_metric->end = date_time::DateTime::getCurrentTime();
+    m->message_metric->data_size = ptr->data_size();
+    m->grabResources();
+    time_manager_->SendMetric(m);
+  }
 }
 
-} //namespace time_tester
+}  // namespace time_tester

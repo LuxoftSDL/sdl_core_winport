@@ -39,14 +39,11 @@ namespace {
 const std::string kLibPrefix = "lib";
 const std::string kLibSuffix = ".so";
 
-} // namespace
+}  // namespace
 
-utils::SharedLibrary::SharedLibrary()
-  : handle_(NULL) {
-}
+utils::SharedLibrary::SharedLibrary() : handle_(NULL) {}
 
-utils::SharedLibrary::SharedLibrary(const char* library_name)
-  : handle_(NULL) {
+utils::SharedLibrary::SharedLibrary(const char* library_name) : handle_(NULL) {
   Load(library_name);
 }
 
@@ -66,9 +63,7 @@ void utils::SharedLibrary::Unload() {
   }
 }
 
-bool utils::SharedLibrary::IsLoaded() const {
-  return handle_ != NULL;
-}
+bool utils::SharedLibrary::IsLoaded() const { return handle_ != NULL; }
 
 void* utils::SharedLibrary::GetSymbol(const char* name) {
   void* result = NULL;

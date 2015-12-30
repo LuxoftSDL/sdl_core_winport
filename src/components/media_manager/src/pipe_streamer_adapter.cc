@@ -38,46 +38,37 @@ namespace media_manager {
 
 CREATE_LOGGERPTR_GLOBAL(logger, "PipeStreamerAdapter")
 
-PipeStreamerAdapter::PipeStreamerAdapter(
-    const std::string& named_pipe_path)
-  : StreamerAdapter(new PipeStreamer(this, named_pipe_path)) {
-}
+PipeStreamerAdapter::PipeStreamerAdapter(const std::string& named_pipe_path)
+    : StreamerAdapter(new PipeStreamer(this, named_pipe_path)) {}
 
-PipeStreamerAdapter::~PipeStreamerAdapter() {
-}
+PipeStreamerAdapter::~PipeStreamerAdapter() {}
 
 PipeStreamerAdapter::PipeStreamer::PipeStreamer(
-    PipeStreamerAdapter* const adapter,
-    const std::string& named_pipe_path)
-  : Streamer(adapter),
-    named_pipe_path_(named_pipe_path) {
-}
+    PipeStreamerAdapter* const adapter, const std::string& named_pipe_path)
+    : Streamer(adapter), named_pipe_path_(named_pipe_path) {}
 
-PipeStreamerAdapter::PipeStreamer::~PipeStreamer() {
-}
+PipeStreamerAdapter::PipeStreamer::~PipeStreamer() {}
 
 bool PipeStreamerAdapter::PipeStreamer::Connect() {
   LOG4CXX_AUTO_TRACE(logger);
   if (!file_system::CreateDirectoryRecursively(
-      profile::Profile::instance()->app_storage_folder())) {
+          profile::Profile::instance()->app_storage_folder())) {
     LOG4CXX_ERROR(logger, "Cannot create app folder");
     return false;
   }
 
   if (!pipe_.Create(named_pipe_path_)) {
-    LOG4CXX_ERROR(logger, "Cannot create pipe "
-                  << named_pipe_path_);
+    LOG4CXX_ERROR(logger, "Cannot create pipe " << named_pipe_path_);
     return false;
   }
 
   if (!pipe_.Open()) {
-    LOG4CXX_ERROR(logger, "Cannot open pipe for writing "
-                  << named_pipe_path_);
+    LOG4CXX_ERROR(logger, "Cannot open pipe for writing " << named_pipe_path_);
     return false;
   }
 
-  LOG4CXX_INFO(logger, "Pipe " << named_pipe_path_
-                << " was successfuly created");
+  LOG4CXX_INFO(logger,
+               "Pipe " << named_pipe_path_ << " was successfuly created");
   return true;
 }
 
@@ -89,17 +80,16 @@ void PipeStreamerAdapter::PipeStreamer::Disconnect() {
 bool PipeStreamerAdapter::PipeStreamer::Send(
     protocol_handler::RawMessagePtr msg) {
   LOG4CXX_AUTO_TRACE(logger);
-  size_t ret = pipe_.Write(reinterpret_cast<const char*>(msg->data()),
-                           msg->data_size());
+  size_t ret =
+      pipe_.Write(reinterpret_cast<const char*>(msg->data()), msg->data_size());
   if (-1 == ret) {
-    LOG4CXX_ERROR(logger, "Failed writing data to pipe "
-                  << named_pipe_path_);
+    LOG4CXX_ERROR(logger, "Failed writing data to pipe " << named_pipe_path_);
     return false;
   }
 
   if (ret != msg->data_size()) {
-    LOG4CXX_WARN(logger, "Couldn't write all the data to pipe "
-                 << named_pipe_path_);
+    LOG4CXX_WARN(logger,
+                 "Couldn't write all the data to pipe " << named_pipe_path_);
   }
 
   LOG4CXX_INFO(logger, "Streamer::sent " << msg->data_size());

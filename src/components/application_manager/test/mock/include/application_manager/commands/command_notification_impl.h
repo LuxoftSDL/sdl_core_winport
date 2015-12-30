@@ -1,1 +1,2 @@
-../../../../../include/application_manager/commands/command_notification_impl.h
+../../../../../ include / application_manager / commands /
+    command_notification_impl.h

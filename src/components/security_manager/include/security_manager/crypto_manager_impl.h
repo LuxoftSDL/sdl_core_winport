@@ -60,17 +60,21 @@ class CryptoManagerImpl : public CryptoManager {
  private:
   class SSLContextImpl : public SSLContext {
    public:
-    SSLContextImpl(SSL *conn, Mode mode);
+    SSLContextImpl(SSL* conn, Mode mode);
     virtual HandshakeResult StartHandshake(const uint8_t** const out_data,
-                                           size_t *out_data_size);
-    virtual HandshakeResult DoHandshakeStep(const uint8_t *const in_data,
+                                           size_t* out_data_size);
+    virtual HandshakeResult DoHandshakeStep(const uint8_t* const in_data,
                                             size_t in_data_size,
                                             const uint8_t** const out_data,
-                                            size_t *out_data_size) OVERRIDE;
-    bool Encrypt(const uint8_t *const in_data,    size_t in_data_size,
-                         const uint8_t ** const out_data, size_t *out_data_size) OVERRIDE;
-    bool Decrypt(const uint8_t *const in_data,    size_t in_data_size,
-                         const uint8_t ** const out_data, size_t *out_data_size) OVERRIDE;
+                                            size_t* out_data_size) OVERRIDE;
+    bool Encrypt(const uint8_t* const in_data,
+                 size_t in_data_size,
+                 const uint8_t** const out_data,
+                 size_t* out_data_size) OVERRIDE;
+    bool Decrypt(const uint8_t* const in_data,
+                 size_t in_data_size,
+                 const uint8_t** const out_data,
+                 size_t* out_data_size) OVERRIDE;
     bool IsInitCompleted() const OVERRIDE;
     bool IsHandshakePending() const OVERRIDE;
     size_t get_max_block_size(size_t mtu) const OVERRIDE;
@@ -80,27 +84,28 @@ class CryptoManagerImpl : public CryptoManager {
     ~SSLContextImpl();
 
     void PrintCertData(X509* cert, const std::string& cert_owner);
-    private:
+
+   private:
     void PrintCertInfo();
     HandshakeResult CheckCertContext();
     bool ReadHandshakeData(const uint8_t** const out_data,
-                                      size_t* out_data_size);
-    bool WriteHandshakeData(const uint8_t*  const in_data, size_t in_data_size);
+                           size_t* out_data_size);
+    bool WriteHandshakeData(const uint8_t* const in_data, size_t in_data_size);
     HandshakeResult PerformHandshake();
-    typedef size_t(*BlockSizeGetter)(size_t);
+    typedef size_t (*BlockSizeGetter)(size_t);
     void EnsureBufferSizeEnough(size_t size);
     void SetHandshakeError(const int error);
     HandshakeResult openssl_error_convert_to_internal(const long error);
 
     std::string GetTextBy(X509_NAME* name, int object) const;
 
-    SSL *connection_;
-    BIO *bioIn_;
-    BIO *bioOut_;
-    BIO *bioFilter_;
+    SSL* connection_;
+    BIO* bioIn_;
+    BIO* bioOut_;
+    BIO* bioFilter_;
     mutable sync_primitives::Lock bio_locker;
     size_t buffer_size_;
-    uint8_t *buffer_;
+    uint8_t* buffer_;
     bool is_handshake_pending_;
     Mode mode_;
     mutable std::string last_error_;
@@ -117,24 +122,24 @@ class CryptoManagerImpl : public CryptoManager {
 
   bool Init(Mode mode,
             Protocol protocol,
-            const std::string &cert_data,
-            const std::string &ciphers_list,
+            const std::string& cert_data,
+            const std::string& ciphers_list,
             const bool verify_peer,
-            const std::string &ca_certificate_file,
+            const std::string& ca_certificate_file,
             const size_t hours_before_update) OVERRIDE;
-  bool OnCertificateUpdated(const std::string &data) OVERRIDE;
-  SSLContext *CreateSSLContext() OVERRIDE;
-  void ReleaseSSLContext(SSLContext *context) OVERRIDE;
+  bool OnCertificateUpdated(const std::string& data) OVERRIDE;
+  SSLContext* CreateSSLContext() OVERRIDE;
+  void ReleaseSSLContext(SSLContext* context) OVERRIDE;
   std::string LastError() const OVERRIDE;
   virtual bool IsCertificateUpdateRequired() const OVERRIDE;
 
-private:
-  bool set_certificate(const std::string &cert_data);
+ private:
+  bool set_certificate(const std::string& cert_data);
 
   int pull_number_from_buf(char* buf, int* idx);
   void asn1_time_to_tm(ASN1_TIME* time);
 
-  SSL_CTX *context_;
+  SSL_CTX* context_;
   mutable struct tm expiration_time_;
   Mode mode_;
   static uint32_t instance_count_;

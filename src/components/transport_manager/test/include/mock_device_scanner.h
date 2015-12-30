@@ -50,9 +50,11 @@ class MockTransportAdapter;
 
 class MockDeviceScanner : public DeviceScanner {
  public:
-  MockDeviceScanner(MockTransportAdapter *adapter);
+  MockDeviceScanner(MockTransportAdapter* adapter);
   void reset();
-  void AddDevice(const std::string& name, const std::string& unique_id, bool start = true);
+  void AddDevice(const std::string& name,
+                 const std::string& unique_id,
+                 bool start = true);
   void RemoveDevice(const std::string& name);
   void fail_further_search() { is_search_failed_ = true; }
 
@@ -63,7 +65,7 @@ class MockDeviceScanner : public DeviceScanner {
   bool IsInitialised() const;
 
  private:
-  MockTransportAdapter *controller_;
+  MockTransportAdapter* controller_;
   DeviceVector devices_;
   bool is_initialized_;
   bool is_search_failed_;
@@ -73,4 +75,5 @@ class MockDeviceScanner : public DeviceScanner {
 }  // namespace components
 }  // namespace test
 
-#endif /* APPLINK_TEST_COMPONENTS_TRANSPORTMANAGER_INCLUDE_MOCKDEVICESCANNER_H_ */
+#endif /* APPLINK_TEST_COMPONENTS_TRANSPORTMANAGER_INCLUDE_MOCKDEVICESCANNER_H_ \
+          */

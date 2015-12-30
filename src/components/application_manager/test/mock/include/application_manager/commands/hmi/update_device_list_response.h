@@ -1,1 +1,2 @@
-../../../../../../include/application_manager/commands/hmi/update_device_list_response.h
+../../../../../../ include / application_manager / commands / hmi /
+    update_device_list_response.h

@@ -43,25 +43,24 @@ struct workerData {
   int sockfd;
 };
 
-void *applicationWorker(void *p) {
-  workerData *data = static_cast<workerData*>(p);
-  char *buf = new char[2 * 1024 * 1024];
+void* applicationWorker(void* p) {
+  workerData* data = static_cast<workerData*>(p);
+  char* buf = new char[2 * 1024 * 1024];
   ssize_t len;
 
   while (true) {
-  len = recv(data->sockfd, buf, 2 * 1024 * 1024, 0);
-  if (len == 0)
-    break;
-  send(data->sockfd, buf, len, 0);
+    len = recv(data->sockfd, buf, 2 * 1024 * 1024, 0);
+    if (len == 0) break;
+    send(data->sockfd, buf, len, 0);
   }
   delete[] buf;
   delete data;
   return NULL;
 }
 
-void * applicationListener(void *p) {
+void* applicationListener(void* p) {
   using test::components::transport_manager::MockApplication;
-  MockApplication *app = static_cast<MockApplication*>(p);
+  MockApplication* app = static_cast<MockApplication*>(p);
 
   unlink(app->socket_name().c_str());
 
@@ -74,8 +73,8 @@ void * applicationListener(void *p) {
   memset(&my_addr, 0, sizeof(my_addr));
   strcpy(my_addr.sun_path, app->socket_name().c_str());
   my_addr.sun_family = AF_UNIX;
-  int res = bind(app->sockfd, reinterpret_cast<sockaddr*>(&my_addr),
-                 sizeof(my_addr));
+  int res =
+      bind(app->sockfd, reinterpret_cast<sockaddr*>(&my_addr), sizeof(my_addr));
   if (res == -1) {
     return NULL;
   }
@@ -113,19 +112,14 @@ namespace test {
 namespace components {
 namespace transport_manager {
 
-MockApplication::MockApplication(const MockDevice *device, ApplicationHandle id)
-    : device(device),
-      handle(id),
-      workerThread(0),
-      sockfd(-1),
-      active(false) {
+MockApplication::MockApplication(const MockDevice* device, ApplicationHandle id)
+    : device(device), handle(id), workerThread(0), sockfd(-1), active(false) {
   std::ostringstream oss;
   oss << "mockDevice" << device->unique_device_id() << "-" << id;
   socket_name_ = oss.str();
 }
 
 void MockApplication::Start() {
-
   pthread_cond_init(&ready_cond, NULL);
   pthread_mutex_init(&ready_mutex, NULL);
 

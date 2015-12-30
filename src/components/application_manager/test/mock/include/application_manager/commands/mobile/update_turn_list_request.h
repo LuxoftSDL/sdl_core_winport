@@ -1,1 +1,2 @@
-../../../../../../include/application_manager/commands/mobile/update_turn_list_request.h
+../../../../../../ include / application_manager / commands / mobile /
+    update_turn_list_request.h

@@ -36,22 +36,16 @@ namespace NsSmartDeviceLink {
 namespace NsSmartObjects {
 
 utils::SharedPtr<CBoolSchemaItem> CBoolSchemaItem::create(
-    const TSchemaItemParameter<bool> & DefaultValue) {
+    const TSchemaItemParameter<bool>& DefaultValue) {
   return new CBoolSchemaItem(DefaultValue);
 }
 
-CBoolSchemaItem::CBoolSchemaItem(
-    const TSchemaItemParameter<bool>& DefaultValue)
-    : CDefaultSchemaItem<bool>(DefaultValue) {
-}
+CBoolSchemaItem::CBoolSchemaItem(const TSchemaItemParameter<bool>& DefaultValue)
+    : CDefaultSchemaItem<bool>(DefaultValue) {}
 
-SmartType CBoolSchemaItem::getSmartType() const {
-  return SmartType_Boolean;
-}
+SmartType CBoolSchemaItem::getSmartType() const { return SmartType_Boolean; }
 
-bool CBoolSchemaItem::getDefaultValue() const {
-  return false;
-}
+bool CBoolSchemaItem::getDefaultValue() const { return false; }
 
 }  // namespace NsSmartObjects
 }  // namespace NsSmartDeviceLink

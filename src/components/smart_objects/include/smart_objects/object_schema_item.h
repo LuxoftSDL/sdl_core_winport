@@ -63,8 +63,7 @@ class CObjectSchemaItem : public ISchemaItem {
      * @param IsMandatory true if member is mandatory, false
      *                    otherwise. Defaults to true.
      **/
-    SMember(const ISchemaItemPtr SchemaItem,
-            const bool IsMandatory = true);
+    SMember(const ISchemaItemPtr SchemaItem, const bool IsMandatory = true);
     /**
      * @brief Member schema item.
      **/
@@ -122,7 +121,8 @@ class CObjectSchemaItem : public ISchemaItem {
    **/
   CObjectSchemaItem(const Members& Members);
   /**
-   * @brief Map of member name to SMember structure describing the object member.
+   * @brief Map of member name to SMember structure describing the object
+   *member.
    **/
   const Members mMembers;
   DISALLOW_COPY_AND_ASSIGN(CObjectSchemaItem);

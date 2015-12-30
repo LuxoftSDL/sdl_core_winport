@@ -50,19 +50,22 @@ CREATE_LOGGERPTR_GLOBAL(logger_, "Utils")
 
 ConditionalVariable::ConditionalVariable() {
   pthread_condattr_t attrs;
-  int32_t initialized  = pthread_condattr_init(&attrs);
+  int32_t initialized = pthread_condattr_init(&attrs);
   if (initialized != 0)
-    LOG4CXX_ERROR(logger_, "Failed to initialize "
-                            "conditional variable attributes");
+    LOG4CXX_ERROR(logger_,
+                  "Failed to initialize "
+                  "conditional variable attributes");
   pthread_condattr_setclock(&attrs, CLOCK_MONOTONIC);
   initialized = pthread_cond_init(&cond_var_, &attrs);
   if (initialized != 0)
-    LOG4CXX_ERROR(logger_, "Failed to initialize "
-                            "conditional variable");
+    LOG4CXX_ERROR(logger_,
+                  "Failed to initialize "
+                  "conditional variable");
   int32_t rv = pthread_condattr_destroy(&attrs);
   if (rv != 0)
-    LOG4CXX_ERROR(logger_, "Failed to destroy "
-                            "conditional variable attributes");
+    LOG4CXX_ERROR(logger_,
+                  "Failed to destroy "
+                  "conditional variable attributes");
 }
 
 ConditionalVariable::~ConditionalVariable() {
@@ -80,13 +83,11 @@ void ConditionalVariable::Broadcast() {
   int32_t signaled = pthread_cond_broadcast(&cond_var_);
   if (signaled != 0)
     LOG4CXX_ERROR(logger_, "Failed to broadcast conditional variable");
-
 }
 
 bool ConditionalVariable::Wait(Lock& lock) {
   lock.AssertTakenAndMarkFree();
-  int32_t wait_status = pthread_cond_wait(&cond_var_,
-                                      &lock.mutex_);
+  int32_t wait_status = pthread_cond_wait(&cond_var_, &lock.mutex_);
   lock.AssertFreeAndMarkTaken();
   if (wait_status != 0) {
     LOG4CXX_ERROR(logger_, "Failed to wait for conditional variable");
@@ -98,8 +99,7 @@ bool ConditionalVariable::Wait(Lock& lock) {
 bool ConditionalVariable::Wait(AutoLock& auto_lock) {
   Lock& lock = auto_lock.GetLock();
   lock.AssertTakenAndMarkFree();
-  int32_t wait_status = pthread_cond_wait(&cond_var_,
-                                      &lock.mutex_);
+  int32_t wait_status = pthread_cond_wait(&cond_var_, &lock.mutex_);
   lock.AssertFreeAndMarkTaken();
   if (wait_status != 0) {
     LOG4CXX_ERROR(logger_, "Failed to wait for conditional variable");
@@ -109,24 +109,23 @@ bool ConditionalVariable::Wait(AutoLock& auto_lock) {
 }
 
 ConditionalVariable::WaitStatus ConditionalVariable::WaitFor(
-    AutoLock& auto_lock, int32_t milliseconds){
+    AutoLock& auto_lock, int32_t milliseconds) {
   struct timespec now;
   clock_gettime(CLOCK_MONOTONIC, &now);
   timespec wait_interval;
-  wait_interval.tv_sec = now.tv_sec +
-      (milliseconds / kMillisecondsPerSecond);
-  wait_interval.tv_nsec = now.tv_nsec +
+  wait_interval.tv_sec = now.tv_sec + (milliseconds / kMillisecondsPerSecond);
+  wait_interval.tv_nsec =
+      now.tv_nsec +
       (milliseconds % kMillisecondsPerSecond) * kNanosecondsPerMillisecond;
   wait_interval.tv_sec += wait_interval.tv_nsec / kNanosecondsPerSecond;
   wait_interval.tv_nsec %= kNanosecondsPerSecond;
   Lock& lock = auto_lock.GetLock();
   lock.AssertTakenAndMarkFree();
-  int32_t timedwait_status = pthread_cond_timedwait(&cond_var_,
-                                                &lock.mutex_,
-                                                &wait_interval);
+  int32_t timedwait_status =
+      pthread_cond_timedwait(&cond_var_, &lock.mutex_, &wait_interval);
   lock.AssertFreeAndMarkTaken();
   WaitStatus wait_status = kNoTimeout;
-  switch(timedwait_status) {
+  switch (timedwait_status) {
     case 0: {
       wait_status = kNoTimeout;
       break;
@@ -140,12 +139,15 @@ ConditionalVariable::WaitStatus ConditionalVariable::WaitFor(
       break;
     }
     default: {
-      LOG4CXX_ERROR(logger_, "Failed to timewait for conditional variable timedwait_status: " << timedwait_status);
+      LOG4CXX_ERROR(
+          logger_,
+          "Failed to timewait for conditional variable timedwait_status: "
+              << timedwait_status);
     }
   }
   return wait_status;
 }
 
-} // namespace sync_primitives
+}  // namespace sync_primitives
 
-#endif // OS_POSIX
+#endif  // OS_POSIX

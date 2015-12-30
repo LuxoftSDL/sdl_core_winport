@@ -37,11 +37,9 @@ namespace application_manager {
 namespace commands {
 
 TTSGetLanguageResponse::TTSGetLanguageResponse(const MessageSharedPtr& message)
-    : ResponseFromHMI(message) {
-}
+    : ResponseFromHMI(message) {}
 
-TTSGetLanguageResponse::~TTSGetLanguageResponse() {
-}
+TTSGetLanguageResponse::~TTSGetLanguageResponse() {}
 
 void TTSGetLanguageResponse::Run() {
   LOG4CXX_AUTO_TRACE(logger_);

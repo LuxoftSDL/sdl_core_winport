@@ -1,1 +1,2 @@
-../../../../../../include/application_manager/commands/mobile/change_registration_request.h
+../../../../../../ include / application_manager / commands / mobile /
+    change_registration_request.h

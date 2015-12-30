@@ -39,14 +39,17 @@ namespace hmi_message_handler {
 CREATE_LOGGERPTR_GLOBAL(logger_, "HMIMessageHandler")
 
 HMIMessageHandlerImpl::HMIMessageHandlerImpl()
-    : observer_(NULL),
-      messages_to_hmi_("HMH ToHMI", this,
-                 threads::ThreadOptions(
-                     profile::Profile::instance()->thread_min_stack_size())),
-      messages_from_hmi_("HMH FromHMI", this,
-                 threads::ThreadOptions(
-                     profile::Profile::instance()->thread_min_stack_size())) {
-}
+    : observer_(NULL)
+    , messages_to_hmi_(
+          "HMH ToHMI",
+          this,
+          threads::ThreadOptions(
+              profile::Profile::instance()->thread_min_stack_size()))
+    , messages_from_hmi_(
+          "HMH FromHMI",
+          this,
+          threads::ThreadOptions(
+              profile::Profile::instance()->thread_min_stack_size())) {}
 
 HMIMessageHandlerImpl::~HMIMessageHandlerImpl() {
   LOG4CXX_AUTO_TRACE(logger_);
@@ -86,8 +89,7 @@ void HMIMessageHandlerImpl::OnErrorSending(MessageSharedPointer message) {
   observer_->OnErrorSending(message);
 }
 
-void HMIMessageHandlerImpl::AddHMIMessageAdapter(
-    HMIMessageAdapter* adapter) {
+void HMIMessageHandlerImpl::AddHMIMessageAdapter(HMIMessageAdapter* adapter) {
   LOG4CXX_AUTO_TRACE(logger_);
   message_adapters_.insert(adapter);
 }
@@ -110,16 +112,13 @@ void HMIMessageHandlerImpl::Handle(const impl::MessageFromHmi message) {
 
   observer_->OnMessageReceived(message);
   LOG4CXX_INFO(logger_, "Message from hmi given away.");
-
 }
 void HMIMessageHandlerImpl::Handle(const impl::MessageToHmi message) {
-  for (std::set<HMIMessageAdapter*>::iterator it =
-      message_adapters_.begin();
-      it != message_adapters_.end();
-      ++it) {
+  for (std::set<HMIMessageAdapter*>::iterator it = message_adapters_.begin();
+       it != message_adapters_.end();
+       ++it) {
     (*it)->SendMessageToHMI(message);
   }
 }
-
 
 }  //  namespace hmi_message_handler

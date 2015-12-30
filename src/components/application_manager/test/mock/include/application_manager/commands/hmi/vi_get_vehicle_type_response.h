@@ -1,1 +1,2 @@
-../../../../../../include/application_manager/commands/hmi/vi_get_vehicle_type_response.h
+../../../../../../ include / application_manager / commands / hmi /
+    vi_get_vehicle_type_response.h

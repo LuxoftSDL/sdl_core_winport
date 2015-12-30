@@ -47,20 +47,21 @@ namespace protocol_handler_test {
 class ProtocolObserverMock : public ::protocol_handler::ProtocolObserver {
  public:
   MOCK_METHOD1(OnDeviceListUpdated,
-      void(const connection_handler::DeviceMap &device_list));
-  MOCK_METHOD0(OnFindNewApplicationsRequest,void());
+               void(const connection_handler::DeviceMap& device_list));
+  MOCK_METHOD0(OnFindNewApplicationsRequest, void());
   MOCK_METHOD1(RemoveDevice,
-      void(const connection_handler::DeviceHandle &device_handle));
+               void(const connection_handler::DeviceHandle& device_handle));
   MOCK_METHOD3(OnServiceStartedCallback,
-      bool(const connection_handler::DeviceHandle &device_handle,
-           const int32_t &session_key,
-           const protocol_handler::ServiceType &type));
-  MOCK_METHOD3(OnServiceEndedCallback,
-      void(const int32_t &session_key,
-           const protocol_handler::ServiceType &type,
+               bool(const connection_handler::DeviceHandle& device_handle,
+                    const int32_t& session_key,
+                    const protocol_handler::ServiceType& type));
+  MOCK_METHOD3(
+      OnServiceEndedCallback,
+      void(const int32_t& session_key,
+           const protocol_handler::ServiceType& type,
            const connection_handler::CloseSessionReason& close_reason));
 };
-} // namespace protocol_handler_test
-} // namespace components
-} // namespace test
-#endif  //SRC_COMPONENTS_PROTOCOL_HANDLER_TEST_INCLUDE_PROTOCOL_OBSERVER_MOCK_H_
+}  // namespace protocol_handler_test
+}  // namespace components
+}  // namespace test
+#endif  // SRC_COMPONENTS_PROTOCOL_HANDLER_TEST_INCLUDE_PROTOCOL_OBSERVER_MOCK_H_

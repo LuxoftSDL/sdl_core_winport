@@ -42,15 +42,13 @@ namespace application_manager {
 namespace commands {
 
 SliderRequest::SliderRequest(const MessageSharedPtr& message)
- : CommandRequestImpl(message) {
+    : CommandRequestImpl(message) {
   subscribe_on_event(hmi_apis::FunctionID::UI_OnResetTimeout);
 }
 
-SliderRequest::~SliderRequest() {
-}
+SliderRequest::~SliderRequest() {}
 
 bool SliderRequest::Init() {
-
   /* Timeout in milliseconds.
      If omitted a standard value of 10000 milliseconds is used.*/
   if ((*message_)[strings::msg_params].keyExists(strings::timeout)) {
@@ -74,8 +72,8 @@ void SliderRequest::Run() {
     return;
   }
 
-  if ((*message_)[strings::msg_params][strings::num_ticks].asInt()
-      < (*message_)[strings::msg_params][strings::position].asInt()) {
+  if ((*message_)[strings::msg_params][strings::num_ticks].asInt() <
+      (*message_)[strings::msg_params][strings::position].asInt()) {
     LOG4CXX_ERROR(logger_, "INVALID_DATA");
     SendResponse(false, mobile_apis::Result::INVALID_DATA);
     return;
@@ -83,9 +81,8 @@ void SliderRequest::Run() {
 
   if ((*message_)[strings::msg_params].keyExists(strings::slider_footer)) {
     if (1 < (*message_)[strings::msg_params][strings::slider_footer].length()) {
-      if ((*message_)[strings::msg_params][strings::num_ticks].asUInt()
-          != (*message_)[strings::msg_params]
-                         [strings::slider_footer].length()) {
+      if ((*message_)[strings::msg_params][strings::num_ticks].asUInt() !=
+          (*message_)[strings::msg_params][strings::slider_footer].length()) {
         LOG4CXX_ERROR(logger_, "INVALID_DATA");
         SendResponse(false, mobile_apis::Result::INVALID_DATA);
         return;
@@ -99,8 +96,8 @@ void SliderRequest::Run() {
     return;
   }
 
-  smart_objects::SmartObject msg_params = smart_objects::SmartObject(
-      smart_objects::SmartType_Map);
+  smart_objects::SmartObject msg_params =
+      smart_objects::SmartObject(smart_objects::SmartType_Map);
   msg_params = (*message_)[strings::msg_params];
   msg_params[strings::app_id] = application->app_id();
 
@@ -119,9 +116,8 @@ void SliderRequest::on_event(const event_engine::Event& event) {
   const event_engine::Event::EventID event_id = event.id();
   if (event_id == hmi_apis::FunctionID::UI_OnResetTimeout) {
     LOG4CXX_INFO(logger_, "Received UI_OnResetTimeout event");
-    ApplicationManagerImpl::instance()->updateRequestTimeout(connection_key(),
-      correlation_id(),
-      default_timeout());
+    ApplicationManagerImpl::instance()->updateRequestTimeout(
+        connection_key(), correlation_id(), default_timeout());
     return;
   }
   if (event_id != hmi_apis::FunctionID::UI_Slider) {
@@ -133,21 +129,21 @@ void SliderRequest::on_event(const event_engine::Event& event) {
 
   const hmi_apis::Common_Result::eType response_code =
       static_cast<hmi_apis::Common_Result::eType>(
-      message[strings::params][hmi_response::code].asInt());
+          message[strings::params][hmi_response::code].asInt());
 
   smart_objects::SmartObject response_msg_params = message[strings::msg_params];
   if (response_code == hmi_apis::Common_Result::ABORTED &&
       response_msg_params[strings::data].keyExists(strings::slider_position)) {
-    //Copy slider_position info to msg_params section
-        response_msg_params[strings::slider_position] =
+    // Copy slider_position info to msg_params section
+    response_msg_params[strings::slider_position] =
         message[strings::params][strings::data][strings::slider_position];
   }
 
   const bool is_response_success =
       Compare<hmi_apis::Common_Result::eType, EQ, ONE>(
-        response_code,
-        hmi_apis::Common_Result::SUCCESS,
-        hmi_apis::Common_Result::WARNINGS);
+          response_code,
+          hmi_apis::Common_Result::SUCCESS,
+          hmi_apis::Common_Result::WARNINGS);
 
   SendResponse(is_response_success,
                MessageHelper::HMIToMobileResult(response_code),
@@ -185,4 +181,3 @@ bool SliderRequest::IsWhiteSpaceExist() {
 
 }  // namespace commands
 }  // namespace application_manager
-

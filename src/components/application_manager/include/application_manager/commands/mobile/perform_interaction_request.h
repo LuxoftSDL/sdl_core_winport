@@ -48,8 +48,7 @@ namespace commands {
 /**
  * @brief PerformInteractionRequest command class
  **/
-class PerformInteractionRequest : public CommandRequestImpl  {
-
+class PerformInteractionRequest : public CommandRequestImpl {
  public:
   /**
    * @brief PerformInteractionRequest class constructor
@@ -86,7 +85,7 @@ class PerformInteractionRequest : public CommandRequestImpl  {
    * has exceed it's limit
    *
    */
-    virtual void onTimeOut();
+  virtual void onTimeOut();
 
   /*
    * @brief Function will be called when VR_OnCommand event
@@ -103,9 +102,8 @@ class PerformInteractionRequest : public CommandRequestImpl  {
    * @param message which should send to mobile side
    *
    */
-  void ProcessPerformInteractionResponse
-  (const smart_objects::SmartObject& message);
-
+  void ProcessPerformInteractionResponse(
+      const smart_objects::SmartObject& message);
 
   /*
    * @brief Sends UI PerformInteraction request to HMI
@@ -140,7 +138,8 @@ class PerformInteractionRequest : public CommandRequestImpl  {
    * return Return TRUE if there are no similar menu names in choice set,
    * otherwise FALSE
    */
-  bool CheckChoiceSetMenuNames(application_manager::ApplicationSharedPtr const app);
+  bool CheckChoiceSetMenuNames(
+      application_manager::ApplicationSharedPtr const app);
 
   /*
    * @brief Checks if incoming choice set doesn't has similar VR synonyms.
@@ -150,7 +149,8 @@ class PerformInteractionRequest : public CommandRequestImpl  {
    * return Return TRUE if there are no similar VR synonyms in choice set,
    * otherwise FALSE
    */
-  bool CheckChoiceSetVRSynonyms(application_manager::ApplicationSharedPtr const app);
+  bool CheckChoiceSetVRSynonyms(
+      application_manager::ApplicationSharedPtr const app);
 
   /*
    * @brief Checks if request with non-sequential positions of vrHelpItems
@@ -161,7 +161,8 @@ class PerformInteractionRequest : public CommandRequestImpl  {
    * @return TRUE if vrHelpItems positions are sequential,
    * otherwise FALSE
    */
-  bool CheckVrHelpItemPositions(application_manager::ApplicationSharedPtr const app);
+  bool CheckVrHelpItemPositions(
+      application_manager::ApplicationSharedPtr const app);
 
   /*
    * @brief Disable PerformInteraction state in application and
@@ -192,10 +193,10 @@ class PerformInteractionRequest : public CommandRequestImpl  {
   bool CheckChoiceIDFromResponse(ApplicationSharedPtr app, int32_t choice_id);
 
   mobile_apis::InteractionMode::eType interaction_mode_;
-  bool                                ui_response_recived_;
-  bool                                vr_response_recived_;
-  bool                                app_pi_was_active_before_;
-  static uint32_t                     pi_requests_count_;
+  bool ui_response_recived_;
+  bool vr_response_recived_;
+  bool app_pi_was_active_before_;
+  static uint32_t pi_requests_count_;
 
   DISALLOW_COPY_AND_ASSIGN(PerformInteractionRequest);
 };

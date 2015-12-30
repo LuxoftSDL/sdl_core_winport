@@ -59,9 +59,7 @@ Errors::eType CStringSchemaItem::validate(const SmartObject& Object) {
   return Errors::OK;
 }
 
-SmartType CStringSchemaItem::getSmartType() const {
-  return SmartType_String;
-}
+SmartType CStringSchemaItem::getSmartType() const { return SmartType_String; }
 
 std::string CStringSchemaItem::getDefaultValue() const {
   return std::string("");
@@ -71,10 +69,9 @@ CStringSchemaItem::CStringSchemaItem(
     const TSchemaItemParameter<size_t>& MinLength,
     const TSchemaItemParameter<size_t>& MaxLength,
     const TSchemaItemParameter<std::string>& DefaultValue)
-    : CDefaultSchemaItem<std::string>(DefaultValue),
-      mMinLength(MinLength),
-      mMaxLength(MaxLength) {
-}
+    : CDefaultSchemaItem<std::string>(DefaultValue)
+    , mMinLength(MinLength)
+    , mMaxLength(MaxLength) {}
 
 }  // namespace NsSmartObjects
 }  // namespace NsSmartDeviceLink

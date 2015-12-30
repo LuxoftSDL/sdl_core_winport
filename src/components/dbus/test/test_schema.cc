@@ -53,9 +53,7 @@ class DBusSchemaTest : public ::testing::Test {
     schema_ = new DBusSchema(ford_message_descriptions::message_descriptions);
   }
 
-  static void TearDownTestCase() {
-    delete schema_;
-  }
+  static void TearDownTestCase() { delete schema_; }
 
   static const DBusSchema* schema_;
   static const int test_negative_value = -3;
@@ -103,7 +101,8 @@ TEST_F(DBusSchemaTest, GetListArg) {
 
   const MessageId kIdWrong = static_cast<const MessageId>(test_negative_value);
   const MessageName kNameWrong("TestInterface", "TestMessage");
-  const MessageType kTypeWrong = static_cast<const MessageType>(test_negative_value);
+  const MessageType kTypeWrong =
+      static_cast<const MessageType>(test_negative_value);
   const ListArgs kExpListWrong;
   argsName = schema_->getListArgs(kNameWrong, kTypeWrong);
   EXPECT_EQ(kExpListWrong, argsName);
@@ -115,5 +114,3 @@ TEST_F(DBusSchemaTest, GetListArg) {
 }  // namespace dbus
 }  // namespace components
 }  // namespace test
-
-

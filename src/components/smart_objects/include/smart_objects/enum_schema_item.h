@@ -42,16 +42,16 @@
 #include "utils/shared_ptr.h"
 #include "smart_objects/default_shema_item.h"
 
-
 namespace NsSmartDeviceLink {
 namespace NsSmartObjects {
 
-template <typename EnumType> class EnumConversionHelper;
+template <typename EnumType>
+class EnumConversionHelper;
 /**
  * @brief Enumeration schema item.
  * @tparam EnumType Enumeration type.
  **/
-template<typename EnumType>
+template <typename EnumType>
 class TEnumSchemaItem : public CDefaultSchemaItem<EnumType> {
  public:
   /**
@@ -61,9 +61,9 @@ class TEnumSchemaItem : public CDefaultSchemaItem<EnumType> {
    * @return Shared pointer to a new schema item.
    **/
   static utils::SharedPtr<TEnumSchemaItem> create(
-    const std::set<EnumType>& AllowedElements,
-    const TSchemaItemParameter<EnumType>& DefaultValue =
-      TSchemaItemParameter<EnumType>());
+      const std::set<EnumType>& AllowedElements,
+      const TSchemaItemParameter<EnumType>& DefaultValue =
+          TSchemaItemParameter<EnumType>());
   /**
    * @brief Validate smart object.
    * @param Object Object to validate.
@@ -127,7 +127,8 @@ class EnumConversionHelper {
   }
 
   static bool CStringToEnum(const char* str, EnumType* value) {
-    typename CStringToEnumMap::const_iterator it = cstring_to_enum_map().find(str);
+    typename CStringToEnumMap::const_iterator it =
+        cstring_to_enum_map().find(str);
     if (it == cstring_to_enum_map().end()) {
       return false;
     }
@@ -138,7 +139,8 @@ class EnumConversionHelper {
   }
 
   static bool EnumToCString(EnumType value, const char** str) {
-    typename EnumToCStringMap::const_iterator it = enum_to_cstring_map().find(value);
+    typename EnumToCStringMap::const_iterator it =
+        enum_to_cstring_map().find(value);
     if (it == enum_to_cstring_map().end()) {
       return false;
     }
@@ -170,7 +172,7 @@ class EnumConversionHelper {
   static const CStringToEnumMap cstring_to_enum_map_;
 
   struct Size {
-    enum {value = sizeof(cstring_values_) / sizeof(cstring_values_[0])};
+    enum { value = sizeof(cstring_values_) / sizeof(cstring_values_[0]) };
   };
 
   static EnumToCStringMap InitEnumToCStringMap() {
@@ -193,27 +195,26 @@ class EnumConversionHelper {
   DISALLOW_COPY_AND_ASSIGN(EnumConversionHelper<EnumType>);
 };
 
-
-template<typename EnumType>
+template <typename EnumType>
 utils::SharedPtr<TEnumSchemaItem<EnumType> > TEnumSchemaItem<EnumType>::create(
-  const std::set<EnumType>& AllowedElements,
-  const TSchemaItemParameter<EnumType>& DefaultValue) {
+    const std::set<EnumType>& AllowedElements,
+    const TSchemaItemParameter<EnumType>& DefaultValue) {
   return new TEnumSchemaItem<EnumType>(AllowedElements, DefaultValue);
 }
 
-template<typename EnumType>
+template <typename EnumType>
 Errors::eType TEnumSchemaItem<EnumType>::validate(const SmartObject& Object) {
   if (SmartType_Integer != Object.getType()) {
     return Errors::INVALID_VALUE;
   }
-  if (mAllowedElements.find(static_cast<EnumType>(Object.asInt()))
-      == mAllowedElements.end()) {
+  if (mAllowedElements.find(static_cast<EnumType>(Object.asInt())) ==
+      mAllowedElements.end()) {
     return Errors::OUT_OF_RANGE;
   }
   return Errors::OK;
 }
 
-template<typename EnumType>
+template <typename EnumType>
 void TEnumSchemaItem<EnumType>::applySchema(SmartObject& Object) {
   if (SmartType_String == Object.getType()) {
     EnumType enum_val = static_cast<EnumType>(-1);
@@ -223,32 +224,32 @@ void TEnumSchemaItem<EnumType>::applySchema(SmartObject& Object) {
   }
 }
 
-template<typename EnumType>
+template <typename EnumType>
 void TEnumSchemaItem<EnumType>::unapplySchema(SmartObject& Object) {
   if (SmartType_Integer == Object.getType()) {
     const char* str;
-    if (ConversionHelper::EnumToCString(static_cast<EnumType>(Object.asInt()), &str)) {
+    if (ConversionHelper::EnumToCString(static_cast<EnumType>(Object.asInt()),
+                                        &str)) {
       Object = str;
     }
   }
 }
 
-template<typename EnumType>
+template <typename EnumType>
 SmartType TEnumSchemaItem<EnumType>::getSmartType() const {
   return SmartType_Integer;
 }
-template<typename EnumType>
+template <typename EnumType>
 EnumType TEnumSchemaItem<EnumType>::getDefaultValue() const {
   return EnumType::INVALID_ENUM;
 }
 
-template<typename EnumType>
+template <typename EnumType>
 TEnumSchemaItem<EnumType>::TEnumSchemaItem(
-  const std::set<EnumType>& AllowedElements,
-  const TSchemaItemParameter<EnumType>& DefaultValue)
-  : CDefaultSchemaItem<EnumType>(DefaultValue),
-    mAllowedElements(AllowedElements) {
-}
+    const std::set<EnumType>& AllowedElements,
+    const TSchemaItemParameter<EnumType>& DefaultValue)
+    : CDefaultSchemaItem<EnumType>(DefaultValue)
+    , mAllowedElements(AllowedElements) {}
 
 }  // namespace NsSmartObjects
 }  // namespace NsSmartDeviceLink

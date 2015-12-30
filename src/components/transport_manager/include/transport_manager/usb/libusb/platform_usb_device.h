@@ -56,7 +56,8 @@ class PlatformUsbDevice {
   std::string GetManufacturer() const;
   std::string GetProductName() const;
   std::string GetSerialNumber() const;
-  PlatformUsbDevice(uint8_t bus, uint8_t address,
+  PlatformUsbDevice(uint8_t bus,
+                    uint8_t address,
                     const libusb_device_descriptor& device_descriptor,
                     libusb_device* device_libusb,
                     libusb_device_handle* device_handle_libusb);

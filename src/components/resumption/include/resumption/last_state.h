@@ -54,7 +54,6 @@ class LastState : public utils::Singleton<LastState> {
   Json::Value dictionary;
 
  private:
-
   /**
    * @brief Load dictionary from filesystem
    */

@@ -1,1 +1,1 @@
-../../../../../../include/application_manager/commands/hmi/get_urls.h
+../../../../../../ include / application_manager / commands / hmi / get_urls.h

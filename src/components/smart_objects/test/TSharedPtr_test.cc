@@ -45,9 +45,9 @@ class CMockObject {
   ~CMockObject(void);
   int getId(void) const;
 
-  MOCK_METHOD0(destructor, void ());
+  MOCK_METHOD0(destructor, void());
 
-private:
+ private:
   int mId;
 };
 
@@ -61,8 +61,7 @@ class CExtendedMockObject : public CMockObject {
 }  // namespace test
 
 test::components::utils::SharedPtrTest::CMockObject::CMockObject(int id)
-    : mId(id) {
-}
+    : mId(id) {}
 
 test::components::utils::SharedPtrTest::CMockObject::~CMockObject(void) {
   destructor();
@@ -72,14 +71,15 @@ int test::components::utils::SharedPtrTest::CMockObject::getId(void) const {
   return mId;
 }
 
-test::components::utils::SharedPtrTest::CExtendedMockObject::CExtendedMockObject(
-    int id)
-    : CMockObject(id) {
-}
+test::components::utils::SharedPtrTest::CExtendedMockObject::
+    CExtendedMockObject(int id)
+    : CMockObject(id) {}
 
-typedef utils::SharedPtr<test::components::utils::SharedPtrTest::CMockObject> tMockObjectPtr;
+typedef utils::SharedPtr<test::components::utils::SharedPtrTest::CMockObject>
+    tMockObjectPtr;
 typedef utils::SharedPtr<
-    test::components::utils::SharedPtrTest::CExtendedMockObject> tExtendedMockObjectPtr;
+    test::components::utils::SharedPtrTest::CExtendedMockObject>
+    tExtendedMockObjectPtr;
 
 TEST(SharedPtrTest, Constructor) {
   test::components::utils::SharedPtrTest::CMockObject* object1 =
@@ -199,6 +199,6 @@ TEST(SharedPtrTest, StressTest) {
     }
   }
   printf("%lu objects created, %lu pointers copied\n",
-    static_cast<unsigned long>(objectCreated),
-    static_cast<unsigned long>(pointersCopied));
+         static_cast<unsigned long>(objectCreated),
+         static_cast<unsigned long>(pointersCopied));
 }

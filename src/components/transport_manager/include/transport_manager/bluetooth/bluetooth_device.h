@@ -61,30 +61,32 @@ typedef std::vector<uint8_t> RfcommChannelVector;
  */
 class BluetoothDevice : public Device {
  public:
-
-  /**
-   * @brief Return device unique identifier.
-   *
-   * @return string with device unique identifier.
-   */
+/**
+ * @brief Return device unique identifier.
+ *
+ * @return string with device unique identifier.
+ */
 #ifdef OS_WINDOWS
-	 static std::string GetUniqueDeviceId(const BTH_ADDR& device_address);
+  static std::string GetUniqueDeviceId(const BTH_ADDR& device_address);
 #else
   static std::string GetUniqueDeviceId(const bdaddr_t& device_address);
 #endif
 
-  /**
-   * @brief Constructor.
-   *
-   * @param address Bluetooth address.
-   * @param name Human-readable device name.
-   * @param rfcomm_channels List of RFCOMM channels where SmartDeviceLink service has been discovered.
-   **/
+/**
+ * @brief Constructor.
+ *
+ * @param address Bluetooth address.
+ * @param name Human-readable device name.
+ * @param rfcomm_channels List of RFCOMM channels where SmartDeviceLink service
+ *has been discovered.
+ **/
 #ifdef OS_WINDOWS
-  BluetoothDevice(const BTH_ADDR& device_address, const char* device_name,
-	  const RfcommChannelVector& rfcomm_channels);
+  BluetoothDevice(const BTH_ADDR& device_address,
+                  const char* device_name,
+                  const RfcommChannelVector& rfcomm_channels);
 #else
-  BluetoothDevice(const bdaddr_t& device_address, const char* device_name,
+  BluetoothDevice(const bdaddr_t& device_address,
+                  const char* device_name,
                   const RfcommChannelVector& rfcomm_channels);
 #endif
   /**
@@ -109,31 +111,28 @@ class BluetoothDevice : public Device {
    */
   virtual ApplicationList GetApplicationList() const;
 
-  /**
-   * @brief Return device bluetooth address.
-   *
-   * @return Device bluetooth address.
-   */
+/**
+ * @brief Return device bluetooth address.
+ *
+ * @return Device bluetooth address.
+ */
 #ifdef OS_WINDOWS
-  const BTH_ADDR & address() const {
-	  return address_;
-  }
+  const BTH_ADDR& address() const { return address_; }
 #else
-  const bdaddr_t& address() const {
-    return address_;
-  }
+  const bdaddr_t& address() const { return address_; }
 #endif
  private:
-  /**
-   * @brief Device bluetooth address.
-   **/
+/**
+ * @brief Device bluetooth address.
+ **/
 #ifdef OS_WINDOWS
   BTH_ADDR address_;
 #else
   bdaddr_t address_;
 #endif
   /**
-   * @brief List of RFCOMM channels where SmartDeviceLink service has been discovered.
+   * @brief List of RFCOMM channels where SmartDeviceLink service has been
+   *discovered.
    **/
   RfcommChannelVector rfcomm_channels_;
 };

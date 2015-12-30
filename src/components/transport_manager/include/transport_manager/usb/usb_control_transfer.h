@@ -53,14 +53,9 @@ class UsbControlOutTransfer;
 
 class UsbControlTransfer {
  public:
-  enum TransferDirection {
-    IN,
-    OUT
-  };
+  enum TransferDirection { IN, OUT };
 
-  enum RequestType {
-    VENDOR
-  };
+  enum RequestType { VENDOR };
 
   virtual ~UsbControlTransfer() {}
   virtual TransferDirection Direction() const = 0;

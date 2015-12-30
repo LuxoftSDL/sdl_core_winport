@@ -41,15 +41,14 @@
 namespace transport_manager {
 namespace transport_adapter {
 
-//CREATE_LOGGERPTR_LOCAL(logger_, "TransportManager")
+// CREATE_LOGGERPTR_LOCAL(logger_, "TransportManager")
 CREATE_LOGGERPTR_GLOBAL(logger_, "TransportManager")
 
-
 TcpDevice::TcpDevice(const uint32_t& in_addr, const std::string& name)
-    : Device(name, name),
-      applications_mutex_(),
-      in_addr_(in_addr),
-      last_handle_(0) {
+    : Device(name, name)
+    , applications_mutex_()
+    , in_addr_(in_addr)
+    , last_handle_(0) {
   LOG4CXX_AUTO_TRACE(logger_);
 }
 
@@ -74,7 +73,9 @@ ApplicationList TcpDevice::GetApplicationList() const {
   sync_primitives::AutoLock locker(applications_mutex_);
   ApplicationList app_list;
   for (std::map<ApplicationHandle, Application>::const_iterator it =
-      applications_.begin(); it != applications_.end(); ++it) {
+           applications_.begin();
+       it != applications_.end();
+       ++it) {
     app_list.push_back(it->first);
   }
   return app_list;
@@ -115,15 +116,13 @@ void TcpDevice::RemoveApplication(const ApplicationHandle app_handle) {
   applications_.erase(app_handle);
 }
 
-TcpDevice::~TcpDevice() {
-  LOG4CXX_AUTO_TRACE(logger_);
-}
+TcpDevice::~TcpDevice() { LOG4CXX_AUTO_TRACE(logger_); }
 
 int TcpDevice::GetApplicationSocket(const ApplicationHandle app_handle) const {
   LOG4CXX_AUTO_TRACE(logger_);
   LOG4CXX_DEBUG(logger_, "ApplicationHandle: " << app_handle);
-  std::map<ApplicationHandle, Application>::const_iterator it = applications_
-      .find(app_handle);
+  std::map<ApplicationHandle, Application>::const_iterator it =
+      applications_.find(app_handle);
   if (applications_.end() == it) {
     LOG4CXX_WARN(logger_, "Application was not found");
     return -1;
@@ -139,8 +138,8 @@ int TcpDevice::GetApplicationSocket(const ApplicationHandle app_handle) const {
 int TcpDevice::GetApplicationPort(const ApplicationHandle app_handle) const {
   LOG4CXX_AUTO_TRACE(logger_);
   LOG4CXX_DEBUG(logger_, "ApplicationHandle: " << app_handle);
-  std::map<ApplicationHandle, Application>::const_iterator it = applications_
-      .find(app_handle);
+  std::map<ApplicationHandle, Application>::const_iterator it =
+      applications_.find(app_handle);
   if (applications_.end() == it) {
     LOG4CXX_WARN(logger_, "Application was not found");
     return -1;

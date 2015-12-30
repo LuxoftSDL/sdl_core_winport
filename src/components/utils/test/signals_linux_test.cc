@@ -39,8 +39,7 @@ namespace test {
 namespace components {
 namespace utils {
 
-void handler(int sig) {
-}
+void handler(int sig) {}
 
 TEST(SignalsLinuxTest, SubscribeToTerminateSignal_Positive) {
   ASSERT_TRUE(::utils::SubscribeToTerminateSignal(handler));
@@ -50,6 +49,6 @@ TEST(SignalsLinuxTest, SubscribeToFaultSignal_Positive) {
   ASSERT_TRUE(::utils::SubscribeToFaultSignal(handler));
 }
 
-} // namespace utils
-} // namespace components
-} // namespace test
+}  // namespace utils
+}  // namespace components
+}  // namespace test

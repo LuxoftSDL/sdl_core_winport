@@ -1,1 +1,1 @@
-../../../../../include/application_manager/commands/command.h
+../../../../../ include / application_manager / commands / command.h

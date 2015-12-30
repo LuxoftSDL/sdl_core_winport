@@ -35,11 +35,9 @@
 
 #include "utils/string_utils.h"
 
-void
-utils::ReplaceStringInPlace(
-  std::string& str,
-  const std::string& from,
-  const std::string& to) {
+void utils::ReplaceStringInPlace(std::string& str,
+                                 const std::string& from,
+                                 const std::string& to) {
   std::size_t pos = 0;
   while ((pos = str.find(from, pos)) != std::string::npos) {
     str.replace(pos, from.length(), to);
@@ -47,21 +45,18 @@ utils::ReplaceStringInPlace(
   }
 }
 
-std::string
-utils::ReplaceString(
-  std::string str,
-  const std::string& from,
-  const std::string& to) {
+std::string utils::ReplaceString(std::string str,
+                                 const std::string& from,
+                                 const std::string& to) {
   ReplaceStringInPlace(str, from, to);
   return str;
 }
 
-std::string utils::RemoveCharsFromString(
-  const std::string& str, const std::string& to_remove) {
+std::string utils::RemoveCharsFromString(const std::string& str,
+                                         const std::string& to_remove) {
   std::string res = str;
   for (size_t i = 0; i < to_remove.size(); ++i) {
-    res.erase(
-      std::remove(res.begin(), res.end(), to_remove[i]), res.end());
+    res.erase(std::remove(res.begin(), res.end(), to_remove[i]), res.end());
   }
   return res;
 }

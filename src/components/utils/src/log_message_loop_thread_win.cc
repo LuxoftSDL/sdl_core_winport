@@ -67,24 +67,24 @@ void LogMessageHandler::Handle(const LogMessage message) {
       type_str = "FATAL";
       break;
     }
-    default: {
-      NOTREACHED();
-    }
+    default: { NOTREACHED(); }
   }
 
   char time_buf[15];
-  _snprintf_s(time_buf, sizeof(time_buf), "%i:%i:%i:%i",
-              message.time.wHour, message.time.wMinute,
-              message.time.wSecond, message.time.wMilliseconds);
+  _snprintf_s(time_buf,
+              sizeof(time_buf),
+              "%i:%i:%i:%i",
+              message.time.wHour,
+              message.time.wMinute,
+              message.time.wSecond,
+              message.time.wMilliseconds);
 
   std::stringstream entry;
-  entry << type_str
-        << " [" << time_buf << "]"
+  entry << type_str << " [" << time_buf << "]"
         << " [" << message.thread_id << "]"
         << " [" << message.logger << "] "
         << file_system::RetrieveFileNameFromPath(message.file_name) << ":"
-        << message.line_number << " "
-        << message.function_name << ": "
+        << message.line_number << " " << message.function_name << ": "
         << message.entry;
 
   // dump log string to console
@@ -98,4 +98,4 @@ void LogMessageHandler::Handle(const LogMessage message) {
   }
 }
 
-} // namespace logger
+}  // namespace logger

@@ -86,10 +86,16 @@ class DnssdServiceBrowser : public DeviceScanner {
 
  private:
   TransportAdapter::Error CreateAvahiClientAndBrowser();
-  void AddService(AvahiIfIndex interface, AvahiProtocol protocol,
-                  const char *name, const char *type, const char *domain);
-  void RemoveService(AvahiIfIndex interface, AvahiProtocol protocol,
-                     const char *name, const char *type, const char *domain);
+  void AddService(AvahiIfIndex interface,
+                  AvahiProtocol protocol,
+                  const char* name,
+                  const char* type,
+                  const char* domain);
+  void RemoveService(AvahiIfIndex interface,
+                     AvahiProtocol protocol,
+                     const char* name,
+                     const char* type,
+                     const char* domain);
 
   void OnClientConnected();
   void OnClientFailure();
@@ -99,21 +105,34 @@ class DnssdServiceBrowser : public DeviceScanner {
   void ServiceResolved(const DnssdServiceRecord& service_record);
   void ServiceResolveFailed(const DnssdServiceRecord& service_record);
 
-  friend void AvahiClientCallback(AvahiClient *avahi_client,
+  friend void AvahiClientCallback(AvahiClient* avahi_client,
                                   AvahiClientState avahi_client_state,
                                   void* data);
   friend void AvahiServiceBrowserCallback(
-      AvahiServiceBrowser *avahi_service_browser, AvahiIfIndex interface,
-      AvahiProtocol protocol, AvahiBrowserEvent event, const char *name,
-      const char *type, const char *domain, AvahiLookupResultFlags flags,
+      AvahiServiceBrowser* avahi_service_browser,
+      AvahiIfIndex interface,
+      AvahiProtocol protocol,
+      AvahiBrowserEvent event,
+      const char* name,
+      const char* type,
+      const char* domain,
+      AvahiLookupResultFlags flags,
       void* data);
 
   friend void AvahiServiceResolverCallback(
-      AvahiServiceResolver* avahi_service_resolver, AvahiIfIndex interface,
-      AvahiProtocol protocol, AvahiResolverEvent event, const char* name,
-      const char* type, const char* domain, const char* host_name,
-      const AvahiAddress* avahi_address, uint16_t port, AvahiStringList* txt,
-      AvahiLookupResultFlags flags, void *data);
+      AvahiServiceResolver* avahi_service_resolver,
+      AvahiIfIndex interface,
+      AvahiProtocol protocol,
+      AvahiResolverEvent event,
+      const char* name,
+      const char* type,
+      const char* domain,
+      const char* host_name,
+      const AvahiAddress* avahi_address,
+      uint16_t port,
+      AvahiStringList* txt,
+      AvahiLookupResultFlags flags,
+      void* data);
 
   TransportAdapterController* controller_;
 

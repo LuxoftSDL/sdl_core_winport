@@ -38,11 +38,9 @@ namespace application_manager {
 namespace commands {
 
 VIIsReadyResponse::VIIsReadyResponse(const MessageSharedPtr& message)
-    : ResponseFromHMI(message) {
-}
+    : ResponseFromHMI(message) {}
 
-VIIsReadyResponse::~VIIsReadyResponse() {
-}
+VIIsReadyResponse::~VIIsReadyResponse() {}
 
 void VIIsReadyResponse::Run() {
   LOG4CXX_AUTO_TRACE(logger_);

@@ -45,14 +45,9 @@
  */
 namespace connection_handler {
 
-  enum CloseSessionReason {
-    kCommon = 0,
-    kFlood,
-    kMalformed,
-    kUnauthorizedApp
-  };
+enum CloseSessionReason { kCommon = 0, kFlood, kMalformed, kUnauthorizedApp };
 
-  class ConnectionHandlerObserver;
+class ConnectionHandlerObserver;
 
 /**
  * \class ConnectionHandler
@@ -65,14 +60,14 @@ class ConnectionHandler {
    * \param observer Pointer to observer object.
    **/
   virtual void set_connection_handler_observer(
-      ConnectionHandlerObserver *observer) = 0;
+      ConnectionHandlerObserver* observer) = 0;
 
   /**
    * \brief Sets pointer to TransportManager.
    * \param transportManager Pointer to TransportManager object.
    **/
   virtual void set_transport_manager(
-      transport_manager::TransportManager *transport_manager) = 0;
+      transport_manager::TransportManager* transport_manager) = 0;
 
   virtual void StartTransportManager() = 0;
 
@@ -88,7 +83,8 @@ class ConnectionHandler {
   virtual void CloseRevokedConnection(uint32_t connection_key) = 0;
 
   /**
-   * \brief Close all associated sessions and close the connection pointed by handle
+   * \brief Close all associated sessions and close the connection pointed by
+   * handle
    */
   virtual void CloseConnection(ConnectionHandle connection_handle) = 0;
 
@@ -103,8 +99,8 @@ class ConnectionHandler {
    * @param mac_address
    * @return true if successfully
    */
-  virtual bool GetDeviceID(const std::string &mac_address,
-                           DeviceHandle *device_handle) = 0;
+  virtual bool GetDeviceID(const std::string& mac_address,
+                           DeviceHandle* device_handle) = 0;
 
   /**
    * Close session associated with the key
@@ -118,13 +114,13 @@ class ConnectionHandler {
                             uint8_t session_id,
                             CloseSessionReason close_reason) = 0;
 
-    /**
-   * @brief SendEndService allows to end up specific service.
-   *
-   * @param key application identifier whose service should be closed.
-   *
-   * @param service_type the service that should be closed.
-   */
+  /**
+ * @brief SendEndService allows to end up specific service.
+ *
+ * @param key application identifier whose service should be closed.
+ *
+ * @param service_type the service that should be closed.
+ */
   virtual void SendEndService(uint32_t key, uint8_t service_type) = 0;
 
   /**
@@ -138,7 +134,7 @@ class ConnectionHandler {
    * \brief Send heartbeat to mobile app
    */
   virtual void SendHeartBeat(ConnectionHandle connection_handle,
-                            uint8_t session_id) = 0;
+                             uint8_t session_id) = 0;
 
   /**
    * Sets heart beat timeout for specified session
@@ -166,7 +162,8 @@ class ConnectionHandler {
    * \param device_id Returned: DeviceID
    * \return int32_t -1 in case of error or 0 in case of success
    */
-  virtual int32_t GetDataOnSessionKey(uint32_t key, uint32_t* app_id,
+  virtual int32_t GetDataOnSessionKey(uint32_t key,
+                                      uint32_t* app_id,
                                       std::list<int32_t>* sessions_list,
                                       uint32_t* device_id) = 0;
 
@@ -174,8 +171,7 @@ class ConnectionHandler {
   /**
    * \brief Destructor
    */
-  virtual ~ConnectionHandler() {
-  }
+  virtual ~ConnectionHandler() {}
 };
 }  // namespace connection_handler
 

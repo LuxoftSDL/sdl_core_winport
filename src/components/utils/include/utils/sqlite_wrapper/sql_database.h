@@ -120,21 +120,21 @@ class SQLDatabase {
   bool Backup();
 
  protected:
-#if defined WIN_NATIVE 
- /**
-   * Gets connection to the SQLite database
-   * @return pointer to connection
-   */
+#if defined WIN_NATIVE
+  /**
+    * Gets connection to the SQLite database
+    * @return pointer to connection
+    */
   sqlite3* conn() const;
-#endif // WIN_NATIVE
+#endif  // WIN_NATIVE
 
  private:
- #if defined WIN_NATIVE
+#if defined WIN_NATIVE
   /**
    * The connection to the SQLite database
    */
   sqlite3* conn_;
-#endif // WIN_NATIVE
+#endif  // WIN_NATIVE
 
   /**
    * Lock for guarding connection to database

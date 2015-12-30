@@ -45,7 +45,8 @@ namespace transport_adapter {
 
 class UsbDevice : public Device {
  public:
-  UsbDevice(PlatformUsbDevice* usb_device, const std::string& name,
+  UsbDevice(PlatformUsbDevice* usb_device,
+            const std::string& name,
             const DeviceUID& unique_device_id)
       : Device(name, unique_device_id), usb_device_(usb_device) {}
 

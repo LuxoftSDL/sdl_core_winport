@@ -52,6 +52,7 @@ class SharedLibrary {
   void* GetSymbol(const char* name);
 
   bool HasSymbol(const char* name);
+
  private:
 #if defined(QT_PORT)
   QLibrary library_;
@@ -62,4 +63,4 @@ class SharedLibrary {
 
 }  // namespace utils
 
-#endif // SRC_COMPONENTS_UTILS_INCLUDE_UTILS_SHARED_LIBRARY_H_
+#endif  // SRC_COMPONENTS_UTILS_INCLUDE_UTILS_SHARED_LIBRARY_H_

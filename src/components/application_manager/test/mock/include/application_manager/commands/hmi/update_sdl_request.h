@@ -1,1 +1,2 @@
-../../../../../../include/application_manager/commands/hmi/update_sdl_request.h
+../../../../../../ include / application_manager / commands / hmi /
+    update_sdl_request.h

@@ -125,22 +125,20 @@ class CommandImpl : public Command {
  *  If request need to terminate itself, it should override this function false
  * @return allowed_to_terminate_ value
  */
-  virtual bool AllowedToTerminate() {
-    return allowed_to_terminate_;
-  }
+  virtual bool AllowedToTerminate() { return allowed_to_terminate_; }
 
   /**
   * @brief SetAllowedToTerminate set up allowed to terminate flag.
   * If true, request controller will terminate request on response
   */
   virtual void SetAllowedToTerminate(bool allowed) {
-      allowed_to_terminate_ = allowed;
+    allowed_to_terminate_ = allowed;
   }
 
   // members
   static const int32_t hmi_protocol_type_;
   static const int32_t mobile_protocol_type_;
-  static const int32_t protocol_version_;  
+  static const int32_t protocol_version_;
 
  protected:
   MessageSharedPtr message_;
@@ -152,7 +150,7 @@ class CommandImpl : public Command {
 #elif defined(OS_WINDOWS)
   static std::string logger_;
 #endif
-#endif // ENABLE_LOG
+#endif  // ENABLE_LOG
 
  private:
   DISALLOW_COPY_AND_ASSIGN(CommandImpl);

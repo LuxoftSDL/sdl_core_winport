@@ -40,14 +40,9 @@ namespace dbms {
 CREATE_LOGGERPTR_GLOBAL(logger_, "SQLDatabase")
 
 SQLDatabase::SQLDatabase(const std::string& db_name)
-    : conn_(NULL),
-      db_name_(db_name),
-      error_(Error::OK) {
-}
+    : conn_(NULL), db_name_(db_name), error_(Error::OK) {}
 
-SQLDatabase::~SQLDatabase() {
-  Close();
-}
+SQLDatabase::~SQLDatabase() { Close(); }
 
 bool SQLDatabase::Open() {
   sync_primitives::AutoLock auto_lock(conn_lock_);
@@ -71,17 +66,11 @@ void SQLDatabase::Close() {
   }
 }
 
-bool SQLDatabase::BeginTransaction() {
-  return Exec("BEGIN TRANSACTION");
-}
+bool SQLDatabase::BeginTransaction() { return Exec("BEGIN TRANSACTION"); }
 
-bool SQLDatabase::CommitTransaction() {
-  return Exec("COMMIT TRANSACTION");
-}
+bool SQLDatabase::CommitTransaction() { return Exec("COMMIT TRANSACTION"); }
 
-bool SQLDatabase::RollbackTransaction() {
-  return Exec("ROLLBACK TRANSACTION");
-}
+bool SQLDatabase::RollbackTransaction() { return Exec("ROLLBACK TRANSACTION"); }
 
 bool SQLDatabase::Exec(const std::string& query) {
   sync_primitives::AutoLock auto_lock(conn_lock_);
@@ -96,19 +85,15 @@ SQLError SQLDatabase::LastError() const {
   return SQLError(error_, qdb_geterrmsg(conn_));
 }
 
-bool SQLDatabase::HasErrors() const {
-  return Error(error_) != OK;
-}
+bool SQLDatabase::HasErrors() const { return Error(error_) != OK; }
 
-qdb_hdl_t* SQLDatabase::conn() const {
-  return conn_;
-}
+qdb_hdl_t* SQLDatabase::conn() const { return conn_; }
 
 bool SQLDatabase::Backup() {
   if (qdb_backup(conn_, QDB_ATTACH_DEFAULT) == -1) {
-	error_ = Error::ERROR;
+    error_ = Error::ERROR;
     LOG4CXX_ERROR(logger_, "Backup returned error: " << std::strerror(errno));
-	return false;
+    return false;
   }
   LOG4CXX_INFO(logger_, "Backup was successful.");
   return true;

@@ -121,7 +121,7 @@ class UpdateStatusManager {
    */
   bool IsAppsSearchInProgress();
 
-private:
+ private:
   /*
    * @brief Sets flag for update progress
    *
@@ -148,8 +148,7 @@ private:
    */
   void CheckUpdateStatus();
 
-private:
-
+ private:
   /**
    * @brief Returns current policy update status
    * @return
@@ -171,26 +170,24 @@ private:
    */
   PolicyTableStatus last_update_status_;
 
-  class UpdateThreadDelegate: public threads::ThreadDelegate {
-
-  public:
+  class UpdateThreadDelegate : public threads::ThreadDelegate {
+   public:
     UpdateThreadDelegate(UpdateStatusManager* update_status_manager);
     ~UpdateThreadDelegate();
     virtual void threadMain();
     virtual void exitThreadMain();
     void updateTimeOut(const uint32_t timeout_ms);
 
-    volatile uint32_t                                timeout_;
-    volatile bool                                    stop_flag_;
-    sync_primitives::Lock                            state_lock_;
-    sync_primitives::ConditionalVariable             termination_condition_;
-    UpdateStatusManager*                             update_status_manager_;
+    volatile uint32_t timeout_;
+    volatile bool stop_flag_;
+    sync_primitives::Lock state_lock_;
+    sync_primitives::ConditionalVariable termination_condition_;
+    UpdateStatusManager* update_status_manager_;
   };
 
-  UpdateThreadDelegate*                              update_status_thread_delegate_;
-  threads::Thread*                                   thread_;
+  UpdateThreadDelegate* update_status_thread_delegate_;
+  threads::Thread* thread_;
 };
-
 }
 
-#endif // SRC_COMPONENTS_POLICY_INCLUDE_POLICY_UPDATE_STATUS_MANAGER_H
+#endif  // SRC_COMPONENTS_POLICY_INCLUDE_POLICY_UPDATE_STATUS_MANAGER_H

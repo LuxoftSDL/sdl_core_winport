@@ -38,11 +38,9 @@ namespace application_manager {
 namespace commands {
 
 UIGetLanguageResponse::UIGetLanguageResponse(const MessageSharedPtr& message)
-    : ResponseFromHMI(message) {
-}
+    : ResponseFromHMI(message) {}
 
-UIGetLanguageResponse::~UIGetLanguageResponse() {
-}
+UIGetLanguageResponse::~UIGetLanguageResponse() {}
 
 void UIGetLanguageResponse::Run() {
   LOG4CXX_AUTO_TRACE(logger_);

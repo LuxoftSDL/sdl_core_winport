@@ -1,1 +1,1 @@
-../../../../../include/application_manager/commands/pending.h
+../../../../../ include / application_manager / commands / pending.h

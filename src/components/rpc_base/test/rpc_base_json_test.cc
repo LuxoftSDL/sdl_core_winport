@@ -39,15 +39,9 @@ using namespace rpc;
 using Json::Value;
 
 namespace {
-enum TestEnum {
-  kValue0,
-  kValue1,
-  kInvalidValue
-};
+enum TestEnum { kValue0, kValue1, kInvalidValue };
 
-bool IsValidEnum(TestEnum val) {
-  return val == kValue0 || val == kValue1;
-}
+bool IsValidEnum(TestEnum val) { return val == kValue0 || val == kValue1; }
 
 bool EnumFromJsonString(const std::string& value, TestEnum* enm) {
   if (value == "kValue0") {
@@ -62,10 +56,13 @@ bool EnumFromJsonString(const std::string& value, TestEnum* enm) {
 }
 
 const char* EnumToJsonString(TestEnum enm) {
-  switch(enm) {
-    case kValue0: return "kValue0";
-    case kValue1: return "kValue1";
-    default: return "UNKNOWN";
+  switch (enm) {
+    case kValue0:
+      return "kValue0";
+    case kValue1:
+      return "kValue1";
+    default:
+      return "UNKNOWN";
   }
 }
 
@@ -276,7 +273,7 @@ TEST(ValidatedTypesJson, MandatoryMapNullTest) {
 
 TEST(ValidatedTypesJson, OptionalMapAbsentValueTest) {
   Value* novalue = NULL;
-  Optional< Map<String<1, 32>, 0, 5> > map(novalue);
+  Optional<Map<String<1, 32>, 0, 5> > map(novalue);
   ASSERT_FALSE(map.is_initialized());
   ASSERT_TRUE(map.is_valid());
 }
@@ -309,7 +306,7 @@ TEST(ValidatedTypesJson, MapFromNonArrayJsonTest) {
 
 TEST(ValidatedTypesJson, OptionalBoolFromJsonTest) {
   Value bool_value(true);
-  Optional< Boolean > optional_bool;
+  Optional<Boolean> optional_bool;
   *optional_bool = Boolean(&bool_value);
   ASSERT_TRUE(optional_bool.is_initialized());
   ASSERT_TRUE(optional_bool.is_valid());
@@ -320,7 +317,7 @@ TEST(ValidatedTypesJson, OptionalBoolFromJsonTest) {
 
 TEST(ValidatedTypesJson, OptionalBoolFromAbsentValueTest) {
   Value* none = NULL;
-  Optional< Boolean > optional_bool;
+  Optional<Boolean> optional_bool;
   *optional_bool = Boolean(none);
   ASSERT_FALSE(optional_bool.is_initialized());
   // It is ok for Optional value to be absent
@@ -328,7 +325,7 @@ TEST(ValidatedTypesJson, OptionalBoolFromAbsentValueTest) {
 }
 
 TEST(ValidatedTypesJson, OptionalBoolFromNullValueTest) {
-  Optional< Boolean > optional_bool;
+  Optional<Boolean> optional_bool;
   *optional_bool = Boolean(&Value::null);
   ASSERT_TRUE(optional_bool.is_initialized());
   // Optional values should not be absent
@@ -336,7 +333,7 @@ TEST(ValidatedTypesJson, OptionalBoolFromNullValueTest) {
 }
 
 TEST(ValidatedTypesJson, NullableIntFromNullValueTest) {
-  Nullable< Integer<int8_t, 1, 15> > nullable_int(&Value::null);
+  Nullable<Integer<int8_t, 1, 15> > nullable_int(&Value::null);
   ASSERT_TRUE(nullable_int.is_initialized());
   ASSERT_TRUE(nullable_int.is_valid());
   ASSERT_TRUE(nullable_int.is_null());
@@ -344,7 +341,7 @@ TEST(ValidatedTypesJson, NullableIntFromNullValueTest) {
 
 TEST(ValidatedTypesJson, NullableIntFromNonNullValueTest) {
   Value json(3);
-  Nullable< Integer<int8_t, 1, 15> > nullable_int(&json);
+  Nullable<Integer<int8_t, 1, 15> > nullable_int(&json);
   ASSERT_TRUE(nullable_int.is_initialized());
   ASSERT_TRUE(nullable_int.is_valid());
   ASSERT_FALSE(nullable_int.is_null());
@@ -353,7 +350,7 @@ TEST(ValidatedTypesJson, NullableIntFromNonNullValueTest) {
 
 TEST(ValidatedTypesJson, NullableIntFromAbsentValueTest) {
   Value* noval = NULL;
-  Nullable< Integer<int8_t, 1, 15> > nullable_int(noval);
+  Nullable<Integer<int8_t, 1, 15> > nullable_int(noval);
   ASSERT_FALSE(nullable_int.is_initialized());
   ASSERT_FALSE(nullable_int.is_valid());
   ASSERT_FALSE(nullable_int.is_null());
@@ -361,8 +358,8 @@ TEST(ValidatedTypesJson, NullableIntFromAbsentValueTest) {
 
 TEST(ValidatedTypesJson, OptionalIntFromJsonTest) {
   Value int_value(42);
-  Optional< Integer<int64_t, 42, 43> > optional_int;
-  *optional_int = Integer<int64_t, 42, 43> (&int_value);
+  Optional<Integer<int64_t, 42, 43> > optional_int;
+  *optional_int = Integer<int64_t, 42, 43>(&int_value);
   ASSERT_TRUE(optional_int.is_initialized());
   ASSERT_TRUE(optional_int.is_valid());
   Value readback = optional_int->ToJsonValue();
@@ -370,8 +367,4 @@ TEST(ValidatedTypesJson, OptionalIntFromJsonTest) {
   ASSERT_EQ(readback.asInt(), 42);
 }
 
-
 }  // namespace test
-
-
-

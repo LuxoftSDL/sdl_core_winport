@@ -39,11 +39,9 @@ namespace threads {
 CREATE_LOGGERPTR_GLOBAL(logger_, "Utils")
 
 SingleThreadSimpleValidator::SingleThreadSimpleValidator()
-    : creation_thread_id_(Thread::CurrentId()) {
-}
+    : creation_thread_id_(Thread::CurrentId()) {}
 
-SingleThreadSimpleValidator::~SingleThreadSimpleValidator() {
-}
+SingleThreadSimpleValidator::~SingleThreadSimpleValidator() {}
 
 void SingleThreadSimpleValidator::AssertRunningOnCreationThread() const {
   PlatformThreadHandle current_id = Thread::CurrentId();
@@ -60,18 +58,14 @@ void SingleThreadSimpleValidator::AssertRunningOnCreationThread() const {
   }
 }
 
-PlatformThreadHandle SingleThreadSimpleValidator::creation_thread_id() const
-{
+PlatformThreadHandle SingleThreadSimpleValidator::creation_thread_id() const {
   return creation_thread_id_;
 }
 
-
 SingleThreadValidator::SingleThreadValidator()
-    : owning_thread_id_(Thread::CurrentId()){
-}
+    : owning_thread_id_(Thread::CurrentId()) {}
 
-SingleThreadValidator::~SingleThreadValidator() {
-}
+SingleThreadValidator::~SingleThreadValidator() {}
 
 void SingleThreadValidator::PassToThread(PlatformThreadHandle thread_id) const {
   owning_thread_id_ = thread_id;
@@ -91,7 +85,6 @@ void SingleThreadValidator::AssertRunningOnValidThread() const {
   }
 }
 
-
-} // namespace threads
+}  // namespace threads
 
 // vim: set ts=2 sw=2 et:

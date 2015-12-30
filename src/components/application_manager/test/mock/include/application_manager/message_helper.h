@@ -1,1 +1,1 @@
-../../../../include/application_manager/message_helper.h
+../../../../ include / application_manager / message_helper.h

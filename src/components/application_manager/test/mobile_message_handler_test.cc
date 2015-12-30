@@ -30,10 +30,8 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-
 #include "gmock/gmock.h"
 #include "application_manager/mobile_message_handler.h"
-
 
 using ::testing::_;
 
@@ -49,5 +47,4 @@ TEST(mobile_message_test, basic_test) {
   message->set_binary_data(binary_data);
   EXPECT_TRUE(message->has_binary_data());
 }
-
 }

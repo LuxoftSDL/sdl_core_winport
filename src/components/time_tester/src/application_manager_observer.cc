@@ -36,11 +36,12 @@
 
 namespace time_tester {
 
-ApplicationManagerObserver::ApplicationManagerObserver(TimeManager* time_manager):
-  time_manager_(time_manager) {
-}
+ApplicationManagerObserver::ApplicationManagerObserver(
+    TimeManager* time_manager)
+    : time_manager_(time_manager) {}
 
-void ApplicationManagerObserver::OnMessage(utils::SharedPtr<MessageMetric> metric) {
+void ApplicationManagerObserver::OnMessage(
+    utils::SharedPtr<MessageMetric> metric) {
   ApplicationManagerMetricWrapper* m = new ApplicationManagerMetricWrapper();
   m->message_metric = metric;
   m->grabResources();

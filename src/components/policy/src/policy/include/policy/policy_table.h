@@ -52,9 +52,7 @@ class PolicyTable {
    * actual class storing policy table.
    * @return PTRepresentation* Policy Table Content Handler
    */
-  utils::SharedPtr<PTRepresentation> pt_data() const {
-    return pt_data_;
-  }
+  utils::SharedPtr<PTRepresentation> pt_data() const { return pt_data_; }
 
  private:
   utils::SharedPtr<PTRepresentation> pt_data_;

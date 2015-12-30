@@ -43,15 +43,14 @@ namespace hmi {
 
 OnPhoneCallNotification::OnPhoneCallNotification(
     const MessageSharedPtr& message)
-    : NotificationFromHMI(message) {
-}
+    : NotificationFromHMI(message) {}
 
-OnPhoneCallNotification::~OnPhoneCallNotification() {
-}
+OnPhoneCallNotification::~OnPhoneCallNotification() {}
 
 void OnPhoneCallNotification::Run() {
   LOG4CXX_AUTO_TRACE(logger_);
-  event_engine::Event event(hmi_apis::FunctionID::BasicCommunication_OnPhoneCall);
+  event_engine::Event event(
+      hmi_apis::FunctionID::BasicCommunication_OnPhoneCall);
   event.set_smart_object(*message_);
   event.raise();
 }
@@ -61,4 +60,3 @@ void OnPhoneCallNotification::Run() {
 }  // namespace commands
 
 }  // namespace application_manager
-

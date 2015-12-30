@@ -44,21 +44,16 @@ ConditionalVariable::ConditionalVariable() {
   InitializeConditionVariable(&cond_var_);
 }
 
-ConditionalVariable::~ConditionalVariable() {
-}
+ConditionalVariable::~ConditionalVariable() {}
 
-void ConditionalVariable::NotifyOne() {
-  WakeConditionVariable(&cond_var_);
-}
+void ConditionalVariable::NotifyOne() { WakeConditionVariable(&cond_var_); }
 
-void ConditionalVariable::Broadcast() {
-  WakeAllConditionVariable(&cond_var_);
-}
+void ConditionalVariable::Broadcast() { WakeAllConditionVariable(&cond_var_); }
 
 bool ConditionalVariable::Wait(Lock& lock) {
   lock.AssertTakenAndMarkFree();
   const BOOL wait_status =
-	SleepConditionVariableCS(&cond_var_, &lock.mutex_, INFINITE);
+      SleepConditionVariableCS(&cond_var_, &lock.mutex_, INFINITE);
   lock.AssertFreeAndMarkTaken();
   if (wait_status == 0) {
     LOG4CXX_ERROR(logger_, "Failed to wait for conditional variable");
@@ -71,7 +66,7 @@ bool ConditionalVariable::Wait(AutoLock& auto_lock) {
   Lock& lock = auto_lock.GetLock();
   lock.AssertTakenAndMarkFree();
   const BOOL wait_status =
-	SleepConditionVariableCS(&cond_var_, &lock.mutex_, INFINITE);
+      SleepConditionVariableCS(&cond_var_, &lock.mutex_, INFINITE);
   lock.AssertFreeAndMarkTaken();
   if (wait_status == 0) {
     LOG4CXX_ERROR(logger_, "Failed to wait for conditional variable");
@@ -81,21 +76,21 @@ bool ConditionalVariable::Wait(AutoLock& auto_lock) {
 }
 
 ConditionalVariable::WaitStatus ConditionalVariable::WaitFor(
-    AutoLock& auto_lock, int32_t milliseconds){
+    AutoLock& auto_lock, int32_t milliseconds) {
   Lock& lock = auto_lock.GetLock();
   lock.AssertTakenAndMarkFree();
   const BOOL wait_status =
-	SleepConditionVariableCS(&cond_var_, &lock.mutex_, milliseconds);
+      SleepConditionVariableCS(&cond_var_, &lock.mutex_, milliseconds);
   lock.AssertFreeAndMarkTaken();
   if (wait_status == 0) {
-	DWORD error_code = GetLastError();
-	if (ERROR_TIMEOUT == error_code) {
-	  return kTimeout;
-	}
+    DWORD error_code = GetLastError();
+    if (ERROR_TIMEOUT == error_code) {
+      return kTimeout;
+    }
   }
   return kNoTimeout;
 }
 
-} // namespace sync_primitives
+}  // namespace sync_primitives
 
-#endif //OS_WINDOWS
+#endif  // OS_WINDOWS

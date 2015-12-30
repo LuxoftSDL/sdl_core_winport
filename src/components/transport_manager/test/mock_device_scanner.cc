@@ -40,11 +40,10 @@ namespace test {
 namespace components {
 namespace transport_manager {
 
-MockDeviceScanner::MockDeviceScanner(MockTransportAdapter *controller)
-    : controller_(controller),
-      is_initialized_(false),
-      is_search_failed_(false) {
-}
+MockDeviceScanner::MockDeviceScanner(MockTransportAdapter* controller)
+    : controller_(controller)
+    , is_initialized_(false)
+    , is_search_failed_(false) {}
 
 TransportAdapter::Error MockDeviceScanner::Init() {
   is_initialized_ = true;
@@ -60,25 +59,22 @@ TransportAdapter::Error MockDeviceScanner::Scan() {
   return TransportAdapter::OK;
 }
 
-void MockDeviceScanner::Terminate() {
-}
+void MockDeviceScanner::Terminate() {}
 
 void MockDeviceScanner::reset() {
   is_search_failed_ = false;
-  for (DeviceVector::iterator it = devices_.begin();
-      it != devices_.end();
-      ++it) {
+  for (DeviceVector::iterator it = devices_.begin(); it != devices_.end();
+       ++it) {
     static_cast<MockDevice*>(it->get())->Stop();
   }
   devices_.clear();
 }
 
-bool MockDeviceScanner::IsInitialised() const {
-  return is_initialized_;
-}
+bool MockDeviceScanner::IsInitialised() const { return is_initialized_; }
 
 void MockDeviceScanner::AddDevice(const std::string& name,
-                                  const std::string& unique_id, bool start) {
+                                  const std::string& unique_id,
+                                  bool start) {
   MockDevice* dev = new MockDevice(name, unique_id, controller_);
   dev->addApplication();
   if (start) {

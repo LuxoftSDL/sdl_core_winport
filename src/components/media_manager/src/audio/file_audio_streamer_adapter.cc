@@ -36,10 +36,8 @@
 namespace media_manager {
 
 FileAudioStreamerAdapter::FileAudioStreamerAdapter()
-  : FileStreamerAdapter(profile::Profile::instance()->audio_stream_file()) {
-}
+    : FileStreamerAdapter(profile::Profile::instance()->audio_stream_file()) {}
 
-FileAudioStreamerAdapter::~FileAudioStreamerAdapter() {
-}
+FileAudioStreamerAdapter::~FileAudioStreamerAdapter() {}
 
 }  // namespace media_manager

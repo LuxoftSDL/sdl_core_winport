@@ -1,1 +1,2 @@
-../../../../../../include/application_manager/commands/hmi/vi_read_did_response.h
+../../../../../../ include / application_manager / commands / hmi /
+    vi_read_did_response.h

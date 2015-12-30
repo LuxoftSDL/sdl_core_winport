@@ -35,14 +35,12 @@
 namespace utils {
 namespace dbms {
 
-SQLError::SQLError(const QSqlError& error)
-  : error_(error) {
-}
+SQLError::SQLError(const QSqlError& error) : error_(error) {}
 
 std::string SQLError::text() const {
   std::string err_msg = error_.nativeErrorCode().toStdString();
   if (err_msg.empty()) {
-    return  "Unknown error";
+    return "Unknown error";
   }
   return err_msg;
 }

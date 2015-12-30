@@ -50,4 +50,4 @@ namespace threads {
 
 CREATE_LOGGERPTR_GLOBAL(logger_, "Utils")
 
-} // namespace threads
+}  // namespace threads

@@ -48,7 +48,6 @@ class EventObserver;
 
 class EventDispatcher : public utils::Singleton<EventDispatcher> {
  public:
-
   /*
    * @brief Delivers the event to all subscribers
    *
@@ -84,9 +83,7 @@ class EventDispatcher : public utils::Singleton<EventDispatcher> {
   void remove_observer(EventObserver* const observer);
 
  protected:
-
  private:
-
   /*
    * @brief Default constructor
    */
@@ -109,18 +106,16 @@ class EventDispatcher : public utils::Singleton<EventDispatcher> {
   FRIEND_BASE_SINGLETON_CLASS(EventDispatcher);
 
   // Data types section
-  typedef std::list<EventObserver*>                   ObserverList;
-  typedef std::map<int32_t, ObserverList>             ObserversMap;
-  typedef std::map<Event::EventID, ObserversMap>      EventObserverMap;
+  typedef std::list<EventObserver*> ObserverList;
+  typedef std::map<int32_t, ObserverList> ObserversMap;
+  typedef std::map<Event::EventID, ObserversMap> EventObserverMap;
 
   // Members section
-  sync_primitives::Lock                               state_lock_;
-  sync_primitives::Lock                               observer_list_lock_;
-  EventObserverMap                                    observers_;
-  ObserverList                                        observers_list_;
-
+  sync_primitives::Lock state_lock_;
+  sync_primitives::Lock observer_list_lock_;
+  EventObserverMap observers_;
+  ObserverList observers_list_;
 };
-
 }
 }
 

@@ -68,6 +68,6 @@ class Pipe {
   Impl* impl_;
 };
 
-} // namespace utils
+}  // namespace utils
 
-#endif // SRC_COMPONENTS_UTILS_INCLUDE_UTILS_PIPE_H_
+#endif  // SRC_COMPONENTS_UTILS_INCLUDE_UTILS_PIPE_H_

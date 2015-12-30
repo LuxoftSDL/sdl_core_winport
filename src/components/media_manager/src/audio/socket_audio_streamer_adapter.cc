@@ -35,22 +35,22 @@
 #include "media_manager/audio/socket_audio_streamer_adapter.h"
 
 namespace {
-  const std::string kHeader = "HTTP/1.1 200 OK\r\n"
-                              "Connection: Keep-Alive\r\n"
-                              "Keep-Alive: timeout=15, max=300\r\n"
-                              "Server: SDL\r\n"
-                              "Content-Type: video/mp4\r\n\r\n";
+const std::string kHeader =
+    "HTTP/1.1 200 OK\r\n"
+    "Connection: Keep-Alive\r\n"
+    "Keep-Alive: timeout=15, max=300\r\n"
+    "Server: SDL\r\n"
+    "Content-Type: video/mp4\r\n\r\n";
 }
 
 namespace media_manager {
 
 SocketAudioStreamerAdapter::SocketAudioStreamerAdapter()
-  : SocketStreamerAdapter(profile::Profile::instance()->server_address(),
-                          profile::Profile::instance()->audio_streaming_port(),
-                          kHeader) {
-}
+    : SocketStreamerAdapter(
+          profile::Profile::instance()->server_address(),
+          profile::Profile::instance()->audio_streaming_port(),
+          kHeader) {}
 
-SocketAudioStreamerAdapter::~SocketAudioStreamerAdapter() {
-}
+SocketAudioStreamerAdapter::~SocketAudioStreamerAdapter() {}
 
 }  // namespace media_manager

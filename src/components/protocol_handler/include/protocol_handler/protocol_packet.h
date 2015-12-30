@@ -58,7 +58,7 @@ class ProtocolPacket {
   struct ProtocolData {
     ProtocolData();
     ~ProtocolData();
-    uint8_t *data;
+    uint8_t* data;
     uint32_t totalDataBytes;
   };
 
@@ -69,11 +69,14 @@ class ProtocolPacket {
   class ProtocolHeader {
    public:
     ProtocolHeader();
-    ProtocolHeader(uint8_t version, bool protection,
+    ProtocolHeader(uint8_t version,
+                   bool protection,
                    uint8_t frameType,
                    uint8_t serviceType,
-                   uint8_t frameData, uint8_t sessionID,
-                   uint32_t dataSize, uint32_t messageID);
+                   uint8_t frameData,
+                   uint8_t sessionID,
+                   uint32_t dataSize,
+                   uint32_t messageID);
     uint8_t version;
     bool protection_flag;
     uint8_t frameType;
@@ -82,7 +85,7 @@ class ProtocolPacket {
     uint8_t sessionId;
     uint32_t dataSize;
     uint32_t messageId;
-    void deserialize(const uint8_t *message, const size_t messageSize);
+    void deserialize(const uint8_t* message, const size_t messageSize);
   };
   /**
    * \class ProtocolHeaderValidator
@@ -100,6 +103,7 @@ class ProtocolPacket {
      * \brief Check ProtocolHeader according to protocol requiements
      */
     RESULT_CODE validate(const ProtocolHeader& header) const;
+
    private:
     size_t max_payload_size_;
   };
@@ -131,10 +135,15 @@ class ProtocolPacket {
    * \param data Message string if provided
    */
   ProtocolPacket(ConnectionID connection_id,
-                 uint8_t version, bool protection, uint8_t frameType,
-                 uint8_t serviceType, uint8_t frameData,
-                 uint8_t sessionId, uint32_t dataSize,
-                 uint32_t messageID, const uint8_t *data = 0);
+                 uint8_t version,
+                 bool protection,
+                 uint8_t frameType,
+                 uint8_t serviceType,
+                 uint8_t frameData,
+                 uint8_t sessionId,
+                 uint32_t dataSize,
+                 uint32_t messageID,
+                 const uint8_t* data = 0);
 
   /*Serialization*/
   /**
@@ -149,7 +158,7 @@ class ProtocolPacket {
    * \param chunkDataSize Size of current message string
    * \return \saRESULT_CODE Status of serialization
    */
-  RESULT_CODE appendData(uint8_t *chunkData, uint32_t chunkDataSize);
+  RESULT_CODE appendData(uint8_t* chunkData, uint32_t chunkDataSize);
 
   /**
    * \brief Getter of message size including protocol header
@@ -170,7 +179,7 @@ class ProtocolPacket {
    * \param messageSize Incoming message size
    * \return \saRESULT_CODE Status of serialization
    */
-  RESULT_CODE deserializePacket(const uint8_t *message,
+  RESULT_CODE deserializePacket(const uint8_t* message,
                                 const size_t messageSize);
 
   /**
@@ -221,7 +230,7 @@ class ProtocolPacket {
   /**
    *\brief Getter of message string
    */
-  uint8_t *data() const;
+  uint8_t* data() const;
 
   /**
    *\brief Setter for size of multiframe message
@@ -231,8 +240,7 @@ class ProtocolPacket {
   /**
    *\brief Setter for new data
    */
-  void set_data(const uint8_t *const  new_data,
-                const size_t new_data_size);
+  void set_data(const uint8_t* const new_data, const size_t new_data_size);
 
   /**
    *\brief Getter for size of multiframe message
@@ -275,8 +283,9 @@ class ProtocolPacket {
   DISALLOW_COPY_AND_ASSIGN(ProtocolPacket);
 };
 }  // namespace protocol_handler
-/**
- * @brief Type definition for variable that hold shared pointer to protocolol packet
- */
+   /**
+    * @brief Type definition for variable that hold shared pointer to protocolol
+    * packet
+    */
 typedef utils::SharedPtr<protocol_handler::ProtocolPacket> ProtocolFramePtr;
 #endif  // SRC_COMPONENTS_PROTOCOL_HANDLER_INCLUDE_PROTOCOL_HANDLER_PROTOCOL_PACKET_H_

@@ -58,7 +58,7 @@ class FileStreamerAdapter : public StreamerAdapter {
     virtual bool Send(protocol_handler::RawMessagePtr msg);
 
    private:
-    std::string    file_name_;
+    std::string file_name_;
     std::ofstream* file_stream_;
   };
 };

@@ -1,1 +1,2 @@
-../../../../../../include/application_manager/commands/mobile/get_dtcs_response.h
+../../../../../../ include / application_manager / commands / mobile /
+    get_dtcs_response.h
