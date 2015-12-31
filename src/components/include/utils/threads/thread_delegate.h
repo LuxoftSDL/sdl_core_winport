@@ -59,7 +59,7 @@ class ThreadDelegate {
    * This function should be blocking and return only when threadMain() will be
    * finished in other case segmantation failes are possible
    */
-  virtual void exitThreadMain();
+  virtual void exitThreadMain() = 0;
 
   virtual ~ThreadDelegate();
 
