@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015, Ford Motor Company
+ * Copyright (c) 2016, Ford Motor Company
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -29,8 +29,6 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-#if defined(OS_POSIX)
-
 #include <errno.h>
 #include <limits.h>
 #include <stddef.h>
@@ -58,7 +56,12 @@ namespace threads {
 CREATE_LOGGERPTR_GLOBAL(logger_, "Utils")
 
 void sleep(uint32_t ms) {
+#ifdef SDL_CPP11
+  std::chrono::microseconds sleep_interval_mcsec(ms * 1000);
+  std::this_thread::sleep_for(std::chrono::microseconds(sleep_interval_mcsec));
+#else
   usleep(ms * 1000);
+#endif
 }
 
 size_t Thread::kMinStackSize =
@@ -66,7 +69,7 @@ size_t Thread::kMinStackSize =
 
 void Thread::cleanup(void* arg) {
   LOG4CXX_AUTO_TRACE(logger_);
-  Thread* thread = reinterpret_cast<Thread*>(arg);
+  Thread* thread = static_cast<Thread*>(arg);
   sync_primitives::AutoLock auto_lock(thread->state_lock_);
   thread->isThreadRunning_ = false;
   thread->state_cond_.Broadcast();
@@ -97,7 +100,7 @@ void* Thread::threadFunc(void* arg) {
   LOG4CXX_DEBUG(logger_,
                 "Thread #" << pthread_self() << " started successfully");
 
-  threads::Thread* thread = reinterpret_cast<Thread*>(arg);
+  threads::Thread* thread = static_cast<Thread*>(arg);
   DCHECK(thread);
 
   pthread_cleanup_push(&cleanup, thread);
@@ -318,5 +321,3 @@ void DeleteThread(Thread* thread) {
 }
 
 }  // namespace threads
-
-#endif  // OS_POSIX
