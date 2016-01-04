@@ -38,8 +38,11 @@
 #include <stdint.h>
 
 #include "utils/macro.h"
+#ifdef QT_PORT
+#include <QAtomicPointer>
+#else
 #include "utils/atomic.h"
-
+#endif
 namespace utils {
 /**
  * @brief Shared pointer.
@@ -192,17 +195,27 @@ class SharedPtr {
    **/
   ObjectType* mObject;
 
+#ifdef QT_PORT
+  /**
+   * @brief Pointer to reference counter.
+   **/
+  QAtomicInt* mReferenceCounter;
+#else
   /**
    * @brief Pointer to reference counter.
    **/
   uint32_t* mReferenceCounter;
-
+#endif
   void release();
 };
 
 template <typename ObjectType>
 inline utils::SharedPtr<ObjectType>::SharedPtr(ObjectType* Object)
+#ifdef QT_PORT
+    : mObject(NULL), mReferenceCounter(new QAtomicInt(1)) {
+#else
     : mObject(NULL), mReferenceCounter(new uint32_t(1)) {
+#endif
   DCHECK(Object != NULL);
   mObject = Object;
 }
@@ -259,7 +272,11 @@ inline utils::SharedPtr<ObjectType>& utils::SharedPtr<ObjectType>::operator=(
   mReferenceCounter = Other.mReferenceCounter;
 
   if (0 != mReferenceCounter) {
+#ifdef QT_PORT
+    mReferenceCounter->ref();
+#else
     atomic_post_inc(mReferenceCounter);
+#endif
   }
 
   return *this;
@@ -274,7 +291,11 @@ utils::SharedPtr<OtherObjectType> utils::SharedPtr<
   casted_pointer.mReferenceCounter = pointer.mReferenceCounter;
 
   if (0 != casted_pointer.mReferenceCounter) {
+#ifdef QT_PORT
+    casted_pointer.mReferenceCounter->ref();
+#else
     atomic_post_inc(casted_pointer.mReferenceCounter);
+#endif
   }
 
   return casted_pointer;
@@ -288,12 +309,14 @@ utils::SharedPtr<OtherObjectType> utils::SharedPtr<
   casted_pointer.mObject = dynamic_cast<OtherObjectType*>(pointer.mObject);
   if (NULL != casted_pointer.mObject) {
     casted_pointer.mReferenceCounter = pointer.mReferenceCounter;
-
     if (0 != casted_pointer.mReferenceCounter) {
+#ifdef QT_PORT
+      casted_pointer.mReferenceCounter->deref();
+#else
       atomic_post_inc(casted_pointer.mReferenceCounter);
+#endif
     }
   }
-
   return casted_pointer;
 }
 
@@ -329,8 +352,6 @@ template <typename ObjectType>
 void SharedPtr<ObjectType>::release() {
   delete mObject;
   mObject = 0;
-
-  delete mReferenceCounter;
   mReferenceCounter = 0;
 }
 
@@ -338,13 +359,21 @@ template <typename ObjectType>
 void utils::SharedPtr<ObjectType>::reset_impl(ObjectType* other) {
   dropReference();
   mObject = other;
+#ifdef QT_PORT
+  mReferenceCounter = new QAtomicInt(1);
+#else
   mReferenceCounter = new uint32_t(1);
+#endif
 }
 
 template <typename ObjectType>
 inline void SharedPtr<ObjectType>::dropReference() {
   if (0 != mReferenceCounter) {
+#ifdef QT_PORT
+    if (1 == *(mReferenceCounter--)) {
+#else
     if (1 == atomic_post_dec(mReferenceCounter)) {
+#endif
       release();
     }
   }
