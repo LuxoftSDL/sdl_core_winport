@@ -352,6 +352,7 @@ template <typename ObjectType>
 void SharedPtr<ObjectType>::release() {
   delete mObject;
   mObject = 0;
+  delete mReferenceCounter;
   mReferenceCounter = 0;
 }
 
