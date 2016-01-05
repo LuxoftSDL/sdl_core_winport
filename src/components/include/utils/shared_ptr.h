@@ -39,6 +39,9 @@
 
 #include "utils/macro.h"
 #include "utils/atomic.h"
+#ifdef QT_PORT
+#include <QSharedPointer>
+#endif
 
 namespace utils {
 /**
@@ -187,6 +190,12 @@ class SharedPtr {
    **/
   void dropReference();
 
+#ifdef QT_PORT
+  /**
+   * @brief Wrapped object.
+   **/
+  QSharedPointer<ObjectType> mObject;
+#else
   /**
    * @brief Wrapped object.
    **/
@@ -196,25 +205,26 @@ class SharedPtr {
    * @brief Pointer to reference counter.
    **/
   uint32_t* mReferenceCounter;
+#endif
 
   void release();
 };
-
+#ifdef QT_PORT
 template <typename ObjectType>
 inline utils::SharedPtr<ObjectType>::SharedPtr(ObjectType* Object)
-    : mObject(NULL), mReferenceCounter(new uint32_t(1)) {
-  DCHECK(Object != NULL);
-  mObject = Object;
+    : mObject(NULL) {
+  DCHECK(Object);
+  mObject.reset(Object);
 }
 
 template <typename ObjectType>
 inline utils::SharedPtr<ObjectType>::SharedPtr()
-    : mObject(0), mReferenceCounter(0) {}
+    : mObject(NULL) {}
 
 template <typename ObjectType>
 inline utils::SharedPtr<ObjectType>::SharedPtr(
     const SharedPtr<ObjectType>& Other)
-    : mObject(0), mReferenceCounter(0) {
+    : mObject(NULL) {
   *this = Other;
 }
 
@@ -222,7 +232,137 @@ template <typename ObjectType>
 template <typename OtherObjectType>
 inline utils::SharedPtr<ObjectType>::SharedPtr(
     const SharedPtr<OtherObjectType>& Other)
-    : mObject(0), mReferenceCounter(0) {
+    : mObject(NULL) {
+  *this = Other;
+}
+
+template <typename ObjectType>
+inline utils::SharedPtr<ObjectType>::~SharedPtr() {
+  mObject.clear();
+}
+
+template <typename ObjectType>
+inline utils::SharedPtr<ObjectType>& utils::SharedPtr<ObjectType>::operator=(
+    const SharedPtr<ObjectType>& Other) {
+  return operator=<ObjectType>(Other);
+}
+
+template <typename ObjectType>
+inline bool utils::SharedPtr<ObjectType>::operator==(
+    const SharedPtr<ObjectType>& Other) const {
+  return (mObject == Other.mObject);
+}
+
+template <typename ObjectType>
+inline bool utils::SharedPtr<ObjectType>::operator<(
+    const SharedPtr<ObjectType>& other) const {
+  return (mObject < other.mObject);
+}
+
+template <typename ObjectType>
+template <typename OtherObjectType>
+inline utils::SharedPtr<ObjectType>& utils::SharedPtr<ObjectType>::operator=(
+    const SharedPtr<OtherObjectType>& Other) {
+  dropReference();
+  mObject = Other.mObject;
+  return *this;
+}
+
+template <typename ObjectType>
+template <typename OtherObjectType>
+utils::SharedPtr<OtherObjectType> utils::SharedPtr<
+    ObjectType>::static_pointer_cast(const SharedPtr<ObjectType>& pointer) {
+  SharedPtr<OtherObjectType> casted_pointer;
+  casted_pointer.mObject = pointer.mObject.staticCast<OtherObjectType>();
+  return casted_pointer;
+}
+
+template <typename ObjectType>
+template <typename OtherObjectType>
+utils::SharedPtr<OtherObjectType> utils::SharedPtr<
+    ObjectType>::dynamic_pointer_cast(const SharedPtr<ObjectType>& pointer) {
+  SharedPtr<OtherObjectType> casted_pointer;
+  casted_pointer.mObject = pointer.mObject.dynamicCast<OtherObjectType>();
+  return casted_pointer;
+}
+
+template <typename ObjectType>
+ObjectType* utils::SharedPtr<ObjectType>::operator->() const {
+  DCHECK(mObject);
+  return mObject.data();
+}
+
+template <typename ObjectType>
+ObjectType& utils::SharedPtr<ObjectType>::operator*() const {
+  DCHECK(mObject);
+  return *mObject;
+}
+
+template <typename ObjectType>
+utils::SharedPtr<ObjectType>::operator bool() const {
+  return valid();
+}
+
+template <typename ObjectType>
+void utils::SharedPtr<ObjectType>::reset() {
+  reset_impl(NULL);
+}
+
+template <typename ObjectType>
+void utils::SharedPtr<ObjectType>::reset(ObjectType* other) {
+  DCHECK(other);
+  reset_impl(other);
+}
+
+template <typename ObjectType>
+void SharedPtr<ObjectType>::release() {
+  mObject.clear();
+}
+
+template <typename ObjectType>
+void utils::SharedPtr<ObjectType>::reset_impl(ObjectType* other) {
+  dropReference();
+  mObject.reset(other);
+}
+
+template <typename ObjectType>
+inline void SharedPtr<ObjectType>::dropReference() {
+  release();
+}
+
+template <typename ObjectType>
+ObjectType* SharedPtr<ObjectType>::get() const {
+  return mObject.operator->();
+}
+
+template <typename ObjectType>
+inline bool SharedPtr<ObjectType>::valid() const {
+  return !mObject.isNull();
+}
+#else
+template <typename ObjectType>
+inline utils::SharedPtr<ObjectType>::SharedPtr(ObjectType* Object)
+    : mObject(NULL), mReferenceCounter(new uint32_t(1)) {
+  DCHECK(Object);
+  mObject = Object;
+}
+
+template <typename ObjectType>
+inline utils::SharedPtr<ObjectType>::SharedPtr()
+    : mObject(NULL), mReferenceCounter(NULL) {}
+
+template <typename ObjectType>
+inline utils::SharedPtr<ObjectType>::SharedPtr(
+    const SharedPtr<ObjectType>& Other)
+    : mObject(NULL), mReferenceCounter(NULL) {
+  *this = Other;
+}
+
+template <typename ObjectType>
+template <typename OtherObjectType>
+inline utils::SharedPtr<ObjectType>::SharedPtr(
+    const SharedPtr<OtherObjectType>& Other)
+    : mObject(NULL), mReferenceCounter(NULL) {
   *this = Other;
 }
 
@@ -258,7 +398,7 @@ inline utils::SharedPtr<ObjectType>& utils::SharedPtr<ObjectType>::operator=(
   mObject = Other.mObject;
   mReferenceCounter = Other.mReferenceCounter;
 
-  if (0 != mReferenceCounter) {
+  if (mReferenceCounter) {
     atomic_post_inc(mReferenceCounter);
   }
 
@@ -273,7 +413,7 @@ utils::SharedPtr<OtherObjectType> utils::SharedPtr<
   casted_pointer.mObject = static_cast<OtherObjectType*>(pointer.mObject);
   casted_pointer.mReferenceCounter = pointer.mReferenceCounter;
 
-  if (0 != casted_pointer.mReferenceCounter) {
+  if (casted_pointer.mReferenceCounter) {
     atomic_post_inc(casted_pointer.mReferenceCounter);
   }
 
@@ -286,10 +426,10 @@ utils::SharedPtr<OtherObjectType> utils::SharedPtr<
     ObjectType>::dynamic_pointer_cast(const SharedPtr<ObjectType>& pointer) {
   SharedPtr<OtherObjectType> casted_pointer;
   casted_pointer.mObject = dynamic_cast<OtherObjectType*>(pointer.mObject);
-  if (NULL != casted_pointer.mObject) {
+  if (casted_pointer.mObject) {
     casted_pointer.mReferenceCounter = pointer.mReferenceCounter;
 
-    if (0 != casted_pointer.mReferenceCounter) {
+    if (casted_pointer.mReferenceCounter) {
       atomic_post_inc(casted_pointer.mReferenceCounter);
     }
   }
@@ -316,22 +456,22 @@ utils::SharedPtr<ObjectType>::operator bool() const {
 
 template <typename ObjectType>
 void utils::SharedPtr<ObjectType>::reset() {
-  reset_impl(0);
+  reset_impl(NULL);
 }
 
 template <typename ObjectType>
 void utils::SharedPtr<ObjectType>::reset(ObjectType* other) {
-  DCHECK(other != NULL);
+  DCHECK(other);
   reset_impl(other);
 }
 
 template <typename ObjectType>
 void SharedPtr<ObjectType>::release() {
   delete mObject;
-  mObject = 0;
+  mObject = NULL;
 
   delete mReferenceCounter;
-  mReferenceCounter = 0;
+  mReferenceCounter = NULL;
 }
 
 template <typename ObjectType>
@@ -343,7 +483,7 @@ void utils::SharedPtr<ObjectType>::reset_impl(ObjectType* other) {
 
 template <typename ObjectType>
 inline void SharedPtr<ObjectType>::dropReference() {
-  if (0 != mReferenceCounter) {
+  if (mReferenceCounter) {
     if (1 == atomic_post_dec(mReferenceCounter)) {
       release();
     }
@@ -362,7 +502,7 @@ inline bool SharedPtr<ObjectType>::valid() const {
   }
   return false;
 }
-
+#endif
 }  // namespace utils
 
 #endif  // SRC_COMPONENTS_INCLUDE_UTILS_SHARED_PTR_H_
