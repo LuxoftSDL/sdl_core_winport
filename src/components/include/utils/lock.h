@@ -70,24 +70,28 @@ class SpinMutex {
  public:
   SpinMutex() : state_(0) {}
   void Lock() {
+#ifdef QT_PORT
+    if (state_.testAndSetAcquire(0, 1)) {
+#else
     if (atomic_post_set(&state_) == 0) {
+#endif
       return;
     }
     for (;;) {
 #if defined(OS_POSIX)
-    sched_yield();
+      sched_yield();
 #elif defined(OS_WINDOWS)
-<<<<<<< HEAD
+#if defined(WIN_NATIVE)
       SwitchToThread();
-=======
-#if defined (WIN_NATIVE)
-    SwitchToThread();
-#elif defined(QT_PORT)    
-    QThread::yieldCurrentThread();
+#elif defined(QT_PORT)
+      QThread::yieldCurrentThread();
 #endif
->>>>>>> e6cef03... Add Qt lock
 #endif
+#ifdef QT_PORT
+      if (state_ == 0 && state_.testAndSetAcquire(0, 1)) {
+#else
       if (state_ == 0 && atomic_post_set(&state_) == 0) {
+#endif
         return;
       }
     }
@@ -98,7 +102,11 @@ class SpinMutex {
   ~SpinMutex() {}
 
  private:
+#ifdef QT_PORT
+  QAtomicInteger<unsigned int> state_;
+#else
   volatile unsigned int state_;
+#endif
 };
 
 /* Platform-indepenednt NON-RECURSIVE lock (mutex) wrapper

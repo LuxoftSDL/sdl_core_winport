@@ -45,21 +45,20 @@ CREATE_LOGGERPTR_GLOBAL(logger_, "Utils")
 
 Lock::Lock()
 #ifndef NDEBUG
-    : lock_taken_(0),
-      is_mutex_recursive_(false)
-#endif // NDEBUG
+    : lock_taken_(0)
+    , is_mutex_recursive_(false)
+#endif  // NDEBUG
 {
   Init(false);
 }
 
 Lock::Lock(bool is_recursive)
 #ifndef NDEBUG
-    : lock_taken_(0),
-      is_mutex_recursive_(is_recursive)
-#endif // NDEBUG
+    : lock_taken_(0)
+    , is_mutex_recursive_(is_recursive)
+#endif  // NDEBUG
 {
   Init(is_recursive);
-
 }
 
 Lock::~Lock() {
@@ -68,10 +67,12 @@ Lock::~Lock() {
     LOG4CXX_ERROR(logger_, "Destroying non-released mutex " << &mutex_);
   }
 #endif
-  int32_t status = 0;
-  if (status != 0) {
-    LOG4CXX_ERROR(logger_, "Failed to destroy mutex " << &mutex_ << ": "
-        << strerror(status));
+  if (mutex_) {
+    delete mutex_;
+    mutex_ = 0;
+  }
+  if (mutex_ != 0) {
+    LOG4CXX_ERROR(logger_, "Failed to destroy mutex " << &mutex_);
   }
 }
 
@@ -86,11 +87,14 @@ void Lock::Release() {
 }
 
 bool Lock::Try() {
-  mutex_->tryLock();
+  if (mutex_->tryLock()) {
 #ifndef NDEBUG
     lock_taken_++;
 #endif
     return true;
+  } else {
+    return false;
+  }
 }
 
 #ifndef NDEBUG
@@ -111,9 +115,8 @@ void Lock::AssertTakenAndMarkFree() {
 #endif
 
 void Lock::Init(bool is_recursive) {
-  const QMutex::RecursionMode mutex_type = is_recursive
-    ? QMutex::Recursive
-    : QMutex::NonRecursive;
+  const QMutex::RecursionMode mutex_type =
+      is_recursive ? QMutex::Recursive : QMutex::NonRecursive;
 
   mutex_ = new QMutex(mutex_type);
 }

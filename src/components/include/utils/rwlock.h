@@ -40,11 +40,6 @@
 
 namespace sync_primitives {
 
-#if defined(QT_PORT)
-namespace impl{
-  typedef QReadWriteLock PlatformRWLock;
-}  // namespace impl
-#endif
 /**
  * RW locks wrapper
  * Read-write locks permit concurrent reads and exclusive writes to a protected
@@ -135,12 +130,12 @@ class RWLock {
 
  private:
 #ifdef QT_PORT
-  impl::PlatformRWLock * rwlock_;
+  QReadWriteLock* rwlock_;
 #else
   class Impl;
   Impl* impl_;
 #endif
-  
+
   DISALLOW_COPY_AND_ASSIGN(RWLock);
 };
 

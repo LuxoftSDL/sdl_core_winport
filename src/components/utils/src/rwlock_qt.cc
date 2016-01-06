@@ -46,32 +46,22 @@ RWLock::RWLock() {
 }
 
 RWLock::~RWLock() {
-
+  if (rwlock_) {
+    delete rwlock_;
+    rwlock_ = 0;
+  }
 }
 
-void RWLock::AcquireForReading() {
-  rwlock_->lockForRead();
-}
+void RWLock::AcquireForReading() { rwlock_->lockForRead(); }
 
-bool RWLock::TryAcquireForReading() {
-  return rwlock_->tryLockForRead();
+bool RWLock::TryAcquireForReading() { return rwlock_->tryLockForRead(); }
 
-}
+void RWLock::AcquireForWriting() { rwlock_->lockForWrite(); }
 
-void RWLock::AcquireForWriting() {
-  rwlock_->lockForWrite();
-}
+bool RWLock::TryAcquireForWriting() { return rwlock_->tryLockForWrite(); }
 
-bool RWLock::TryAcquireForWriting() {
-  return rwlock_->tryLockForWrite();
-}
+void RWLock::ReleaseForReading() { rwlock_->unlock(); }
 
- void RWLock::ReleaseForReading(){
-  rwlock_->unlock();
- }
-
- void RWLock::ReleaseForWriting(){
-  rwlock_->unlock();
- }
+void RWLock::ReleaseForWriting() { rwlock_->unlock(); }
 
 }  // namespace sync_primitives
