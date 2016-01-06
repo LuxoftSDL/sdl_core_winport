@@ -31,45 +31,23 @@
  */
 #include "utils/conditional_variable.h"
 
-#include <errno.h>
-#include <time.h>
-
 #include "utils/lock.h"
 #include "utils/logger.h"
 #include "QWaitCondition"
-
-namespace {
-const long kNanosecondsPerSecond = 1000000000;
-const long kMillisecondsPerSecond = 1000;
-const long kNanosecondsPerMillisecond = 1000000;
-}
 
 namespace sync_primitives {
 
 CREATE_LOGGERPTR_GLOBAL(logger_, "Utils")
 
-ConditionalVariable::ConditionalVariable() {
-  cond_var_ = new QWaitCondition;
-  if (!cond_var_){
-    LOG4CXX_ERROR(logger_, "Failed to initialize "
-                            "conditional variable");
-  }
-}
+ConditionalVariable::ConditionalVariable() : cond_var_() {}
 
-ConditionalVariable::~ConditionalVariable() {
-}
+void ConditionalVariable::NotifyOne() { cond_var_.wakeOne(); }
 
-void ConditionalVariable::NotifyOne() {
-  cond_var_->wakeOne();
-}
-
-void ConditionalVariable::Broadcast() {
-  cond_var_->wakeAll();
-}
+void ConditionalVariable::Broadcast() { cond_var_.wakeAll(); }
 
 bool ConditionalVariable::Wait(Lock& lock) {
   lock.AssertTakenAndMarkFree();
-    bool wait_status = cond_var_->wait(lock.mutex_,INFINITE);
+  const bool wait_status = cond_var_.wait(lock.mutex_, INFINITE);
   lock.AssertFreeAndMarkTaken();
   if (!wait_status) {
     LOG4CXX_ERROR(logger_, "Failed to wait for conditional variable");
@@ -81,7 +59,7 @@ bool ConditionalVariable::Wait(Lock& lock) {
 bool ConditionalVariable::Wait(AutoLock& auto_lock) {
   Lock& lock = auto_lock.GetLock();
   lock.AssertTakenAndMarkFree();
-  bool wait_status = cond_var_->wait(lock.mutex_,INFINITE);
+  const bool wait_status = cond_var_.wait(lock.mutex_, INFINITE);
   lock.AssertFreeAndMarkTaken();
   if (!wait_status) {
     LOG4CXX_ERROR(logger_, "Failed to wait for conditional variable");
@@ -91,31 +69,18 @@ bool ConditionalVariable::Wait(AutoLock& auto_lock) {
 }
 
 ConditionalVariable::WaitStatus ConditionalVariable::WaitFor(
-    AutoLock& auto_lock, int32_t milliseconds){
+    AutoLock& auto_lock, int32_t milliseconds) {
   Lock& lock = auto_lock.GetLock();
-  lock.AssertTakenAndMarkFree();
-  int32_t timedwait_status = cond_var_->wait(lock.mutex_, milliseconds);
-  lock.AssertFreeAndMarkTaken();
-  WaitStatus wait_status = kNoTimeout;
-  switch(timedwait_status) {
-    case 0: {
-      wait_status = kNoTimeout;
-      break;
-    }
-    case EINTR: {
-      wait_status = kNoTimeout;
-      break;
-    }
-    case ETIMEDOUT: {
-      wait_status = kTimeout;
-      break;
-    }
-    default: {
-      LOG4CXX_ERROR(logger_, "Failed to timewait for conditional variable timedwait_status: " 
-        << timedwait_status);
-    }
+  if (lock.is_mutex_recursive_) {
+    LOG4CXX_ERROR(logger_, "Cannot wait on recursive mutexes");
   }
-  return wait_status;
+  lock.AssertTakenAndMarkFree();
+  const bool timedwait_status = cond_var_.wait(lock.mutex_, milliseconds);
+  lock.AssertFreeAndMarkTaken();
+  if (timedwait_status) {
+    return kNoTimeout;
+  }
+  return kTimeout;
 }
 
-} // namespace sync_primitives
+}  // namespace sync_primitives
