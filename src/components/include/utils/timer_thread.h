@@ -342,7 +342,7 @@ template <class T>
 TimerThread<T>::TimerDelegate::TimerDelegate(TimerThread* timer_thread)
     : timer_thread_(timer_thread)
     , timeout_milliseconds_(0)
-    , state_lock_(true)
+    , state_lock_(false)
     , stop_flag_(false)
     , restart_flag_(false) {
   DCHECK(timer_thread_);
@@ -393,10 +393,13 @@ void TimerThread<T>::TimerDelegate::threadMain() {
 template <class T>
 void TimerThread<T>::TimerLooperDelegate::threadMain() {
   using sync_primitives::ConditionalVariable;
-  sync_primitives::AutoLock auto_lock(TimerDelegate::state_lock_);
+  sync_primitives::Lock lock;
+  lock.Acquire();
   TimerDelegate::stop_flag_ = false;
+  lock.Release();
   while (!TimerDelegate::stop_flag_) {
     int32_t wait_milliseconds_left = TimerDelegate::get_timeout();
+    sync_primitives::AutoLock auto_lock(TimerDelegate::state_lock_);
     LOG4CXX_DEBUG(logger_,
                   "Milliseconds left to wait: " << wait_milliseconds_left);
     ConditionalVariable::WaitStatus wait_status =
