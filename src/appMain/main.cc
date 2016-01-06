@@ -101,12 +101,7 @@ int32_t main(int32_t argc, char** argv) {
   } else {
     profile::Profile::instance()->config_file_name("smartDeviceLink.ini");
   }
-
   PLATFORM_INIT(argc, argv);
-#ifdef QT_PORT
-  QThreadPool * pool = QThreadPool::globalInstance();
-  pool->setMaxThreadCount(MAX_THREADS);
-#endif
   // Logger initialization
   INIT_LOGGER();
 

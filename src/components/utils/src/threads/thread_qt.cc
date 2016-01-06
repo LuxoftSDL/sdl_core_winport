@@ -59,7 +59,7 @@ void Thread::cleanup(void* arg) {
   thread->state_cond_.Broadcast();
 }
 
-void Thread::threadFunc(void* arg) {
+void* Thread::threadFunc(void* arg) {
   LOG4CXX_DEBUG(logger_,
                 "Thread #" << QThread::currentThread()
                            << " started successfully");
@@ -71,14 +71,15 @@ void Thread::threadFunc(void* arg) {
   thread->state_cond_.Broadcast();
 
   while (!thread->finalized_) {
+    LOG4CXX_DEBUG(logger_,
+                  "Thread #" << QThread::currentThreadId() << " iteration");
     thread->run_cond_.Wait(thread->state_lock_);
     LOG4CXX_DEBUG(logger_,
-                  "Thread #"
-                      << " execute. "
-                      << "stopped_ = "
-                      << thread->stopped_
-                      << "; finalized_ = "
-                      << thread->finalized_);
+                  "Thread #" << QThread::currentThreadId() << " execute. "
+                             << "stopped_ = "
+                             << thread->stopped_
+                             << "; finalized_ = "
+                             << thread->finalized_);
     if (!thread->stopped_ && !thread->finalized_) {
       thread->isThreadRunning_ = true;
       thread->state_lock_.Release();
@@ -87,9 +88,16 @@ void Thread::threadFunc(void* arg) {
       thread->isThreadRunning_ = false;
     }
     thread->state_cond_.Broadcast();
+    LOG4CXX_DEBUG(logger_,
+                  "Thread #" << QThread::currentThreadId()
+                             << " finished iteration");
   }
 
   thread->state_lock_.Release();
+  LOG4CXX_DEBUG(logger_,
+                "Thread #" << QThread::currentThreadId()
+                           << " exited successfully");
+  return NULL;
 }
 
 void Thread::SetNameForId(const PlatformThreadHandle& thread_id,
@@ -111,6 +119,11 @@ Thread::Thread(const char* name, ThreadDelegate* delegate, QObject* parent)
 bool Thread::start() {
   start(thread_options_);
   return true;
+}
+
+void Thread::cleanup() {
+  sync_primitives::AutoLock auto_lock(state_lock_);
+  cleanup(this);
 }
 
 PlatformThreadHandle Thread::CurrentId() { return QThread::currentThread(); }
@@ -152,7 +165,8 @@ bool Thread::start(const ThreadOptions& options) {
   }
   stopped_ = false;
   run_cond_.NotifyOne();
-  return true;
+  LOG4CXX_DEBUG(logger_, "Thread " << name_ << " #" << handle_ << " started");
+  return NULL != handle_;
 }
 
 void Thread::stop() {

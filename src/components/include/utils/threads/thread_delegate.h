@@ -49,8 +49,8 @@ class Thread;
  * Look for "threads/thread.h" for example
  */
 #ifdef QT_PORT
-class ThreadDelegate: public QObject {
-    Q_OBJECT
+class ThreadDelegate : public QObject {
+  Q_OBJECT
 #else
 class ThreadDelegate {
 #endif
@@ -61,6 +61,9 @@ class ThreadDelegate {
    */
   virtual void threadMain() = 0;
 
+#ifdef QT_PORT
+  Q_SIGNAL void close_thread();
+#endif
   /**
    * Should be called to free all resources allocated in threadMain
    * and exiting threadMain

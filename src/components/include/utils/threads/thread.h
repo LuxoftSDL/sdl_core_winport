@@ -37,7 +37,7 @@
 #include <pthread.h>
 #elif defined(OS_WINDOWS)
 #include "utils/winhdr.h"
-#if defined (QT_PORT)
+#if defined(QT_PORT)
 #include <QtCore>
 #include <QThread>
 #endif
@@ -60,7 +60,7 @@ namespace threads {
 #if defined(OS_POSIX)
 typedef pthread_t PlatformThreadHandle;
 #elif defined(OS_WINDOWS)
-#if defined (WIN_NATIVE)
+#if defined(WIN_NATIVE)
 typedef HANDLE PlatformThreadHandle;
 #elif defined(QT_PORT)
 typedef Qt::HANDLE PlatformThreadHandle;
@@ -99,8 +99,8 @@ Thread* CreateThread(const char* name, ThreadDelegate* delegate);
 void DeleteThread(Thread* thread);
 
 #ifdef QT_PORT
-class Thread: public QObject {
-    Q_OBJECT
+class Thread : public QObject {
+  Q_OBJECT
 #else
 class Thread {
 #endif
@@ -235,29 +235,25 @@ class Thread {
   sync_primitives::ConditionalVariable state_cond_;
 
  private:
-  /**
-   * Ctor.
-   * @param name - display string to identify the thread.
-   * @param delegate - thread procedure delegate. Look for
-   * 'threads/thread_delegate.h' for details.
-   * LifeCycle thread , otherwise it will be joined in stop method
-   * NOTE: delegate will be deleted after thread will be joined
-   *       This constructor made private to prevent
-   *       Thread object to be created on stack
-   */
+/**
+ * Ctor.
+ * @param name - display string to identify the thread.
+ * @param delegate - thread procedure delegate. Look for
+ * 'threads/thread_delegate.h' for details.
+ * LifeCycle thread , otherwise it will be joined in stop method
+ * NOTE: delegate will be deleted after thread will be joined
+ *       This constructor made private to prevent
+ *       Thread object to be created on stack
+ */
 #ifdef QT_PORT
-  Thread(const char* name, ThreadDelegate* delegate, QObject *parent = 0);
-  
+  Thread(const char* name, ThreadDelegate* delegate, QObject* parent = 0);
+
   QFuture<void> future_;
-#else   
+#else
   Thread(const char* name, ThreadDelegate* delegate);
 #endif
   virtual ~Thread();
-#ifdef QT_PORT
-  static void threadFunc(void* arg);
-#else
   static void* threadFunc(void* arg);
-#endif
   static void cleanup(void* arg);
   DISALLOW_COPY_AND_ASSIGN(Thread);
 };

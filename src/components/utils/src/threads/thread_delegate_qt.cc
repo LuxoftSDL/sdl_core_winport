@@ -46,13 +46,15 @@ ThreadDelegate::~ThreadDelegate() {
 
 void ThreadDelegate::exitThreadMain() {
   if (thread_) {
-    thread_->stop();
+    thread_->cleanup();
+    emit close_thread();
   }
 }
 
 void ThreadDelegate::set_thread(Thread* thread) {
   DCHECK(thread);
   thread_ = thread;
+  QObject::connect(this, SIGNAL(close_thread()), thread_, SLOT(deleteLater()));
 }
 #include "moc_thread_delegate.cpp"
 }  // namespace threads
