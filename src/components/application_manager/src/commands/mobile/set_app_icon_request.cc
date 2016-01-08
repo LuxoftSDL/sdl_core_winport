@@ -32,11 +32,11 @@
  */
 
 #include "application_manager/commands/mobile/set_app_icon_request.h"
-#include "application_manager/application_manager_impl.h"
 #include "application_manager/application_impl.h"
+#include "application_manager/application_manager_impl.h"
 #include "config_profile/profile.h"
-#include "interfaces/MOBILE_API.h"
 #include "interfaces/HMI_API.h"
+#include "interfaces/MOBILE_API.h"
 #include "utils/file_system.h"
 #include "utils/helpers.h"
 

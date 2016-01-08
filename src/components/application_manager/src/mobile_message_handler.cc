@@ -32,15 +32,15 @@
 
 #include <string.h>
 
-#include "utils/macro.h"
 #include "application_manager/mobile_message_handler.h"
-#include "protocol_handler/protocol_payload.h"
 #include "protocol_handler/protocol_packet.h"
+#include "protocol_handler/protocol_payload.h"
 #include "utils/bitstream.h"
 #include "utils/logger.h"
+#include "utils/macro.h"
 
-#include <stdint.h>
 #include <memory>
+#include <stdint.h>
 #include <string>
 
 namespace {

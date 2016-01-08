@@ -30,9 +30,9 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include <cstring>
 #include "qdb_wrapper/sql_database.h"
 #include "utils/logger.h"
+#include <cstring>
 
 namespace utils {
 namespace dbms {
@@ -42,11 +42,14 @@ CREATE_LOGGERPTR_GLOBAL(logger_, "SQLDatabase")
 SQLDatabase::SQLDatabase(const std::string& db_name)
     : conn_(NULL), db_name_(db_name), error_(Error::OK) {}
 
-SQLDatabase::~SQLDatabase() { Close(); }
+SQLDatabase::~SQLDatabase() {
+  Close();
+}
 
 bool SQLDatabase::Open() {
   sync_primitives::AutoLock auto_lock(conn_lock_);
-  if (conn_) return true;
+  if (conn_)
+    return true;
   conn_ = qdb_connect(db_name_.c_str(), 0);
   if (conn_ == NULL) {
     error_ = Error::ERROR;
@@ -66,11 +69,17 @@ void SQLDatabase::Close() {
   }
 }
 
-bool SQLDatabase::BeginTransaction() { return Exec("BEGIN TRANSACTION"); }
+bool SQLDatabase::BeginTransaction() {
+  return Exec("BEGIN TRANSACTION");
+}
 
-bool SQLDatabase::CommitTransaction() { return Exec("COMMIT TRANSACTION"); }
+bool SQLDatabase::CommitTransaction() {
+  return Exec("COMMIT TRANSACTION");
+}
 
-bool SQLDatabase::RollbackTransaction() { return Exec("ROLLBACK TRANSACTION"); }
+bool SQLDatabase::RollbackTransaction() {
+  return Exec("ROLLBACK TRANSACTION");
+}
 
 bool SQLDatabase::Exec(const std::string& query) {
   sync_primitives::AutoLock auto_lock(conn_lock_);
@@ -85,9 +94,13 @@ SQLError SQLDatabase::LastError() const {
   return SQLError(error_, qdb_geterrmsg(conn_));
 }
 
-bool SQLDatabase::HasErrors() const { return Error(error_) != OK; }
+bool SQLDatabase::HasErrors() const {
+  return Error(error_) != OK;
+}
 
-qdb_hdl_t* SQLDatabase::conn() const { return conn_; }
+qdb_hdl_t* SQLDatabase::conn() const {
+  return conn_;
+}
 
 bool SQLDatabase::Backup() {
   if (qdb_backup(conn_, QDB_ATTACH_DEFAULT) == -1) {

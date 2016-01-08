@@ -30,9 +30,9 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include <unistd.h>
-#include "gtest/gtest.h"
 #include "utils/message_queue.h"
+#include "gtest/gtest.h"
+#include <unistd.h>
 
 namespace test {
 namespace components {

@@ -31,12 +31,12 @@
  POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include <algorithm>
-#include "application_manager/commands/mobile/diagnostic_message_request.h"
-#include "application_manager/application_manager_impl.h"
 #include "application_manager/application_impl.h"
+#include "application_manager/application_manager_impl.h"
+#include "application_manager/commands/mobile/diagnostic_message_request.h"
 #include "config_profile/profile.h"
 #include "interfaces/HMI_API.h"
+#include <algorithm>
 
 namespace application_manager {
 

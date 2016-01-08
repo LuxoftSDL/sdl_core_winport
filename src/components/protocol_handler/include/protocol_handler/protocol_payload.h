@@ -32,8 +32,8 @@
 #ifndef SRC_COMPONENTS_PROTOCOL_HANDLER_INCLUDE_PROTOCOL_HANDLER_PROTOCOL_PAYLOAD_H_
 #define SRC_COMPONENTS_PROTOCOL_HANDLER_INCLUDE_PROTOCOL_HANDLER_PROTOCOL_PAYLOAD_H_
 
-#include <stdint.h>
 #include <ostream>
+#include <stdint.h>
 #include <string>
 #include <vector>
 
@@ -82,4 +82,6 @@ size_t ProtocolPayloadV2SizeBits();
 }  // namespace protocol_handler
 
 #endif /* SRC_COMPONENTS_PROTOCOL_HANDLER_INCLUDE_PROTOCOL_HANDLER_PROTOCOL_PAYLOAD_H_ \
+        * \                                                                            \
+        * \ \                                                                                     \
           */

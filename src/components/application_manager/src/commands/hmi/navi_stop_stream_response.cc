@@ -40,7 +40,9 @@ NaviStopStreamResponse::NaviStopStreamResponse(const MessageSharedPtr& message)
 
 NaviStopStreamResponse::~NaviStopStreamResponse() {}
 
-void NaviStopStreamResponse::Run() { LOG4CXX_AUTO_TRACE(logger_); }
+void NaviStopStreamResponse::Run() {
+  LOG4CXX_AUTO_TRACE(logger_);
+}
 
 }  // namespace commands
 

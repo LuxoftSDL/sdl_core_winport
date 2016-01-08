@@ -32,13 +32,13 @@
 
 #include <unistd.h>
 
-#include "gtest/gtest.h"
 #include "gmock/gmock.h"
+#include "gtest/gtest.h"
 
 #include "utils/macro.h"
 
-#include "utils/messagemeter.h"
 #include "utils/date_time.h"
+#include "utils/messagemeter.h"
 
 namespace test {
 namespace components {

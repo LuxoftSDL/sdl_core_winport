@@ -30,10 +30,10 @@
  */
 
 #include "gtest/gtest.h"
-#include <fstream>
 #include "config_profile/profile.h"
 #include "mock_policy_listener.h"
 #include "policy/policy_manager_impl.h"
+#include <fstream>
 
 using ::testing::_;
 using ::policy::PolicyManagerImpl;
@@ -48,7 +48,7 @@ class PolicyManagerImplStressTest : public ::testing::Test {
  protected:
   static const std::string kNameFile;
   static const int kNumberGroups = 3;  // 10;
-  static const int kNumberFuncs = 4;  // 100;
+  static const int kNumberFuncs = 4;   // 100;
   static const int kNumberApps = 5;
   static const int kNumberAppGroups = 5;
   static PolicyManagerImpl* manager;

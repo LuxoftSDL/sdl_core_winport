@@ -31,8 +31,8 @@
  */
 #include <pthread.h>
 
-#include "utils/rwlock.h"
 #include "utils/logger.h"
+#include "utils/rwlock.h"
 
 CREATE_LOGGERPTR_GLOBAL(logger_, "Utils")
 
@@ -60,7 +60,9 @@ class RWLock::Impl {
 
 sync_primitives::RWLock::RWLock() : impl_(new RWLock::Impl) {}
 
-sync_primitives::RWLock::~RWLock() { delete impl_; }
+sync_primitives::RWLock::~RWLock() {
+  delete impl_;
+}
 
 void sync_primitives::RWLock::AcquireForReading() {
   impl_->AcquireForReading();

@@ -32,11 +32,11 @@
 #ifndef TEST_COMPONENTS_INCLUDE_PROTOCOL_HANDLER_CONTROL_MESSAGE_MATCHER_H_
 #define TEST_COMPONENTS_INCLUDE_PROTOCOL_HANDLER_CONTROL_MESSAGE_MATCHER_H_
 
+#include "protocol/raw_message.h"
+#include "protocol_handler/protocol_packet.h"
 #include <gmock/gmock.h>
 #include <string>
 #include <vector>
-#include "protocol/raw_message.h"
-#include "protocol_handler/protocol_packet.h"
 
 namespace test {
 namespace components {

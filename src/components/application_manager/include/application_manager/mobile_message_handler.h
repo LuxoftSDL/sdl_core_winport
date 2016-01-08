@@ -33,9 +33,9 @@
 #ifndef SRC_COMPONENTS_APPLICATION_MANAGER_INCLUDE_APPLICATION_MANAGER_MOBILE_MESSAGE_HANDLER_IMPL_H_
 #define SRC_COMPONENTS_APPLICATION_MANAGER_INCLUDE_APPLICATION_MANAGER_MOBILE_MESSAGE_HANDLER_IMPL_H_
 
-#include "utils/macro.h"
-#include "protocol/common.h"
 #include "application_manager/message.h"
+#include "protocol/common.h"
+#include "utils/macro.h"
 
 namespace application_manager {
 typedef utils::SharedPtr<application_manager::Message> MobileMessage;

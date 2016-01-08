@@ -38,15 +38,15 @@
 
 #ifdef OS_WINDOWS
 #include "utils/winhdr.h"
-#include <ws2bth.h>
 #include <BluetoothAPIs.h>
+#include <ws2bth.h>
 #else
 #include <bluetooth/bluetooth.h>
 #include <bluetooth/hci.h>
 #include <bluetooth/hci_lib.h>
+#include <bluetooth/rfcomm.h>
 #include <bluetooth/sdp.h>
 #include <bluetooth/sdp_lib.h>
-#include <bluetooth/rfcomm.h>
 #endif
 
 #include "transport_manager/transport_adapter/device_scanner.h"

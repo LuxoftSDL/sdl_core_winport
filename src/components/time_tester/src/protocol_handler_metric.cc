@@ -31,8 +31,8 @@
  */
 
 #include "protocol_handler_metric.h"
-#include "json/json.h"
 #include "json_keys.h"
+#include "json/json.h"
 
 namespace time_tester {
 

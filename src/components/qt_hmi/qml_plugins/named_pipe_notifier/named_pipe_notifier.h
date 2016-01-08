@@ -45,7 +45,9 @@ class NamedPipeNotifier : public QThread {
  public:
   explicit NamedPipeNotifier(QObject* parent = 0) : QThread(parent) {}
 
-  const QString& name() const { return name_; }
+  const QString& name() const {
+    return name_;
+  }
   void set_name(const QString& name) {
     if (name_ != name) {
       name_ = name;

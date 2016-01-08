@@ -32,9 +32,9 @@
 #ifndef SRC_COMPONENTS_DBUS_INCLUDE_DBUS_MESSAGE_DESCRIPTIONS_H_
 #define SRC_COMPONENTS_DBUS_INCLUDE_DBUS_MESSAGE_DESCRIPTIONS_H_
 
+#include "interfaces/HMI_API.h"
 #include <stdint.h>
 #include <stdlib.h>
-#include "interfaces/HMI_API.h"
 
 namespace ford_message_descriptions {
 

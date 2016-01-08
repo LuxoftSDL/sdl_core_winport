@@ -29,13 +29,13 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-#include <string>
-#include <cstdint>
 #include <QtDebug>
+#include <cstdint>
+#include <string>
 
-#include "utils/macro.h"
-#include "utils/log_message_loop_thread.h"
 #include "utils/file_system.h"
+#include "utils/log_message_loop_thread.h"
+#include "utils/macro.h"
 
 namespace logger {
 

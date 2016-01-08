@@ -33,9 +33,9 @@
 #ifndef SRC_COMPONENTS_PROTOCOL_HANDLER_INCLUDE_PROTOCOL_HANDLER_PROTOCOL_PACKET_H_
 #define SRC_COMPONENTS_PROTOCOL_HANDLER_INCLUDE_PROTOCOL_HANDLER_PROTOCOL_PACKET_H_
 
-#include "utils/macro.h"
 #include "protocol/common.h"
 #include "transport_manager/common.h"
+#include "utils/macro.h"
 
 /**
  *\namespace protocol_handlerHandler

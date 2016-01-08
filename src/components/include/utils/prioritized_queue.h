@@ -33,9 +33,9 @@
 #ifndef SRC_COMPONENTS_UTILS_INCLUDE_UTILS_PRIORITIZED_QUEUE_H_
 #define SRC_COMPONENTS_UTILS_INCLUDE_UTILS_PRIORITIZED_QUEUE_H_
 
-#include <queue>
-#include <map>
 #include <algorithm>
+#include <map>
+#include <queue>
 
 #include "utils/macro.h"
 
@@ -58,8 +58,12 @@ class PrioritizedQueue {
     queues_[message_priority].push(message);
     ++total_size_;
   }
-  size_t size() const { return total_size_; }
-  bool empty() const { return queues_.empty(); }
+  size_t size() const {
+    return total_size_;
+  }
+  bool empty() const {
+    return queues_.empty();
+  }
   void swap(PrioritizedQueue<M>& x) {
     std::swap(queues_, x.queues_);
     std::swap(total_size_, x.total_size_);

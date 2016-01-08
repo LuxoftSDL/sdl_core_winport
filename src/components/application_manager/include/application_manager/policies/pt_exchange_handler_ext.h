@@ -33,8 +33,8 @@
 #ifndef SRC_COMPONENTS_POLICY_INCLUDE_POLICY_PT_EXCHANGE_HANDLER_EXT_H_
 #define SRC_COMPONENTS_POLICY_INCLUDE_POLICY_PT_EXCHANGE_HANDLER_EXT_H_
 
-#include "application_manager/policies/pt_exchange_handler.h"
 #include "application_manager/policies/policy_handler.h"
+#include "application_manager/policies/pt_exchange_handler.h"
 
 namespace policy {
 class PTExchangeHandlerExt : public PTExchangeHandler {

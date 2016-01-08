@@ -40,11 +40,11 @@
 #include <sstream>
 #include <string>
 
-#include <transport_manager/common.h>
-#include <transport_manager/transport_manager.h>
-#include <transport_manager/transport_adapter/transport_adapter_impl.h>
-#include <transport_manager/transport_manager_impl.h>
 #include "mock_device_scanner.h"
+#include <transport_manager/common.h>
+#include <transport_manager/transport_adapter/transport_adapter_impl.h>
+#include <transport_manager/transport_manager.h>
+#include <transport_manager/transport_manager_impl.h>
 
 namespace test {
 namespace components {
@@ -70,7 +70,9 @@ class MockApplication {
   MockApplication(const MockDevice* device, ApplicationHandle id);
   void Start();
   void Stop();
-  const std::string& socket_name() const { return socket_name_; }
+  const std::string& socket_name() const {
+    return socket_name_;
+  }
 };
 
 }  // namespace transport_manager

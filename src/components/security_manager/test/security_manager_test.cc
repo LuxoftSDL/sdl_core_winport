@@ -33,13 +33,13 @@
 #include <gtest/gtest.h>
 #include <string>
 
-#include "utils/byte_order.h"
 #include "protocol/common.h"
 #include "security_manager/security_manager_impl.h"
+#include "utils/byte_order.h"
 
+#include "include/security_manager_mock.h"
 #include "protocol_handler_mock.h"
 #include "protocol_observer_mock.h"
-#include "include/security_manager_mock.h"
 #include "transport_manager_mock.h"
 
 // TODO(EZamakhov): add test on get correct/wrong InternalError

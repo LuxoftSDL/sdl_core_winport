@@ -33,8 +33,8 @@
 #ifndef SRC_COMPONENTS_MEDIA_MANAGER_INCLUDE_MEDIA_MANAGER_AUDIO_FROM_MIC_RECORDER_ADAPTER_H_
 #define SRC_COMPONENTS_MEDIA_MANAGER_INCLUDE_MEDIA_MANAGER_AUDIO_FROM_MIC_RECORDER_ADAPTER_H_
 
-#include <string>
 #include "media_manager/media_adapter_impl.h"
+#include <string>
 
 namespace threads {
 class Thread;

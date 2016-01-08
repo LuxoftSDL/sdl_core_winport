@@ -33,19 +33,19 @@
 #ifndef SRC_COMPONENTS_INCLUDE_UTILS_TIMER_THREAD_H_
 #define SRC_COMPONENTS_INCLUDE_UTILS_TIMER_THREAD_H_
 
-#include <time.h>
+#include <algorithm>
 #include <cstdint>
 #include <limits>
 #include <string>
-#include <algorithm>
+#include <time.h>
 
 #include "utils/conditional_variable.h"
 #include "utils/lock.h"
 #include "utils/logger.h"
 #include "utils/macro.h"
-#include "utils/timer_thread.h"
 #include "utils/threads/thread.h"
 #include "utils/threads/thread_delegate.h"
+#include "utils/timer_thread.h"
 
 namespace timer {
 // TODO(AKutsan): Remove this logger after bugfix

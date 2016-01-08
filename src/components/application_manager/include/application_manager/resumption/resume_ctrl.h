@@ -33,20 +33,20 @@
 #ifndef SRC_COMPONENTS_APPLICATION_MANAGER_INCLUDE_RESUME_CTRL_H
 #define SRC_COMPONENTS_APPLICATION_MANAGER_INCLUDE_RESUME_CTRL_H
 
-#include <stdint.h>
-#include <vector>
+#include <list>
 #include <map>
 #include <set>
-#include <list>
+#include <stdint.h>
+#include <vector>
 
+#include "application_manager/application.h"
+#include "application_manager/event_engine/event_observer.h"
 #include "interfaces/HMI_API.h"
 #include "interfaces/HMI_API_schema.h"
 #include "interfaces/MOBILE_API_schema.h"
-#include "application_manager/event_engine/event_observer.h"
-#include "smart_objects/smart_object.h"
-#include "application_manager/application.h"
-#include "utils/timer_thread.h"
 #include "resumption_data.h"
+#include "smart_objects/smart_object.h"
+#include "utils/timer_thread.h"
 
 namespace application_manager {
 class Application;
@@ -223,7 +223,9 @@ class ResumeCtrl : public app_mngr::event_engine::EventObserver {
   /**
    * @brief Updates flag for saving application data
    */
-  void ApplicationsDataUpdated() { is_data_saved_ = false; }
+  void ApplicationsDataUpdated() {
+    is_data_saved_ = false;
+  }
 
   /**
    * @brief Resume HMI Level and audio streaming state if needed

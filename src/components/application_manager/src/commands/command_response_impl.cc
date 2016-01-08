@@ -42,9 +42,13 @@ CommandResponseImpl::CommandResponseImpl(const MessageSharedPtr& message)
 
 CommandResponseImpl::~CommandResponseImpl() {}
 
-bool CommandResponseImpl::Init() { return true; }
+bool CommandResponseImpl::Init() {
+  return true;
+}
 
-bool CommandResponseImpl::CleanUp() { return true; }
+bool CommandResponseImpl::CleanUp() {
+  return true;
+}
 
 void CommandResponseImpl::Run() {}
 

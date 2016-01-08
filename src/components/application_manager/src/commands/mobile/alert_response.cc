@@ -32,10 +32,10 @@
  */
 
 #include "application_manager/commands/mobile/alert_response.h"
-#include "application_manager/application_manager_impl.h"
 #include "application_manager/application_impl.h"
-#include "interfaces/MOBILE_API.h"
+#include "application_manager/application_manager_impl.h"
 #include "interfaces/HMI_API.h"
+#include "interfaces/MOBILE_API.h"
 
 namespace application_manager {
 

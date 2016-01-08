@@ -33,8 +33,8 @@
 #ifndef SRC_COMPONENTS_POLICY_SRC_POLICY_INCLUDE_POLICY_UPDATE_STATUS_MANAGER_INTERFACE_H_
 #define SRC_COMPONENTS_POLICY_SRC_POLICY_INCLUDE_POLICY_UPDATE_STATUS_MANAGER_INTERFACE_H_
 
-#include "utils/shared_ptr.h"
 #include "policy/policy_types.h"
+#include "utils/shared_ptr.h"
 
 namespace policy {
 

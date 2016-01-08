@@ -32,12 +32,12 @@
 #ifndef SRC_COMPONENTS_PROTOCOL_HANDLER_INCLUDE_PROTOCOL_HANDLER_INCOMING_DATA_HANDLER_H_
 #define SRC_COMPONENTS_PROTOCOL_HANDLER_INCLUDE_PROTOCOL_HANDLER_INCOMING_DATA_HANDLER_H_
 
+#include "protocol_handler/protocol_packet.h"
+#include "transport_manager/common.h"
+#include "utils/macro.h"
 #include <list>
 #include <map>
 #include <vector>
-#include "utils/macro.h"
-#include "protocol_handler/protocol_packet.h"
-#include "transport_manager/common.h"
 
 namespace protocol_handler {
 

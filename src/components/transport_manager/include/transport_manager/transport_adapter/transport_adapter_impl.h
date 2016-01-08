@@ -33,17 +33,17 @@
 #ifndef SRC_COMPONENTS_TRANSPORT_MANAGER_INCLUDE_TRANSPORT_MANAGER_TRANSPORT_ADAPTER_TRANSPORT_ADAPTER_IMPL_H_
 #define SRC_COMPONENTS_TRANSPORT_MANAGER_INCLUDE_TRANSPORT_MANAGER_TRANSPORT_ADAPTER_TRANSPORT_ADAPTER_IMPL_H_
 
-#include <queue>
-#include <set>
 #include <map>
 #include <memory>
+#include <queue>
+#include <set>
 #include <string>
 
-#include "utils/lock.h"
-#include "utils/rwlock.h"
+#include "transport_manager/transport_adapter/connection.h"
 #include "transport_manager/transport_adapter/transport_adapter.h"
 #include "transport_manager/transport_adapter/transport_adapter_controller.h"
-#include "transport_manager/transport_adapter/connection.h"
+#include "utils/lock.h"
+#include "utils/rwlock.h"
 
 #ifdef TIME_TESTER
 #include "transport_manager/time_metric_observer.h"

@@ -32,18 +32,18 @@
 #ifdef __QNX__
 #include <process.h>
 #elif defined(OS_POSIX)
+#include <fcntl.h>
+#include <sys/stat.h>
 #include <sys/types.h>
 #include <sys/wait.h>
-#include <sys/stat.h>
-#include <fcntl.h>
 #include <unistd.h>
 #else
 #include <fcntl.h>
 #endif  // __QNX__
 
 #include <algorithm>
-#include <functional>
 #include <cstring>
+#include <functional>
 #include <iostream>
 
 #include "utils/logger.h"
@@ -73,11 +73,17 @@ System& System::Add(const std::string& arg) {
   return *this;
 }
 
-std::string System::command() const { return command_; }
+std::string System::command() const {
+  return command_;
+}
 
-std::vector<std::string> System::argv() const { return argv_; }
+std::vector<std::string> System::argv() const {
+  return argv_;
+}
 
-bool System::Execute() { return Execute(false); }
+bool System::Execute() {
+  return Execute(false);
+}
 
 #ifdef __QNX__
 
@@ -105,7 +111,9 @@ bool System::Execute(bool wait) {
   return true;
 }
 #elif defined(OS_WINDOWS)
-bool System::Execute(bool wait) { return true; }
+bool System::Execute(bool wait) {
+  return true;
+}
 
 #elif defined(OS_POSIX)
 

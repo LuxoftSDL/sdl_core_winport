@@ -33,8 +33,8 @@
 
 #include <csignal>
 
-#include "utils/winhdr.h"
 #include "utils/signals.h"
+#include "utils/winhdr.h"
 
 namespace utils {
 

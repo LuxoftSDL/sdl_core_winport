@@ -31,10 +31,10 @@
  */
 
 #include "application_manager/commands/hmi/on_button_press_notification.h"
-#include "application_manager/application_manager_impl.h"
 #include "application_manager/application_impl.h"
-#include "utils/logger.h"
+#include "application_manager/application_manager_impl.h"
 #include "application_manager/event_engine/event.h"
+#include "utils/logger.h"
 
 namespace application_manager {
 

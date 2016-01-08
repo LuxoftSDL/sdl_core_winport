@@ -31,10 +31,10 @@
  */
 
 #include "include/mock_connection.h"
-#include "include/mock_device.h"
-#include "include/mock_transport_adapter.h"
-#include "include/mock_device_scanner.h"
 #include "include/mock_connection_factory.h"
+#include "include/mock_device.h"
+#include "include/mock_device_scanner.h"
+#include "include/mock_transport_adapter.h"
 
 namespace test {
 namespace components {
@@ -44,7 +44,9 @@ MockTransportAdapter::MockTransportAdapter()
     : TransportAdapterImpl(
           new MockDeviceScanner(this), new MockConnectionFactory(this), NULL) {}
 
-void MockTransportAdapter::reset() { get_device_scanner()->reset(); }
+void MockTransportAdapter::reset() {
+  get_device_scanner()->reset();
+}
 
 MockDeviceScanner* MockTransportAdapter::get_device_scanner() const {
   return static_cast<MockDeviceScanner*>(device_scanner_);

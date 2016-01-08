@@ -36,9 +36,9 @@
 #ifndef SRC_COMPONENTS_TRANSPORT_MANAGER_INCLUDE_TRANSPORT_MANAGER_TCP_TCP_DEVICE_H_
 #define SRC_COMPONENTS_TRANSPORT_MANAGER_INCLUDE_TRANSPORT_MANAGER_TCP_TCP_DEVICE_H_
 
+#include <errno.h>
 #include <memory.h>
 #include <signal.h>
-#include <errno.h>
 #include <sys/types.h>
 #ifdef OS_POSIX
 #include <arpa/inet.h>
@@ -50,8 +50,8 @@
 #include <map>
 #include <string>
 
-#include "utils/lock.h"
 #include "transport_manager/transport_adapter/device.h"
+#include "utils/lock.h"
 
 namespace transport_manager {
 namespace transport_adapter {

@@ -31,8 +31,8 @@
  */
 
 #include "gtest/gtest.h"
-#include "utils/auto_trace.h"
 #include "logger.h"
+#include "utils/auto_trace.h"
 #include <fstream>
 
 namespace test {
@@ -49,7 +49,9 @@ void Preconditions() {
   std::remove(file_name);
 }
 
-void InitLogger() { INIT_LOGGER(); }
+void InitLogger() {
+  INIT_LOGGER();
+}
 
 void CreateDeleteAutoTrace(const std::string& testlog) {
   LOG4CXX_AUTO_TRACE(logger_);
@@ -78,7 +80,9 @@ bool CheckTraceInFile(const std::string& testlog) {
   return isLogFound;
 }
 
-void DeinitLogger() { DEINIT_LOGGER(); }
+void DeinitLogger() {
+  DEINIT_LOGGER();
+}
 
 TEST(AutoTraceTest, Basic) {
   const std::string testlog =

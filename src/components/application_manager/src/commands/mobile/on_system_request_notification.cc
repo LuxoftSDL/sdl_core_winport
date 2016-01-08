@@ -32,10 +32,10 @@
  */
 
 #include "application_manager/commands/mobile/on_system_request_notification.h"
-#include "interfaces/MOBILE_API.h"
-#include "utils/file_system.h"
 #include "application_manager/application_manager_impl.h"
 #include "application_manager/policies/policy_handler.h"
+#include "interfaces/MOBILE_API.h"
+#include "utils/file_system.h"
 
 namespace application_manager {
 

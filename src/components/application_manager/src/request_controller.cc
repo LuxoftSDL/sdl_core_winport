@@ -31,10 +31,10 @@
  */
 
 #include "utils/logger.h"
-#include "config_profile/profile.h"
-#include "application_manager/request_controller.h"
 #include "application_manager/commands/command_request_impl.h"
 #include "application_manager/commands/hmi/request_to_hmi.h"
+#include "application_manager/request_controller.h"
+#include "config_profile/profile.h"
 #include "utils/make_shared.h"
 
 #if defined(_MSC_VER)

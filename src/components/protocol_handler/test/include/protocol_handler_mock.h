@@ -32,10 +32,10 @@
 #ifndef SRC_COMPONENTS_PROTOCOL_HANDLER_TEST_INCLUDE_PROTOCOL_HANDLER_MOCK_H_
 #define SRC_COMPONENTS_PROTOCOL_HANDLER_TEST_INCLUDE_PROTOCOL_HANDLER_MOCK_H_
 
-#include <gmock/gmock.h>
-#include "transport_manager/transport_manager.h"
-#include "protocol_handler/session_observer.h"
 #include "protocol_handler/protocol_packet.h"
+#include "protocol_handler/session_observer.h"
+#include "transport_manager/transport_manager.h"
+#include <gmock/gmock.h>
 
 namespace test {
 namespace components {

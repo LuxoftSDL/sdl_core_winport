@@ -38,14 +38,14 @@
 #include <time.h>
 #endif
 
+#include "application_manager/message_helper.h"
 #include "application_manager/resumption/resumption_data_db.h"
 #include "application_manager/resumption/resumption_sql_queries.h"
 #include "application_manager/smart_object_keys.h"
 #include "config_profile/profile.h"
-#include "application_manager/message_helper.h"
-#include "utils/helpers.h"
-#include "utils/gen_hash.h"
 #include "utils/file_system.h"
+#include "utils/gen_hash.h"
+#include "utils/helpers.h"
 
 namespace {
 const std::string kDatabaseName = "resumption";

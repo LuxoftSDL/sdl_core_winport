@@ -32,10 +32,10 @@
  */
 
 #include "application_manager/commands/mobile/list_files_request.h"
-#include "application_manager/application_manager_impl.h"
 #include "application_manager/application_impl.h"
-#include "config_profile/profile.h"
+#include "application_manager/application_manager_impl.h"
 #include "application_manager/mobile_command_factory.h"
+#include "config_profile/profile.h"
 #include "utils/file_system.h"
 
 namespace application_manager {

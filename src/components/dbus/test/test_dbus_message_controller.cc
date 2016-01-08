@@ -33,11 +33,11 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include <pthread.h>
-#include <gtest/gtest.h>
-#include <gmock/gmock.h>
 #include "hmi_message_handler/mock_dbus_message_controller.h"
 #include "hmi_message_handler/mock_subscriber.h"
+#include <gmock/gmock.h>
+#include <gtest/gtest.h>
+#include <pthread.h>
 
 using ::testing::_;
 
@@ -85,7 +85,8 @@ class DBusMessageControllerTest : public ::testing::Test {
   }
 
   bool waitCond(int seconds) {
-    if (one_thread) return true;
+    if (one_thread)
+      return true;
     timespec elapsed;
     clock_gettime(CLOCK_REALTIME, &elapsed);
     elapsed.tv_sec += seconds;

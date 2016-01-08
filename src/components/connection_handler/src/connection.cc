@@ -34,16 +34,16 @@
 
 #include <algorithm>
 
+#include "config_profile/profile.h"
 #include "connection_handler/connection.h"
 #include "connection_handler/connection_handler.h"
 #include "protocol_handler/protocol_packet.h"
-#include "config_profile/profile.h"
 #include "utils/logger.h"
 #include "utils/macro.h"
 
 #ifdef ENABLE_SECURITY
-#include "security_manager/ssl_context.h"
 #include "security_manager/security_manager.h"
+#include "security_manager/ssl_context.h"
 #endif  // ENABLE_SECURITY
 
 /**
@@ -254,13 +254,15 @@ security_manager::SSLContext* Connection::GetSSLContext(
   }
   const Session& session = session_it->second;
   // for control services return current SSLContext value
-  if (protocol_handler::kControl == service_type) return session.ssl_context;
+  if (protocol_handler::kControl == service_type)
+    return session.ssl_context;
   const Service* service = session.FindService(service_type);
   if (!service) {
     LOG4CXX_WARN(logger_, "Service not found in this session!");
     return NULL;
   }
-  if (!service->is_protected_) return NULL;
+  if (!service->is_protected_)
+    return NULL;
   LOG4CXX_TRACE(logger_, "SSLContext is " << session.ssl_context);
   return session.ssl_context;
 }

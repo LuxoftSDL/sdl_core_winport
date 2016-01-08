@@ -29,18 +29,18 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-#include <sys/stat.h>
 #include <cstdio>
 #include <cstdlib>
-#include <vector>
 #include <string>
+#include <sys/stat.h>
+#include <vector>
 
-#include "utils/logger.h"
-#include "life_cycle.h"
-#include "utils/system.h"
 #include "config_profile/profile.h"
+#include "life_cycle.h"
 #include "networking.h"
+#include "utils/logger.h"
 #include "utils/macro.h"
+#include "utils/system.h"
 
 CREATE_LOGGERPTR_GLOBAL(logger_, "appMain")
 

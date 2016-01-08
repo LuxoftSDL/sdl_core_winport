@@ -32,10 +32,10 @@
  */
 
 #include "application_manager/commands/mobile/register_app_interface_response.h"
-#include "interfaces/MOBILE_API.h"
-#include "application_manager/policies/policy_handler.h"
 #include "application_manager/application_manager_impl.h"
+#include "application_manager/policies/policy_handler.h"
 #include "connection_handler/connection_handler.h"
+#include "interfaces/MOBILE_API.h"
 
 namespace application_manager {
 

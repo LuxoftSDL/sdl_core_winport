@@ -44,9 +44,13 @@ CommandNotificationFromMobileImpl::CommandNotificationFromMobileImpl(
 
 CommandNotificationFromMobileImpl::~CommandNotificationFromMobileImpl() {}
 
-bool CommandNotificationFromMobileImpl::Init() { return true; }
+bool CommandNotificationFromMobileImpl::Init() {
+  return true;
+}
 
-bool CommandNotificationFromMobileImpl::CleanUp() { return true; }
+bool CommandNotificationFromMobileImpl::CleanUp() {
+  return true;
+}
 
 void CommandNotificationFromMobileImpl::Run() {}
 

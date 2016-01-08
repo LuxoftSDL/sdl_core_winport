@@ -34,12 +34,12 @@
 #define SRC_COMPONENTS_MEDIA_MANAGER_INCLUDE_MEDIA_MANAGER_STREAMER_ADAPTER_H_
 
 #include "media_manager/media_adapter_impl.h"
+#include "protocol/raw_message.h"
+#include "utils/atomic_object.h"
 #include "utils/message_queue.h"
+#include "utils/shared_ptr.h"
 #include "utils/threads/thread.h"
 #include "utils/threads/thread_delegate.h"
-#include "utils/atomic_object.h"
-#include "utils/shared_ptr.h"
-#include "protocol/raw_message.h"
 
 namespace media_manager {
 

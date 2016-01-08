@@ -31,8 +31,8 @@
  */
 
 #include "include/mock_device_scanner.h"
-#include "include/mock_transport_adapter.h"
 #include "include/mock_device.h"
+#include "include/mock_transport_adapter.h"
 
 using ::transport_manager::SearchDeviceError;
 
@@ -70,7 +70,9 @@ void MockDeviceScanner::reset() {
   devices_.clear();
 }
 
-bool MockDeviceScanner::IsInitialised() const { return is_initialized_; }
+bool MockDeviceScanner::IsInitialised() const {
+  return is_initialized_;
+}
 
 void MockDeviceScanner::AddDevice(const std::string& name,
                                   const std::string& unique_id,

@@ -33,9 +33,9 @@
 #ifndef SRC_COMPONENTS_POLICY_INCLUDE_POLICY_POLICY_TABLE_H_
 #define SRC_COMPONENTS_POLICY_INCLUDE_POLICY_POLICY_TABLE_H_
 
-#include "utils/shared_ptr.h"
-#include "policy/pt_representation.h"
 #include "policy/pt_ext_representation.h"
+#include "policy/pt_representation.h"
+#include "utils/shared_ptr.h"
 
 namespace policy {
 
@@ -52,7 +52,9 @@ class PolicyTable {
    * actual class storing policy table.
    * @return PTRepresentation* Policy Table Content Handler
    */
-  utils::SharedPtr<PTRepresentation> pt_data() const { return pt_data_; }
+  utils::SharedPtr<PTRepresentation> pt_data() const {
+    return pt_data_;
+  }
 
  private:
   utils::SharedPtr<PTRepresentation> pt_data_;

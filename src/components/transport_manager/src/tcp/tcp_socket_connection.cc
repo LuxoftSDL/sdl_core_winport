@@ -33,9 +33,9 @@
 
 #include "transport_manager/tcp/tcp_socket_connection.h"
 
+#include <errno.h>
 #include <memory.h>
 #include <signal.h>
-#include <errno.h>
 #ifdef OS_POSIX
 #include <unistd.h>
 #elif defined(OS_WINDOWS)
@@ -44,10 +44,10 @@
 #include <io.h>
 #endif
 
-#include "utils/logger.h"
-#include "utils/threads/thread.h"
 #include "transport_manager/tcp/tcp_device.h"
 #include "transport_manager/transport_adapter/transport_adapter_controller.h"
+#include "utils/logger.h"
+#include "utils/threads/thread.h"
 
 namespace transport_manager {
 namespace transport_adapter {
@@ -61,7 +61,9 @@ TcpSocketConnection::TcpSocketConnection(const DeviceUID& device_uid,
 
 TcpSocketConnection::~TcpSocketConnection() {}
 
-bool TcpSocketConnection::Establish(ConnectError** error) { return true; }
+bool TcpSocketConnection::Establish(ConnectError** error) {
+  return true;
+}
 
 TcpServerOiginatedSocketConnection::TcpServerOiginatedSocketConnection(
     const DeviceUID& device_uid,

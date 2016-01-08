@@ -32,13 +32,13 @@
 
 #include "gmock/gmock.h"
 
+#include <ifaddrs.h>
 #include <netinet/in.h>
 #include <sys/types.h>
-#include <ifaddrs.h>
 
-#include "transport_manager/transport_adapter/transport_adapter_controller.h"
 #include "transport_manager/tcp/dnssd_service_browser.h"
 #include "transport_manager/tcp/tcp_device.h"
+#include "transport_manager/transport_adapter/transport_adapter_controller.h"
 
 namespace transport_manager {
 namespace transport_adapter {
@@ -108,7 +108,8 @@ in_addr_t GetIfaceAddress() {
       }
     }
   }
-  if (if_addrs) freeifaddrs(if_addrs);
+  if (if_addrs)
+    freeifaddrs(if_addrs);
   return result;
 }
 static in_addr_t iface_address = GetIfaceAddress();

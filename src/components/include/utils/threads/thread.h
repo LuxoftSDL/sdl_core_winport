@@ -41,15 +41,15 @@
 #error "Thread is not defined for this platform"
 #endif
 
+#include <cstdint>
 #include <ostream>
 #include <string>
-#include <cstdint>
 
+#include "utils/conditional_variable.h"
+#include "utils/lock.h"
 #include "utils/macro.h"
 #include "utils/threads/thread_delegate.h"
 #include "utils/threads/thread_options.h"
-#include "utils/conditional_variable.h"
-#include "utils/lock.h"
 
 namespace threads {
 
@@ -127,11 +127,17 @@ class Thread {
   void cleanup();
 #endif
 
-  sync_primitives::Lock& delegate_lock() { return delegate_lock_; }
+  sync_primitives::Lock& delegate_lock() {
+    return delegate_lock_;
+  }
 
-  ThreadDelegate* delegate() const { return delegate_; }
+  ThreadDelegate* delegate() const {
+    return delegate_;
+  }
 
-  void set_delegate(ThreadDelegate* delegate) { delegate_ = delegate; }
+  void set_delegate(ThreadDelegate* delegate) {
+    delegate_ = delegate;
+  }
 
   friend Thread* CreateThread(const char* name, ThreadDelegate* delegate);
   friend void DeleteThread(Thread* thread);
@@ -160,14 +166,18 @@ class Thread {
    * @brief Get thread name.
    * @return thread name
    */
-  const std::string& name() { return name_; }
+  const std::string& name() {
+    return name_;
+  }
 
   /**
    * @brief Returns true if the thread has been started, and not yet stopped.
    * When a thread is running, the thread_id_ is non-zero.
    * @return true if the thread has been started, and not yet stopped.
    */
-  bool is_running() const { return isThreadRunning_ != 0; }
+  bool is_running() const {
+    return isThreadRunning_ != 0;
+  }
 
   void set_running(bool running);
 
@@ -175,25 +185,33 @@ class Thread {
    * @brief Is thread joinable?
    * @return - Returns true if the thread is joinable.
    */
-  bool is_joinable() const { return thread_options_.is_joinable(); }
+  bool is_joinable() const {
+    return thread_options_.is_joinable();
+  }
 
   /**
    * @brief Thread stack size
    * @return thread stack size
    */
-  size_t stack_size() const { return thread_options_.stack_size(); }
+  size_t stack_size() const {
+    return thread_options_.stack_size();
+  }
 
   /**
    * @brief The native thread handle.
    * @return thread handle.
    */
-  PlatformThreadHandle thread_handle() const { return handle_; }
+  PlatformThreadHandle thread_handle() const {
+    return handle_;
+  }
 
   /**
    * @brief Thread options.
    * @return thread options.
    */
-  const ThreadOptions& thread_options() const { return thread_options_; }
+  const ThreadOptions& thread_options() const {
+    return thread_options_;
+  }
 
   /**
    * @brief Minimum size of thread stack for specific platform.

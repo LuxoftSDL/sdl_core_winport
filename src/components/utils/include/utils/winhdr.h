@@ -34,13 +34,13 @@
 
 #define WIN32_LEAN_AND_MEAN
 
+#include <Mstcpip.h>
+#include <Wtsapi32.h>
+#include <psapi.h>
 #include <windows.h>
 #include <winsock2.h>
 #include <ws2tcpip.h>
 #include <wspiapi.h>
-#include <Mstcpip.h>
-#include <psapi.h>
-#include <Wtsapi32.h>
 
 #ifdef min
 #undef min

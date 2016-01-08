@@ -31,9 +31,9 @@
  */
 #include <functional>
 
-#include "application_manager/state_controller.h"
 #include "application_manager/application_manager_impl.h"
 #include "application_manager/message_helper.h"
+#include "application_manager/state_controller.h"
 #include "utils/helpers.h"
 #include "utils/make_shared.h"
 
@@ -67,7 +67,8 @@ void StateController::HmiLevelConflictResolver::operator()(
   using namespace mobile_apis;
   using namespace helpers;
   DCHECK_OR_RETURN_VOID(state_ctrl_);
-  if (to_resolve == applied_) return;
+  if (to_resolve == applied_)
+    return;
   if (Compare<HMILevel::eType, EQ, ONE>(
           state_->hmi_level(), HMILevel::HMI_FULL, HMILevel::HMI_LIMITED)) {
     HmiStatePtr cur_state = to_resolve->RegularHmiState();

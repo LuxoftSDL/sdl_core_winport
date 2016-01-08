@@ -35,18 +35,18 @@
 
 #include <string>
 
-#include "utils/shared_ptr.h"
-#include "utils/message_queue.h"
-#include "utils/threads/thread.h"
-#include "utils/singleton.h"
-#include "utils/threads/thread_delegate.h"
-#include "metric_wrapper.h"
-#include "application_manager_observer.h"
 #include "application_manager/application_manager_impl.h"
-#include "transport_manager_observer.h"
-#include "transport_manager/transport_manager_impl.h"
-#include "protocol_handler_observer.h"
+#include "application_manager_observer.h"
+#include "metric_wrapper.h"
 #include "protocol_handler/protocol_handler_impl.h"
+#include "protocol_handler_observer.h"
+#include "transport_manager/transport_manager_impl.h"
+#include "transport_manager_observer.h"
+#include "utils/message_queue.h"
+#include "utils/shared_ptr.h"
+#include "utils/singleton.h"
+#include "utils/threads/thread.h"
+#include "utils/threads/thread_delegate.h"
 
 namespace time_tester {
 

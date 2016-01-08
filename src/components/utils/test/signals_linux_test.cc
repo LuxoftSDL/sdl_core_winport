@@ -30,10 +30,10 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include <unistd.h>
-#include <assert.h>
-#include "gtest/gtest.h"
 #include "utils/signals.h"
+#include "gtest/gtest.h"
+#include <assert.h>
+#include <unistd.h>
 
 namespace test {
 namespace components {

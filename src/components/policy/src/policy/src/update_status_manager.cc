@@ -142,14 +142,18 @@ bool UpdateStatusManager::IsUpdateRequired() const {
   return update_required_ || update_scheduled_;
 }
 
-bool UpdateStatusManager::IsUpdatePending() const { return exchange_pending_; }
+bool UpdateStatusManager::IsUpdatePending() const {
+  return exchange_pending_;
+}
 
 void UpdateStatusManager::ScheduleUpdate() {
   update_scheduled_ = true;
   update_required_ = true;
 }
 
-void UpdateStatusManager::ResetUpdateSchedule() { update_scheduled_ = false; }
+void UpdateStatusManager::ResetUpdateSchedule() {
+  update_scheduled_ = false;
+}
 
 std::string UpdateStatusManager::StringifiedUpdateStatus() const {
   switch (GetUpdateStatus()) {

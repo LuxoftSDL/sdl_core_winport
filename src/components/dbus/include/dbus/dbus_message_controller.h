@@ -33,9 +33,9 @@
 #ifndef SRC_COMPONENTS_DBUS_INCLUDE_DBUS_DBUS_MESSAGE_CONTROLLER_H_
 #define SRC_COMPONENTS_DBUS_INCLUDE_DBUS_DBUS_MESSAGE_CONTROLLER_H_
 
-#include <string>
-#include <map>
 #include "dbus/dbus_adapter.h"
+#include <map>
+#include <string>
 
 namespace dbus {
 

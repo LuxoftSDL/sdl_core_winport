@@ -1,8 +1,8 @@
 #ifndef QWSSOCKET_H
 #define QWSSOCKET_H
 
-#include <QTcpSocket>
 #include <QHostAddress>
+#include <QTcpSocket>
 #include <QTime>
 
 enum EWebsocketVersion {

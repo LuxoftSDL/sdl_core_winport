@@ -35,8 +35,8 @@
 
 #include <pthread.h>
 
-#include "utils/threads/thread.h"
 #include "utils/lock.h"
+#include "utils/threads/thread.h"
 
 namespace threads {
 

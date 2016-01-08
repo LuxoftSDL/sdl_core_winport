@@ -42,7 +42,8 @@
 template <typename T>
 ::testing::AssertionResult AssertRpcObjValid(const char* obj_expr,
                                              const T& obj) {
-  if (obj.is_valid()) return ::testing::AssertionSuccess();
+  if (obj.is_valid())
+    return ::testing::AssertionSuccess();
 
   rpc::ValidationReport report(obj_expr);
   obj.ReportErrors(&report);

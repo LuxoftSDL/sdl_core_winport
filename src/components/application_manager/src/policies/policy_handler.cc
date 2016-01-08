@@ -32,22 +32,22 @@
 #include <algorithm>
 #include <vector>
 
-#include "application_manager/policies/policy_handler.h"
-#include "application_manager/smart_object_keys.h"
-#include "application_manager/policies/delegates/app_permission_delegate.h"
 #include "application_manager/application_manager_impl.h"
 #include "application_manager/message_helper.h"
-#include "policy/policy_manager_impl.h"
+#include "application_manager/policies/delegates/app_permission_delegate.h"
+#include "application_manager/policies/policy_handler.h"
+#include "application_manager/smart_object_keys.h"
+#include "application_manager/usage_statistics.h"
+#include "config_profile/profile.h"
 #include "connection_handler/connection_handler.h"
-#include "utils/macro.h"
+#include "interfaces/MOBILE_API.h"
+#include "policy/policy_manager_impl.h"
+#include "policy/policy_types.h"
 #include "utils/date_time.h"
+#include "utils/file_system.h"
+#include "utils/macro.h"
 #include "json/value.h"
 #include "json/writer.h"
-#include "config_profile/profile.h"
-#include "application_manager/usage_statistics.h"
-#include "policy/policy_types.h"
-#include "interfaces/MOBILE_API.h"
-#include "utils/file_system.h"
 
 namespace policy {
 
@@ -156,7 +156,8 @@ struct ApplicationListHmiLevelSorter {
 };
 
 typedef std::set<application_manager::ApplicationSharedPtr,
-                 ApplicationListHmiLevelSorter> HmiLevelOrderedApplicationList;
+                 ApplicationListHmiLevelSorter>
+    HmiLevelOrderedApplicationList;
 
 struct DeactivateApplication {
   explicit DeactivateApplication(
@@ -1224,7 +1225,9 @@ void PolicyHandler::OnCertificateUpdated(const std::string& certificate_data) {
   }
 }
 
-bool PolicyHandler::CanUpdate() { return 0 != GetAppIdForSending(); }
+bool PolicyHandler::CanUpdate() {
+  return 0 != GetAppIdForSending();
+}
 
 void PolicyHandler::RemoveDevice(const std::string& device_id) {
   LOG4CXX_AUTO_TRACE(logger_);

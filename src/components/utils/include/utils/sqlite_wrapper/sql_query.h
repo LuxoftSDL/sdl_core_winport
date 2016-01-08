@@ -33,10 +33,10 @@
 #ifndef SRC_COMPONENTS_POLICY_SQLITE_WRAPPER_INCLUDE_SQLITE_WRAPPER_SQL_QUERY_H_
 #define SRC_COMPONENTS_POLICY_SQLITE_WRAPPER_INCLUDE_SQLITE_WRAPPER_SQL_QUERY_H_
 
+#include "utils/lock.h"
+#include "utils/sqlite_wrapper/sql_error.h"
 #include <stdint.h>
 #include <string>
-#include "utils/sqlite_wrapper/sql_error.h"
-#include "utils/lock.h"
 
 struct sqlite3_stmt;
 

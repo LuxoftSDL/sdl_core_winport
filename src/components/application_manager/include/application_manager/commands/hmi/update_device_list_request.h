@@ -35,8 +35,8 @@
 
 #include "application_manager/commands/hmi/request_to_hmi.h"
 #include "application_manager/event_engine/event_observer.h"
-#include "utils/lock.h"
 #include "utils/conditional_variable.h"
+#include "utils/lock.h"
 
 namespace application_manager {
 

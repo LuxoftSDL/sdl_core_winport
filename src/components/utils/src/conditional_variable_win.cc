@@ -46,9 +46,13 @@ ConditionalVariable::ConditionalVariable() {
 
 ConditionalVariable::~ConditionalVariable() {}
 
-void ConditionalVariable::NotifyOne() { WakeConditionVariable(&cond_var_); }
+void ConditionalVariable::NotifyOne() {
+  WakeConditionVariable(&cond_var_);
+}
 
-void ConditionalVariable::Broadcast() { WakeAllConditionVariable(&cond_var_); }
+void ConditionalVariable::Broadcast() {
+  WakeAllConditionVariable(&cond_var_);
+}
 
 bool ConditionalVariable::Wait(Lock& lock) {
   lock.AssertTakenAndMarkFree();

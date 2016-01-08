@@ -33,12 +33,12 @@
 #ifndef SRC_COMPONENTS_POLICY_INCLUDE_POLICY_POLICY_TYPES_H_
 #define SRC_COMPONENTS_POLICY_INCLUDE_POLICY_POLICY_TYPES_H_
 
-#include <string>
-#include <vector>
+#include "utils/helpers.h"
+#include "utils/shared_ptr.h"
 #include <map>
 #include <set>
-#include "utils/shared_ptr.h"
-#include "utils/helpers.h"
+#include <string>
+#include <vector>
 
 namespace policy {
 

@@ -33,8 +33,8 @@
 #ifndef SRC_COMPONENTS_INCLUDE_PROTOCOL_COMMON_H_
 #define SRC_COMPONENTS_INCLUDE_PROTOCOL_COMMON_H_
 
-#include "utils/macro.h"
 #include "protocol/raw_message.h"
+#include "utils/macro.h"
 
 /**
  *\namespace protocol_handlerHandler

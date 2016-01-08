@@ -31,9 +31,9 @@
  */
 
 #include "protocol_handler_observer.h"
-#include "utils/date_time.h"
 #include "protocol_handler_metric.h"
 #include "time_manager.h"
+#include "utils/date_time.h"
 
 namespace time_tester {
 

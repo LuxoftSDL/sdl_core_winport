@@ -29,14 +29,14 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-#include <QThread>
 #include <QDateTime>
 #include <QFile>
 #include <QTextStream>
+#include <QThread>
 
-#include "utils/logger.h"
-#include "utils/log_message_loop_thread.h"
 #include "config_profile/profile.h"
+#include "utils/log_message_loop_thread.h"
+#include "utils/logger.h"
 
 namespace {
 
@@ -102,9 +102,13 @@ void logger::deinit_logger() {
   message_loop_thread = NULL;
 }
 
-bool logger::logs_enabled() { return is_logs_enabled; }
+bool logger::logs_enabled() {
+  return is_logs_enabled;
+}
 
-void logger::set_logs_enabled(bool state) { is_logs_enabled = state; }
+void logger::set_logs_enabled(bool state) {
+  is_logs_enabled = state;
+}
 
 bool logger::push_log(const std::string& logger,
                       const LogLevel level,

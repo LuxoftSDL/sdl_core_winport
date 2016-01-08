@@ -33,8 +33,8 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include <gtest/gtest.h>
 #include "dbus/dbus_adapter.h"
+#include <gtest/gtest.h>
 
 using ::dbus::DBusAdapter;
 

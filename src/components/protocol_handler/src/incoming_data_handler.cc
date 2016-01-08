@@ -31,9 +31,9 @@
  */
 #include <algorithm>
 
+#include "protocol/common.h"
 #include "protocol_handler/incoming_data_handler.h"
 #include "utils/logger.h"
-#include "protocol/common.h"
 
 namespace protocol_handler {
 

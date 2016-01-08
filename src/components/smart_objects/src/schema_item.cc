@@ -39,9 +39,13 @@ Errors::eType ISchemaItem::validate(const SmartObject& object) {
   return Errors::ERROR;
 }
 
-bool ISchemaItem::setDefaultValue(SmartObject& Object) { return false; }
+bool ISchemaItem::setDefaultValue(SmartObject& Object) {
+  return false;
+}
 
-bool ISchemaItem::hasDefaultValue(SmartObject& Object) { return false; }
+bool ISchemaItem::hasDefaultValue(SmartObject& Object) {
+  return false;
+}
 
 void ISchemaItem::applySchema(SmartObject& Object) {}
 
@@ -50,7 +54,9 @@ void ISchemaItem::unapplySchema(SmartObject& Object) {}
 void ISchemaItem::BuildObjectBySchema(const SmartObject& pattern_object,
                                       SmartObject& result_object) {}
 
-size_t ISchemaItem::GetMemberSize() { return 0; }
+size_t ISchemaItem::GetMemberSize() {
+  return 0;
+}
 
 }  // namespace NsSmartObjects
 }  // namespace NsSmartDeviceLink

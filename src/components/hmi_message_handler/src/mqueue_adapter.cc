@@ -111,8 +111,10 @@ MqueueAdapter::~MqueueAdapter() {
   receiver_thread_->join();
   delete receiver_thread_delegate_;
   threads::DeleteThread(receiver_thread_);
-  if (-1 != hmi_to_sdl_mqueue_) mq_close(hmi_to_sdl_mqueue_);
-  if (-1 != sdl_to_hmi_mqueue_) mq_close(sdl_to_hmi_mqueue_);
+  if (-1 != hmi_to_sdl_mqueue_)
+    mq_close(hmi_to_sdl_mqueue_);
+  if (-1 != sdl_to_hmi_mqueue_)
+    mq_close(sdl_to_hmi_mqueue_);
   mq_unlink(kHmiToSdlQueue);
   mq_unlink(kSdlToHmiQueue);
 }

@@ -33,10 +33,10 @@
 #ifndef SRC_COMPONENTS_CONNECTION_HANDLER_INCLUDE_CONNECTION_HANDLER_DEVICE_H_
 #define SRC_COMPONENTS_CONNECTION_HANDLER_INCLUDE_CONNECTION_HANDLER_DEVICE_H_
 
-#include <string>
-#include <map>
-#include <vector>
 #include <cstdint>
+#include <map>
+#include <string>
+#include <vector>
 
 /**
  * \namespace connection_handler

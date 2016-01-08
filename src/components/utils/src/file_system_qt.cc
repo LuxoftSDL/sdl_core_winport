@@ -34,20 +34,20 @@
 #include "utils/logger.h"
 #include "utils/string_utils.h"
 
+#include <QDebug>
+#include <QDir>
+#include <QFileInfo>
+#include <QStorageInfo>
+#include <QUrl>
+#include <QtCore>
+#include <sstream>
 #include <sys/stat.h>
 #include <sys/types.h>
-#include <sstream>
-#include <QtCore>
-#include <QStorageInfo>
-#include <QDir>
-#include <QDebug>
-#include <QFileInfo>
-#include <QUrl>
 
-#include <io.h>
-#include <fstream>
-#include <cstddef>
 #include <algorithm>
+#include <cstddef>
+#include <fstream>
+#include <io.h>
 
 #define R_OK 4
 #define W_OK 2

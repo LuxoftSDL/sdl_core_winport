@@ -63,7 +63,9 @@ MessageRefKeeper& MessageRefKeeper::operator=(MessageRefKeeper other) {
   return *this;
 }
 
-DBusMessage* MessageRefKeeper::get() const { return raw_message_; }
+DBusMessage* MessageRefKeeper::get() const {
+  return raw_message_;
+}
 
 DBusMessage* MessageRefKeeper::Pass() {
   DBusMessage* message = raw_message_;

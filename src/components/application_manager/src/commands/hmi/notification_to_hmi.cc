@@ -45,9 +45,13 @@ NotificationToHMI::NotificationToHMI(const MessageSharedPtr& message)
 
 NotificationToHMI::~NotificationToHMI() {}
 
-bool NotificationToHMI::Init() { return true; }
+bool NotificationToHMI::Init() {
+  return true;
+}
 
-bool NotificationToHMI::CleanUp() { return true; }
+bool NotificationToHMI::CleanUp() {
+  return true;
+}
 
 void NotificationToHMI::Run() {}
 

@@ -35,8 +35,8 @@
 
 #include "interfaces/HMI_API.h"
 #include "interfaces/MOBILE_API.h"
-#include "json/json.h"
 #include "utils/macro.h"
+#include "json/json.h"
 
 #include <cstdint>
 
@@ -469,17 +469,25 @@ class HMICapabilities {
   DISALLOW_COPY_AND_ASSIGN(HMICapabilities);
 };
 
-bool HMICapabilities::is_ui_cooperating() const { return is_ui_cooperating_; }
+bool HMICapabilities::is_ui_cooperating() const {
+  return is_ui_cooperating_;
+}
 
-bool HMICapabilities::is_vr_cooperating() const { return is_vr_cooperating_; }
+bool HMICapabilities::is_vr_cooperating() const {
+  return is_vr_cooperating_;
+}
 
-bool HMICapabilities::is_tts_cooperating() const { return is_tts_cooperating_; }
+bool HMICapabilities::is_tts_cooperating() const {
+  return is_tts_cooperating_;
+}
 
 bool HMICapabilities::is_navi_cooperating() const {
   return is_navi_cooperating_;
 }
 
-bool HMICapabilities::is_ivi_cooperating() const { return is_ivi_cooperating_; }
+bool HMICapabilities::is_ivi_cooperating() const {
+  return is_ivi_cooperating_;
+}
 
 const hmi_apis::Common_Language::eType& HMICapabilities::active_ui_language()
     const {

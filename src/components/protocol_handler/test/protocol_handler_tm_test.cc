@@ -29,13 +29,13 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-#include <gtest/gtest.h>
-#include <string>
-#include "protocol_handler/protocol_handler_impl.h"
-#include "protocol/common.h"
 #include "control_message_matcher.h"
+#include "protocol/common.h"
+#include "protocol_handler/protocol_handler_impl.h"
 #include "protocol_handler_mock.h"
 #include "protocol_observer_mock.h"
+#include <gtest/gtest.h>
+#include <string>
 
 namespace test {
 namespace components {

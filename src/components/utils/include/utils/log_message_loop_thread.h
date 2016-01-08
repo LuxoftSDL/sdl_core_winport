@@ -32,9 +32,9 @@
 #ifndef SRC_COMPONENTS_UTILS_INCLUDE_UTILS_LOG_MESSAGE_LOOP_THREAD_H_
 #define SRC_COMPONENTS_UTILS_INCLUDE_UTILS_LOG_MESSAGE_LOOP_THREAD_H_
 
-#include <string>
-#include <queue>
 #include <cstdint>
+#include <queue>
+#include <string>
 
 #if defined(LOG4CXX_LOGGER)
 #include <log4cxx/logger.h>

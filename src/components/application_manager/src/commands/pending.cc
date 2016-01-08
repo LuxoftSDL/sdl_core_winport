@@ -55,7 +55,9 @@ void Pending::Remove(hmi_apis::FunctionID::eType id) {
   }
 }
 
-bool Pending::IsFinal(hmi_apis::FunctionID::eType id) { return id == last_; }
+bool Pending::IsFinal(hmi_apis::FunctionID::eType id) {
+  return id == last_;
+}
 
 }  // namespace commands
 }  // namespace application_manager

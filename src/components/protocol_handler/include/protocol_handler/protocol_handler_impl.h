@@ -33,21 +33,21 @@
 #ifndef SRC_COMPONENTS_PROTOCOL_HANDLER_INCLUDE_PROTOCOL_HANDLER_PROTOCOL_HANDLER_IMPL_H_
 #define SRC_COMPONENTS_PROTOCOL_HANDLER_INCLUDE_PROTOCOL_HANDLER_PROTOCOL_HANDLER_IMPL_H_
 
+#include "utils/message_queue.h"
+#include "utils/messagemeter.h"
+#include "utils/prioritized_queue.h"
+#include "utils/shared_ptr.h"
+#include "utils/threads/message_loop_thread.h"
+#include <list>
 #include <map>
 #include <memory>
 #include <set>
-#include <list>
-#include "utils/prioritized_queue.h"
-#include "utils/message_queue.h"
-#include "utils/threads/message_loop_thread.h"
-#include "utils/shared_ptr.h"
-#include "utils/messagemeter.h"
 
+#include "protocol_handler/incoming_data_handler.h"
 #include "protocol_handler/protocol_handler.h"
+#include "protocol_handler/protocol_observer.h"
 #include "protocol_handler/protocol_packet.h"
 #include "protocol_handler/session_observer.h"
-#include "protocol_handler/protocol_observer.h"
-#include "protocol_handler/incoming_data_handler.h"
 #include "transport_manager/common.h"
 #include "transport_manager/transport_manager.h"
 #include "transport_manager/transport_manager_listener_empty.h"
@@ -114,9 +114,11 @@ struct RawFordMessageToMobile : public ProtocolFramePtr {
 
 // Short type names for prioritized message queues
 typedef threads::MessageLoopThread<
-    utils::PrioritizedQueue<RawFordMessageFromMobile> > FromMobileQueue;
+    utils::PrioritizedQueue<RawFordMessageFromMobile> >
+    FromMobileQueue;
 typedef threads::MessageLoopThread<
-    utils::PrioritizedQueue<RawFordMessageToMobile> > ToMobileQueue;
+    utils::PrioritizedQueue<RawFordMessageToMobile> >
+    ToMobileQueue;
 }  // namespace impl
 
 /**

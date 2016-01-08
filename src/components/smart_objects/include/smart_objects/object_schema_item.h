@@ -33,8 +33,8 @@
 #define SRC_COMPONENTS_SMART_OBJECTS_INCLUDE_SMART_OBJECTS_OBJECT_SCHEMA_ITEM_H_
 
 #include <map>
-#include <string>
 #include <set>
+#include <string>
 
 #include "utils/macro.h"
 #include "utils/shared_ptr.h"

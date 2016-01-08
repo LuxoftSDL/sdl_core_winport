@@ -33,11 +33,11 @@
 #include "config_profile/profile.h"
 #include "utils/logger.h"
 
-#include "transport_manager/transport_adapter/transport_adapter_impl.h"
-#include "transport_manager/transport_adapter/transport_adapter_listener.h"
+#include "transport_manager/transport_adapter/client_connection_listener.h"
 #include "transport_manager/transport_adapter/device_scanner.h"
 #include "transport_manager/transport_adapter/server_connection_factory.h"
-#include "transport_manager/transport_adapter/client_connection_listener.h"
+#include "transport_manager/transport_adapter/transport_adapter_impl.h"
+#include "transport_manager/transport_adapter/transport_adapter_listener.h"
 
 namespace transport_manager {
 namespace transport_adapter {
@@ -880,7 +880,9 @@ TMMetricObserver* TransportAdapterImpl::GetTimeMetricObserver() {
 
 void TransportAdapterImpl::Store() const {}
 
-bool TransportAdapterImpl::Restore() { return true; }
+bool TransportAdapterImpl::Restore() {
+  return true;
+}
 
 bool TransportAdapterImpl::ToBeAutoConnected(DeviceSptr device) const {
   return false;

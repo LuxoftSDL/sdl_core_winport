@@ -35,8 +35,8 @@
 #define SRC_COMPONENTS_APPLICATION_MANAGER_INCLUDE_APPLICATION_MANAGER_COMMANDS_PERFORM_AUDIO_PASS_THRU_REQUEST_H_
 
 #include "application_manager/commands/command_request_impl.h"
-#include "utils/macro.h"
 #include "interfaces/MOBILE_API.h"
+#include "utils/macro.h"
 
 namespace application_manager {
 

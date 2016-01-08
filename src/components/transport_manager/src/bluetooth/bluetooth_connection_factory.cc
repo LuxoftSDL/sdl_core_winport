@@ -34,8 +34,8 @@
  */
 
 #include "transport_manager/bluetooth/bluetooth_connection_factory.h"
-#include "transport_manager/transport_adapter/transport_adapter_controller.h"
 #include "transport_manager/bluetooth/bluetooth_socket_connection.h"
+#include "transport_manager/transport_adapter/transport_adapter_controller.h"
 
 #include "utils/logger.h"
 
@@ -70,7 +70,9 @@ TransportAdapter::Error BluetoothConnectionFactory::CreateConnection(
 
 void BluetoothConnectionFactory::Terminate() {}
 
-bool BluetoothConnectionFactory::IsInitialised() const { return true; }
+bool BluetoothConnectionFactory::IsInitialised() const {
+  return true;
+}
 
 BluetoothConnectionFactory::~BluetoothConnectionFactory() {}
 
