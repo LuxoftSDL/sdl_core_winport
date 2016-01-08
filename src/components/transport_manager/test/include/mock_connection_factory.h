@@ -71,7 +71,4 @@ class MockConnectionFactory : public ServerConnectionFactory {
 }  // namespace components
 }  // namespace test
 
-#endif /* APPLINK_TEST_COMPONENTS_TRANSPORTMANAGER_INCLUDE_MOCKCONNECTIONFACTORY_H_ \
-        * \                                                                         \
-        * \ \                                                                                  \
-          */
+#endif  // APPLINK_TEST_COMPONENTS_TRANSPORTMANAGER_INCLUDE_MOCKCONNECTIONFACTORY_H_

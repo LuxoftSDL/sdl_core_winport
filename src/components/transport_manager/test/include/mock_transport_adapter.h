@@ -61,7 +61,4 @@ class MockTransportAdapter : public TransportAdapterImpl {
 }  // namespace components
 }  // namespace test
 
-#endif /* APPLINK_TEST_COMPONENTS_TRANSPORTMANAGER_INCLUDE_MOCKDEVICEADAPTER_H_ \
-        * \                                                                     \
-        * \ \                                                                              \
-          */
+#endif  // APPLINK_TEST_COMPONENTS_TRANSPORTMANAGER_INCLUDE_MOCKDEVICEADAPTER_H_

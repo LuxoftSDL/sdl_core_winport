@@ -77,7 +77,4 @@ class MockDeviceScanner : public DeviceScanner {
 }  // namespace components
 }  // namespace test
 
-#endif /* APPLINK_TEST_COMPONENTS_TRANSPORTMANAGER_INCLUDE_MOCKDEVICESCANNER_H_ \
-        * \                                                                     \
-        * \ \                                                                              \
-          */
+#endif  // APPLINK_TEST_COMPONENTS_TRANSPORTMANAGER_INCLUDE_MOCKDEVICESCANNER_H_
