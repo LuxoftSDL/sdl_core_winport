@@ -13,7 +13,7 @@ from utils import setup_working_dir, walk_dir, run_cmd
 import re
 
 
-INCLUDE_PATTERNS = ['^.*\.cc$', '^.*\.h$']
+INCLUDE_PATTERNS = ['^.*\.cc$', '^.*\.h$', '^.*\.cpp$', '^.*\.hpp$']
 EXCLUDE_PATTERNS = ['^.*3rd_party.*$']
 FORMAT_CMD = 'clang-format -i -style=file {}'
 
