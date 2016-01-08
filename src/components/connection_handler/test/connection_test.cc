@@ -30,13 +30,13 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
+#include <gtest/gtest.h>
+#include <algorithm>
+#include "protocol/common.h"
 #include "connection_handler/connection.h"
 #include "connection_handler/connection_handler_impl.h"
-#include "protocol/common.h"
 #include "protocol/service_type.h"
 #include "utils/shared_ptr.h"
-#include <algorithm>
-#include <gtest/gtest.h>
 
 #define EXPECT_RETURN_TRUE true
 #define EXPECT_RETURN_FALSE false

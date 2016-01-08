@@ -67,9 +67,7 @@ class HMIMessageAdapter : public HMIMessageSender {
    * from HMI.
    */
   virtual void SubscribeTo() = 0;
-  inline virtual HMIMessageHandler* handler() const {
-    return handler_;
-  }
+  inline virtual HMIMessageHandler* handler() const { return handler_; }
 
  private:
   /**

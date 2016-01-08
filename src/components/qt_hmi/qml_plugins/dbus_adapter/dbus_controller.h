@@ -35,8 +35,8 @@
 #ifndef SRC_COMPONENTS_QT_HMI_QML_PLUGINS_DBUS_ADAPTER_DBUS_CONTROLLER_H_
 #define SRC_COMPONENTS_QT_HMI_QML_PLUGINS_DBUS_ADAPTER_DBUS_CONTROLLER_H_
 
-#include <QtCore/QObject>
 #include <QtDBus/QDBusMessage>
+#include <QtCore/QObject>
 #include <map>
 
 typedef bool (*fillRoutine)(QDBusMessage&, const QVariantMap&);

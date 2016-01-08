@@ -30,8 +30,8 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include <gmock/gmock.h>
 #include <gtest/gtest.h>
+#include <gmock/gmock.h>
 
 #include "hmi_message_handler/hmi_message_handler.h"
 #include "hmi_message_handler/mqueue_adapter.h"

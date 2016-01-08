@@ -35,10 +35,10 @@
 
 #include <vector>
 
-#include "policy/policy_listener.h"
-#include "policy/policy_types.h"
-#include "usage_statistics/statistics_manager.h"
 #include "utils/macro.h"
+#include "policy/policy_types.h"
+#include "policy/policy_listener.h"
+#include "usage_statistics/statistics_manager.h"
 
 namespace policy {
 class PolicyManager : public usage_statistics::StatisticsManager {

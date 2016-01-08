@@ -121,9 +121,7 @@ inline Boolean::Boolean(const Json::Value* value, bool def_value)
   }
 }
 
-inline Json::Value Boolean::ToJsonValue() const {
-  return Json::Value(value_);
-}
+inline Json::Value Boolean::ToJsonValue() const { return Json::Value(value_); }
 
 template <typename T, T minval, T maxval>
 Integer<T, minval, maxval>::Integer(const Json::Value* value)

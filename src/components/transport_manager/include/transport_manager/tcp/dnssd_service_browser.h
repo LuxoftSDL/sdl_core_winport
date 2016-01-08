@@ -44,9 +44,9 @@
 #include <string>
 #include <vector>
 
+#include "utils/lock.h"
 #include "transport_manager/transport_adapter/device_scanner.h"
 #include "transport_manager/transport_adapter/transport_adapter.h"
-#include "utils/lock.h"
 
 namespace transport_manager {
 

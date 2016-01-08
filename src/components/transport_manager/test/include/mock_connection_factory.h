@@ -52,16 +52,12 @@ class MockTransportAdapter;
 class MockConnectionFactory : public ServerConnectionFactory {
  public:
   MockConnectionFactory(MockTransportAdapter* adapter);
-  TransportAdapter::Error Init() {
-    return TransportAdapter::OK;
-  }
+  TransportAdapter::Error Init() { return TransportAdapter::OK; }
   TransportAdapter::Error CreateConnection(
       const ::transport_manager::DeviceUID& device_handle,
       const ApplicationHandle& app_handle);
   void Terminate() {}
-  bool IsInitialised() const {
-    return true;
-  }
+  bool IsInitialised() const { return true; }
 
  private:
   MockTransportAdapter* controller_;
@@ -71,4 +67,5 @@ class MockConnectionFactory : public ServerConnectionFactory {
 }  // namespace components
 }  // namespace test
 
-#endif  // APPLINK_TEST_COMPONENTS_TRANSPORTMANAGER_INCLUDE_MOCKCONNECTIONFACTORY_H_
+#endif /* APPLINK_TEST_COMPONENTS_TRANSPORTMANAGER_INCLUDE_MOCKCONNECTIONFACTORY_H_ \
+          */

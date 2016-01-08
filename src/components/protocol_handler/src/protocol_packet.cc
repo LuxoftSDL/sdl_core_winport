@@ -30,16 +30,16 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include <cstring>
-#include <limits>
+#include <stdint.h>
 #include <memory.h>
 #include <new>
-#include <stdint.h>
+#include <cstring>
+#include <limits>
 
 #include "protocol/common.h"
 #include "protocol_handler/protocol_packet.h"
-#include "utils/byte_order.h"
 #include "utils/macro.h"
+#include "utils/byte_order.h"
 
 namespace protocol_handler {
 
@@ -47,9 +47,7 @@ CREATE_LOGGERPTR_GLOBAL(logger_, "ProtocolHandler")
 
 ProtocolPacket::ProtocolData::ProtocolData() : data(NULL), totalDataBytes(0u) {}
 
-ProtocolPacket::ProtocolData::~ProtocolData() {
-  delete[] data;
-}
+ProtocolPacket::ProtocolData::~ProtocolData() { delete[] data; }
 
 ProtocolPacket::ProtocolHeader::ProtocolHeader()
     : version(0x00)
@@ -362,9 +360,7 @@ RESULT_CODE ProtocolPacket::appendData(uint8_t* chunkData,
   return RESULT_FAIL;
 }
 
-size_t ProtocolPacket::packet_size() const {
-  return packet_header_.dataSize;
-}
+size_t ProtocolPacket::packet_size() const { return packet_header_.dataSize; }
 
 bool ProtocolPacket::operator==(const ProtocolPacket& other) const {
   if (connection_id_ == other.connection_id_ &&
@@ -447,33 +443,21 @@ void ProtocolPacket::set_protection_flag(const bool protection) {
   packet_header_.protection_flag = protection;
 }
 
-uint8_t ProtocolPacket::frame_type() const {
-  return packet_header_.frameType;
-}
+uint8_t ProtocolPacket::frame_type() const { return packet_header_.frameType; }
 
 uint8_t ProtocolPacket::service_type() const {
   return packet_header_.serviceType;
 }
 
-uint8_t ProtocolPacket::frame_data() const {
-  return packet_header_.frameData;
-}
+uint8_t ProtocolPacket::frame_data() const { return packet_header_.frameData; }
 
-uint8_t ProtocolPacket::session_id() const {
-  return packet_header_.sessionId;
-}
+uint8_t ProtocolPacket::session_id() const { return packet_header_.sessionId; }
 
-uint32_t ProtocolPacket::data_size() const {
-  return packet_header_.dataSize;
-}
+uint32_t ProtocolPacket::data_size() const { return packet_header_.dataSize; }
 
-uint32_t ProtocolPacket::message_id() const {
-  return packet_header_.messageId;
-}
+uint32_t ProtocolPacket::message_id() const { return packet_header_.messageId; }
 
-uint8_t* ProtocolPacket::data() const {
-  return packet_data_.data;
-}
+uint8_t* ProtocolPacket::data() const { return packet_data_.data; }
 
 void ProtocolPacket::set_total_data_bytes(size_t dataBytes) {
   if (dataBytes) {
@@ -502,12 +486,8 @@ uint32_t ProtocolPacket::total_data_bytes() const {
   return packet_data_.totalDataBytes;
 }
 
-uint8_t ProtocolPacket::connection_id() const {
-  return connection_id_;
-}
+uint8_t ProtocolPacket::connection_id() const { return connection_id_; }
 
-uint32_t ProtocolPacket::payload_size() const {
-  return payload_size_;
-}
+uint32_t ProtocolPacket::payload_size() const { return payload_size_; }
 
 }  // namespace protocol_handler

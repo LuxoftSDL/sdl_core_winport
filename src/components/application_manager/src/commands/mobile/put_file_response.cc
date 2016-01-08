@@ -32,9 +32,9 @@
  */
 
 #include "application_manager/commands/mobile/put_file_response.h"
+#include "utils/file_system.h"
 #include "application_manager/application_impl.h"
 #include "application_manager/application_manager_impl.h"
-#include "utils/file_system.h"
 
 namespace application_manager {
 

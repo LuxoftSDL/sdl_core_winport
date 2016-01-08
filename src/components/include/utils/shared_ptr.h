@@ -37,8 +37,8 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include "utils/atomic.h"
 #include "utils/macro.h"
+#include "utils/atomic.h"
 
 namespace utils {
 /**

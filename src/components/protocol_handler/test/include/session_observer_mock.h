@@ -33,10 +33,10 @@
 #ifndef TEST_COMPONENTS_INCLUDE_PROTOCOL_HANDLER_SESSION_OBSERVER_MOCK_H_
 #define TEST_COMPONENTS_INCLUDE_PROTOCOL_HANDLER_SESSION_OBSERVER_MOCK_H_
 
-#include "protocol_handler/session_observer.h"
 #include <gmock/gmock.h>
-#include <list>
 #include <string>
+#include <list>
+#include "protocol_handler/session_observer.h"
 
 namespace test {
 namespace components {

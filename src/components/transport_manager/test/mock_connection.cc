@@ -32,11 +32,11 @@
 
 #include <cstring>
 
-#include "include/mock_connection.h"
-#include "transport_manager/common.h"
-#include <sstream>
 #include <sys/socket.h>
 #include <sys/un.h>
+#include <sstream>
+#include "transport_manager/common.h"
+#include "include/mock_connection.h"
 
 #include <algorithm>
 

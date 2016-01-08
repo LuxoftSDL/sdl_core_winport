@@ -33,8 +33,8 @@
 #define SRC_COMPONENTS_DBUS_SCHEMA_INCLUDE_DBUS_SCHEMA_SCHEMA_H_
 
 #include <string>
-#include <utility>
 #include <vector>
+#include <utility>
 
 #include "dbus/message_descriptions.h"
 #include "interfaces/HMI_API.h"

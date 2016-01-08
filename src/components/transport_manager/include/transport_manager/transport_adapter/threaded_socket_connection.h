@@ -47,10 +47,10 @@ typedef long ssize_t;
 #endif
 #include <queue>
 
-#include "protocol/common.h"
 #include "transport_manager/transport_adapter/connection.h"
-#include "utils/lock.h"
+#include "protocol/common.h"
 #include "utils/threads/thread_delegate.h"
+#include "utils/lock.h"
 
 using ::transport_manager::transport_adapter::Connection;
 
@@ -92,9 +92,7 @@ class ThreadedSocketConnection : public Connection {
   /**
    * @brief Set variable that hold socket No.
    */
-  void set_socket(int socket) {
-    socket_ = socket;
-  }
+  void set_socket(int socket) { socket_ = socket; }
 
  protected:
   /**
@@ -118,23 +116,17 @@ class ThreadedSocketConnection : public Connection {
   /**
    * @brief Return pointer to the device adapter controller.
    */
-  TransportAdapterController* controller() {
-    return controller_;
-  }
+  TransportAdapterController* controller() { return controller_; }
 
   /**
    * @brief Return device unique identifier.
    */
-  DeviceUID device_handle() const {
-    return device_uid_;
-  }
+  DeviceUID device_handle() const { return device_uid_; }
 
   /**
    * @brief Return handle of application.
    */
-  ApplicationHandle application_handle() const {
-    return app_handle_;
-  }
+  ApplicationHandle application_handle() const { return app_handle_; }
 
  private:
   class SocketConnectionDelegate : public threads::ThreadDelegate {

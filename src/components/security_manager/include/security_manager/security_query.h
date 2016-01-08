@@ -33,11 +33,11 @@
 #ifndef SRC_COMPONENTS_SECURITY_MANAGER_INCLUDE_SECURITY_MANAGER_SECURITY_QUERY_H_
 #define SRC_COMPONENTS_SECURITY_MANAGER_INCLUDE_SECURITY_MANAGER_SECURITY_QUERY_H_
 
-#include "utils/shared_ptr.h"
-#include <cstddef>
 #include <stdint.h>
-#include <string>
+#include <cstddef>
 #include <vector>
+#include <string>
+#include "utils/shared_ptr.h"
 
 namespace security_manager {
 /**

@@ -31,19 +31,19 @@ Copyright (c) 2013, Ford Motor Company
  POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "application_manager/application_impl.h"
-#include "application_manager/application_manager_impl.h"
-#include "application_manager/commands/mobile/system_request.h"
-#include "application_manager/policies/policy_handler.h"
-#include "config_profile/profile.h"
-#include "formatters/CFormatterJsonBase.hpp"
-#include "interfaces/MOBILE_API.h"
-#include "utils/file_system.h"
-#include "utils/helpers.h"
-#include "json/json.h"
-#include <stdio.h>
-#include <string>
 #include <vector>
+#include <string>
+#include <stdio.h>
+#include "application_manager/commands/mobile/system_request.h"
+#include "application_manager/application_manager_impl.h"
+#include "application_manager/application_impl.h"
+#include "application_manager/policies/policy_handler.h"
+#include "interfaces/MOBILE_API.h"
+#include "config_profile/profile.h"
+#include "utils/file_system.h"
+#include "formatters/CFormatterJsonBase.hpp"
+#include "json/json.h"
+#include "utils/helpers.h"
 
 #if defined(_MSC_VER)
 #define snprintf _snprintf_s

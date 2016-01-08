@@ -72,9 +72,7 @@ class BaseError {
    *
    * @return string with description of error.
    */
-  virtual const std::string& text() const {
-    return description_;
-  }
+  virtual const std::string& text() const { return description_; }
 
  private:
   std::string description_;

@@ -36,9 +36,9 @@
 #include <string>
 #include <vector>
 
-#include "policy/policy_types.h"
-#include "usage_statistics/counter.h"
 #include "utils/shared_ptr.h"
+#include "usage_statistics/counter.h"
+#include "policy/policy_types.h"
 namespace policy_table = rpc::policy_table_interface_base;
 
 namespace policy {

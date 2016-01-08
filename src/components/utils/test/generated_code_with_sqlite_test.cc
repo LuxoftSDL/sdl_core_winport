@@ -29,9 +29,9 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "generated_code_with_sqlite_test.h"
-#include "gtest/gtest.h"
 #include <sqlite3.h>
+#include "gtest/gtest.h"
+#include "generated_code_with_sqlite_test.h"
 
 namespace rpc {
 

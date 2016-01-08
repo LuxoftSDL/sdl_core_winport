@@ -33,8 +33,8 @@
 #ifndef TEST_COMPONENTS_HMI_MESSAGE_HANDLER_INCLUDE_HMI_MESSAGE_HANDLER_MOCK_DBUS_MESSAGE_CONTROLLER_H_
 #define TEST_COMPONENTS_HMI_MESSAGE_HANDLER_INCLUDE_HMI_MESSAGE_HANDLER_MOCK_DBUS_MESSAGE_CONTROLLER_H_
 
-#include "hmi_message_handler/dbus_message_controller.h"
 #include <pthread.h>
+#include "hmi_message_handler/dbus_message_controller.h"
 
 class MockDBusMessageController
     : public ::hmi_message_handler::DBusMessageController {

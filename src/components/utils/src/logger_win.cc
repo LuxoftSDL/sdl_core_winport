@@ -30,8 +30,8 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 #include "utils/logger.h"
-#include "config_profile/profile.h"
 #include "utils/log_message_loop_thread.h"
+#include "config_profile/profile.h"
 
 namespace {
 bool is_logs_enabled = false;
@@ -64,13 +64,9 @@ void deinit_logger() {
   fclose(output_file);
 }
 
-bool logs_enabled() {
-  return is_logs_enabled;
-}
+bool logs_enabled() { return is_logs_enabled; }
 
-void set_logs_enabled(bool state) {
-  is_logs_enabled = state;
-}
+void set_logs_enabled(bool state) { is_logs_enabled = state; }
 
 bool push_log(const std::string& logger,
               LogLevel level,

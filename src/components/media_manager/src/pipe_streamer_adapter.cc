@@ -30,9 +30,9 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 #include "utils/logger.h"
+#include "utils/file_system.h"
 #include "config_profile/profile.h"
 #include "media_manager/pipe_streamer_adapter.h"
-#include "utils/file_system.h"
 
 namespace media_manager {
 

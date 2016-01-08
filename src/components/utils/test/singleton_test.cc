@@ -42,12 +42,8 @@ using ::utils::Singleton;
 
 class SingletonTest : public ::utils::Singleton<SingletonTest> {
  public:
-  void SetValue(int value) {
-    test_value = value;
-  }
-  int GetValue() {
-    return test_value;
-  }
+  void SetValue(int value) { test_value = value; }
+  int GetValue() { return test_value; }
 
   FRIEND_BASE_SINGLETON_CLASS(SingletonTest);
 

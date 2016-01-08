@@ -33,9 +33,9 @@
 #ifndef SRC_COMPONENTS_TRANSPORT_MANAGER_INCLUDE_TRANSPORT_MANAGER_TRANSPORT_ADAPTER_TRANSPORT_ADAPTER_CONTROLLER_H_
 #define SRC_COMPONENTS_TRANSPORT_MANAGER_INCLUDE_TRANSPORT_MANAGER_TRANSPORT_ADAPTER_TRANSPORT_ADAPTER_CONTROLLER_H_
 
-#include "protocol/common.h"
-#include "transport_manager/transport_adapter/connection.h"
 #include "transport_manager/transport_adapter/device.h"
+#include "transport_manager/transport_adapter/connection.h"
+#include "protocol/common.h"
 
 namespace transport_manager {
 namespace transport_adapter {

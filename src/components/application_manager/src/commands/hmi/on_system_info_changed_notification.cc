@@ -31,8 +31,8 @@
  */
 
 #include "application_manager/commands/hmi/on_system_info_changed_notification.h"
-#include "application_manager/message_helper.h"
 #include "application_manager/policies/policy_handler.h"
+#include "application_manager/message_helper.h"
 
 namespace application_manager {
 

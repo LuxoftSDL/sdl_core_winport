@@ -116,9 +116,7 @@ void TcpDevice::RemoveApplication(const ApplicationHandle app_handle) {
   applications_.erase(app_handle);
 }
 
-TcpDevice::~TcpDevice() {
-  LOG4CXX_AUTO_TRACE(logger_);
-}
+TcpDevice::~TcpDevice() { LOG4CXX_AUTO_TRACE(logger_); }
 
 int TcpDevice::GetApplicationSocket(const ApplicationHandle app_handle) const {
   LOG4CXX_AUTO_TRACE(logger_);

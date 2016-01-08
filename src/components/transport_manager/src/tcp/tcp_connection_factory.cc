@@ -73,9 +73,7 @@ TransportAdapter::Error TcpConnectionFactory::CreateConnection(
 
 void TcpConnectionFactory::Terminate() {}
 
-bool TcpConnectionFactory::IsInitialised() const {
-  return true;
-}
+bool TcpConnectionFactory::IsInitialised() const { return true; }
 
 TcpConnectionFactory::~TcpConnectionFactory() {}
 

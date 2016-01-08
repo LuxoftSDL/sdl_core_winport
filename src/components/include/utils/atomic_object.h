@@ -33,9 +33,9 @@
 #ifndef SRC_COMPONENTS_INCLUDE_UTILS_ATOMIC_OBJECT_H_
 #define SRC_COMPONENTS_INCLUDE_UTILS_ATOMIC_OBJECT_H_
 
+#include "utils/rwlock.h"
 #include "utils/conditional_variable.h"
 #include "utils/macro.h"
-#include "utils/rwlock.h"
 
 namespace sync_primitives {
 

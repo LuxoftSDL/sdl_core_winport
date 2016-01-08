@@ -30,10 +30,10 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include <fcntl.h>
 #include <gtest/gtest.h>
-#include <sys/stat.h>
 #include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
 #include <unistd.h>
 
 #include "security_manager/crypto_manager.h"

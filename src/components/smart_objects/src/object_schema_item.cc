@@ -163,9 +163,7 @@ void CObjectSchemaItem::BuildObjectBySchema(const SmartObject& pattern_object,
   }
 }
 
-size_t CObjectSchemaItem::GetMemberSize() {
-  return mMembers.size();
-}
+size_t CObjectSchemaItem::GetMemberSize() { return mMembers.size(); }
 
 CObjectSchemaItem::CObjectSchemaItem(const Members& members)
     : mMembers(members) {}

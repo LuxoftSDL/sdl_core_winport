@@ -33,8 +33,8 @@
  */
 
 #include "application_manager/commands/mobile/on_hash_change_notification.h"
-#include "application_manager/application_impl.h"
 #include "application_manager/application_manager_impl.h"
+#include "application_manager/application_impl.h"
 #include "interfaces/MOBILE_API.h"
 #include <string>
 

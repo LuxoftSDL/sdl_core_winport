@@ -31,11 +31,11 @@
  POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "application_manager/application_impl.h"
-#include "application_manager/application_manager_impl.h"
-#include "application_manager/commands/mobile/speak_request.h"
-#include "utils/helpers.h"
 #include <string.h>
+#include "application_manager/commands/mobile/speak_request.h"
+#include "application_manager/application_manager_impl.h"
+#include "application_manager/application_impl.h"
+#include "utils/helpers.h"
 
 namespace application_manager {
 

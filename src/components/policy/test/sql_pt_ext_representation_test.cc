@@ -29,11 +29,11 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "driver_dbms.h"
-#include "policy/sql_pt_ext_representation.h"
+#include <vector>
 #include "gtest/gtest.h"
 #include <algorithm>
-#include <vector>
+#include "driver_dbms.h"
+#include "policy/sql_pt_ext_representation.h"
 
 using policy::SQLPTExtRepresentation;
 

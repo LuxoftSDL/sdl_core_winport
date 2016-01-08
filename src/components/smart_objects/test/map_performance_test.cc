@@ -30,9 +30,9 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include <map>
 #include <string>
 #include <vector>
+#include <map>
 
 #include "gmock/gmock.h"
 

@@ -52,7 +52,5 @@ MessagePriority MessagePriority::FromServiceType(ServiceType service_type) {
 MessagePriority::MessagePriority(const MessagePriority& that)
     : value_(that.value_) {}
 
-size_t MessagePriority::OrderingValue() const {
-  return value_;
-}
+size_t MessagePriority::OrderingValue() const { return value_; }
 }  // namespace protocol_handler

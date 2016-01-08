@@ -33,10 +33,10 @@
 #ifndef SRC_COMPONENTS_APPLICATION_MANAGER_INCLUDE_APPLICATION_MANAGER_HMISTATE_H
 #define SRC_COMPONENTS_APPLICATION_MANAGER_INCLUDE_APPLICATION_MANAGER_HMISTATE_H
 
-#include "application_manager/state_context.h"
+#include <list>
 #include "interfaces/MOBILE_API.h"
 #include "utils/shared_ptr.h"
-#include <list>
+#include "application_manager/state_context.h"
 
 namespace application_manager {
 
@@ -81,9 +81,7 @@ class HmiState {
    * @brief parent get parent state
    * @return parent state
    */
-  const HmiStatePtr parent() const {
-    return parent_;
-  }
+  const HmiStatePtr parent() const { return parent_; }
 
   /**
    * @brief hmi_level
@@ -147,17 +145,13 @@ class HmiState {
    * @brief state_id state type
    * @return reutrn state type
    */
-  StateID state_id() const {
-    return state_id_;
-  }
+  StateID state_id() const { return state_id_; }
 
   /**
    * @brief set_state_id sets state id
    * @param state_id state id to setup
    */
-  virtual void set_state_id(StateID state_id) {
-    state_id_ = state_id;
-  }
+  virtual void set_state_id(StateID state_id) { state_id_ = state_id; }
 
  protected:
   uint32_t app_id_;

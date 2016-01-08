@@ -33,8 +33,8 @@
 #ifndef RPC_BASE_VALIDATION_REPORT_H_
 #define RPC_BASE_VALIDATION_REPORT_H_
 
-#include <list>
 #include <string>
+#include <list>
 
 namespace rpc {
 

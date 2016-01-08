@@ -39,8 +39,8 @@
 #include <set>
 #include <string>
 
-#include "smart_objects/default_shema_item.h"
 #include "utils/shared_ptr.h"
+#include "smart_objects/default_shema_item.h"
 
 namespace NsSmartDeviceLink {
 namespace NsSmartObjects {

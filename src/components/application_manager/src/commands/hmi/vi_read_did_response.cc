@@ -30,8 +30,8 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 #include "application_manager/commands/hmi/vi_read_did_response.h"
-#include "application_manager/application_manager_impl.h"
 #include "application_manager/event_engine/event.h"
+#include "application_manager/application_manager_impl.h"
 
 namespace application_manager {
 

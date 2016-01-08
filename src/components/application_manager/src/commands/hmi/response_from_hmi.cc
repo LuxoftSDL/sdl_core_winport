@@ -52,13 +52,9 @@ ResponseFromHMI::ResponseFromHMI(const MessageSharedPtr& message)
 
 ResponseFromHMI::~ResponseFromHMI() {}
 
-bool ResponseFromHMI::Init() {
-  return true;
-}
+bool ResponseFromHMI::Init() { return true; }
 
-bool ResponseFromHMI::CleanUp() {
-  return true;
-}
+bool ResponseFromHMI::CleanUp() { return true; }
 
 void ResponseFromHMI::Run() {}
 

@@ -31,25 +31,25 @@
  */
 
 #include "config_profile/profile.h"
-#include "application_manager/application.h"
-#include "application_manager/application_impl.h"
-#include "application_manager/application_manager_impl.h"
-#include "media_manager/audio/from_mic_recorder_listener.h"
 #include "media_manager/media_manager_impl.h"
+#include "media_manager/audio/from_mic_recorder_listener.h"
 #include "media_manager/streamer_listener.h"
+#include "application_manager/application.h"
+#include "application_manager/application_manager_impl.h"
+#include "application_manager/application_impl.h"
 #include "protocol_handler/protocol_handler.h"
 #include "utils/file_system.h"
-#include "utils/helpers.h"
 #include "utils/logger.h"
+#include "utils/helpers.h"
 #if defined(EXTENDED_MEDIA_MODE)
 #include "media_manager/audio/from_mic_recorder_adapter.h"
 #endif
-#include "media_manager/audio/file_audio_streamer_adapter.h"
-#include "media_manager/audio/pipe_audio_streamer_adapter.h"
-#include "media_manager/audio/socket_audio_streamer_adapter.h"
-#include "media_manager/video/file_video_streamer_adapter.h"
-#include "media_manager/video/pipe_video_streamer_adapter.h"
 #include "media_manager/video/socket_video_streamer_adapter.h"
+#include "media_manager/audio/socket_audio_streamer_adapter.h"
+#include "media_manager/video/pipe_video_streamer_adapter.h"
+#include "media_manager/audio/pipe_audio_streamer_adapter.h"
+#include "media_manager/video/file_video_streamer_adapter.h"
+#include "media_manager/audio/file_audio_streamer_adapter.h"
 
 namespace media_manager {
 

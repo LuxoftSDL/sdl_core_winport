@@ -43,9 +43,7 @@ DialNumberRequest::DialNumberRequest(const MessageSharedPtr& message)
 
 DialNumberRequest::~DialNumberRequest() {}
 
-void DialNumberRequest::Run() {
-  SendRequest();
-}
+void DialNumberRequest::Run() { SendRequest(); }
 
 }  // namespace hmi
 

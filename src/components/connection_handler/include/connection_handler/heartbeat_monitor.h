@@ -32,14 +32,14 @@
 #ifndef SRC_COMPONENTS_CONNECTION_HANDLER_INCLUDE_HEARTBEAT_MONITOR_H_
 #define SRC_COMPONENTS_CONNECTION_HANDLER_INCLUDE_HEARTBEAT_MONITOR_H_
 
-#include <map>
 #include <stdint.h>
+#include <map>
 
-#include "utils/date_time.h"
-#include "utils/lock.h"
-#include "utils/macro.h"
 #include "utils/threads/thread.h"
 #include "utils/threads/thread_delegate.h"
+#include "utils/date_time.h"
+#include "utils/macro.h"
+#include "utils/lock.h"
 
 namespace connection_handler {
 

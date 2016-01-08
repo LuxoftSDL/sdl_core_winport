@@ -33,8 +33,8 @@
 #ifndef SRC_COMPONENTS_MEDIA_MANAGER_INCLUDE_MEDIA_MANAGER_MEDIA_ADAPTER_H_
 #define SRC_COMPONENTS_MEDIA_MANAGER_INCLUDE_MEDIA_MANAGER_MEDIA_ADAPTER_H_
 
-#include "protocol/common.h"
 #include <cstdint>
+#include "protocol/common.h"
 
 namespace media_manager {
 
@@ -46,9 +46,7 @@ class MediaAdapter {
   virtual void StopActivity(int32_t application_key) = 0;
   virtual bool is_app_performing_activity(int32_t application_key) const = 0;
 
-  virtual ~MediaAdapter() {
-    ;
-  }
+  virtual ~MediaAdapter() { ; }
 };
 }  // namespace media_manager
 #endif  // SRC_COMPONENTS_MEDIA_MANAGER_INCLUDE_MEDIA_MANAGER_MEDIA_ADAPTER_H_

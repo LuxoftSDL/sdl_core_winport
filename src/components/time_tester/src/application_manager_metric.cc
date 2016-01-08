@@ -31,8 +31,8 @@
  */
 
 #include "application_manager_metric.h"
-#include "application_manager/smart_object_keys.h"
 #include "json_keys.h"
+#include "application_manager/smart_object_keys.h"
 
 namespace time_tester {
 

@@ -36,11 +36,11 @@
 #include <map>
 #include <vector>
 
+#include "utils/lock.h"
+#include "utils/threads/thread.h"
 #include "connection_handler/device.h"
 #include "connection_handler/heartbeat_monitor.h"
 #include "protocol/service_type.h"
-#include "utils/lock.h"
-#include "utils/threads/thread.h"
 
 #ifdef ENABLE_SECURITY
 namespace security_manager {

@@ -29,14 +29,14 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-#include <cstdint>
-#include <sstream>
 #include <string>
+#include <sstream>
+#include <cstdint>
 
-#include "utils/file_system.h"
-#include "utils/log_message_loop_thread.h"
-#include "utils/macro.h"
 #include "utils/winhdr.h"
+#include "utils/macro.h"
+#include "utils/log_message_loop_thread.h"
+#include "utils/file_system.h"
 
 namespace logger {
 

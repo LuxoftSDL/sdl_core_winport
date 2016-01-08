@@ -46,13 +46,9 @@ RequestToHMI::RequestToHMI(const MessageSharedPtr& message)
 
 RequestToHMI::~RequestToHMI() {}
 
-bool RequestToHMI::Init() {
-  return true;
-}
+bool RequestToHMI::Init() { return true; }
 
-bool RequestToHMI::CleanUp() {
-  return true;
-}
+bool RequestToHMI::CleanUp() { return true; }
 
 void RequestToHMI::Run() {}
 

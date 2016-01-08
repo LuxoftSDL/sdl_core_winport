@@ -30,9 +30,9 @@
 * POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include "dbus/dbus_message_controller.h"
-#include "hmi_message_handler/dbus_message_adapter.h"
 #include <pthread.h>
+#include "hmi_message_handler/dbus_message_adapter.h"
+#include "dbus/dbus_message_controller.h"
 
 namespace Json {
 class Value;

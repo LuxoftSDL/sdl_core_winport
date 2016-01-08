@@ -31,11 +31,11 @@
  */
 
 #include "gtest/gtest.h"
+#include "gmock/gmock.h"
 #include "application_manager/application_manager_impl.h"
 #include "application_manager/commands/command_request_impl.h"
 #include "application_manager/message_helper.h"
 #include "application_manager/smart_object_keys.h"
-#include "gmock/gmock.h"
 #include "interfaces/MOBILE_API.h"
 
 using ::testing::Return;

@@ -30,9 +30,9 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 #include "application_manager_observer.h"
-#include "application_manager_metric.h"
-#include "time_manager.h"
 #include "utils/shared_ptr.h"
+#include "time_manager.h"
+#include "application_manager_metric.h"
 
 namespace time_tester {
 

@@ -37,8 +37,8 @@
 
 #include <utility>
 
-#include "connection_handler/connection.h"
 #include "utils/logger.h"
+#include "connection_handler/connection.h"
 
 namespace connection_handler {
 

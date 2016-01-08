@@ -38,8 +38,8 @@
 
 #include "transport_manager/common.h"
 #include "transport_manager/error.h"
-#include "transport_manager/transport_adapter/threaded_socket_connection.h"
 #include "transport_manager/transport_adapter/transport_adapter_impl.h"
+#include "transport_manager/transport_adapter/threaded_socket_connection.h"
 
 using ::transport_manager::ApplicationHandle;
 using ::transport_manager::DeviceHandle;
@@ -66,4 +66,5 @@ class MockConnection : public ThreadedSocketConnection {
 }  // namespace components
 }  // namespace test
 
-#endif  // APPLINK_TEST_COMPONENTS_TRANSPORTMANAGER_INCLUDE_MOCKCONNECTION_H_
+#endif /* APPLINK_TEST_COMPONENTS_TRANSPORTMANAGER_INCLUDE_MOCKCONNECTION_H_ \
+          */

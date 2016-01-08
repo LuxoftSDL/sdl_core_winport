@@ -33,31 +33,31 @@
 #include <stdlib.h>  // for rand()
 
 #include <climits>
-#include <fstream>
 #include <string>
+#include <fstream>
 #include <utility>
 
-#include "application_manager/application_impl.h"
 #include "application_manager/application_manager_impl.h"
+#include "application_manager/mobile_command_factory.h"
 #include "application_manager/commands/command_impl.h"
 #include "application_manager/commands/command_notification_impl.h"
 #include "application_manager/message_helper.h"
-#include "application_manager/mobile_command_factory.h"
 #include "application_manager/mobile_message_handler.h"
 #include "application_manager/policies/policy_handler.h"
-#include "config_profile/profile.h"
-#include "connection_handler/connection_handler_impl.h"
-#include "formatters/CFormatterJsonSDLRPCv1.hpp"
-#include "formatters/CFormatterJsonSDLRPCv2.hpp"
-#include "formatters/formatter_json_rpc.h"
-#include "hmi_message_handler/hmi_message_handler.h"
-#include "interfaces/HMI_API_schema.h"
 #include "protocol_handler/protocol_handler.h"
-#include "smart_objects/enum_schema_item.h"
-#include "usage_statistics/counter.h"
+#include "hmi_message_handler/hmi_message_handler.h"
+#include "connection_handler/connection_handler_impl.h"
+#include "formatters/formatter_json_rpc.h"
+#include "formatters/CFormatterJsonSDLRPCv2.hpp"
+#include "formatters/CFormatterJsonSDLRPCv1.hpp"
+#include "config_profile/profile.h"
+#include "utils/threads/thread.h"
 #include "utils/file_system.h"
 #include "utils/helpers.h"
-#include "utils/threads/thread.h"
+#include "smart_objects/enum_schema_item.h"
+#include "interfaces/HMI_API_schema.h"
+#include "application_manager/application_impl.h"
+#include "usage_statistics/counter.h"
 #include <time.h>
 
 namespace {
@@ -963,9 +963,7 @@ mobile_apis::HMILevel::eType ApplicationManagerImpl::GetDefaultHmiLevel(
   return default_hmi;
 }
 
-uint32_t ApplicationManagerImpl::GenerateGrammarID() {
-  return rand();
-}
+uint32_t ApplicationManagerImpl::GenerateGrammarID() { return rand(); }
 
 uint32_t ApplicationManagerImpl::GenerateNewHMIAppID() {
   LOG4CXX_TRACE(logger_, "ENTER");

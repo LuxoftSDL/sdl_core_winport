@@ -33,9 +33,9 @@
 #ifndef SRC_COMPONENTS_TIME_TESTER_INCLUDE_TIME_TESTER_MECTRIC_H_
 #define SRC_COMPONENTS_TIME_TESTER_INCLUDE_TIME_TESTER_MECTRIC_H_
 
+#include <string>
 #include "utils/resource_usage.h"
 #include "json/json.h"
-#include <string>
 
 namespace time_tester {
 

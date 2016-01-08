@@ -31,10 +31,10 @@
  */
 
 #include "dbus/dbus_adapter.h"
-#include "formatters/CSmartFactory.hpp"
-#include "utils/logger.h"
 #include <dbus/dbus.h>
 #include <sstream>
+#include "formatters/CSmartFactory.hpp"
+#include "utils/logger.h"
 
 using ford_message_descriptions::ParameterDescription;
 namespace sos = NsSmartDeviceLink::NsJSONHandler::strings;
@@ -700,9 +700,7 @@ bool DBusAdapter::GetArguments(DBusMessageIter* iter,
   return true;
 }
 
-const DBusSchema& DBusAdapter::get_schema() const {
-  return *schema_;
-}
+const DBusSchema& DBusAdapter::get_schema() const { return *schema_; }
 
 bool DBusAdapter::GetOneArgument(
     DBusMessageIter* iter,

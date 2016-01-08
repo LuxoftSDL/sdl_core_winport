@@ -32,24 +32,24 @@
 
 #include "transport_manager/transport_manager_impl.h"
 
-#include <algorithm>
+#include <stdint.h>
 #include <cstring>
-#include <functional>
-#include <iterator>
-#include <limits>
 #include <queue>
 #include <set>
+#include <algorithm>
+#include <limits>
+#include <functional>
 #include <sstream>
-#include <stdint.h>
+#include <iterator>
 
-#include "config_profile/profile.h"
+#include "utils/macro.h"
+#include "utils/logger.h"
 #include "transport_manager/common.h"
-#include "transport_manager/transport_adapter/transport_adapter.h"
-#include "transport_manager/transport_adapter/transport_adapter_event.h"
 #include "transport_manager/transport_manager_listener.h"
 #include "transport_manager/transport_manager_listener_empty.h"
-#include "utils/logger.h"
-#include "utils/macro.h"
+#include "transport_manager/transport_adapter/transport_adapter.h"
+#include "transport_manager/transport_adapter/transport_adapter_event.h"
+#include "config_profile/profile.h"
 
 using ::transport_manager::transport_adapter::TransportAdapter;
 

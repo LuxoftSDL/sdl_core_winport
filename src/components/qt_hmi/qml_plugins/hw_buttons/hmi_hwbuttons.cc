@@ -41,8 +41,8 @@
 #include <QtQml>
 #endif  // QT_VERSION
 
-#include "attributed_mouse_event.h"
 #include "masked_container.h"
+#include "attributed_mouse_event.h"
 
 void HmiHWButtons::registerTypes(const char* uri) {
   // @uri com.ford.hmi_framework

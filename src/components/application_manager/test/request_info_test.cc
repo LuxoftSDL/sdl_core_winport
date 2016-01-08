@@ -1,7 +1,7 @@
 #include "gtest/gtest.h"
-#include "application_manager/message_helper.h"
-#include "application_manager/request_info.h"
 #include "gmock/gmock.h"
+#include "application_manager/request_info.h"
+#include "application_manager/message_helper.h"
 #include <iostream>
 
 namespace request_info = application_manager::request_controller;
@@ -250,13 +250,9 @@ TEST_F(RequestInfoTest, RequestInfoSetEqualHashTest) {
   EXPECT_EQ(0u, request_info_set.Size());
 }
 
-uint32_t MockRequest::correlation_id() const {
-  return correlation_id_;
-}
+uint32_t MockRequest::correlation_id() const { return correlation_id_; }
 
-uint32_t MockRequest::connection_key() const {
-  return connection_key_;
-}
+uint32_t MockRequest::connection_key() const { return connection_key_; }
 
 void TestRequestInfo::SetEndTime(const TimevalStruct& end_time) {
   end_time_ = end_time;

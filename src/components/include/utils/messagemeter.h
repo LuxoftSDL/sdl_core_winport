@@ -33,10 +33,10 @@
 #ifndef SRC_COMPONENTS_INCLUDE_UTILS_MESSAGEMETER_H_
 #define SRC_COMPONENTS_INCLUDE_UTILS_MESSAGEMETER_H_
 
-#include "utils/date_time.h"
 #include <cstddef>
-#include <map>
 #include <set>
+#include <map>
+#include "utils/date_time.h"
 
 namespace utils {
 /**
@@ -93,7 +93,8 @@ class MessageMeter {
 };
 
 template <class Id>
-MessageMeter<Id>::MessageMeter() : time_range_() {
+MessageMeter<Id>::MessageMeter()
+    : time_range_() {
   time_range_.tv_sec = 1;
   time_range_.tv_usec = 0;
 }

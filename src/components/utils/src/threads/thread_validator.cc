@@ -31,8 +31,8 @@
  */
 #include "utils/threads/thread_validator.h"
 
-#include "utils/back_trace.h"
 #include "utils/logger.h"
+#include "utils/back_trace.h"
 
 namespace threads {
 

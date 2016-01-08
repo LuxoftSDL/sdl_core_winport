@@ -33,8 +33,8 @@
 #ifndef SRC_COMPONENTS_HMI_MESSAGE_HANDLER_INCLUDE_HMI_MESSAGE_HANDLER_HMI_MESSAGE_HANDLER_H_
 #define SRC_COMPONENTS_HMI_MESSAGE_HANDLER_INCLUDE_HMI_MESSAGE_HANDLER_HMI_MESSAGE_HANDLER_H_
 
-#include "hmi_message_handler/hmi_message_observer.h"
 #include "hmi_message_handler/hmi_message_sender.h"
+#include "hmi_message_handler/hmi_message_observer.h"
 
 namespace hmi_message_handler {
 

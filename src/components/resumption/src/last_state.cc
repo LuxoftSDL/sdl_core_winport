@@ -66,11 +66,7 @@ void LastState::LoadFromFileSystem() {
   LOG4CXX_WARN(logger_, "No valid last state was found.");
 }
 
-LastState::LastState() {
-  LoadFromFileSystem();
-}
+LastState::LastState() { LoadFromFileSystem(); }
 
-LastState::~LastState() {
-  SaveToFileSystem();
-}
+LastState::~LastState() { SaveToFileSystem(); }
 }

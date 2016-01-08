@@ -30,12 +30,12 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "application_manager/commands/hmi/on_device_state_changed_notification.h"
-#include "application_manager/message_helper.h"
-#include "application_manager/policies/policy_handler.h"
-#include "encryption/hashing.h"
-#include "interfaces/HMI_API.h"
 #include <algorithm>
+#include "application_manager/commands/hmi/on_device_state_changed_notification.h"
+#include "application_manager/policies/policy_handler.h"
+#include "application_manager/message_helper.h"
+#include "interfaces/HMI_API.h"
+#include "encryption/hashing.h"
 
 namespace {
 // TODO(AOleynik) : replace this !!!

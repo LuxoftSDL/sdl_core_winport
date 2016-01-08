@@ -34,8 +34,8 @@
 #ifndef SRC_COMPONENTS_APPLICATION_MANAGER_INCLUDE_APPLICATION_MANAGER_COMMANDS_ON_VEHICLE_DATA_NOTIFICATION_H_
 #define SRC_COMPONENTS_APPLICATION_MANAGER_INCLUDE_APPLICATION_MANAGER_COMMANDS_ON_VEHICLE_DATA_NOTIFICATION_H_
 
-#include "application_manager/application.h"
 #include "application_manager/commands/command_notification_impl.h"
+#include "application_manager/application.h"
 #include "utils/macro.h"
 
 namespace application_manager {

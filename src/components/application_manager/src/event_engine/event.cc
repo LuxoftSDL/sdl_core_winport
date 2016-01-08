@@ -40,9 +40,7 @@ Event::Event(const EventID& id) : id_(id), response_so_() {}
 
 Event::~Event() {}
 
-void Event::raise() {
-  EventDispatcher::instance()->raise_event(*this);
-}
+void Event::raise() { EventDispatcher::instance()->raise_event(*this); }
 
 void Event::set_smart_object(const smart_objects::SmartObject& so) {
   response_so_ = so;

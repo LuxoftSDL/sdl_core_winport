@@ -78,9 +78,7 @@ class PulseThreadDelegate : public ThreadDelegate {
    * This method is to be initialize child class
    * @return If this method returns false, thread will be stopped
    */
-  virtual bool Init() {
-    return true;
-  }
+  virtual bool Init() { return true; }
 
   /**
     * Finalizes thread

@@ -32,8 +32,8 @@
 
 #include "application_manager/commands/hmi/navi_start_stream_request.h"
 #include "application_manager/application_manager_impl.h"
-#include "config_profile/profile.h"
 #include "protocol_handler/protocol_handler.h"
+#include "config_profile/profile.h"
 
 namespace application_manager {
 

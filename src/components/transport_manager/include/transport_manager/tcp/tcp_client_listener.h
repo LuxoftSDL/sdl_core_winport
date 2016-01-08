@@ -41,8 +41,8 @@
 #include <iostream>
 #endif
 
-#include "transport_manager/transport_adapter/client_connection_listener.h"
 #include "utils/threads/thread_delegate.h"
+#include "transport_manager/transport_adapter/client_connection_listener.h"
 class Thread;
 
 namespace transport_manager {

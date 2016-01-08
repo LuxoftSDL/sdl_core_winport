@@ -34,9 +34,9 @@
 #ifndef SRC_COMPONENTS_APPLICATION_MANAGER_INCLUDE_APPLICATION_MANAGER_COMMANDS_PUT_FILE_REQUEST_H_
 #define SRC_COMPONENTS_APPLICATION_MANAGER_INCLUDE_APPLICATION_MANAGER_COMMANDS_PUT_FILE_REQUEST_H_
 
-#include "application_manager/application_manager_impl.h"
 #include "application_manager/commands/command_request_impl.h"
 #include "utils/macro.h"
+#include "application_manager/application_manager_impl.h"
 
 namespace application_manager {
 

@@ -30,9 +30,9 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
+#include <sstream>
 #include "gmock/gmock.h"
 #include "smart_objects/smart_object.h"
-#include <sstream>
 
 //#define NO_INCLUSIVE_MAPS
 //#define COPY_SUB_OBJECTS_WORKAROUND
@@ -150,8 +150,7 @@ class StressTestHelper : public ::testing::Test {
         break;
       }
       case 5:  // map
-        if (size <= 0)
-          break;
+        if (size <= 0) break;
 
         // std::cout << "Creating a map with size: " << size << std::endl;
         mVerifyMap[key_path] = "map";
@@ -167,8 +166,7 @@ class StressTestHelper : public ::testing::Test {
         }
         break;
       case 6:  // array
-        if (size <= 0)
-          break;
+        if (size <= 0) break;
 
         // std::cout << "Creating an array with size: " << size << std::endl;
         mVerifyMap[key_path] = "array";

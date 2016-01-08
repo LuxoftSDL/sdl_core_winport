@@ -32,8 +32,8 @@
  */
 
 #include "application_manager/commands/mobile/create_interaction_choice_set_response.h"
-#include "application_manager/application_impl.h"
 #include "application_manager/application_manager_impl.h"
+#include "application_manager/application_impl.h"
 #include "interfaces/MOBILE_API.h"
 
 namespace application_manager {

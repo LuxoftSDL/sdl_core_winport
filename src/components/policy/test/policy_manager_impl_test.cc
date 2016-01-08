@@ -31,12 +31,12 @@
 
 #include <vector>
 
-#include "mock_cache_manager.h"
+#include "gtest/gtest.h"
 #include "mock_policy_listener.h"
 #include "mock_pt_ext_representation.h"
+#include "mock_cache_manager.h"
 #include "mock_update_status_manager.h"
 #include "policy/policy_manager_impl.h"
-#include "gtest/gtest.h"
 
 using ::testing::_;
 using ::testing::Return;

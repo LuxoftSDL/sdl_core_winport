@@ -33,10 +33,10 @@
 #ifndef SRC_COMPONENTS_MEDIA_MANAGER_INCLUDE_MEDIA_MANAGER_MEDIA_ADAPTER_IMPL_H_
 #define SRC_COMPONENTS_MEDIA_MANAGER_INCLUDE_MEDIA_MANAGER_MEDIA_ADAPTER_IMPL_H_
 
+#include <set>
 #include "media_manager/media_adapter.h"
 #include "media_manager/media_adapter_listener.h"
 #include "utils/macro.h"
-#include <set>
 
 namespace media_manager {
 

@@ -100,9 +100,7 @@ bool RequestInfo::isExpired() {
          date_time::DateTime::getmSecs(curr_time);
 }
 
-uint64_t RequestInfo::hash() {
-  return GenerateHash(app_id(), requestId());
-}
+uint64_t RequestInfo::hash() { return GenerateHash(app_id(), requestId()); }
 
 uint64_t RequestInfo::GenerateHash(uint32_t var1, uint32_t var2) {
   uint64_t hash_result = 0;

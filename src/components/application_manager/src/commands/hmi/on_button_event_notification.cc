@@ -31,8 +31,8 @@
  */
 
 #include "application_manager/commands/hmi/on_button_event_notification.h"
-#include "application_manager/application_impl.h"
 #include "application_manager/application_manager_impl.h"
+#include "application_manager/application_impl.h"
 #include "utils/logger.h"
 
 namespace application_manager {

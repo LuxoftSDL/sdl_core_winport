@@ -32,12 +32,12 @@
 #if defined(OS_POSIX)
 
 #include "utils/lock.h"
-#include "utils/logger.h"
-#include <cstring>
 #include <errno.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <string.h>
+#include <cstring>
+#include "utils/logger.h"
 
 namespace sync_primitives {
 

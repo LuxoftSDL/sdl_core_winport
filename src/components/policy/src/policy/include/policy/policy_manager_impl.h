@@ -35,15 +35,15 @@
 
 #include <string>
 
-#include "./functions.h"
-#include "policy/cache_manager_interface.h"
-#include "policy/policy_helper.h"
+#include "utils/shared_ptr.h"
+#include "utils/lock.h"
 #include "policy/policy_manager.h"
 #include "policy/policy_table.h"
+#include "policy/cache_manager_interface.h"
 #include "policy/update_status_manager.h"
+#include "./functions.h"
 #include "usage_statistics/statistics_manager.h"
-#include "utils/lock.h"
-#include "utils/shared_ptr.h"
+#include "policy/policy_helper.h"
 
 namespace policy_table = rpc::policy_table_interface_base;
 
@@ -56,9 +56,7 @@ class PolicyManagerImpl : public PolicyManager {
                     uint16_t attempts_to_open_policy_db,
                     uint16_t open_attempt_timeout_ms);
   virtual void set_listener(PolicyListener* listener);
-  PolicyListener* listener() const {
-    return listener_;
-  }
+  PolicyListener* listener() const { return listener_; }
   virtual bool InitPT(const std::string& file_name);
   virtual bool LoadPT(const std::string& file, const BinaryMessage& pt_content);
   virtual bool ResetPT(const std::string& file_name);
@@ -207,8 +205,7 @@ class PolicyManagerImpl : public PolicyManager {
    */
   void CheckPermissionsChanges(
       const utils::SharedPtr<policy_table::Table> update,
-      const utils::SharedPtr<policy_table::Table>
-          snapshot);
+      const utils::SharedPtr<policy_table::Table> snapshot);
 
   /**
    * @brief Fill structure to be sent with OnPermissionsChanged notification

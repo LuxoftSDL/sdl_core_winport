@@ -32,8 +32,8 @@
  */
 
 #include "application_manager/commands/mobile/delete_sub_menu_request.h"
-#include "application_manager/application_impl.h"
 #include "application_manager/application_manager_impl.h"
+#include "application_manager/application_impl.h"
 #include "interfaces/HMI_API.h"
 #include "utils/helpers.h"
 

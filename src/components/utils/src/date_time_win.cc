@@ -31,11 +31,11 @@
  */
 #if defined(OS_WINDOWS)
 
-#include <stdint.h>
 #include <time.h>
+#include <stdint.h>
 
-#include "utils/date_time.h"
 #include "utils/winhdr.h"
+#include "utils/date_time.h"
 
 namespace {
 const uint64_t kDeltaEpochInMicrosecs = 11644473600000000;
@@ -134,27 +134,25 @@ TimevalStruct DateTime::Sub(const TimevalStruct& time1,
 bool DateTime::Greater(const TimevalStruct& time1, const TimevalStruct& time2) {
   const TimevalStruct times1 = ConvertionUsecs(time1);
   const TimevalStruct times2 = ConvertionUsecs(time2);
-  return timercmp(&times1, &times2, >);
+  return timercmp(&times1, &times2, > );
 }
 
 bool DateTime::Less(const TimevalStruct& time1, const TimevalStruct& time2) {
   const TimevalStruct times1 = ConvertionUsecs(time1);
   const TimevalStruct times2 = ConvertionUsecs(time2);
-  return timercmp(&times1, &times2, <);
+  return timercmp(&times1, &times2, < );
 }
 
 bool DateTime::Equal(const TimevalStruct& time1, const TimevalStruct& time2) {
   const TimevalStruct times1 = ConvertionUsecs(time1);
   const TimevalStruct times2 = ConvertionUsecs(time2);
-  return !timercmp(&times1, &times2, !=);
+  return !timercmp(&times1, &times2, != );
 }
 
 TimeCompare date_time::DateTime::compareTime(const TimevalStruct& time1,
                                              const TimevalStruct& time2) {
-  if (Greater(time1, time2))
-    return GREATER;
-  if (Less(time1, time2))
-    return LESS;
+  if (Greater(time1, time2)) return GREATER;
+  if (Less(time1, time2)) return LESS;
   return EQUAL;
 }
 

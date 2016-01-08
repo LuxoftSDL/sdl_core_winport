@@ -31,9 +31,9 @@
  */
 
 #include "utils/threads/thread.h"
-#include "media_manager/audio/audio_stream_sender_thread.h"
-#include "media_manager/audio/from_mic_recorder_listener.h"
 #include "utils/logger.h"
+#include "media_manager/audio/from_mic_recorder_listener.h"
+#include "media_manager/audio/audio_stream_sender_thread.h"
 
 namespace media_manager {
 

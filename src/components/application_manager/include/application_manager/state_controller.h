@@ -34,12 +34,12 @@
 #define SRC_COMPONENTS_APPLICATION_MANAGER_INCLUDE_APPLICATION_MANAGER_STATE_CONTROLLER_H_
 #include <list>
 
-#include "application_manager/application.h"
 #include "application_manager/hmi_state.h"
-#include "application_manager/message_helper.h"
-#include "application_manager/state_context.h"
+#include "application_manager/application.h"
 #include "event_engine/event_observer.h"
+#include "application_manager/message_helper.h"
 #include "interfaces/MOBILE_API.h"
+#include "application_manager/state_context.h"
 #include "utils/lock.h"
 
 namespace application_manager {
@@ -261,9 +261,7 @@ class StateController : public event_engine::EventObserver {
    * @brief state_context getter for state_context
    * @return
    */
-  const StateContext& state_context() const {
-    return state_context_;
-  }
+  const StateContext& state_context() const { return state_context_; }
 
  private:
   /**

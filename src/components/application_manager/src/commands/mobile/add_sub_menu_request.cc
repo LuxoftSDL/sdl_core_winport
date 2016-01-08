@@ -32,8 +32,8 @@
  */
 
 #include "application_manager/commands/mobile/add_sub_menu_request.h"
-#include "application_manager/application.h"
 #include "application_manager/application_manager_impl.h"
+#include "application_manager/application.h"
 #include "utils/helpers.h"
 
 namespace application_manager {

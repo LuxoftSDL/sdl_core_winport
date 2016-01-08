@@ -32,17 +32,17 @@
 
 #include "time_manager.h"
 
-#include <arpa/inet.h>
-#include <netinet/in.h>
-#include <string.h>
-#include <sys/select.h>
 #include <sys/socket.h>
-#include <sys/time.h>
 #include <sys/types.h>
+#include <sys/select.h>
+#include <sys/time.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
 #include <unistd.h>
+#include <string.h>
 
-#include "config_profile/profile.h"
 #include "transport_manager/transport_manager_default.h"
+#include "config_profile/profile.h"
 #include "utils/resource_usage.h"
 
 namespace time_tester {
@@ -61,9 +61,7 @@ TimeManager::TimeManager()
   thread_ = threads::CreateThread("TimeManager", streamer_);
 }
 
-TimeManager::~TimeManager() {
-  Stop();
-}
+TimeManager::~TimeManager() { Stop(); }
 
 void TimeManager::Init(protocol_handler::ProtocolHandlerImpl* ph) {
   LOG4CXX_AUTO_TRACE(logger_);
@@ -100,9 +98,7 @@ TimeManager::Streamer::Streamer(TimeManager* const server)
     , client_socket_fd_(0)
     , stop_flag_(false) {}
 
-TimeManager::Streamer::~Streamer() {
-  Stop();
-}
+TimeManager::Streamer::~Streamer() { Stop(); }
 
 void TimeManager::Streamer::threadMain() {
   LOG4CXX_AUTO_TRACE(logger_);

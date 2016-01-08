@@ -33,11 +33,11 @@
 #ifndef SRC_COMPONENTS_APPLICATION_MANAGER_INCLUDE_APPLICATION_MANAGER_TIME_METRIC_OBSERVER_H_
 #define SRC_COMPONENTS_APPLICATION_MANAGER_INCLUDE_APPLICATION_MANAGER_TIME_METRIC_OBSERVER_H_
 
-#include "application_manager/smart_object_keys.h"
 #include "smart_objects/smart_object.h"
-#include "utils/date_time.h"
-#include "utils/shared_ptr.h"
+#include "application_manager/smart_object_keys.h"
 #include "json/json.h"
+#include "utils/shared_ptr.h"
+#include "utils/date_time.h"
 
 namespace smart_objects = NsSmartDeviceLink::NsSmartObjects;
 namespace application_manager {

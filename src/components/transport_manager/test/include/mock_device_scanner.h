@@ -56,9 +56,7 @@ class MockDeviceScanner : public DeviceScanner {
                  const std::string& unique_id,
                  bool start = true);
   void RemoveDevice(const std::string& name);
-  void fail_further_search() {
-    is_search_failed_ = true;
-  }
+  void fail_further_search() { is_search_failed_ = true; }
 
  protected:
   TransportAdapter::Error Init();
@@ -77,4 +75,5 @@ class MockDeviceScanner : public DeviceScanner {
 }  // namespace components
 }  // namespace test
 
-#endif  // APPLINK_TEST_COMPONENTS_TRANSPORTMANAGER_INCLUDE_MOCKDEVICESCANNER_H_
+#endif /* APPLINK_TEST_COMPONENTS_TRANSPORTMANAGER_INCLUDE_MOCKDEVICESCANNER_H_ \
+          */

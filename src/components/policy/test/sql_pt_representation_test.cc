@@ -29,11 +29,11 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "driver_dbms.h"
-#include "policy/policy_types.h"
-#include "policy/sql_pt_representation.h"
-#include "gtest/gtest.h"
 #include <vector>
+#include "gtest/gtest.h"
+#include "driver_dbms.h"
+#include "policy/sql_pt_representation.h"
+#include "policy/policy_types.h"
 
 using policy::SQLPTRepresentation;
 using policy::CheckPermissionResult;
