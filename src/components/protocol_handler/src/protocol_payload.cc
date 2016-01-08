@@ -93,8 +93,6 @@ std::ostream& operator<<(std::ostream& os, const ProtocolPayloadV2& payload) {
             << ", data (bytes): " << payload.data.size() << ")";
 }
 
-size_t ProtocolPayloadV2SizeBits() {
-  return PayloadHeaderBits;
-}
+size_t ProtocolPayloadV2SizeBits() { return PayloadHeaderBits; }
 
 }  // namespace protocol_handler

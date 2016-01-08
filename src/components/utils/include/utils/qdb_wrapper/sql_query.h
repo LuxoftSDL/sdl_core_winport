@@ -33,13 +33,13 @@
 #ifndef SRC_COMPONENTS_POLICY_QDB_WRAPPER_INCLUDE_QDB_WRAPPER_SQL_QUERY_H_
 #define SRC_COMPONENTS_POLICY_QDB_WRAPPER_INCLUDE_QDB_WRAPPER_SQL_QUERY_H_
 
+#include <stdint.h>
+#include <qdb/qdb.h>
+#include <string>
+#include <vector>
+#include <utility>
 #include "qdb_wrapper/sql_error.h"
 #include "utils/lock.h"
-#include <qdb/qdb.h>
-#include <stdint.h>
-#include <string>
-#include <utility>
-#include <vector>
 
 namespace utils {
 namespace dbms {

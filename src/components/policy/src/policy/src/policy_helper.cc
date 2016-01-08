@@ -30,13 +30,13 @@
  POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "policy/policy_helper.h"
-#include "policy/policy_manager_impl.h"
-#include "utils/logger.h"
 #include <algorithm>
 #include <iterator>
 #include <sstream>
 #include <string.h>
+#include "utils/logger.h"
+#include "policy/policy_helper.h"
+#include "policy/policy_manager_impl.h"
 
 #if defined(OS_WINDOWS)
 #define strcasecmp _stricmp
@@ -121,11 +121,10 @@ bool operator!=(const policy_table::ApplicationParams& first,
   return false;
 }
 
-CheckAppPolicy::CheckAppPolicy(PolicyManagerImpl* pm,
-                               const utils::SharedPtr<policy_table::Table>
-                                   update,
-                               const utils::SharedPtr<policy_table::Table>
-                                   snapshot)
+CheckAppPolicy::CheckAppPolicy(
+    PolicyManagerImpl* pm,
+    const utils::SharedPtr<policy_table::Table> update,
+    const utils::SharedPtr<policy_table::Table> snapshot)
     : pm_(pm), update_(update), snapshot_(snapshot) {}
 
 bool policy::CheckAppPolicy::HasRevokedGroups(

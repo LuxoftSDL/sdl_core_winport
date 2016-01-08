@@ -33,8 +33,8 @@
 #ifndef SRC_COMPONENTS_POLICY_SQLITE_WRAPPER_INCLUDE_SQL_QT_WRAPPER_SQL_ERROR_H_
 #define SRC_COMPONENTS_POLICY_SQLITE_WRAPPER_INCLUDE_SQL_QT_WRAPPER_SQL_ERROR_H_
 
-#include <QSqlError>
 #include <string>
+#include <QSqlError>
 
 namespace utils {
 namespace dbms {

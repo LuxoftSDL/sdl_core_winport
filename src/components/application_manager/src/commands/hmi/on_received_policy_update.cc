@@ -30,10 +30,10 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
+#include <string>
 #include "application_manager/commands/hmi/on_received_policy_update.h"
 #include "application_manager/policies/policy_handler.h"
 #include "utils/file_system.h"
-#include <string>
 
 namespace application_manager {
 

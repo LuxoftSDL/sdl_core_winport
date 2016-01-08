@@ -33,8 +33,8 @@
 
 #include "application_manager/commands/mobile/on_hmi_status_notification.h"
 #include "application_manager/application_manager_impl.h"
-#include "application_manager/message.h"
 #include "application_manager/message_helper.h"
+#include "application_manager/message.h"
 #include "interfaces/MOBILE_API.h"
 
 namespace application_manager {

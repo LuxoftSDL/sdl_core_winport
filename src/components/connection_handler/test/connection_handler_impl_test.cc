@@ -30,12 +30,12 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "config_profile/profile.h"
+#include <gtest/gtest.h>
+#include <fstream>
+#include <cstdint>
 #include "connection_handler/connection_handler_impl.h"
 #include "protocol/common.h"
-#include <cstdint>
-#include <fstream>
-#include <gtest/gtest.h>
+#include "config_profile/profile.h"
 // TODO(EZamakhov): move security test
 #include "security_manager_mock.h"
 
@@ -55,9 +55,7 @@ class ConnectionHandlerTest : public ::testing::Test {
     uid = 1u;
     connection_key = connection_handler_->KeyFromPair(0, 0u);
   }
-  void TearDown() OVERRIDE {
-    ConnectionHandlerImpl::destroy();
-  }
+  void TearDown() OVERRIDE { ConnectionHandlerImpl::destroy(); }
   // Additional SetUp
   void AddTestDeviceConnection() {
     const transport_manager::DeviceHandle device_handle = 0;

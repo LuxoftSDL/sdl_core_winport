@@ -31,8 +31,8 @@
  */
 
 #include "transport_manager/usb/usb_connection_factory.h"
-#include "transport_manager/transport_adapter/transport_adapter_impl.h"
 #include "transport_manager/usb/usb_device.h"
+#include "transport_manager/transport_adapter/transport_adapter_impl.h"
 #include "utils/logger.h"
 
 #if defined(__QNXNTO__)
@@ -97,9 +97,7 @@ TransportAdapter::Error UsbConnectionFactory::CreateConnection(
 
 void UsbConnectionFactory::Terminate() {}
 
-bool UsbConnectionFactory::IsInitialised() const {
-  return true;
-}
+bool UsbConnectionFactory::IsInitialised() const { return true; }
 
 UsbConnectionFactory::~UsbConnectionFactory() {}
 

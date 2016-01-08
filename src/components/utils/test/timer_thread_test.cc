@@ -30,15 +30,15 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include <iostream>
 #include <pthread.h>
+#include <iostream>
 
 #include "lock.h"
 #include "macro.h"
 
+#include "gtest/gtest.h"
 #include "utils/conditional_variable.h"
 #include "utils/timer_thread.h"
-#include "gtest/gtest.h"
 
 namespace test {
 namespace components {

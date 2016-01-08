@@ -32,9 +32,9 @@
 #ifndef SRC_COMPONENTS_DBUS_INCLUDE_DBUS_DBUS_ADAPTER_H_
 #define SRC_COMPONENTS_DBUS_INCLUDE_DBUS_DBUS_ADAPTER_H_
 
-#include "dbus/schema.h"
-#include "smart_objects/smart_object.h"
 #include <string>
+#include "smart_objects/smart_object.h"
+#include "dbus/schema.h"
 
 struct DBusConnection;
 struct DBusMessage;

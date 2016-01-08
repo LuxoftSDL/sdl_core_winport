@@ -35,9 +35,9 @@
 
 #include <typeinfo>
 
+#include "utils/shared_ptr.h"
 #include "smart_objects/default_shema_item.h"
 #include "smart_objects/schema_item_parameter.h"
-#include "utils/shared_ptr.h"
 
 namespace NsSmartDeviceLink {
 namespace NsSmartObjects {

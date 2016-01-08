@@ -30,11 +30,11 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 #include <gtest/gtest.h>
-#include <list>
 #include <vector>
+#include <list>
 
-#include "protocol_handler/incoming_data_handler.h"
 #include "utils/macro.h"
+#include "protocol_handler/incoming_data_handler.h"
 
 namespace test {
 namespace components {

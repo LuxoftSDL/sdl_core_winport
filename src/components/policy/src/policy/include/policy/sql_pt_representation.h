@@ -33,12 +33,12 @@
 #ifndef SRC_COMPONENTS_POLICY_INCLUDE_POLICY_SQL_PT_REPRESENTATION_H_
 #define SRC_COMPONENTS_POLICY_INCLUDE_POLICY_SQL_PT_REPRESENTATION_H_
 
-#include "./types.h"
+#include <string>
+#include <vector>
 #include "policy/pt_representation.h"
 #include "rpc_base/rpc_base.h"
 #include "utils/sql_wrapper.h"
-#include <string>
-#include <vector>
+#include "./types.h"
 
 namespace policy_table = rpc::policy_table_interface_base;
 

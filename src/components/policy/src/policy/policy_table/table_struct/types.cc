@@ -913,9 +913,7 @@ bool ModuleMeta::is_valid() const {
 bool ModuleMeta::is_initialized() const {
   return (initialization_state__ != kUninitialized) || (!struct_empty());
 }
-bool ModuleMeta::struct_empty() const {
-  return true;
-}
+bool ModuleMeta::struct_empty() const { return true; }
 void ModuleMeta::ReportErrors(rpc::ValidationReport* report__) const {
   if (struct_empty()) {
     rpc::CompositeType::ReportErrors(report__);
@@ -1213,9 +1211,7 @@ bool DeviceParams::is_valid() const {
 bool DeviceParams::is_initialized() const {
   return (initialization_state__ != kUninitialized) || (!struct_empty());
 }
-bool DeviceParams::struct_empty() const {
-  return true;
-}
+bool DeviceParams::struct_empty() const { return true; }
 void DeviceParams::ReportErrors(rpc::ValidationReport* report__) const {
   if (struct_empty()) {
     rpc::CompositeType::ReportErrors(report__);

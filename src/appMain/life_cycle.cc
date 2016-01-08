@@ -35,16 +35,16 @@
 #include "utils/winhdr.h"
 #endif
 
-#include "config_profile/profile.h"
-#include "life_cycle.h"
-#include "resumption/last_state.h"
 #include "utils/logger.h"
+#include "life_cycle.h"
 #include "utils/signals.h"
+#include "config_profile/profile.h"
+#include "resumption/last_state.h"
 
 #ifdef ENABLE_SECURITY
-#include "application_manager/policies/policy_handler.h"
-#include "security_manager/crypto_manager_impl.h"
 #include "security_manager/security_manager_impl.h"
+#include "security_manager/crypto_manager_impl.h"
+#include "application_manager/policies/policy_handler.h"
 #endif  // ENABLE_SECURITY
 
 using threads::Thread;

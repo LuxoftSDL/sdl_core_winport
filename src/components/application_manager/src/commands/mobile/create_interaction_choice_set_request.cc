@@ -31,16 +31,16 @@
  POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "application_manager/application_impl.h"
-#include "application_manager/application_manager_impl.h"
+#include <string.h>
+#include <string>
+#include <algorithm>
+#include <vector>
 #include "application_manager/commands/mobile/create_interaction_choice_set_request.h"
+#include "application_manager/application_manager_impl.h"
+#include "application_manager/application_impl.h"
 #include "application_manager/message_helper.h"
 #include "utils/gen_hash.h"
 #include "utils/helpers.h"
-#include <algorithm>
-#include <string.h>
-#include <string>
-#include <vector>
 
 namespace application_manager {
 

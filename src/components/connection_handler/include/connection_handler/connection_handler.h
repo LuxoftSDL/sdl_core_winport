@@ -33,11 +33,11 @@
 #ifndef SRC_COMPONENTS_CONNECTION_HANDLER_INCLUDE_CONNECTION_HANDLER_CONNECTION_HANDLER_H_
 #define SRC_COMPONENTS_CONNECTION_HANDLER_INCLUDE_CONNECTION_HANDLER_CONNECTION_HANDLER_H_
 
-#include "connection_handler/connection.h"
-#include "connection_handler/device.h"
-#include "connection_handler/devices_discovery_starter.h"
-#include "protocol_handler/session_observer.h"
 #include "transport_manager/transport_manager_listener.h"
+#include "protocol_handler/session_observer.h"
+#include "connection_handler/device.h"
+#include "connection_handler/connection.h"
+#include "connection_handler/devices_discovery_starter.h"
 
 /**
  * \namespace connection_handler

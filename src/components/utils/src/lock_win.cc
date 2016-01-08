@@ -32,12 +32,12 @@
 #if defined(OS_WINDOWS)
 
 #include "utils/lock.h"
-#include "utils/logger.h"
-#include <cstring>
 #include <errno.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <string.h>
+#include <cstring>
+#include "utils/logger.h"
 
 namespace sync_primitives {
 
@@ -107,9 +107,7 @@ void Lock::AssertTakenAndMarkFree() {
 }
 #endif
 
-void Lock::Init(bool is_recursive) {
-  InitializeCriticalSection(&mutex_);
-}
+void Lock::Init(bool is_recursive) { InitializeCriticalSection(&mutex_); }
 
 }  // namespace sync_primitives
 

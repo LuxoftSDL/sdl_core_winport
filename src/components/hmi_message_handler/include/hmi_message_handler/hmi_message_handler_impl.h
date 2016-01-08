@@ -33,15 +33,15 @@
 #ifndef SRC_COMPONENTS_HMI_MESSAGE_HANDLER_INCLUDE_HMI_MESSAGE_HANDLER_HMI_MESSAGE_HANDLER_IMPL_H_
 #define SRC_COMPONENTS_HMI_MESSAGE_HANDLER_INCLUDE_HMI_MESSAGE_HANDLER_HMI_MESSAGE_HANDLER_IMPL_H_
 
+#include <set>
 #include "hmi_message_handler/hmi_message_adapter.h"
 #include "hmi_message_handler/hmi_message_handler.h"
 #include "utils/macro.h"
 #include "utils/message_queue.h"
 #include "utils/prioritized_queue.h"
-#include "utils/singleton.h"
 #include "utils/threads/message_loop_thread.h"
 #include "utils/threads/thread.h"
-#include <set>
+#include "utils/singleton.h"
 
 namespace hmi_message_handler {
 
@@ -58,9 +58,7 @@ struct MessageFromHmi : public MessageSharedPointer {
   explicit MessageFromHmi(const MessageSharedPointer& message)
       : MessageSharedPointer(message) {}
   // PrioritizedQueue requres this method to decide which priority to assign
-  size_t PriorityOrder() const {
-    return (*this)->Priority().OrderingValue();
-  }
+  size_t PriorityOrder() const { return (*this)->Priority().OrderingValue(); }
 };
 
 struct MessageToHmi : public MessageSharedPointer {
@@ -68,9 +66,7 @@ struct MessageToHmi : public MessageSharedPointer {
   explicit MessageToHmi(const MessageSharedPointer& message)
       : MessageSharedPointer(message) {}
   // PrioritizedQueue requres this method to decide which priority to assign
-  size_t PriorityOrder() const {
-    return (*this)->Priority().OrderingValue();
-  }
+  size_t PriorityOrder() const { return (*this)->Priority().OrderingValue(); }
 };
 
 typedef threads::MessageLoopThread<utils::PrioritizedQueue<MessageFromHmi> >

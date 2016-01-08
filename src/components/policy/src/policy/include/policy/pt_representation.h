@@ -33,10 +33,10 @@
 #ifndef SRC_COMPONENTS_POLICY_INCLUDE_POLICY_PT_REPRESENTATION_H_
 #define SRC_COMPONENTS_POLICY_INCLUDE_POLICY_PT_REPRESENTATION_H_
 
-#include "./types.h"
-#include "policy/policy_types.h"
-#include <string>
 #include <vector>
+#include <string>
+#include "policy/policy_types.h"
+#include "./types.h"
 
 namespace policy_table = rpc::policy_table_interface_base;
 

@@ -33,10 +33,10 @@
 #ifndef SRC_COMPONENTS_HMI_MESSAGE_HANDLER_INCLUDE_HMI_MESSAGE_HANDLER_MQUEUE_ADAPTER_H_
 #define SRC_COMPONENTS_HMI_MESSAGE_HANDLER_INCLUDE_HMI_MESSAGE_HANDLER_MQUEUE_ADAPTER_H_
 
-#include "hmi_message_handler/hmi_message_adapter.h"
-#include "utils/threads/thread.h"
 #include <memory>
 #include <mqueue.h>
+#include "utils/threads/thread.h"
+#include "hmi_message_handler/hmi_message_adapter.h"
 
 namespace hmi_message_handler {
 

@@ -53,15 +53,15 @@
 #include <stddef.h>
 #include <stdio.h>
 
-#include "gmock/gmock.h"
 #include "gtest/gtest.h"
+#include "gmock/gmock.h"
 
-#include "../../connection_handler/include/connection_handler/connection_handler.h"
 #include "../../include/transport_manager/transport_manager.h"
-#include "../include/transport_manager/common.h"
 #include "../include/transport_manager/transport_adapter/transport_adapter.h"
-#include "../include/transport_manager/transport_manager_default.h"
+#include "../include/transport_manager/common.h"
 #include "../include/transport_manager/transport_manager_impl.h"
+#include "../include/transport_manager/transport_manager_default.h"
+#include "../../connection_handler/include/connection_handler/connection_handler.h"
 
 namespace test {
 namespace test_transport_manager_instance {

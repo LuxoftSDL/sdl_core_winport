@@ -36,11 +36,11 @@
 #include "transport_manager/bluetooth/bluetooth_device_scanner.h"
 
 #ifdef OS_WINDOWS
-#include <BaseTsd.h>
-#include <fcntl.h>
-#include <io.h>
 #include <stdlib.h>
 #include <sys/types.h>
+#include <io.h>
+#include <BaseTsd.h>
+#include <fcntl.h>
 
 #define SDP_RECORD_SIZE 0x0000004f
 union {
@@ -56,19 +56,19 @@ struct {
 #include <bluetooth/bluetooth.h>
 #include <bluetooth/hci.h>
 #include <bluetooth/hci_lib.h>
-#include <bluetooth/rfcomm.h>
 #include <bluetooth/sdp.h>
 #include <bluetooth/sdp_lib.h>
+#include <bluetooth/rfcomm.h>
 #include <errno.h>
+#include <sys/types.h>
 #include <sys/socket.h>
 #include <sys/time.h>
-#include <sys/types.h>
 #include <unistd.h>
 #endif
-#include "transport_manager/bluetooth/bluetooth_device.h"
-#include "transport_manager/bluetooth/bluetooth_transport_adapter.h"
-#include <sstream>
 #include <vector>
+#include <sstream>
+#include "transport_manager/bluetooth/bluetooth_transport_adapter.h"
+#include "transport_manager/bluetooth/bluetooth_device.h"
 
 #include "utils/logger.h"
 #include "utils/threads/thread.h"

@@ -58,9 +58,7 @@ class DataAccessor {
       --(*counter_);
     }
   }
-  const T& GetData() const {
-    return data_;
-  }
+  const T& GetData() const { return data_; }
 
  private:
   void* operator new(size_t size);

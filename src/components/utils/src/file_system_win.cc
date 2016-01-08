@@ -31,20 +31,20 @@
  */
 #if defined(OS_WINDOWS)
 
+#include <sys/types.h>
+#include <sys/stat.h>
 #include <direct.h>
 #include <io.h>
-#include <sys/stat.h>
-#include <sys/types.h>
 // TODO(VS): lint error: Streams are highly discouraged.
-#include <algorithm>
-#include <cstddef>
-#include <fstream>
 #include <sstream>
+#include <fstream>
+#include <cstddef>
+#include <algorithm>
 
+#include "utils/winhdr.h"
 #include "Shlwapi.h"
 #include "utils/file_system.h"
 #include "utils/string_utils.h"
-#include "utils/winhdr.h"
 
 #pragma comment(lib, "Shlwapi.lib")
 
@@ -423,9 +423,7 @@ void file_system::MakeAbsolutePath(std::string& path) {
   }
 }
 
-std::string file_system::GetPathDelimiter() {
-  return "\\";
-}
+std::string file_system::GetPathDelimiter() { return "\\"; }
 
 std::string file_system::ConcatPath(const std::string& str1,
                                     const std::string& str2) {

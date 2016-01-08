@@ -140,9 +140,7 @@ class AutoReadLock {
   explicit AutoReadLock(RWLock& rwlock) : rwlock_(rwlock) {
     rwlock_.AcquireForReading();
   }
-  ~AutoReadLock() {
-    rwlock_.ReleaseForReading();
-  }
+  ~AutoReadLock() { rwlock_.ReleaseForReading(); }
 
  private:
   RWLock& rwlock_;
@@ -159,9 +157,7 @@ class AutoWriteLock {
   explicit AutoWriteLock(RWLock& rwlock) : rwlock_(rwlock) {
     rwlock_.AcquireForWriting();
   }
-  ~AutoWriteLock() {
-    rwlock_.ReleaseForWriting();
-  }
+  ~AutoWriteLock() { rwlock_.ReleaseForWriting(); }
 
  private:
   RWLock& rwlock_;

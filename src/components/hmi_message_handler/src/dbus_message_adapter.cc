@@ -31,9 +31,9 @@
  */
 
 #include "hmi_message_handler/dbus_message_adapter.h"
-#include "formatters/CSmartFactory.hpp"
-#include "utils/logger.h"
 #include <sstream>
+#include "utils/logger.h"
+#include "formatters/CSmartFactory.hpp"
 
 namespace smart_objects = NsSmartDeviceLink::NsSmartObjects;
 namespace sos = NsSmartDeviceLink::NsJSONHandler::strings;
@@ -174,12 +174,11 @@ void DBusMessageAdapter::SendMessageToCore(
   }
 
   MessageSharedPointer message = new application_manager::Message(
-      protocol_handler::MessagePriority::kDefault);  // todo: ykazakov constant
-                                                     // is a temp solution to
-                                                     // finish
-                                                     // merge
-  // MessagePriority::FromServiceType(message.servicetype)
-  // shall be used instead
+      protocol_handler::MessagePriority::
+          kDefault);  // todo: ykazakov constant is a temp solution to finish
+                      // merge
+                      // MessagePriority::FromServiceType(message.servicetype)
+                      // shall be used instead
   message->set_protocol_version(application_manager::ProtocolVersion::kHMI);
   message->set_smart_object(obj);
   handler()->OnMessageReceived(message);

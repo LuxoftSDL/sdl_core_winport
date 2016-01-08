@@ -30,11 +30,11 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "media_manager/audio/from_mic_recorder_adapter.h"
-#include "media_manager/audio/from_mic_to_file_recorder_thread.h"
-#include "utils/logger.h"
-#include "utils/threads/thread.h"
 #include <string>
+#include "utils/threads/thread.h"
+#include "utils/logger.h"
+#include "media_manager/audio/from_mic_to_file_recorder_thread.h"
+#include "media_manager/audio/from_mic_recorder_adapter.h"
 
 namespace media_manager {
 

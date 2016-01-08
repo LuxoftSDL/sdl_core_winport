@@ -31,14 +31,14 @@
  POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "application_manager/application_impl.h"
-#include "application_manager/application_manager_impl.h"
-#include "application_manager/commands/mobile/scrollable_message_request.h"
-#include "application_manager/message_helper.h"
-#include "interfaces/HMI_API.h"
-#include "interfaces/MOBILE_API.h"
-#include "utils/helpers.h"
 #include <string.h>
+#include "application_manager/commands/mobile/scrollable_message_request.h"
+#include "application_manager/application_manager_impl.h"
+#include "application_manager/application_impl.h"
+#include "application_manager/message_helper.h"
+#include "interfaces/MOBILE_API.h"
+#include "interfaces/HMI_API.h"
+#include "utils/helpers.h"
 
 namespace application_manager {
 

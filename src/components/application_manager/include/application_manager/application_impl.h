@@ -33,22 +33,22 @@
 #ifndef SRC_COMPONENTS_APPLICATION_MANAGER_INCLUDE_APPLICATION_MANAGER_APPLICATION_IMPL_H_
 #define SRC_COMPONENTS_APPLICATION_MANAGER_INCLUDE_APPLICATION_MANAGER_APPLICATION_IMPL_H_
 
-#include <list>
 #include <map>
 #include <set>
-#include <utility>
 #include <vector>
+#include <utility>
+#include <list>
 
-#include "application_manager/application_data_impl.h"
-#include "application_manager/hmi_state.h"
-#include "application_manager/usage_statistics.h"
-#include "protocol_handler/protocol_handler.h"
 #include "utils/date_time.h"
+#include "application_manager/application_data_impl.h"
+#include "application_manager/usage_statistics.h"
+#include "application_manager/hmi_state.h"
+#include "protocol_handler/protocol_handler.h"
 
 #include "connection_handler/device.h"
-#include "utils/atomic_object.h"
-#include "utils/lock.h"
 #include "utils/timer_thread.h"
+#include "utils/lock.h"
+#include "utils/atomic_object.h"
 
 namespace usage_statistics {
 
@@ -64,11 +64,11 @@ namespace mobile_api = mobile_apis;
 class ApplicationImpl : public virtual InitialApplicationDataImpl,
                         public virtual DynamicApplicationDataImpl {
  public:
-  ApplicationImpl(uint32_t application_id,
-                  const std::string& mobile_app_id,
-                  const std::string& app_name,
-                  utils::SharedPtr<usage_statistics::StatisticsManager>
-                      statistics_manager);
+  ApplicationImpl(
+      uint32_t application_id,
+      const std::string& mobile_app_id,
+      const std::string& app_name,
+      utils::SharedPtr<usage_statistics::StatisticsManager> statistics_manager);
 
   ~ApplicationImpl();
 
@@ -86,9 +86,7 @@ class ApplicationImpl : public virtual InitialApplicationDataImpl,
    */
   virtual void ChangeSupportingAppHMIType();
 
-  inline bool is_navi() const {
-    return is_navi_;
-  }
+  inline bool is_navi() const { return is_navi_; }
   void set_is_navi(bool allow);
 
   bool video_streaming_approved() const;
@@ -371,13 +369,9 @@ class ApplicationImpl : public virtual InitialApplicationDataImpl,
   DISALLOW_COPY_AND_ASSIGN(ApplicationImpl);
 };
 
-uint32_t ApplicationImpl::hmi_app_id() const {
-  return hmi_app_id_;
-}
+uint32_t ApplicationImpl::hmi_app_id() const { return hmi_app_id_; }
 
-uint32_t ApplicationImpl::app_id() const {
-  return app_id_;
-}
+uint32_t ApplicationImpl::app_id() const { return app_id_; }
 
 const mobile_api::AudioStreamingState::eType
 ApplicationImpl::audio_streaming_state() const {
@@ -387,9 +381,7 @@ ApplicationImpl::audio_streaming_state() const {
                    : AudioStreamingState::INVALID_ENUM;
 }
 
-bool ApplicationImpl::app_allowed() const {
-  return is_app_allowed_;
-}
+bool ApplicationImpl::app_allowed() const { return is_app_allowed_; }
 
 }  // namespace application_manager
 

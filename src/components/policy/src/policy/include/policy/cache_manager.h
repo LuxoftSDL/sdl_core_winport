@@ -35,16 +35,16 @@
 
 #include <map>
 
-#include "policy/cache_manager_interface.h"
-#include "policy/pt_ext_representation.h"
-#include "policy/pt_representation.h"
-#include "usage_statistics/statistics_manager.h"
 #include "utils/shared_ptr.h"
+#include "policy/pt_representation.h"
+#include "policy/pt_ext_representation.h"
+#include "usage_statistics/statistics_manager.h"
+#include "policy/cache_manager_interface.h"
 
-#include "policy/policy_types.h"
-#include "utils/conditional_variable.h"
 #include "utils/lock.h"
 #include "utils/timer_thread.h"
+#include "utils/conditional_variable.h"
+#include "policy/policy_types.h"
 
 namespace policy {
 
@@ -675,9 +675,7 @@ class CacheManager : public CacheManagerInterface {
                 policy_table::PolicyTable& pt);
 
 #ifdef BUILD_TESTS
-  utils::SharedPtr<policy_table::Table> GetPT() const {
-    return pt_;
-  }
+  utils::SharedPtr<policy_table::Table> GetPT() const { return pt_; }
 #endif
 
  private:

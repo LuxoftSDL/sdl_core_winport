@@ -30,8 +30,8 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include <set>
 #include <string>
+#include <set>
 
 #include "gmock/gmock.h"
 

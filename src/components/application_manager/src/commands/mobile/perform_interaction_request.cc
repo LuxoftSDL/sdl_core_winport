@@ -31,17 +31,17 @@
  POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "application_manager/application_impl.h"
-#include "application_manager/application_manager_impl.h"
-#include "application_manager/commands/mobile/perform_interaction_request.h"
-#include "application_manager/message_helper.h"
-#include "config_profile/profile.h"
-#include "interfaces/HMI_API.h"
-#include "interfaces/MOBILE_API.h"
-#include "utils/file_system.h"
-#include "utils/helpers.h"
 #include <string.h>
 #include <string>
+#include "application_manager/commands/mobile/perform_interaction_request.h"
+#include "application_manager/application_manager_impl.h"
+#include "application_manager/application_impl.h"
+#include "application_manager/message_helper.h"
+#include "config_profile/profile.h"
+#include "interfaces/MOBILE_API.h"
+#include "interfaces/HMI_API.h"
+#include "utils/file_system.h"
+#include "utils/helpers.h"
 
 namespace application_manager {
 

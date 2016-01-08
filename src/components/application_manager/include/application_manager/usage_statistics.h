@@ -33,17 +33,17 @@
 #ifndef SRC_COMPONENTS_APPLICATION_MANAGER_INCLUDE_APPLICATION_MANAGER_USAGE_STATISTICS_H_
 #define SRC_COMPONENTS_APPLICATION_MANAGER_INCLUDE_APPLICATION_MANAGER_USAGE_STATISTICS_H_
 
-#include "interfaces/MOBILE_API.h"
-#include "usage_statistics/counter.h"
 #include <string>
+#include "usage_statistics/counter.h"
+#include "interfaces/MOBILE_API.h"
 
 namespace application_manager {
 
 class UsageStatistics {
  public:
-  UsageStatistics(const std::string& app_id,
-                  utils::SharedPtr<usage_statistics::StatisticsManager>
-                      statistics_manager);
+  UsageStatistics(
+      const std::string& app_id,
+      utils::SharedPtr<usage_statistics::StatisticsManager> statistics_manager);
   void RecordHmiStateChanged(mobile_apis::HMILevel::eType new_hmi_level);
   void RecordAppRegistrationGuiLanguage(
       mobile_apis::Language::eType gui_language);

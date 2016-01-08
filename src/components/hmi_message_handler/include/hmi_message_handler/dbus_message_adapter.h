@@ -33,10 +33,10 @@
 #ifndef SRC_COMPONENTS_HMI_MESSAGE_HANDLER_INCLUDE_HMI_MESSAGE_HANDLER_DBUS_MESSAGE_ADAPTER_H_
 #define SRC_COMPONENTS_HMI_MESSAGE_HANDLER_INCLUDE_HMI_MESSAGE_HANDLER_DBUS_MESSAGE_ADAPTER_H_
 
-#include "dbus/dbus_message_controller.h"
-#include "hmi_message_handler/hmi_message_adapter.h"
-#include "smart_objects/smart_object.h"
 #include <string>
+#include "hmi_message_handler/hmi_message_adapter.h"
+#include "dbus/dbus_message_controller.h"
+#include "smart_objects/smart_object.h"
 
 namespace hmi_message_handler {
 

@@ -46,13 +46,9 @@ bool utils::SharedLibrary::Load(const char* library_name) {
   return IsLoaded();
 }
 
-void utils::SharedLibrary::Unload() {
-  library_.unload();
-}
+void utils::SharedLibrary::Unload() { library_.unload(); }
 
-bool utils::SharedLibrary::IsLoaded() const {
-  return library_.isLoaded();
-}
+bool utils::SharedLibrary::IsLoaded() const { return library_.isLoaded(); }
 
 void* utils::SharedLibrary::GetSymbol(const char* name) {
   void* result = NULL;

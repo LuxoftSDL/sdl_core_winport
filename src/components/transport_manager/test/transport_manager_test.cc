@@ -32,21 +32,21 @@
 #include <pthread.h>
 
 #include "protocol/common.h"
-#include "transport_manager/common.h"
 #include "transport_manager/info.h"
+#include "transport_manager/common.h"
 #include "transport_manager/transport_manager_impl.h"
 
-#include "include/mock_device.h"
-#include "include/mock_transport_adapter.h"
-#include "include/mock_transport_manager_listener.h"
 #include "include/raw_message_matcher.h"
+#include "include/mock_transport_adapter.h"
+#include "include/mock_device.h"
+#include "include/mock_transport_manager_listener.h"
 #include "transport_manager/transport_manager_listener_empty.h"
 
 // for instance test
-#include "connection_handler/connection_handler.h"
-#include "transport_manager/transport_adapter/transport_adapter.h"
 #include "transport_manager/transport_manager.h"
+#include "transport_manager/transport_adapter/transport_adapter.h"
 #include "transport_manager/transport_manager_default.h"
+#include "connection_handler/connection_handler.h"
 
 using ::testing::_;
 using ::testing::AtLeast;
@@ -113,13 +113,10 @@ class TransportManagerTest : public ::testing::Test {
     pthread_mutex_lock(&test_mutex);
   }
 
-  virtual void TearDown() {
-    pthread_mutex_unlock(&test_mutex);
-  }
+  virtual void TearDown() { pthread_mutex_unlock(&test_mutex); }
 
   bool waitCond(int seconds) {
-    if (one_thread)
-      return true;
+    if (one_thread) return true;
     timespec elapsed;
     clock_gettime(CLOCK_REALTIME, &elapsed);
     elapsed.tv_sec += seconds;

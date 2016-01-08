@@ -31,20 +31,20 @@
  */
 #include "policy/policy_manager_impl.h"
 
-#include "policy/cache_manager.h"
-#include "policy/policy_helper.h"
-#include "policy/policy_table.h"
-#include "policy/pt_representation.h"
-#include "policy/update_status_manager.h"
-#include "utils/date_time.h"
-#include "utils/file_system.h"
-#include "utils/logger.h"
+#include <algorithm>
+#include <set>
+#include <queue>
+#include <iterator>
 #include "json/reader.h"
 #include "json/writer.h"
-#include <algorithm>
-#include <iterator>
-#include <queue>
-#include <set>
+#include "policy/policy_table.h"
+#include "policy/pt_representation.h"
+#include "policy/policy_helper.h"
+#include "utils/file_system.h"
+#include "utils/logger.h"
+#include "utils/date_time.h"
+#include "policy/cache_manager.h"
+#include "policy/update_status_manager.h"
 
 policy::PolicyManager* CreateManager(const std::string& app_storage_folder,
                                      uint16_t attempts_to_open_policy_db,
@@ -208,8 +208,7 @@ bool PolicyManagerImpl::LoadPT(const std::string& file,
 
 void PolicyManagerImpl::CheckPermissionsChanges(
     const utils::SharedPtr<policy_table::Table> pt_update,
-    const utils::SharedPtr<policy_table::Table>
-        snapshot) {
+    const utils::SharedPtr<policy_table::Table> snapshot) {
   LOG4CXX_INFO(logger_, "Checking incoming permissions.");
 
   // Replace predefined policies with its actual setting, e.g. "123":"default"
@@ -745,9 +744,7 @@ void PolicyManagerImpl::ResetRetrySequence() {
   update_status_manager_.OnResetRetrySequence();
 }
 
-int PolicyManagerImpl::TimeoutExchange() {
-  return retry_sequence_timeout_;
-}
+int PolicyManagerImpl::TimeoutExchange() { return retry_sequence_timeout_; }
 
 const std::vector<int> PolicyManagerImpl::RetrySequenceDelaysSeconds() {
   sync_primitives::AutoLock auto_lock(retry_sequence_lock_);

@@ -1,3 +1,6 @@
 #include "sdlalert.h"
 
-SdlAlert::SdlAlert(QObject* parent) : QQuickItem() {}
+SdlAlert::SdlAlert(QObject *parent) :
+    QQuickItem()
+{
+}

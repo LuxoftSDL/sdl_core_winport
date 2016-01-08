@@ -31,13 +31,13 @@
  POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "application_manager/application.h"
-#include "application_manager/application_manager_impl.h"
+#include <string>
 #include "application_manager/commands/mobile/add_command_request.h"
+#include "application_manager/application_manager_impl.h"
+#include "application_manager/application.h"
 #include "application_manager/message_helper.h"
 #include "utils/file_system.h"
 #include "utils/helpers.h"
-#include <string>
 
 namespace application_manager {
 
@@ -474,9 +474,7 @@ bool AddCommandRequest::IsWhiteSpaceExist() {
   return false;
 }
 
-bool AddCommandRequest::BothSend() const {
-  return send_vr_ && send_ui_;
-}
+bool AddCommandRequest::BothSend() const { return send_vr_ && send_ui_; }
 
 void AddCommandRequest::RemoveCommand() {
   LOG4CXX_AUTO_TRACE(logger_);

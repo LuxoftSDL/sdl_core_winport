@@ -30,10 +30,10 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "utils/file_system.h"
-#include "gtest/gtest.h"
 #include <algorithm>
 #include <fstream>
+#include "gtest/gtest.h"
+#include "utils/file_system.h"
 
 namespace test {
 namespace components {

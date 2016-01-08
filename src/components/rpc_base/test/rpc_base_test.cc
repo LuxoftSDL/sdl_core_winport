@@ -31,9 +31,9 @@
  */
 
 #include "gtest/gtest.h"
+#include "json/writer.h"
 #include "rpc_base/gtest_support.h"
 #include "rpc_base/rpc_base.h"
-#include "json/writer.h"
 
 namespace test {
 using namespace rpc;
@@ -42,9 +42,7 @@ namespace {
 
 enum TestEnum { kValue0, kValue1, kInvalidValue };
 
-bool IsValidEnum(TestEnum val) {
-  return val == kValue0 || val == kValue1;
-}
+bool IsValidEnum(TestEnum val) { return val == kValue0 || val == kValue1; }
 
 }  // namespace
 

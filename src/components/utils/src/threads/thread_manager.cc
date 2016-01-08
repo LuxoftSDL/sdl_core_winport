@@ -31,15 +31,15 @@
  */
 
 #include "utils/threads/thread_delegate.h"
-#include "utils/conditional_variable.h"
 #include "utils/lock.h"
-#include "utils/logger.h"
+#include "utils/conditional_variable.h"
 #include "utils/threads/thread.h"
+#include "utils/logger.h"
 
 #include <pthread.h>
 
-#include <list>
 #include <sstream>
+#include <list>
 
 #if defined(OS_LINUX)
 #include <sys/syscall.h>

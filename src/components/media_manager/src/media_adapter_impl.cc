@@ -39,9 +39,7 @@ CREATE_LOGGERPTR_GLOBAL(logger_, "MediaAdapterImpl")
 
 MediaAdapterImpl::MediaAdapterImpl() : current_application_(0) {}
 
-MediaAdapterImpl::~MediaAdapterImpl() {
-  media_listeners_.clear();
-}
+MediaAdapterImpl::~MediaAdapterImpl() { media_listeners_.clear(); }
 
 void MediaAdapterImpl::AddListener(const MediaListenerPtr& listener) {
   LOG4CXX_AUTO_TRACE(logger_);

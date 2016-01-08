@@ -33,10 +33,10 @@
 #ifndef TEST_COMPONENTS_INCLUDE_TRANSPORT_MANAGER_TRANSPORT_MANAGER_MOCK_H_
 #define TEST_COMPONENTS_INCLUDE_TRANSPORT_MANAGER_TRANSPORT_MANAGER_MOCK_H_
 
-#include "transport_manager/transport_adapter/transport_adapter_event.h"
-#include "transport_manager/transport_manager.h"
 #include <gmock/gmock.h>
 #include <string>
+#include "transport_manager/transport_manager.h"
+#include "transport_manager/transport_adapter/transport_adapter_event.h"
 
 namespace test {
 namespace components {

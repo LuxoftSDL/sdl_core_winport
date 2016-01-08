@@ -34,8 +34,8 @@
 #define SRC_COMPONENTS_PROTOCOL_HANDLER_INCLUDE_PROTOCOL_HANDLER_TIME_METRIC_OBSERVER_H_
 #include "protocol/common.h"
 
-#include "utils/date_time.h"
 #include <stdint.h>
+#include "utils/date_time.h"
 
 namespace protocol_handler {
 

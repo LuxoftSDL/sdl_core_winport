@@ -29,8 +29,8 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-#include <dlfcn.h>
 #include <string>
+#include <dlfcn.h>
 
 #include "utils/shared_library.h"
 
@@ -63,9 +63,7 @@ void utils::SharedLibrary::Unload() {
   }
 }
 
-bool utils::SharedLibrary::IsLoaded() const {
-  return handle_ != NULL;
-}
+bool utils::SharedLibrary::IsLoaded() const { return handle_ != NULL; }
 
 void* utils::SharedLibrary::GetSymbol(const char* name) {
   void* result = NULL;

@@ -32,11 +32,11 @@
 
 #include <string>
 //#include <stdio.h>
-#include "config_profile/profile.h"
+#include "gmock/gmock.h"
+#include "connection_handler/heartbeat_monitor.h"
 #include "connection_handler/connection.h"
 #include "connection_handler/connection_handler.h"
-#include "connection_handler/heartbeat_monitor.h"
-#include "gmock/gmock.h"
+#include "config_profile/profile.h"
 
 namespace test {
 namespace components {
@@ -98,14 +98,10 @@ class HeartBeatMonitorTest : public testing::Test {
         kConnectionHandle, 0, &connection_handler_mock, kTimeout);
   }
 
-  virtual void TearDown() {
-    delete conn;
-  }
+  virtual void TearDown() { delete conn; }
 };
 
-ACTION_P2(RemoveSession, conn, session_id) {
-  conn->RemoveSession(session_id);
-}
+ACTION_P2(RemoveSession, conn, session_id) { conn->RemoveSession(session_id); }
 
 TEST_F(HeartBeatMonitorTest, TimerNotStarted) {
   // Whithout StartHeartBeat nothing to be call

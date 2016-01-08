@@ -31,13 +31,13 @@
  */
 #include "security_manager/crypto_manager_impl.h"
 
-#include <algorithm>
 #include <assert.h>
-#include <map>
-#include <memory.h>
 #include <openssl/bio.h>
-#include <openssl/err.h>
 #include <openssl/ssl.h>
+#include <openssl/err.h>
+#include <memory.h>
+#include <map>
+#include <algorithm>
 
 #include "utils/macro.h"
 
@@ -81,33 +81,27 @@ SSLContext::HandshakeResult CryptoManagerImpl::SSLContextImpl::StartHandshake(
 
 namespace {
 size_t aes128_gcm_sha256_max_block_size(size_t mtu) {
-  if (mtu < 29)
-    return 0;
+  if (mtu < 29) return 0;
   return mtu - 29;
 }
 size_t rc4_md5_max_block_size(size_t mtu) {
-  if (mtu < 21)
-    return 0;
+  if (mtu < 21) return 0;
   return mtu - 21;
 }
 size_t rc4_sha_max_block_size(size_t mtu) {
-  if (mtu < 25)
-    return 0;
+  if (mtu < 25) return 0;
   return mtu - 25;
 }
 size_t seed_sha_max_block_size(size_t mtu) {
-  if (mtu < 53)
-    return 0;
+  if (mtu < 53) return 0;
   return ((mtu - 37) & 0xfffffff0) - 5;
 }
 size_t aes128_sha256_max_block_size(size_t mtu) {
-  if (mtu < 69)
-    return 0;
+  if (mtu < 69) return 0;
   return ((mtu - 53) & 0xfffffff0) - 1;
 }
 size_t des_cbc3_sha_max_block_size(size_t mtu) {
-  if (mtu < 37)
-    return 0;
+  if (mtu < 37) return 0;
   return ((mtu - 29) & 0xfffffff8) - 5;
 }
 }  // namespace

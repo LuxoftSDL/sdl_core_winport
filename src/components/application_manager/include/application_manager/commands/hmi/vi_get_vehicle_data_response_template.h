@@ -33,8 +33,8 @@
 #ifndef HMI_VI_GETBSCRIBE_VEHICLE_DATA_REQUEST_RESPONSE_H_
 #define HMI_VI_GETBSCRIBE_VEHICLE_DATA_REQUEST_RESPONSE_H_
 
-#include "application_manager/commands/hmi/response_from_hmi.h"
 #include "application_manager/event_engine/event.h"
+#include "application_manager/commands/hmi/response_from_hmi.h"
 
 namespace application_manager {
 namespace commands {

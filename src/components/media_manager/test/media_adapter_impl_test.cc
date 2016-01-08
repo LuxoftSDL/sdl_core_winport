@@ -32,6 +32,4 @@
 
 #include "gmock/gmock.h"
 
-TEST(MediaAdapterImplTest, DummyTest) {
-  ASSERT_TRUE(true);
-}
+TEST(MediaAdapterImplTest, DummyTest) { ASSERT_TRUE(true); }

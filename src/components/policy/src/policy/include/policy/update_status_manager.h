@@ -2,14 +2,14 @@
 #define SRC_COMPONENTS_POLICY_INCLUDE_POLICY_UPDATE_STATUS_MANAGER_H
 
 #include "policy/policy_types.h"
-#include "utils/conditional_variable.h"
 #include "utils/lock.h"
+#include "utils/timer_thread.h"
+#include "utils/threads/thread.h"
+#include "utils/threads/thread_delegate.h"
+#include "utils/conditional_variable.h"
 #include "utils/lock.h"
 #include "utils/logger.h"
 #include "utils/macro.h"
-#include "utils/threads/thread.h"
-#include "utils/threads/thread_delegate.h"
-#include "utils/timer_thread.h"
 
 namespace policy {
 

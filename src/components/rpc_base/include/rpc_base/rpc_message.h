@@ -68,9 +68,7 @@ class RequestBase : public Message, public CompositeType {
   explicit RequestBase(InitializationState init_state)
       : CompositeType(init_state) {}
   // Message interface
-  MessageType message_type() const {
-    return kRequest;
-  }
+  MessageType message_type() const { return kRequest; }
   virtual ~RequestBase() {}
 };
 
@@ -79,9 +77,7 @@ class ResponseBase : public Message, public CompositeType {
  public:
   ResponseBase(InitializationState init_state) : CompositeType(init_state) {}
   // Message interface
-  MessageType message_type() const {
-    return kResponse;
-  }
+  MessageType message_type() const { return kResponse; }
   virtual ~ResponseBase() {}
 };
 
@@ -90,9 +86,7 @@ class NotificationBase : public Message, public CompositeType {
  public:
   explicit NotificationBase(InitializationState init_state)
       : CompositeType(init_state) {}
-  MessageType message_type() const {
-    return kNotification;
-  }
+  MessageType message_type() const { return kNotification; }
   // Message interface
   virtual ~NotificationBase() {}
 };

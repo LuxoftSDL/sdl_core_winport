@@ -34,17 +34,17 @@
 #define SRC_COMPONENTS_APPLICATION_MANAGER_INCLUDE_APPLICATION_MANAGER_REQUEST_CONTROLLER_H_
 
 #include <climits>
-#include <list>
 #include <vector>
+#include <list>
 
-#include "utils/conditional_variable.h"
 #include "utils/lock.h"
 #include "utils/shared_ptr.h"
 #include "utils/threads/thread.h"
+#include "utils/conditional_variable.h"
 #include "utils/threads/thread_delegate.h"
 
-#include "interfaces/HMI_API.h"
 #include "interfaces/MOBILE_API.h"
+#include "interfaces/HMI_API.h"
 
 #include "application_manager/request_info.h"
 #include "utils/timer_thread.h"

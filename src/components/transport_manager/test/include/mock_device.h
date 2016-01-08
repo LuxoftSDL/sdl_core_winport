@@ -39,12 +39,12 @@
 #include "transport_manager/common.h"
 #include "transport_manager/transport_adapter/transport_adapter_impl.h"
 
-#include "gmock/gmock.h"
-#include "mock_application.h"
-#include "mock_device_scanner.h"
 #include "gtest/gtest.h"
+#include "gmock/gmock.h"
 #include <transport_manager/transport_adapter/transport_adapter_impl.h>
 #include <transport_manager/transport_manager_impl.h>
+#include "mock_device_scanner.h"
+#include "mock_application.h"
 
 using ::transport_manager::ApplicationList;
 using ::transport_manager::transport_adapter::Device;

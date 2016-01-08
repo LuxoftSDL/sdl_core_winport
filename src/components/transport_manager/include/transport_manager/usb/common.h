@@ -70,9 +70,7 @@ class UsbDeviceListener {
  public:
   virtual ~UsbDeviceListener() {}
 
-  UsbHandlerSptr GetUsbHandler() {
-    return usb_handler_;
-  }
+  UsbHandlerSptr GetUsbHandler() { return usb_handler_; }
 
   void SetUsbHandler(UsbHandlerSptr usb_handler) {
     usb_handler_ = usb_handler;

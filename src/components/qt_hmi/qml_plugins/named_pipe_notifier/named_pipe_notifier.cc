@@ -32,10 +32,10 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include <errno.h>
 #include <fcntl.h>
 #include <sys/select.h>
 #include <sys/stat.h>
+#include <errno.h>
 
 #include "named_pipe_notifier.h"
 

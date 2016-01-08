@@ -1,10 +1,10 @@
 #ifndef SMARTDEVICELINK_H
 #define SMARTDEVICELINK_H
 
-#include "QtWebsocket/QWsSocket.h"
-#include "sdlappslistmodel.h"
 #include <QQuickItem>
 #include <QStringListModel>
+#include "QtWebsocket/QWsSocket.h"
+#include "sdlappslistmodel.h"
 
 class SmartDeviceLink : public QObject {
   Q_OBJECT
@@ -20,15 +20,9 @@ class SmartDeviceLink : public QObject {
     return instance;
   }
 
-  SdlAppsListModel* getMediaApps() {
-    return &m_media_apps;
-  }
-  QString getShow1() {
-    return m_show1;
-  }
-  QString getShow2() {
-    return m_show2;
-  }
+  SdlAppsListModel* getMediaApps() { return &m_media_apps; }
+  QString getShow1() { return m_show1; }
+  QString getShow2() { return m_show2; }
 
  private:
   QWsSocket m_ws_basic;

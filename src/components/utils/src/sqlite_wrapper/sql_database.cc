@@ -45,14 +45,11 @@ SQLDatabase::SQLDatabase()
 SQLDatabase::SQLDatabase(const std::string& db_name)
     : conn_(NULL), databasename_(db_name + kExtension), error_(SQLITE_OK) {}
 
-SQLDatabase::~SQLDatabase() {
-  Close();
-}
+SQLDatabase::~SQLDatabase() { Close(); }
 
 bool SQLDatabase::Open() {
   sync_primitives::AutoLock auto_lock(conn_lock_);
-  if (conn_)
-    return true;
+  if (conn_) return true;
   error_ = sqlite3_open(databasename_.c_str(), &conn_);
   return error_ == SQLITE_OK;
   return true;
@@ -76,17 +73,11 @@ void SQLDatabase::Close() {
   }
 }
 
-bool SQLDatabase::BeginTransaction() {
-  return Exec("BEGIN TRANSACTION");
-}
+bool SQLDatabase::BeginTransaction() { return Exec("BEGIN TRANSACTION"); }
 
-bool SQLDatabase::CommitTransaction() {
-  return Exec("COMMIT TRANSACTION");
-}
+bool SQLDatabase::CommitTransaction() { return Exec("COMMIT TRANSACTION"); }
 
-bool SQLDatabase::RollbackTransaction() {
-  return Exec("ROLLBACK TRANSACTION");
-}
+bool SQLDatabase::RollbackTransaction() { return Exec("ROLLBACK TRANSACTION"); }
 
 bool SQLDatabase::Exec(const std::string& query) {
   sync_primitives::AutoLock auto_lock(conn_lock_);
@@ -94,28 +85,18 @@ bool SQLDatabase::Exec(const std::string& query) {
   return error_ == SQLITE_OK;
 }
 
-SQLError SQLDatabase::LastError() const {
-  return SQLError(Error(error_));
-}
+SQLError SQLDatabase::LastError() const { return SQLError(Error(error_)); }
 
-bool SQLDatabase::HasErrors() const {
-  return Error(error_) != OK;
-}
+bool SQLDatabase::HasErrors() const { return Error(error_) != OK; }
 
-sqlite3* SQLDatabase::conn() const {
-  return conn_;
-}
+sqlite3* SQLDatabase::conn() const { return conn_; }
 
 void SQLDatabase::set_path(const std::string& path) {
   databasename_ = path + databasename_;
 }
 
-std::string SQLDatabase::get_path() const {
-  return databasename_;
-}
+std::string SQLDatabase::get_path() const { return databasename_; }
 
-bool SQLDatabase::Backup() {
-  return true;
-}
+bool SQLDatabase::Backup() { return true; }
 }  // namespace dbms
 }  // namespace utils

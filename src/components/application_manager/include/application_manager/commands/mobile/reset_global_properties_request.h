@@ -34,8 +34,8 @@
 #ifndef SRC_COMPONENTS_APPLICATION_MANAGER_INCLUDE_APPLICATION_MANAGER_COMMANDS_MOBILE_RESET_GLOBAL_PROPERTIES_REQUEST_H_
 #define SRC_COMPONENTS_APPLICATION_MANAGER_INCLUDE_APPLICATION_MANAGER_COMMANDS_MOBILE_RESET_GLOBAL_PROPERTIES_REQUEST_H_
 
-#include "application_manager/application.h"
 #include "application_manager/commands/command_request_impl.h"
+#include "application_manager/application.h"
 #include "utils/macro.h"
 
 namespace application_manager {

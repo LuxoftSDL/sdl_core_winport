@@ -30,19 +30,19 @@
 // POSSIBILITY OF SUCH DAMAGE.
 //
 
-#include "application_manager/application_impl.h"
+#include <string>
+#include <string.h>
 #include "application_manager/application_manager_impl.h"
 #include "application_manager/mobile_command_factory.h"
-#include "interfaces/MOBILE_API.h"
+#include "application_manager/application_impl.h"
 #include "smart_objects/smart_object.h"
+#include "interfaces/MOBILE_API.h"
 #include "utils/file_system.h"
 #include "utils/logger.h"
-#include <string.h>
-#include <string>
 
-#include "application_manager/message.h"
-#include "application_manager/smart_object_keys.h"
 #include "media_manager/audio/audio_stream_sender_thread.h"
+#include "application_manager/smart_object_keys.h"
+#include "application_manager/message.h"
 
 namespace media_manager {
 using sync_primitives::AutoLock;
@@ -132,8 +132,6 @@ void AudioStreamSenderThread::exitThreadMain() {
   setShouldBeStopped(true);
 }
 
-uint32_t AudioStreamSenderThread::session_key() const {
-  return session_key_;
-}
+uint32_t AudioStreamSenderThread::session_key() const { return session_key_; }
 
 }  // namespace media_manager

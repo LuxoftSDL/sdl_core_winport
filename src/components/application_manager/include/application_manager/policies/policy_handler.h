@@ -33,25 +33,25 @@
 #ifndef SRC_COMPONENTS_APPLICATION_MANAGER_INCLUDE_APPLICATION_MANAGER_POLICY_HANDLER_H_
 #define SRC_COMPONENTS_APPLICATION_MANAGER_INCLUDE_APPLICATION_MANAGER_POLICY_HANDLER_H_
 
+#include <string>
 #include <map>
 #include <set>
-#include <string>
 #include <vector>
 
-#include "application_manager/application_manager_impl.h"
-#include "application_manager/policies/delegates/statistics_delegate.h"
-#include "application_manager/policies/policy_event_observer.h"
-#include "application_manager/policies/policy_handler_observer.h"
 #include "policy/policy_manager.h"
-#include "usage_statistics/statistics_manager.h"
-#include "utils/conditional_variable.h"
+#include "application_manager/policies/policy_event_observer.h"
+#include "application_manager/policies/delegates/statistics_delegate.h"
 #include "utils/logger.h"
-#include "utils/rwlock.h"
-#include "utils/shared_library.h"
 #include "utils/singleton.h"
-#include "utils/threads/async_runner.h"
 #include "utils/threads/thread.h"
 #include "utils/threads/thread_delegate.h"
+#include "utils/conditional_variable.h"
+#include "utils/rwlock.h"
+#include "usage_statistics/statistics_manager.h"
+#include "application_manager/policies/policy_handler_observer.h"
+#include "utils/threads/async_runner.h"
+#include "application_manager/application_manager_impl.h"
+#include "utils/shared_library.h"
 
 namespace Json {
 class Value;

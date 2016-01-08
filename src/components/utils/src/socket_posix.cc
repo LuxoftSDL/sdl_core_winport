@@ -29,10 +29,10 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-#include <algorithm>
 #include <sys/socket.h>
 #include <sys/types.h>
 #include <unistd.h>
+#include <algorithm>
 
 #include "utils/socket.h"
 
@@ -85,9 +85,7 @@ utils::TcpSocketConnection::Impl::Impl() : tcp_socket_(NULL) {}
 utils::TcpSocketConnection::Impl::Impl(int tcp_socket)
     : tcp_socket_(tcp_socket) {}
 
-utils::TcpSocketConnection::Impl::~Impl() {
-  Close();
-}
+utils::TcpSocketConnection::Impl::~Impl() { Close(); }
 
 ssize_t utils::TcpSocketConnection::Impl::Send(const char* buffer,
                                                std::size_t size) {
@@ -122,9 +120,7 @@ utils::TcpSocketConnection::TcpSocketConnection(Impl* impl) : impl_(impl) {
   DCHECK(impl_);
 }
 
-utils::TcpSocketConnection::~TcpSocketConnection() {
-  delete impl_;
-}
+utils::TcpSocketConnection::~TcpSocketConnection() { delete impl_; }
 
 utils::TcpSocketConnection::TcpSocketConnection(TcpSocketConnection& rhs) {
   Swap(rhs);
@@ -147,13 +143,9 @@ ssize_t utils::TcpSocketConnection::Send(const char* buffer, std::size_t size) {
   return impl_->Send(buffer, size);
 }
 
-bool utils::TcpSocketConnection::Close() {
-  return impl_->Close();
-}
+bool utils::TcpSocketConnection::Close() { return impl_->Close(); }
 
-bool utils::TcpSocketConnection::IsValid() const {
-  return impl_->IsValid();
-}
+bool utils::TcpSocketConnection::IsValid() const { return impl_->IsValid(); }
 
 ////////////////////////////////////////////////////////////////////////////////
 /// utils::ServerTcpSocket::Impl
@@ -184,9 +176,7 @@ class utils::TcpServerSocket::Impl {
 utils::TcpServerSocket::Impl::Impl()
     : server_socket_(NULL), is_listening_(false) {}
 
-utils::TcpServerSocket::Impl::~Impl() {
-  Close();
-}
+utils::TcpServerSocket::Impl::~Impl() { Close(); }
 
 bool utils::TcpServerSocket::Impl::IsListening() const {
   return server_socket_ && is_listening_;
@@ -264,17 +254,13 @@ utils::TcpSocketConnection utils::TcpServerSocket::Impl::Accept() {
 utils::TcpServerSocket::TcpServerSocket()
     : impl_(new TcpServerSocket::Impl()) {}
 
-utils::TcpServerSocket::~TcpServerSocket() {
-  delete impl_;
-}
+utils::TcpServerSocket::~TcpServerSocket() { delete impl_; }
 
 bool utils::TcpServerSocket::IsListening() const {
   return impl_->IsListening();
 }
 
-bool utils::TcpServerSocket::Close() {
-  return impl_->Close();
-}
+bool utils::TcpServerSocket::Close() { return impl_->Close(); }
 
 bool utils::TcpServerSocket::Listen(const std::string& address,
                                     int port,

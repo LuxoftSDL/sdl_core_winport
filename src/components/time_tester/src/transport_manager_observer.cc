@@ -33,8 +33,8 @@
 
 #include <time.h>
 
-#include "time_manager.h"
 #include "transport_manager_metric.h"
+#include "time_manager.h"
 
 namespace time_tester {
 

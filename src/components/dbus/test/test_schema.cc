@@ -33,8 +33,8 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "dbus/schema.h"
 #include <gtest/gtest.h>
+#include "dbus/schema.h"
 
 using dbus::DBusSchema;
 using dbus::MessageId;
@@ -53,9 +53,7 @@ class DBusSchemaTest : public ::testing::Test {
     schema_ = new DBusSchema(ford_message_descriptions::message_descriptions);
   }
 
-  static void TearDownTestCase() {
-    delete schema_;
-  }
+  static void TearDownTestCase() { delete schema_; }
 
   static const DBusSchema* schema_;
   static const int test_negative_value = -3;

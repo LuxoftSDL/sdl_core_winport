@@ -33,8 +33,8 @@
 #ifndef SRC_COMPONENTS_APPLICATION_MANAGER_INCLUDE_APPLICATION_MANAGER_COMMANDS_HMI_ON_VI_SPEED_NOTIFICATION_H_
 #define SRC_COMPONENTS_APPLICATION_MANAGER_INCLUDE_APPLICATION_MANAGER_COMMANDS_HMI_ON_VI_SPEED_NOTIFICATION_H_
 
-#include "application_manager/application_manager_impl.h"
 #include "application_manager/commands/hmi/notification_from_hmi.h"
+#include "application_manager/application_manager_impl.h"
 
 namespace application_manager {
 

@@ -1,13 +1,13 @@
 #ifndef QWSSERVER_H
 #define QWSSERVER_H
 
-#include <QMap>
-#include <QNetworkProxy>
-#include <QQueue>
-#include <QString>
-#include <QStringList>
 #include <QTcpServer>
 #include <QTcpSocket>
+#include <QNetworkProxy>
+#include <QString>
+#include <QStringList>
+#include <QMap>
+#include <QQueue>
 
 #include "QWsSocket.h"
 

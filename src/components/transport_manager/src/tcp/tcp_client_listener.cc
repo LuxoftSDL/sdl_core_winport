@@ -41,30 +41,30 @@
 #endif
 
 #include "transport_manager/tcp/tcp_client_listener.h"
-#include <errno.h>
 #include <memory.h>
 #include <signal.h>
+#include <errno.h>
 #include <sys/types.h>
 #ifdef OS_POSIX
 #include <linux/tcp.h>
 #elif defined(__linux__)
+#include <sys/sysctl.h>
+#include <sys/socket.h>
 #include <arpa/inet.h>
+#include <unistd.h>
+#include <sys/time.h>
 #include <netinet/in.h>
 #include <netinet/tcp.h>
 #include <netinet/tcp_var.h>
-#include <sys/socket.h>
-#include <sys/sysctl.h>
-#include <sys/time.h>
-#include <unistd.h>
 #endif  // __linux__
 
 #include <sstream>
 
-#include "transport_manager/tcp/tcp_device.h"
-#include "transport_manager/tcp/tcp_socket_connection.h"
-#include "transport_manager/transport_adapter/transport_adapter_controller.h"
 #include "utils/logger.h"
 #include "utils/threads/thread.h"
+#include "transport_manager/transport_adapter/transport_adapter_controller.h"
+#include "transport_manager/tcp/tcp_device.h"
+#include "transport_manager/tcp/tcp_socket_connection.h"
 
 namespace transport_manager {
 namespace transport_adapter {
@@ -163,9 +163,7 @@ void TcpClientListener::Terminate() {
   socket_ = -1;
 }
 
-bool TcpClientListener::IsInitialised() const {
-  return thread_;
-}
+bool TcpClientListener::IsInitialised() const { return thread_; }
 
 TcpClientListener::~TcpClientListener() {
   LOG4CXX_AUTO_TRACE(logger_);

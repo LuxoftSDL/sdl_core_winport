@@ -33,11 +33,11 @@
 #ifndef SRC_COMPONENTS_MEDIA_MANAGER_INCLUDE_MEDIA_MANAGER_AUDIO_AUDIO_STREAM_SENDER_THREAD_H_
 #define SRC_COMPONENTS_MEDIA_MANAGER_INCLUDE_MEDIA_MANAGER_AUDIO_AUDIO_STREAM_SENDER_THREAD_H_
 
-#include "utils/conditional_variable.h"
-#include "utils/lock.h"
+#include <string>
 #include "utils/macro.h"
 #include "utils/threads/thread_delegate.h"
-#include <string>
+#include "utils/conditional_variable.h"
+#include "utils/lock.h"
 
 namespace NsSmartDeviceLink {
 namespace NsSmartObjects {

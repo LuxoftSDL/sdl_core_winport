@@ -30,8 +30,8 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 #include "utils/winhdr.h"
-#include "utils/logger.h"
 #include "utils/rwlock.h"
+#include "utils/logger.h"
 
 CREATE_LOGGERPTR_GLOBAL(logger_, "Utils")
 
@@ -59,9 +59,7 @@ class RWLock::Impl {
 
 sync_primitives::RWLock::RWLock() : impl_(new RWLock::Impl) {}
 
-sync_primitives::RWLock::~RWLock() {
-  delete impl_;
-}
+sync_primitives::RWLock::~RWLock() { delete impl_; }
 
 void sync_primitives::RWLock::AcquireForReading() {
   impl_->AcquireForReading();
@@ -87,9 +85,7 @@ void sync_primitives::RWLock::ReleaseForWriting() {
   impl_->ReleaseForWriting();
 }
 
-sync_primitives::RWLock::Impl::Impl() {
-  InitializeSRWLock(&rwlock_);
-}
+sync_primitives::RWLock::Impl::Impl() { InitializeSRWLock(&rwlock_); }
 
 sync_primitives::RWLock::Impl::~Impl() {}
 

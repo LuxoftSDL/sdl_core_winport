@@ -30,13 +30,13 @@
  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  POSSIBILITY OF SUCH DAMAGE.
  */
-#include "application_manager/application.h"
-#include "application_manager/application_manager_impl.h"
+#include <string.h>
 #include "application_manager/commands/mobile/show_request.h"
+#include "application_manager/application_manager_impl.h"
+#include "application_manager/application.h"
 #include "application_manager/message_helper.h"
 #include "utils/file_system.h"
 #include "utils/helpers.h"
-#include <string.h>
 
 namespace application_manager {
 

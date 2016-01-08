@@ -33,14 +33,14 @@
 #ifndef SRC_COMPONENTS_INCLUDE_UTILS_ASYNC_RUNNER_H_
 #define SRC_COMPONENTS_INCLUDE_UTILS_ASYNC_RUNNER_H_
 
-#include <queue>
 #include <string>
+#include <queue>
 
-#include "thread.h"
 #include "thread_delegate.h"
+#include "thread.h"
 
-#include "utils/conditional_variable.h"
 #include "utils/lock.h"
+#include "utils/conditional_variable.h"
 
 namespace threads {
 

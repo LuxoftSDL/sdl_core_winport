@@ -30,12 +30,12 @@
  POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "application_manager/application_manager_impl.h"
-#include "application_manager/commands/command_request_impl.h"
-#include "application_manager/message_helper.h"
-#include "smart_objects/smart_object.h"
 #include <algorithm>
 #include <string>
+#include "application_manager/commands/command_request_impl.h"
+#include "application_manager/application_manager_impl.h"
+#include "application_manager/message_helper.h"
+#include "smart_objects/smart_object.h"
 
 namespace application_manager {
 
@@ -71,17 +71,11 @@ CommandRequestImpl::CommandRequestImpl(const MessageSharedPtr& message)
 
 CommandRequestImpl::~CommandRequestImpl() {}
 
-bool CommandRequestImpl::Init() {
-  return true;
-}
+bool CommandRequestImpl::Init() { return true; }
 
-bool CommandRequestImpl::CheckPermissions() {
-  return CheckAllowedParameters();
-}
+bool CommandRequestImpl::CheckPermissions() { return CheckAllowedParameters(); }
 
-bool CommandRequestImpl::CleanUp() {
-  return true;
-}
+bool CommandRequestImpl::CleanUp() { return true; }
 
 void CommandRequestImpl::Run() {}
 

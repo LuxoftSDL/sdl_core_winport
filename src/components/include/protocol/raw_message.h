@@ -32,10 +32,10 @@
 #ifndef SRC_COMPONENTS_INCLUDE_PROTOCOL_RAW_MESSAGE_H_
 #define SRC_COMPONENTS_INCLUDE_PROTOCOL_RAW_MESSAGE_H_
 
-#include "protocol/message_priority.h"
-#include "protocol/service_type.h"
 #include "utils/macro.h"
 #include "utils/shared_ptr.h"
+#include "protocol/service_type.h"
+#include "protocol/message_priority.h"
 
 namespace protocol_handler {
 /**
@@ -93,9 +93,7 @@ class RawMessage {
   /**
    * \brief Type of service message belongs to
    */
-  ServiceType service_type() const {
-    return service_type_;
-  }
+  ServiceType service_type() const { return service_type_; }
   /**
    * \brief Specifies current state of message in queue.
    * if false message is "ready to be processed"

@@ -35,20 +35,20 @@
 
 #include "transport_manager/tcp/tcp_transport_adapter.h"
 
-#include <errno.h>
 #include <memory.h>
 #include <signal.h>
+#include <errno.h>
 #include <stdio.h>
 
 #include <cstdlib>
 #include <sstream>
 
+#include "utils/logger.h"
+#include "utils/threads/thread_delegate.h"
 #include "resumption/last_state.h"
 #include "transport_manager/tcp/tcp_client_listener.h"
 #include "transport_manager/tcp/tcp_connection_factory.h"
 #include "transport_manager/tcp/tcp_device.h"
-#include "utils/logger.h"
-#include "utils/threads/thread_delegate.h"
 
 #ifdef AVAHI_SUPPORT
 #include "transport_manager/tcp/dnssd_service_browser.h"
@@ -72,9 +72,7 @@ TcpTransportAdapter::TcpTransportAdapter(const uint16_t port)
 
 TcpTransportAdapter::~TcpTransportAdapter() {}
 
-DeviceType TcpTransportAdapter::GetDeviceType() const {
-  return TCP;
-}
+DeviceType TcpTransportAdapter::GetDeviceType() const { return TCP; }
 
 void TcpTransportAdapter::Store() const {
   LOG4CXX_AUTO_TRACE(logger_);

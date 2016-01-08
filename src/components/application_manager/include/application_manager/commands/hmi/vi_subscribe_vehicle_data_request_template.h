@@ -33,8 +33,8 @@
 #ifndef HMI_VI_SUBSCRIBE_VEHICLE_DATA_REQUEST_TEMPLATE_H_
 #define HMI_VI_SUBSCRIBE_VEHICLE_DATA_REQUEST_TEMPLATE_H_
 
-#include "application_manager/commands/hmi/request_to_hmi.h"
 #include "application_manager/event_engine/event.h"
+#include "application_manager/commands/hmi/request_to_hmi.h"
 
 namespace application_manager {
 namespace commands {

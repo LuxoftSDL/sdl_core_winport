@@ -44,8 +44,7 @@ BitStream::~BitStream() {}
 
 size_t BitStream::FullBytesLeft() {
   size_t left = bytes_count_ - byte_offset_;
-  if (bit_offset_ != 0)
-    left -= 1;
+  if (bit_offset_ != 0) left -= 1;
   return left;
 }
 

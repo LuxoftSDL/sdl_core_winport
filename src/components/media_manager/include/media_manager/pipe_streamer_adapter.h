@@ -36,8 +36,8 @@
 #include <string>
 
 #include "media_manager/streamer_adapter.h"
-#include "utils/pipe.h"
 #include "utils/threads/thread_delegate.h"
+#include "utils/pipe.h"
 
 namespace media_manager {
 

@@ -55,40 +55,22 @@ RawMessage::RawMessage(uint32_t connection_key,
   }
 }
 
-RawMessage::~RawMessage() {
-  delete[] data_;
-}
+RawMessage::~RawMessage() { delete[] data_; }
 
-uint32_t RawMessage::connection_key() const {
-  return connection_key_;
-}
+uint32_t RawMessage::connection_key() const { return connection_key_; }
 
-void RawMessage::set_connection_key(uint32_t key) {
-  connection_key_ = key;
-}
+void RawMessage::set_connection_key(uint32_t key) { connection_key_ = key; }
 
-uint8_t* RawMessage::data() const {
-  return data_;
-}
+uint8_t* RawMessage::data() const { return data_; }
 
-size_t RawMessage::payload_size() const {
-  return payload_size_;
-}
+size_t RawMessage::payload_size() const { return payload_size_; }
 
-size_t RawMessage::data_size() const {
-  return data_size_;
-}
+size_t RawMessage::data_size() const { return data_size_; }
 
-uint32_t RawMessage::protocol_version() const {
-  return protocol_version_;
-}
+uint32_t RawMessage::protocol_version() const { return protocol_version_; }
 
-bool RawMessage::IsWaiting() const {
-  return waiting_;
-}
+bool RawMessage::IsWaiting() const { return waiting_; }
 
-void RawMessage::set_waiting(bool v) {
-  waiting_ = v;
-}
+void RawMessage::set_waiting(bool v) { waiting_ = v; }
 
 }  // namespace protocol_handler

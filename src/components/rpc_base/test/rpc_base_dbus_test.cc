@@ -40,9 +40,7 @@ using namespace dbus;
 
 enum TestEnum { kValue0, kValue1, kInvalidValue };
 
-bool IsValidEnum(TestEnum val) {
-  return val == kValue0 || val == kValue1;
-}
+bool IsValidEnum(TestEnum val) { return val == kValue0 || val == kValue1; }
 
 bool EnumFromJsonString(const std::string& value, TestEnum* enm) {
   if (value == "kValue0") {

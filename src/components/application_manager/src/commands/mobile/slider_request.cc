@@ -32,8 +32,8 @@
  */
 
 #include "application_manager/commands/mobile/slider_request.h"
-#include "application_manager/application_impl.h"
 #include "application_manager/application_manager_impl.h"
+#include "application_manager/application_impl.h"
 #include "application_manager/message_helper.h"
 #include "utils/helpers.h"
 

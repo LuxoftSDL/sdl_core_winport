@@ -78,23 +78,17 @@ class Device {
 
   virtual void Stop() {}
 
-  inline const DeviceUID& unique_device_id() const {
-    return unique_device_id_;
-  }
+  inline const DeviceUID& unique_device_id() const { return unique_device_id_; }
 
   /**
    * @brief Return name of device.
    */
-  inline const std::string& name() const {
-    return name_;
-  }
+  inline const std::string& name() const { return name_; }
 
   /**
    * @brief Get @link keep_on_disconnect_ @endlink value
    */
-  inline bool keep_on_disconnect() const {
-    return keep_on_disconnect_;
-  }
+  inline bool keep_on_disconnect() const { return keep_on_disconnect_; }
 
   /**
    * @brief Set @link keep_on_disconnect_ @endlink value

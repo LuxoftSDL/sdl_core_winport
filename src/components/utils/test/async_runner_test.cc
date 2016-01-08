@@ -30,11 +30,11 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
+#include <stdlib.h>
+#include <ctime>
 #include "lock.h"
 #include "threads/async_runner.h"
 #include "utils/conditional_variable.h"
-#include <ctime>
-#include <stdlib.h>
 
 #include "gtest/gtest.h"
 
@@ -52,9 +52,7 @@ uint32_t check_value = 0;
 // ThreadDelegate successor
 class TestThreadDelegate : public ThreadDelegate {
  public:
-  void threadMain() {
-    ++check_value;
-  }
+  void threadMain() { ++check_value; }
 };
 
 class AsyncRunnerTest : public ::testing::Test {
@@ -82,16 +80,10 @@ class AsyncRunnerTest : public ::testing::Test {
     delegates_ = new TestThreadDelegate*[kDelegatesNum_];
   }
 
-  void DeleteThreadsArray() {
-    delete[] delegates_;
-  }
+  void DeleteThreadsArray() { delete[] delegates_; }
 
-  void CreateAsyncRunner() {
-    asr_pt_ = new AsyncRunner("test");
-  }
-  void DeleteAsyncRunner() {
-    delete asr_pt_;
-  }
+  void CreateAsyncRunner() { asr_pt_ = new AsyncRunner("test"); }
+  void DeleteAsyncRunner() { delete asr_pt_; }
 };
 
 TEST_F(AsyncRunnerTest, ASyncRunManyDelegates_ExpectSuccessfulAllDelegatesRun) {

@@ -30,13 +30,13 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "include/security_manager_mock.h"
-#include "protocol_handler/protocol_payload.h"
-#include "security_manager/security_query.h"
-#include "utils/byte_order.h"
 #include <gtest/gtest.h>
-#include <string>
 #include <vector>
+#include <string>
+#include "security_manager/security_query.h"
+#include "protocol_handler/protocol_payload.h"
+#include "utils/byte_order.h"
+#include "include/security_manager_mock.h"
 
 // Test values for compare after serialization and byteorder conversion
 #define SEQ_NUMBER 0x12345678u

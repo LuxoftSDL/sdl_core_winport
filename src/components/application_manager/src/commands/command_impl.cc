@@ -47,27 +47,17 @@ CommandImpl::CommandImpl(const MessageSharedPtr& message)
     , default_timeout_(profile::Profile::instance()->default_timeout())
     , allowed_to_terminate_(true) {}
 
-CommandImpl::~CommandImpl() {
-  CleanUp();
-}
+CommandImpl::~CommandImpl() { CleanUp(); }
 
-bool CommandImpl::CheckPermissions() {
-  return true;
-}
+bool CommandImpl::CheckPermissions() { return true; }
 
-bool CommandImpl::Init() {
-  return true;
-}
+bool CommandImpl::Init() { return true; }
 
-bool CommandImpl::CleanUp() {
-  return true;
-}
+bool CommandImpl::CleanUp() { return true; }
 
 void CommandImpl::Run() {}
 
-uint32_t CommandImpl::default_timeout() const {
-  return default_timeout_;
-}
+uint32_t CommandImpl::default_timeout() const { return default_timeout_; }
 
 uint32_t CommandImpl::correlation_id() const {
   return (*message_)[strings::params][strings::correlation_id].asUInt();

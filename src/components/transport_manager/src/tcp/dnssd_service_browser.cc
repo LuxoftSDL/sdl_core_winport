@@ -31,13 +31,13 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "utils/logger.h"
 #include <algorithm>
 #include <map>
+#include "utils/logger.h"
 
-#include "transport_manager/tcp/dnssd_service_browser.h"
-#include "transport_manager/tcp/tcp_device.h"
 #include "transport_manager/transport_adapter/transport_adapter_impl.h"
+#include "transport_manager/tcp/tcp_device.h"
+#include "transport_manager/tcp/dnssd_service_browser.h"
 
 namespace transport_manager {
 namespace transport_adapter {
@@ -68,9 +68,7 @@ void DnssdServiceBrowser::Terminate() {
   }
 }
 
-bool DnssdServiceBrowser::IsInitialised() const {
-  return initialised_;
-}
+bool DnssdServiceBrowser::IsInitialised() const { return initialised_; }
 
 DnssdServiceBrowser::DnssdServiceBrowser(TransportAdapterController* controller)
     : controller_(controller)

@@ -34,15 +34,15 @@
 #include <fcntl.h>
 #include <memory.h>
 #ifdef OS_POSIX
-#include <sys/socket.h>
-#include <sys/types.h>
 #include <unistd.h>
+#include <sys/types.h>
+#include <sys/socket.h>
 #elif defined(OS_WINDOWS)
 #include "utils/winhdr.h"
-#include <BaseTsd.h>
-#include <io.h>
 #include <stdlib.h>
 #include <sys/types.h>
+#include <io.h>
+#include <BaseTsd.h>
 #define MSG_DONTWAIT 0
 #endif
 #include "utils/logger.h"

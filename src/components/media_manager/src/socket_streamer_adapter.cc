@@ -38,9 +38,9 @@
 #include <unistd.h>
 #endif
 
-#include "media_manager/socket_streamer_adapter.h"
 #include "utils/logger.h"
 #include "utils/socket.h"
+#include "media_manager/socket_streamer_adapter.h"
 
 namespace media_manager {
 

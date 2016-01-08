@@ -33,8 +33,8 @@
 #ifndef SRC_COMPONENTS_APPLICATION_MANAGER_INCLUDE_APPLICATION_MANAGER_COMMANDS_HMI_ON_PUT_FILE_NOTIFICATION_H_
 #define SRC_COMPONENTS_APPLICATION_MANAGER_INCLUDE_APPLICATION_MANAGER_COMMANDS_HMI_ON_PUT_FILE_NOTIFICATION_H_
 
-#include "application_manager/application_impl.h"
 #include "application_manager/commands/hmi/notification_to_hmi.h"
+#include "application_manager/application_impl.h"
 
 namespace application_manager {
 
