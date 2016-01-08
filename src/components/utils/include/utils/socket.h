@@ -32,9 +32,9 @@
 #ifndef SRC_COMPONENTS_UTILS_INCLUDE_UTILS_SOCKET_H_
 #define SRC_COMPONENTS_UTILS_INCLUDE_UTILS_SOCKET_H_
 
-#include <cstdint>
-#include <algorithm>
 #include "utils/macro.h"
+#include <algorithm>
+#include <cstdint>
 
 #if defined(_MSC_VER)
 #include "utils/winhdr.h"

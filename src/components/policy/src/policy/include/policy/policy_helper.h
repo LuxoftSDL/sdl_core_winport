@@ -34,8 +34,8 @@
 #define SRC_COMPONENTS_POLICY_INCLUDE_POLICY_POLICY_HELPER_H_
 
 #include "./functions.h"
-#include "utils/shared_ptr.h"
 #include "policy/policy_types.h"
+#include "utils/shared_ptr.h"
 
 namespace policy {
 class PolicyManagerImpl;
@@ -82,8 +82,10 @@ bool operator!=(const policy_table::ApplicationParams& first,
  */
 struct CheckAppPolicy {
   CheckAppPolicy(PolicyManagerImpl* pm,
-                 const utils::SharedPtr<policy_table::Table> update,
-                 const utils::SharedPtr<policy_table::Table> snapshot);
+                 const utils::SharedPtr<policy_table::Table>
+                     update,
+                 const utils::SharedPtr<policy_table::Table>
+                     snapshot);
   bool operator()(const AppPoliciesValueType& app_policy);
 
  private:

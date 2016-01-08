@@ -30,10 +30,10 @@
  POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include <sstream>
-#include <stdlib.h>
-#include <stdint.h>
 #include <errno.h>
+#include <sstream>
+#include <stdint.h>
+#include <stdlib.h>
 #ifdef OS_POSIX
 #include <unistd.h>
 #elif defined(OS_WINDOWS)
@@ -41,15 +41,15 @@
 #include <io.h>
 #endif
 
-#include "utils/logger.h"
-#include "utils/threads/thread.h"
+#include "policy/cache_manager.h"
+#include "policy/policy_helper.h"
+#include "policy/sql_pt_queries.h"
+#include "policy/sql_pt_representation.h"
 #include "utils/file_system.h"
 #include "utils/gen_hash.h"
-#include "policy/sql_pt_representation.h"
+#include "utils/logger.h"
 #include "utils/sql_wrapper.h"
-#include "policy/sql_pt_queries.h"
-#include "policy/policy_helper.h"
-#include "policy/cache_manager.h"
+#include "utils/threads/thread.h"
 
 namespace policy {
 
@@ -423,7 +423,9 @@ bool SQLPTRepresentation::Close() {
   return !db_->HasErrors();
 }
 
-VehicleData SQLPTRepresentation::GetVehicleData() { return VehicleData(); }
+VehicleData SQLPTRepresentation::GetVehicleData() {
+  return VehicleData();
+}
 
 bool SQLPTRepresentation::Drop() {
   Query query(db());
@@ -435,7 +437,9 @@ bool SQLPTRepresentation::Drop() {
   return true;
 }
 
-void SQLPTRepresentation::WriteDb() { db_->Backup(); }
+void SQLPTRepresentation::WriteDb() {
+  db_->Backup();
+}
 
 bool SQLPTRepresentation::Clear() {
   Query query(db());
@@ -1674,6 +1678,8 @@ void SQLPTRepresentation::SetPreloaded(bool value) {
   }
 }
 
-bool SQLPTRepresentation::SetVINValue(const std::string& value) { return true; }
+bool SQLPTRepresentation::SetVINValue(const std::string& value) {
+  return true;
+}
 
 }  // namespace policy

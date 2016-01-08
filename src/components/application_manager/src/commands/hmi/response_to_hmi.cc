@@ -45,9 +45,13 @@ ResponseToHMI::ResponseToHMI(const MessageSharedPtr& message)
 
 ResponseToHMI::~ResponseToHMI() {}
 
-bool ResponseToHMI::Init() { return true; }
+bool ResponseToHMI::Init() {
+  return true;
+}
 
-bool ResponseToHMI::CleanUp() { return true; }
+bool ResponseToHMI::CleanUp() {
+  return true;
+}
 
 void ResponseToHMI::Run() {
   (*message_)[strings::params][strings::protocol_type] = hmi_protocol_type_;

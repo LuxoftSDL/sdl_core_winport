@@ -33,10 +33,10 @@
 #ifndef SRC_COMPONENTS_MEDIA_MANAGER_INCLUDE_MEDIA_MANAGER_SOCKET_STREAMER_ADAPTER_H_
 #define SRC_COMPONENTS_MEDIA_MANAGER_INCLUDE_MEDIA_MANAGER_SOCKET_STREAMER_ADAPTER_H_
 
-#include <string>
 #include "media_manager/streamer_adapter.h"
-#include "utils/threads/thread_delegate.h"
 #include "utils/socket.h"
+#include "utils/threads/thread_delegate.h"
+#include <string>
 
 namespace media_manager {
 

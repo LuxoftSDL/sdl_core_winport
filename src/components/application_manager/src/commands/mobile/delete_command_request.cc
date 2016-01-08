@@ -32,10 +32,10 @@
  */
 
 #include "application_manager/commands/mobile/delete_command_request.h"
-#include "application_manager/application_manager_impl.h"
 #include "application_manager/application_impl.h"
-#include "interfaces/MOBILE_API.h"
+#include "application_manager/application_manager_impl.h"
 #include "interfaces/HMI_API.h"
+#include "interfaces/MOBILE_API.h"
 #include "utils/helpers.h"
 
 namespace application_manager {

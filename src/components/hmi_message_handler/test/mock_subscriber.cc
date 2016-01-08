@@ -30,8 +30,8 @@
 * POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include <dbus/dbus.h>
 #include "include/mock_subscriber.h"
+#include <dbus/dbus.h>
 
 namespace test {
 namespace components {

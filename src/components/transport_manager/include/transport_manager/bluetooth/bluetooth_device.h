@@ -38,8 +38,8 @@
 
 #ifdef OS_WINDOWS
 #include "utils/winhdr.h"
-#include <ws2bth.h>
 #include <BluetoothAPIs.h>
+#include <ws2bth.h>
 #else
 #include <bluetooth/bluetooth.h>
 #endif
@@ -117,9 +117,13 @@ class BluetoothDevice : public Device {
  * @return Device bluetooth address.
  */
 #ifdef OS_WINDOWS
-  const BTH_ADDR& address() const { return address_; }
+  const BTH_ADDR& address() const {
+    return address_;
+  }
 #else
-  const bdaddr_t& address() const { return address_; }
+  const bdaddr_t& address() const {
+    return address_;
+  }
 #endif
  private:
 /**

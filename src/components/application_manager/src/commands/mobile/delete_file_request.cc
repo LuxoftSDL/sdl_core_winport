@@ -32,8 +32,8 @@
  */
 
 #include "application_manager/commands/mobile/delete_file_request.h"
-#include "application_manager/application_manager_impl.h"
 #include "application_manager/application_impl.h"
+#include "application_manager/application_manager_impl.h"
 #include "config_profile/profile.h"
 #include "utils/file_system.h"
 

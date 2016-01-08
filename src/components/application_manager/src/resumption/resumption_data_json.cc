@@ -34,14 +34,14 @@
 #include <time.h>
 #endif
 
+#include "application_manager/message_helper.h"
 #include "application_manager/resumption/resumption_data_json.h"
+#include "application_manager/smart_object_keys.h"
+#include "config_profile/profile.h"
+#include "formatters/CFormatterJsonBase.hpp"
+#include "resumption/last_state.h"
 #include "smart_objects/smart_object.h"
 #include "json/json.h"
-#include "formatters/CFormatterJsonBase.hpp"
-#include "application_manager/message_helper.h"
-#include "application_manager/smart_object_keys.h"
-#include "resumption/last_state.h"
-#include "config_profile/profile.h"
 
 namespace resumption {
 

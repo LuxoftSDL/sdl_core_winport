@@ -31,24 +31,24 @@
  */
 #include "application_manager/resumption/resume_ctrl.h"
 
-#include <fstream>
 #include <algorithm>
+#include <fstream>
 #include <functional>
 
 #include "application_manager/application_manager_impl.h"
 
-#include "config_profile/profile.h"
-#include "utils/file_system.h"
-#include "connection_handler/connection_handler_impl.h"
-#include "application_manager/message_helper.h"
-#include "connection_handler/connection.h"
 #include "application_manager/commands/command_impl.h"
-#include "resumption/last_state.h"
-#include "policy/policy_manager_impl.h"
+#include "application_manager/message_helper.h"
 #include "application_manager/policies/policy_handler.h"
-#include "utils/helpers.h"
 #include "application_manager/resumption/resumption_data_db.h"
 #include "application_manager/resumption/resumption_data_json.h"
+#include "config_profile/profile.h"
+#include "connection_handler/connection.h"
+#include "connection_handler/connection_handler_impl.h"
+#include "policy/policy_manager_impl.h"
+#include "resumption/last_state.h"
+#include "utils/file_system.h"
+#include "utils/helpers.h"
 
 namespace resumption {
 using namespace application_manager;
@@ -354,7 +354,9 @@ void ResumeCtrl::StartAppHmiStateResumption(ApplicationSharedPtr application) {
   }
 }
 
-void ResumeCtrl::ResetLaunchTime() { launch_time_ = time(NULL); }
+void ResumeCtrl::ResetLaunchTime() {
+  launch_time_ = time(NULL);
+}
 
 bool ResumeCtrl::CheckPersistenceFilesForResumption(
     ApplicationSharedPtr application) {
@@ -667,7 +669,9 @@ bool ResumeCtrl::CheckDelayAfterIgnOn() {
   return seconds_from_sdl_start <= wait_time;
 }
 
-time_t ResumeCtrl::launch_time() const { return launch_time_; }
+time_t ResumeCtrl::launch_time() const {
+  return launch_time_;
+}
 
 time_t ResumeCtrl::GetIgnOffTime() {
   return resumption_storage_->GetIgnOffTime();

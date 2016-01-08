@@ -33,10 +33,10 @@
 #ifndef SRC_COMPONENTS_INCLUDE_SECURITY_MANAGER_SSL_CONTEXT_H_
 #define SRC_COMPONENTS_INCLUDE_SECURITY_MANAGER_SSL_CONTEXT_H_
 
-#include <cstddef>  // for size_t typedef
-#include <string>
-#include <ctype.h>
 #include <algorithm>
+#include <cstddef>  // for size_t typedef
+#include <ctype.h>
+#include <string>
 
 // TODO(EZamakhov): update brief info
 /**

@@ -33,14 +33,14 @@
 
 #include <errno.h>
 #include <limits.h>
-#include <stddef.h>
 #include <signal.h>
+#include <stddef.h>
 
-#include "utils/winhdr.h"
-#include "utils/threads/thread.h"
 #include "utils/atomic.h"
-#include "utils/threads/thread_delegate.h"
 #include "utils/logger.h"
+#include "utils/threads/thread.h"
+#include "utils/threads/thread_delegate.h"
+#include "utils/winhdr.h"
 
 const size_t THREAD_NAME_SIZE = 15;
 
@@ -133,14 +133,18 @@ Thread::Thread(const char* name, ThreadDelegate* delegate)
     , finalized_(false)
     , thread_created_(false) {}
 
-bool Thread::start() { return start(thread_options_); }
+bool Thread::start() {
+  return start(thread_options_);
+}
 
 void Thread::cleanup() {
   sync_primitives::AutoLock auto_lock(state_lock_);
   cleanup(this);
 }
 
-PlatformThreadHandle Thread::CurrentId() { return GetCurrentThread(); }
+PlatformThreadHandle Thread::CurrentId() {
+  return GetCurrentThread();
+}
 
 bool Thread::start(const ThreadOptions& options) {
   LOG4CXX_AUTO_TRACE(logger_);
@@ -235,7 +239,9 @@ Thread* CreateThread(const char* name, ThreadDelegate* delegate) {
   return thread;
 }
 
-void DeleteThread(Thread* thread) { delete thread; }
+void DeleteThread(Thread* thread) {
+  delete thread;
+}
 
 }  // namespace threads
 

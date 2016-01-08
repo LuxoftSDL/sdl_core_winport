@@ -32,9 +32,9 @@
 #if defined(OS_WINDOWS)
 
 #include "utils/threads/thread_delegate.h"
-#include "utils/winhdr.h"
-#include "utils/threads/thread.h"
 #include "utils/lock.h"
+#include "utils/threads/thread.h"
+#include "utils/winhdr.h"
 
 namespace threads {
 

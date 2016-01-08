@@ -34,8 +34,8 @@
 #define SRC_COMPONENTS_TIME_TESTER_INCLUDE_TIME_TESTER_TRANSPORT_MANAGER_OBSERVER_H_
 
 #include "transport_manager/time_metric_observer.h"
-#include "utils/message_queue.h"
 #include "utils/date_time.h"
+#include "utils/message_queue.h"
 
 namespace time_tester {
 

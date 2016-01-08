@@ -34,9 +34,9 @@
  */
 
 #include "transport_manager/usb/usb_aoa_adapter.h"
-#include "transport_manager/usb/usb_device_scanner.h"
-#include "transport_manager/usb/usb_connection_factory.h"
 #include "transport_manager/usb/common.h"
+#include "transport_manager/usb/usb_connection_factory.h"
+#include "transport_manager/usb/usb_device_scanner.h"
 #include "utils/logger.h"
 
 namespace transport_manager {
@@ -55,7 +55,9 @@ UsbAoaAdapter::UsbAoaAdapter()
 
 UsbAoaAdapter::~UsbAoaAdapter() {}
 
-DeviceType UsbAoaAdapter::GetDeviceType() const { return PASA_AOA; }
+DeviceType UsbAoaAdapter::GetDeviceType() const {
+  return PASA_AOA;
+}
 
 bool UsbAoaAdapter::IsInitialised() const {
   return is_initialised_ && TransportAdapterImpl::IsInitialised();
@@ -84,7 +86,9 @@ TransportAdapter::Error UsbAoaAdapter::Init() {
   return TransportAdapter::OK;
 }
 
-bool UsbAoaAdapter::ToBeAutoConnected(DeviceSptr device) const { return true; }
+bool UsbAoaAdapter::ToBeAutoConnected(DeviceSptr device) const {
+  return true;
+}
 
 }  // namespace transport_adapter
 }  // namespace transport_manager

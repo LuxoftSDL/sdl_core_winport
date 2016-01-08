@@ -31,11 +31,11 @@
  POSSIBILITY OF SUCH DAMAGE.
  */
 
+#include "application_manager/application_impl.h"
+#include "application_manager/application_manager_impl.h"
+#include "application_manager/commands/mobile/dial_number_request.h"
 #include <algorithm>
 #include <string>
-#include "application_manager/commands/mobile/dial_number_request.h"
-#include "application_manager/application_manager_impl.h"
-#include "application_manager/application_impl.h"
 
 namespace application_manager {
 

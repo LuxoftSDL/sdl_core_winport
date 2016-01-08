@@ -34,17 +34,17 @@
 #include "utils/file_system.h"
 #include "utils/logger.h"
 
-#include <sys/statvfs.h>
-#include <sys/stat.h>
-#include <sys/types.h>
 #include <sstream>
+#include <sys/stat.h>
+#include <sys/statvfs.h>
+#include <sys/types.h>
 
 #include <dirent.h>
 #include <unistd.h>
 // TODO(VS): lint error: Streams are highly discouraged.
-#include <fstream>
-#include <cstddef>
 #include <algorithm>
+#include <cstddef>
+#include <fstream>
 
 CREATE_LOGGERPTR_GLOBAL(logger_, "Utils")
 
@@ -454,7 +454,9 @@ void file_system::MakeAbsolutePath(std::string& path) {
   path = ConcatPath(CurrentWorkingDirectory(), path);
 }
 
-std::string file_system::GetPathDelimiter() { return "/"; }
+std::string file_system::GetPathDelimiter() {
+  return "/";
+}
 
 std::string file_system::ConcatPath(const std::string& str1,
                                     const std::string& str2) {

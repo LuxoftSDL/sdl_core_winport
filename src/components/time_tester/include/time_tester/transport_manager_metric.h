@@ -33,9 +33,9 @@
 #ifndef SRC_COMPONENTS_TIME_TESTER_INCLUDE_TIME_TESTER_TRANSPORT_MANAGER_MECTRIC_H_
 #define SRC_COMPONENTS_TIME_TESTER_INCLUDE_TIME_TESTER_TRANSPORT_MANAGER_MECTRIC_H_
 
-#include <string>
 #include "metric_wrapper.h"
 #include "transport_manager_observer.h"
+#include <string>
 
 namespace time_tester {
 

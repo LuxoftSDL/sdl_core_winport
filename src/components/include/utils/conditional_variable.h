@@ -40,8 +40,8 @@
 #error "Condition variable is not defined for this platform"
 #endif
 
-#include <stdint.h>
 #include "utils/macro.h"
+#include <stdint.h>
 
 namespace sync_primitives {
 class AutoLock;

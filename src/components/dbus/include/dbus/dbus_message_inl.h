@@ -36,7 +36,9 @@
 
 namespace dbus {
 // MessageReader
-inline bool MessageReader::has_failed() const { return failed_; }
+inline bool MessageReader::has_failed() const {
+  return failed_;
+}
 
 inline bool MessageReader::IsAtLastElement() const {
   DBusMessageIter* iter = const_cast<DBusMessageIter*>(&iterator_);

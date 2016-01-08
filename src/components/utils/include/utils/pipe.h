@@ -32,9 +32,9 @@
 #ifndef SRC_COMPONENTS_UTILS_INCLUDE_UTILS_PIPE_H_
 #define SRC_COMPONENTS_UTILS_INCLUDE_UTILS_PIPE_H_
 
+#include "utils/macro.h"
 #include <cstdint>
 #include <string>
-#include "utils/macro.h"
 
 #if defined(_MSC_VER)
 typedef SSIZE_T ssize_t;

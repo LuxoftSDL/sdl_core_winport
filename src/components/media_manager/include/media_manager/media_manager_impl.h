@@ -33,14 +33,14 @@
 #ifndef SRC_COMPONENTS_MEDIA_MANAGER_INCLUDE_MEDIA_MANAGER_MEDIA_MANAGER_IMPL_H_
 #define SRC_COMPONENTS_MEDIA_MANAGER_INCLUDE_MEDIA_MANAGER_MEDIA_MANAGER_IMPL_H_
 
-#include <string>
-#include <map>
-#include "utils/singleton.h"
-#include "protocol_handler/protocol_observer.h"
-#include "protocol_handler/protocol_handler.h"
-#include "media_manager/media_manager.h"
 #include "media_manager/media_adapter_impl.h"
 #include "media_manager/media_adapter_listener.h"
+#include "media_manager/media_manager.h"
+#include "protocol_handler/protocol_handler.h"
+#include "protocol_handler/protocol_observer.h"
+#include "utils/singleton.h"
+#include <map>
+#include <string>
 
 namespace media_manager {
 

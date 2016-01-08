@@ -34,8 +34,8 @@
 #ifndef SRC_COMPONENTS_APPLICATION_MANAGER_INCLUDE_APPLICATION_MANAGER_COMMANDS_SYSTEM_REQUEST_H_
 #define SRC_COMPONENTS_APPLICATION_MANAGER_INCLUDE_APPLICATION_MANAGER_COMMANDS_SYSTEM_REQUEST_H_
 
-#include <string>
 #include "application_manager/commands/command_request_impl.h"
+#include <string>
 
 namespace NsSmartDeviceLink {
 namespace NsSmartObjects {

@@ -31,8 +31,8 @@
  */
 
 #include "application_manager/commands/hmi/get_urls.h"
-#include "application_manager/message.h"
 #include "application_manager/application_manager_impl.h"
+#include "application_manager/message.h"
 #include "application_manager/policies/policy_handler.h"
 
 namespace application_manager {

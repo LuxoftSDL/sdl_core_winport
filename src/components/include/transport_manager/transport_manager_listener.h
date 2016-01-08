@@ -33,11 +33,11 @@
 #ifndef SRC_COMPONENTS_INCLUDE_TRANSPORT_MANAGER_TRANSPORT_MANAGER_LISTENER_H_
 #define SRC_COMPONENTS_INCLUDE_TRANSPORT_MANAGER_TRANSPORT_MANAGER_LISTENER_H_
 
-#include <vector>
-#include "transport_manager/common.h"
-#include "transport_manager/info.h"
-#include "transport_manager/error.h"
 #include "protocol/common.h"
+#include "transport_manager/common.h"
+#include "transport_manager/error.h"
+#include "transport_manager/info.h"
+#include <vector>
 
 namespace transport_manager {
 

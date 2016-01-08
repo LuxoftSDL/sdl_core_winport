@@ -33,9 +33,9 @@
 #ifndef SRC_COMPONENTS_APPLICATION_MANAGER_INCLUDE_APPLICATION_MANAGER_EVENT_OBSERVER_H_
 #define SRC_COMPONENTS_APPLICATION_MANAGER_INCLUDE_APPLICATION_MANAGER_EVENT_OBSERVER_H_
 
-#include <string>
 #include "application_manager/event_engine/event.h"
 #include "application_manager/event_engine/event_dispatcher.h"
+#include <string>
 
 namespace application_manager {
 namespace event_engine {
@@ -102,7 +102,9 @@ class EventObserver {
   DISALLOW_COPY_AND_ASSIGN(EventObserver);
 };
 
-const EventObserver::ObserverID& EventObserver::id() const { return id_; }
+const EventObserver::ObserverID& EventObserver::id() const {
+  return id_;
+}
 }
 }
 

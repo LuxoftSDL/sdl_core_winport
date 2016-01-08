@@ -31,8 +31,8 @@
  */
 #include <algorithm>
 
-#include "utils/winhdr.h"
 #include "utils/pipe.h"
+#include "utils/winhdr.h"
 
 namespace std {
 
@@ -71,7 +71,9 @@ class Pipe::Impl {
 
 utils::Pipe::Pipe() : impl_(new Pipe::Impl()) {}
 
-utils::Pipe::~Pipe() { delete impl_; }
+utils::Pipe::~Pipe() {
+  delete impl_;
+}
 
 utils::Pipe::Pipe(Pipe& rh) {
   impl_ = new Pipe::Impl();
@@ -86,15 +88,21 @@ utils::Pipe& utils::Pipe::operator=(Pipe& rh) {
   return *this;
 }
 
-bool utils::Pipe::Valid() const { return impl_->Valid(); }
+bool utils::Pipe::Valid() const {
+  return impl_->Valid();
+}
 
 bool utils::Pipe::Create(const std::string& name) {
   return impl_->Create(name);
 }
 
-bool utils::Pipe::Open() { return impl_->Open(); }
+bool utils::Pipe::Open() {
+  return impl_->Open();
+}
 
-bool utils::Pipe::Close() { return impl_->Close(); }
+bool utils::Pipe::Close() {
+  return impl_->Close();
+}
 
 ssize_t utils::Pipe::Write(const char* buf, size_t length) {
   return impl_->Write(buf, length);
@@ -102,16 +110,22 @@ ssize_t utils::Pipe::Write(const char* buf, size_t length) {
 
 utils::Pipe::Pipe(Pipe::Impl* impl) : impl_(impl) {}
 
-void utils::Pipe::Swap(Pipe& rh) { std::swap(this->impl_, rh.impl_); }
+void utils::Pipe::Swap(Pipe& rh) {
+  std::swap(this->impl_, rh.impl_);
+}
 
 utils::Pipe::Impl::Impl() : pipe_(NULL) {}
 
 utils::Pipe::Impl::Impl(HANDLE pipe)
     : pipe_(INVALID_HANDLE_VALUE == pipe ? NULL : pipe) {}
 
-utils::Pipe::Impl::~Impl() { Close(); }
+utils::Pipe::Impl::~Impl() {
+  Close();
+}
 
-utils::Pipe::Impl::Impl(Impl& rh) : pipe_(rh.pipe_) { rh.pipe_ = NULL; }
+utils::Pipe::Impl::Impl(Impl& rh) : pipe_(rh.pipe_) {
+  rh.pipe_ = NULL;
+}
 
 utils::Pipe::Impl& utils::Pipe::Impl::operator=(Impl& rh) {
   Close();
@@ -120,7 +134,9 @@ utils::Pipe::Impl& utils::Pipe::Impl::operator=(Impl& rh) {
   return *this;
 }
 
-bool utils::Pipe::Impl::Valid() const { return pipe_ != NULL; }
+bool utils::Pipe::Impl::Valid() const {
+  return pipe_ != NULL;
+}
 
 bool utils::Pipe::Impl::Create(const std::string& name) {
   if (!Close()) {

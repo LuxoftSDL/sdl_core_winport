@@ -31,14 +31,14 @@
  POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include <string.h>
-#include <algorithm>
-#include "application_manager/commands/mobile/change_registration_request.h"
-#include "application_manager/application_manager_impl.h"
 #include "application_manager/application_impl.h"
+#include "application_manager/application_manager_impl.h"
+#include "application_manager/commands/mobile/change_registration_request.h"
 #include "application_manager/policies/policy_handler.h"
-#include "interfaces/MOBILE_API.h"
 #include "interfaces/HMI_API.h"
+#include "interfaces/MOBILE_API.h"
+#include <algorithm>
+#include <string.h>
 
 namespace {
 struct IsSameNickname {

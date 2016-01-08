@@ -33,32 +33,32 @@
 #ifndef SRC_COMPONENTS_APPLICATION_MANAGER_INCLUDE_APPLICATION_MANAGER_H_
 #define SRC_COMPONENTS_APPLICATION_MANAGER_INCLUDE_APPLICATION_MANAGER_H_
 
-#include <stdint.h>
-#include <vector>
+#include <algorithm>
+#include <deque>
 #include <map>
 #include <set>
-#include <deque>
-#include <algorithm>
+#include <stdint.h>
+#include <vector>
 
-#include "application_manager/hmi_command_factory.h"
 #include "application_manager/application_manager.h"
 #include "application_manager/hmi_capabilities.h"
+#include "application_manager/hmi_command_factory.h"
 #include "application_manager/message.h"
 #include "application_manager/message_helper.h"
+#include "application_manager/policies/policy_handler_observer.h"
 #include "application_manager/request_controller.h"
 #include "application_manager/resumption/resume_ctrl.h"
-#include "application_manager/vehicle_info_data.h"
 #include "application_manager/state_controller.h"
-#include "protocol_handler/protocol_observer.h"
-#include "protocol_handler/protocol_handler.h"
-#include "hmi_message_handler/hmi_message_observer.h"
-#include "hmi_message_handler/hmi_message_sender.h"
-#include "application_manager/policies/policy_handler_observer.h"
-#include "media_manager/media_manager_impl.h"
+#include "application_manager/vehicle_info_data.h"
 #include "connection_handler/connection_handler.h"
 #include "connection_handler/connection_handler_observer.h"
 #include "connection_handler/device.h"
 #include "formatters/CSmartFactory.hpp"
+#include "hmi_message_handler/hmi_message_observer.h"
+#include "hmi_message_handler/hmi_message_sender.h"
+#include "media_manager/media_manager_impl.h"
+#include "protocol_handler/protocol_handler.h"
+#include "protocol_handler/protocol_observer.h"
 
 #include "interfaces/HMI_API.h"
 #include "interfaces/HMI_API_schema.h"
@@ -76,15 +76,15 @@
 #include "time_metric_observer.h"
 #endif  // TIME_TESTER
 
+#include "utils/data_accessor.h"
+#include "utils/lock.h"
 #include "utils/macro.h"
-#include "utils/shared_ptr.h"
 #include "utils/message_queue.h"
 #include "utils/prioritized_queue.h"
-#include "utils/threads/thread.h"
-#include "utils/threads/message_loop_thread.h"
-#include "utils/lock.h"
+#include "utils/shared_ptr.h"
 #include "utils/singleton.h"
-#include "utils/data_accessor.h"
+#include "utils/threads/message_loop_thread.h"
+#include "utils/threads/thread.h"
 
 namespace NsSmartDeviceLink {
 namespace NsSmartObjects {
@@ -129,7 +129,9 @@ struct MessageFromMobile : public utils::SharedPtr<Message> {
   explicit MessageFromMobile(const utils::SharedPtr<Message>& message)
       : utils::SharedPtr<Message>(message) {}
   // PrioritizedQueue requres this method to decide which priority to assign
-  size_t PriorityOrder() const { return (*this)->Priority().OrderingValue(); }
+  size_t PriorityOrder() const {
+    return (*this)->Priority().OrderingValue();
+  }
 };
 
 struct MessageToMobile : public utils::SharedPtr<Message> {
@@ -138,7 +140,9 @@ struct MessageToMobile : public utils::SharedPtr<Message> {
                            bool final_message)
       : utils::SharedPtr<Message>(message), is_final(final_message) {}
   // PrioritizedQueue requres this method to decide which priority to assign
-  size_t PriorityOrder() const { return (*this)->Priority().OrderingValue(); }
+  size_t PriorityOrder() const {
+    return (*this)->Priority().OrderingValue();
+  }
   // Signals if connection to mobile must be closed after sending this message
   bool is_final;
 };
@@ -148,7 +152,9 @@ struct MessageFromHmi : public utils::SharedPtr<Message> {
   explicit MessageFromHmi(const utils::SharedPtr<Message>& message)
       : utils::SharedPtr<Message>(message) {}
   // PrioritizedQueue requres this method to decide which priority to assign
-  size_t PriorityOrder() const { return (*this)->Priority().OrderingValue(); }
+  size_t PriorityOrder() const {
+    return (*this)->Priority().OrderingValue();
+  }
 };
 
 struct MessageToHmi : public utils::SharedPtr<Message> {
@@ -156,7 +162,9 @@ struct MessageToHmi : public utils::SharedPtr<Message> {
   explicit MessageToHmi(const utils::SharedPtr<Message>& message)
       : utils::SharedPtr<Message>(message) {}
   // PrioritizedQueue requres this method to decide which priority to assign
-  size_t PriorityOrder() const { return (*this)->Priority().OrderingValue(); }
+  size_t PriorityOrder() const {
+    return (*this)->Priority().OrderingValue();
+  }
 };
 
 // Short type names for prioritized message queues
@@ -817,7 +825,9 @@ class ApplicationManagerImpl
     * Getter for resume_controller
     * @return Resume Controller
     */
-  resumption::ResumeCtrl& resume_controller() { return resume_ctrl_; }
+  resumption::ResumeCtrl& resume_controller() {
+    return resume_ctrl_;
+  }
 
   /**
    * Generate grammar ID
@@ -1014,11 +1024,17 @@ class ApplicationManagerImpl
      * @brief thread-safe getter for applications
      * @return applications list
      */
-    const ApplictionSet& applications() const { return GetData(); }
+    const ApplictionSet& applications() const {
+      return GetData();
+    }
 
-    ApplictionSetConstIt begin() { return applications().begin(); }
+    ApplictionSetConstIt begin() {
+      return applications().begin();
+    }
 
-    ApplictionSetConstIt end() { return applications().end(); }
+    ApplictionSetConstIt end() {
+      return applications().end();
+    }
 
     template <class UnaryPredicate>
     ApplicationSharedPtr Find(UnaryPredicate finder) {

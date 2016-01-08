@@ -31,12 +31,12 @@
  POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include <string.h>
-#include "application_manager/commands/mobile/perform_audio_pass_thru_request.h"
-#include "application_manager/application_manager_impl.h"
 #include "application_manager/application_impl.h"
+#include "application_manager/application_manager_impl.h"
+#include "application_manager/commands/mobile/perform_audio_pass_thru_request.h"
 #include "application_manager/message_helper.h"
 #include "utils/helpers.h"
+#include <string.h>
 
 namespace application_manager {
 

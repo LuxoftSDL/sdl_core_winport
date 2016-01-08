@@ -34,10 +34,10 @@
 
 #ifdef ENABLE_LOG
 
-#include <errno.h>
-#include <string>
-#include <sstream>
 #include <cstdint>
+#include <errno.h>
+#include <sstream>
+#include <string>
 
 #if defined(LOG4CXX_LOGGER)
 #include <log4cxx/logger.h>

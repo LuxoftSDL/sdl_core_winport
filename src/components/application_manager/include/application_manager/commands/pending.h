@@ -34,10 +34,10 @@
 #ifndef SRC_COMPONENTS_APPLICATION_MANAGER_INCLUDE_APPLICATION_MANAGER_COMMANDS_PENDING_H_
 #define SRC_COMPONENTS_APPLICATION_MANAGER_INCLUDE_APPLICATION_MANAGER_COMMANDS_PENDING_H_
 
-#include <set>
-#include "utils/macro.h"
-#include "utils/lock.h"
 #include "interfaces/HMI_API.h"
+#include "utils/lock.h"
+#include "utils/macro.h"
+#include <set>
 
 namespace application_manager {
 

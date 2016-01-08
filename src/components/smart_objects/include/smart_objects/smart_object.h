@@ -33,10 +33,10 @@
 #ifndef SRC_COMPONENTS_SMART_OBJECTS_INCLUDE_SMART_OBJECTS_SMART_OBJECT_H_
 #define SRC_COMPONENTS_SMART_OBJECTS_INCLUDE_SMART_OBJECTS_SMART_OBJECT_H_
 
+#include <map>
 #include <set>
 #include <string>
 #include <vector>
-#include <map>
 
 #include "smart_objects/smart_schema.h"
 

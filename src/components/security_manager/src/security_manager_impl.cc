@@ -31,10 +31,10 @@
  */
 
 #include "security_manager/security_manager_impl.h"
-#include "security_manager/crypto_manager_impl.h"
 #include "protocol_handler/protocol_packet.h"
-#include "utils/logger.h"
+#include "security_manager/crypto_manager_impl.h"
 #include "utils/byte_order.h"
+#include "utils/logger.h"
 #include "json/json.h"
 
 namespace security_manager {
@@ -337,7 +337,8 @@ bool SecurityManagerImpl::ProccessInternalError(
   Json::Reader reader;
   const bool parsingSuccessful =
       reader.parse(inMessage->get_json_message(), root);
-  if (!parsingSuccessful) return false;
+  if (!parsingSuccessful)
+    return false;
   LOG4CXX_DEBUG(logger_,
                 "Received InternalError id " << root[kErrId].asString()
                                              << ", text: "
@@ -410,6 +411,8 @@ void SecurityManagerImpl::SendQuery(const SecurityQuery& query,
   }
 }
 
-const char* SecurityManagerImpl::ConfigSection() { return "Security Manager"; }
+const char* SecurityManagerImpl::ConfigSection() {
+  return "Security Manager";
+}
 
 }  // namespace security_manager

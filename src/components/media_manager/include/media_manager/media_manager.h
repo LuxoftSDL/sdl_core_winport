@@ -33,8 +33,8 @@
 #ifndef SRC_COMPONENTS_MEDIA_MANAGER_INCLUDE_MEDIA_MANAGER_MEDIA_MANAGER_H_
 #define SRC_COMPONENTS_MEDIA_MANAGER_INCLUDE_MEDIA_MANAGER_MEDIA_MANAGER_H_
 
-#include <string>
 #include "protocol_handler/protocol_handler.h"
+#include <string>
 
 namespace media_manager {
 

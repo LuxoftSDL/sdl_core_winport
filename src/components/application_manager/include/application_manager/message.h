@@ -36,10 +36,10 @@
 #include <string>
 #include <vector>
 
-#include "utils/shared_ptr.h"
 #include "protocol/message_priority.h"
 #include "protocol/rpc_type.h"
 #include "smart_objects/smart_object.h"
+#include "utils/shared_ptr.h"
 
 namespace smart_objects = NsSmartDeviceLink::NsSmartObjects;
 
@@ -103,7 +103,9 @@ class Message {
   void set_data_size(size_t data_size);
   void set_payload_size(size_t payload_size);
 
-  protocol_handler::MessagePriority Priority() const { return priority_; }
+  protocol_handler::MessagePriority Priority() const {
+    return priority_;
+  }
 
  private:
   int32_t function_id_;     // @remark protocol V2.

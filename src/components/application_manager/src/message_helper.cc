@@ -32,11 +32,11 @@
 
 #include "application_manager/message_helper.h"
 
+#include <algorithm>
+#include <map>
 #include <set>
 #include <string>
-#include <algorithm>
 #include <utility>
-#include <map>
 
 #include "application_manager/application.h"
 #include "application_manager/application_manager_impl.h"
@@ -47,15 +47,15 @@
 #include "interfaces/MOBILE_API.h"
 #include "smart_objects/enum_schema_item.h"
 #include "utils/file_system.h"
+#include "utils/logger.h"
 #include "utils/macro.h"
 #include "utils/make_shared.h"
-#include "utils/logger.h"
 #include "utils/make_shared.h"
 #include "utils/string_utils.h"
 
-#include "formatters/formatter_json_rpc.h"
-#include "formatters/CFormatterJsonSDLRPCv2.hpp"
 #include "formatters/CFormatterJsonSDLRPCv1.hpp"
+#include "formatters/CFormatterJsonSDLRPCv2.hpp"
+#include "formatters/formatter_json_rpc.h"
 
 #if defined(_MSC_VER)
 #define snprintf _snprintf_s
@@ -505,7 +505,9 @@ void MessageHelper::SendOnAppInterfaceUnregisteredNotificationToMobile(
   }
 }
 
-const VehicleData& MessageHelper::vehicle_data() { return vehicle_data_; }
+const VehicleData& MessageHelper::vehicle_data() {
+  return vehicle_data_;
+}
 
 std::string MessageHelper::HMIResultToString(
     hmi_apis::Common_Result::eType hmi_result) {

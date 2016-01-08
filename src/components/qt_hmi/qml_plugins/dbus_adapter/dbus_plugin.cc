@@ -34,12 +34,12 @@
 
 #include "dbus_plugin.h"
 
+#include "dbus_controller.h"
 #include "hmi_proxy.h"
-#include "sdl_proxy.h"
 #include "optional_argument.h"
 #include "qml_dbus.h"
-#include "dbus_controller.h"
 #include "request_to_sdl.h"
+#include "sdl_proxy.h"
 
 #include <log4cxx/logger.h>
 #include <log4cxx/propertyconfigurator.h>
@@ -49,12 +49,12 @@
 
 #if QT_4
 #include <QtDeclarative/QDeclarativeContext>
-#include <QtDeclarative/QDeclarativeListReference>
 #include <QtDeclarative/QDeclarativeEngine>
+#include <QtDeclarative/QDeclarativeListReference>
 #elif QT_5
 #include <QtQml/QQmlContext>
-#include <QtQml/QQmlListReference>
 #include <QtQml/QQmlEngine>
+#include <QtQml/QQmlListReference>
 #endif  // QT_VERSION
 log4cxx::LoggerPtr logger_ =
     log4cxx::LoggerPtr(log4cxx::Logger::getLogger("DBusPlugin"));

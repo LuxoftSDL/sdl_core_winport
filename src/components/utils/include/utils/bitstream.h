@@ -57,12 +57,20 @@ class BitStream {
   // Mark stream as badly-formed.
   // Should be called by Extract* family of procedures if they decide
   // that stream is invalid
-  void MarkBad() { bad_ = true; }
+  void MarkBad() {
+    bad_ = true;
+  }
   // Predicates to check whether there were errors while parsing
   // Stream is good when it is created
-  bool IsGood() { return !bad_; }
-  bool IsBad() { return bad_; }
-  operator bool() { return IsGood(); }
+  bool IsGood() {
+    return !bad_;
+  }
+  bool IsBad() {
+    return bad_;
+  }
+  operator bool() {
+    return IsGood();
+  }
 
  private:
   // These two functions are used for internal stream checks only

@@ -32,18 +32,18 @@
 
 #include <string>
 
+#include "formatters/CSmartFactory.hpp"
+#include "formatters/generic_json_formatter.h"
 #include "gmock/gmock.h"
-#include "smart_objects/smart_object.h"
-#include "smart_objects/smart_schema.h"
 #include "smart_objects/array_schema_item.h"
 #include "smart_objects/bool_schema_item.h"
-#include "smart_objects/string_schema_item.h"
 #include "smart_objects/enum_schema_item.h"
 #include "smart_objects/number_schema_item.h"
-#include "smart_objects/schema_item_parameter.h"
 #include "smart_objects/object_schema_item.h"
-#include "formatters/generic_json_formatter.h"
-#include "formatters/CSmartFactory.hpp"
+#include "smart_objects/schema_item_parameter.h"
+#include "smart_objects/smart_object.h"
+#include "smart_objects/smart_schema.h"
+#include "smart_objects/string_schema_item.h"
 
 namespace formatters = NsSmartDeviceLink::NsJSONHandler::Formatters;
 namespace smartobj = NsSmartDeviceLink::NsSmartObjects;

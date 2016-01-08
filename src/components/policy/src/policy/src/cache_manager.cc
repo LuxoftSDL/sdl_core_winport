@@ -33,16 +33,16 @@
 #include "policy/cache_manager.h"
 
 #include <algorithm>
-#include <iterator>
-#include <functional>
-#include <ctime>
 #include <cmath>
+#include <ctime>
+#include <functional>
+#include <iterator>
 
 #include "utils/file_system.h"
-#include "json/reader.h"
-#include "json/features.h"
-#include "json/writer.h"
 #include "utils/logger.h"
+#include "json/features.h"
+#include "json/reader.h"
+#include "json/writer.h"
 #ifdef OS_WINDOWS
 #define strncasecmp _strnicmp
 #define strcasecmp _stricmp
@@ -381,7 +381,9 @@ bool CacheManager::SetUserPermissionsForApp(
   return true;
 }
 
-bool CacheManager::UpdateRequired() const { return update_required; }
+bool CacheManager::UpdateRequired() const {
+  return update_required;
+}
 
 void CacheManager::SaveUpdateRequired(bool status) {
   update_required = status;

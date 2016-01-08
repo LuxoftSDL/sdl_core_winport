@@ -32,16 +32,16 @@
 
 #include "config_profile/profile.h"
 
-#include <errno.h>
-#include <string.h>
-#include <stdlib.h>
-#include <sstream>
 #include <algorithm>
+#include <errno.h>
+#include <sstream>
+#include <stdlib.h>
+#include <string.h>
 
 #include "config_profile/ini_file.h"
+#include "utils/file_system.h"
 #include "utils/logger.h"
 #include "utils/threads/thread.h"
-#include "utils/file_system.h"
 
 #ifdef ENABLE_SECURITY
 #include <openssl/ssl.h>
@@ -370,12 +370,18 @@ const std::string& Profile::config_file_name() const {
   return config_file_name_;
 }
 
-const std::string& Profile::sdl_version() const { return sdl_version_; }
+const std::string& Profile::sdl_version() const {
+  return sdl_version_;
+}
 
-bool Profile::launch_hmi() const { return launch_hmi_; }
+bool Profile::launch_hmi() const {
+  return launch_hmi_;
+}
 
 #ifdef WEB_HMI
-std::string Profile::link_to_web_hmi() const { return link_to_web_hmi_; }
+std::string Profile::link_to_web_hmi() const {
+  return link_to_web_hmi_;
+}
 #endif  // WEB_HMI
 
 const std::string& Profile::app_config_folder() const {
@@ -390,7 +396,9 @@ const std::string& Profile::app_resourse_folder() const {
   return app_resourse_folder_;
 }
 
-bool Profile::enable_protocol_4() const { return enable_protocol_4_; }
+bool Profile::enable_protocol_4() const {
+  return enable_protocol_4_;
+}
 
 const std::string& Profile::app_icons_folder() const {
   return app_icons_folder_;
@@ -408,7 +416,9 @@ const std::string& Profile::hmi_capabilities_file_name() const {
   return hmi_capabilities_file_name_;
 }
 
-const std::string& Profile::server_address() const { return server_address_; }
+const std::string& Profile::server_address() const {
+  return server_address_;
+}
 
 const std::vector<std::string>& Profile::help_prompt() const {
   return help_prompt_;
@@ -422,9 +432,13 @@ const std::vector<std::string>& Profile::vr_commands() const {
   return vr_commands_;
 }
 
-const uint32_t& Profile::max_cmd_id() const { return max_cmd_id_; }
+const uint32_t& Profile::max_cmd_id() const {
+  return max_cmd_id_;
+}
 
-const uint32_t& Profile::default_timeout() const { return default_timeout_; }
+const uint32_t& Profile::default_timeout() const {
+  return default_timeout_;
+}
 
 const uint32_t& Profile::app_resuming_timeout() const {
   return app_resuming_timeout_;
@@ -434,9 +448,13 @@ const uint32_t& Profile::app_resumption_save_persistent_data_timeout() const {
   return app_resumption_save_persistent_data_timeout_;
 }
 
-const std::string& Profile::vr_help_title() const { return vr_help_title_; }
+const std::string& Profile::vr_help_title() const {
+  return vr_help_title_;
+}
 
-const uint16_t& Profile::server_port() const { return server_port_; }
+const uint16_t& Profile::server_port() const {
+  return server_port_;
+}
 
 const uint16_t& Profile::video_streaming_port() const {
   return video_streaming_port_;
@@ -462,9 +480,13 @@ bool Profile::is_mixing_audio_supported() const {
   return is_mixing_audio_supported_;
 }
 
-const uint32_t& Profile::app_dir_quota() const { return app_dir_quota_; }
+const uint32_t& Profile::app_dir_quota() const {
+  return app_dir_quota_;
+}
 
-bool Profile::is_redecoding_enabled() const { return is_redecoding_enabled_; }
+bool Profile::is_redecoding_enabled() const {
+  return is_redecoding_enabled_;
+}
 
 const std::string& Profile::video_server_type() const {
   return video_consumer_type_;
@@ -518,7 +540,9 @@ const uint32_t& Profile::pending_requests_amount() const {
   return pending_requests_amount_;
 }
 
-const uint32_t& Profile::put_file_in_none() const { return put_file_in_none_; }
+const uint32_t& Profile::put_file_in_none() const {
+  return put_file_in_none_;
+}
 
 const uint32_t& Profile::delete_file_in_none() const {
   return delete_file_in_none_;
@@ -532,7 +556,9 @@ const std::string& Profile::app_info_storage() const {
   return app_info_storage_;
 }
 
-uint32_t Profile::heart_beat_timeout() const { return heart_beat_timeout_; }
+uint32_t Profile::heart_beat_timeout() const {
+  return heart_beat_timeout_;
+}
 
 const std::string& Profile::preloaded_pt_file() const {
   return preloaded_pt_file_;
@@ -542,13 +568,17 @@ const std::string& Profile::policies_snapshot_file_name() const {
   return policy_snapshot_file_name_;
 }
 
-bool Profile::enable_policy() const { return enable_policy_; }
+bool Profile::enable_policy() const {
+  return enable_policy_;
+}
 
 uint32_t Profile::transport_manager_disconnect_timeout() const {
   return transport_manager_disconnect_timeout_;
 }
 
-bool Profile::use_last_state() const { return use_last_state_; }
+bool Profile::use_last_state() const {
+  return use_last_state_;
+}
 
 const std::string& Profile::system_files_path() const {
   return system_files_path_;
@@ -562,7 +592,9 @@ uint16_t Profile::transport_manager_tcp_adapter_port() const {
   return transport_manager_tcp_adapter_port_;
 }
 
-const std::string& Profile::tts_delimiter() const { return tts_delimiter_; }
+const std::string& Profile::tts_delimiter() const {
+  return tts_delimiter_;
+}
 
 const std::string& Profile::recording_file_source() const {
   return recording_file_source_;
@@ -572,9 +604,13 @@ const std::string& Profile::recording_file_name() const {
   return recording_file_name_;
 }
 
-const std::string& Profile::event_mq_name() const { return event_mq_name_; }
+const std::string& Profile::event_mq_name() const {
+  return event_mq_name_;
+}
 
-const std::string& Profile::ack_mq_name() const { return ack_mq_name_; }
+const std::string& Profile::ack_mq_name() const {
+  return ack_mq_name_;
+}
 
 uint32_t Profile::application_list_update_timeout() const {
   return application_list_update_timeout_;
@@ -593,7 +629,9 @@ const std::pair<uint32_t, int32_t>& Profile::start_stream_retry_amount() const {
   return start_stream_retry_amount_;
 }
 
-uint32_t Profile::thread_pool_size() const { return max_thread_pool_size_; }
+uint32_t Profile::thread_pool_size() const {
+  return max_thread_pool_size_;
+}
 
 uint32_t Profile::default_hub_protocol_index() const {
   return default_hub_protocol_index_;
@@ -697,7 +735,9 @@ uint32_t Profile::resumption_delay_after_ign() const {
   return resumption_delay_after_ign_;
 }
 
-uint32_t Profile::hash_string_size() const { return hash_string_size_; }
+uint32_t Profile::hash_string_size() const {
+  return hash_string_size_;
+}
 
 uint16_t Profile::tts_global_properties_timeout() const {
   return tts_global_properties_timeout_;
@@ -705,19 +745,33 @@ uint16_t Profile::tts_global_properties_timeout() const {
 
 #ifdef ENABLE_SECURITY
 
-const std::string& Profile::cert_path() const { return cert_path_; }
+const std::string& Profile::cert_path() const {
+  return cert_path_;
+}
 
-const std::string& Profile::ca_cert_path() const { return ca_cert_path_; }
+const std::string& Profile::ca_cert_path() const {
+  return ca_cert_path_;
+}
 
-const std::string& Profile::ssl_mode() const { return ssl_mode_; }
+const std::string& Profile::ssl_mode() const {
+  return ssl_mode_;
+}
 
-const std::string& Profile::key_path() const { return key_path_; }
+const std::string& Profile::key_path() const {
+  return key_path_;
+}
 
-const std::string& Profile::ciphers_list() const { return ciphers_list_; }
+const std::string& Profile::ciphers_list() const {
+  return ciphers_list_;
+}
 
-bool Profile::verify_peer() const { return verify_peer_; }
+bool Profile::verify_peer() const {
+  return verify_peer_;
+}
 
-uint32_t Profile::update_before_hours() const { return update_before_hours_; }
+uint32_t Profile::update_before_hours() const {
+  return update_before_hours_;
+}
 
 const std::string& Profile::security_manager_protocol_name() const {
   return security_manager_protocol_name_;
@@ -725,9 +779,13 @@ const std::string& Profile::security_manager_protocol_name() const {
 
 #endif  // ENABLE_SECURITY
 
-bool Profile::logs_enabled() const { return logs_enabled_; }
+bool Profile::logs_enabled() const {
+  return logs_enabled_;
+}
 
-bool Profile::use_db_for_resumption() const { return use_db_for_resumption_; }
+bool Profile::use_db_for_resumption() const {
+  return use_db_for_resumption_;
+}
 
 uint16_t Profile::attempts_to_open_resumption_db() const {
   return attempts_to_open_resumption_db_;
@@ -1690,13 +1748,15 @@ std::list<std::string> Profile::ReadStringContainer(const char* const pSection,
                                                     bool* out_result) const {
   std::string string;
   const bool result = ReadValue(&string, pSection, pKey);
-  if (out_result) *out_result = result;
+  if (out_result)
+    *out_result = result;
   std::list<std::string> value_container;
   if (result) {
     std::istringstream iss(string);
     std::string temp_str;
     while (iss) {
-      if (!getline(iss, temp_str, ',')) break;
+      if (!getline(iss, temp_str, ','))
+        break;
       value_container.push_back(temp_str);
     }
   }

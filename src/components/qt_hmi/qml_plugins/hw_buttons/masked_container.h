@@ -35,8 +35,8 @@
 #ifndef SRC_COMPONENTS_QT_HMI_QML_PLUGINS_HW_BUTTONS_MASKED_CONTAINER_H_
 #define SRC_COMPONENTS_QT_HMI_QML_PLUGINS_HW_BUTTONS_MASKED_CONTAINER_H_
 
-#include <vector>
 #include <QtCore/QString>
+#include <vector>
 
 #include "qt_version.h"
 

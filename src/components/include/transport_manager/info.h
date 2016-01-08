@@ -36,8 +36,8 @@
 #ifndef SRC_COMPONENTS_INCLUDE_TRANSPORT_MANAGER_INFO_H_
 #define SRC_COMPONENTS_INCLUDE_TRANSPORT_MANAGER_INFO_H_
 
-#include <string>
 #include "transport_manager/common.h"
+#include <string>
 
 /**
  * @brief transport_manager name space
@@ -70,7 +70,9 @@ class Info {
   /**
    * @brief Return string with name.
    */
-  std::string name() const { return name_; }
+  std::string name() const {
+    return name_;
+  }
 
   /**
    * @brief Destructor.
@@ -118,18 +120,24 @@ class DeviceInfo : public Info {
   /**
    * @brief Return mac_address.
    */
-  std::string mac_address() const { return mac_address_; }
+  std::string mac_address() const {
+    return mac_address_;
+  }
 
   /**
    * @brief Return device_handle field.
    */
-  DeviceHandle device_handle() const { return device_handle_; }
+  DeviceHandle device_handle() const {
+    return device_handle_;
+  }
 
   /**
    * @brief Return connection_type_.
    * @return
    */
-  ConnectionType connection_type() const { return connection_type_; }
+  ConnectionType connection_type() const {
+    return connection_type_;
+  }
 
   /**
    * @brief Overloaded operator "==".

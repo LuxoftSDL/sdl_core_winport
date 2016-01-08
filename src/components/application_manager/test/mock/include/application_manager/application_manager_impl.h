@@ -32,25 +32,25 @@
 
 #ifndef SRC_COMPONENTS_APPLICATION_MANAGER_INCLUDE_APPLICATION_MANAGER_H_
 #define SRC_COMPONENTS_APPLICATION_MANAGER_INCLUDE_APPLICATION_MANAGER_H_
-#include "gtest/gtest.h"
 #include "gmock/gmock.h"
+#include "gtest/gtest.h"
 
-#include <stdint.h>
-#include <vector>
-#include <map>
-#include <set>
-#include "application_manager/hmi_command_factory.h"
 #include "application_manager/application_manager.h"
 #include "application_manager/hmi_capabilities.h"
+#include "application_manager/hmi_command_factory.h"
 #include "application_manager/message.h"
 #include "application_manager/request_controller.h"
 #include "application_manager/resumption/resume_ctrl.h"
-#include "application_manager/vehicle_info_data.h"
 #include "application_manager/state_controller.h"
-#include "protocol_handler/protocol_observer.h"
-#include "protocol_handler/protocol_handler.h"
+#include "application_manager/vehicle_info_data.h"
 #include "hmi_message_handler/hmi_message_observer.h"
 #include "hmi_message_handler/hmi_message_sender.h"
+#include "protocol_handler/protocol_handler.h"
+#include "protocol_handler/protocol_observer.h"
+#include <map>
+#include <set>
+#include <stdint.h>
+#include <vector>
 
 #include "media_manager/media_manager_impl.h"
 
@@ -69,14 +69,14 @@
 #include "time_metric_observer.h"
 #endif  // TIME_TESTER
 
+#include "utils/lock.h"
 #include "utils/macro.h"
-#include "utils/shared_ptr.h"
 #include "utils/message_queue.h"
 #include "utils/prioritized_queue.h"
-#include "utils/threads/thread.h"
-#include "utils/threads/message_loop_thread.h"
-#include "utils/lock.h"
+#include "utils/shared_ptr.h"
 #include "utils/singleton.h"
+#include "utils/threads/message_loop_thread.h"
+#include "utils/threads/thread.h"
 
 namespace application_manager {
 enum VRTTSSessionChanging { kVRSessionChanging = 0, kTTSSessionChanging };
@@ -87,7 +87,9 @@ struct MessageFromMobile : public utils::SharedPtr<Message> {
   explicit MessageFromMobile(const utils::SharedPtr<Message>& message)
       : utils::SharedPtr<Message>(message) {}
   // PrioritizedQueue requres this method to decide which priority to assign
-  size_t PriorityOrder() const { return (*this)->Priority().OrderingValue(); }
+  size_t PriorityOrder() const {
+    return (*this)->Priority().OrderingValue();
+  }
 };
 
 struct MessageToMobile : public utils::SharedPtr<Message> {
@@ -95,7 +97,9 @@ struct MessageToMobile : public utils::SharedPtr<Message> {
                            bool final_message)
       : utils::SharedPtr<Message>(message), is_final(final_message) {}
   // PrioritizedQueue requres this method to decide which priority to assign
-  size_t PriorityOrder() const { return (*this)->Priority().OrderingValue(); }
+  size_t PriorityOrder() const {
+    return (*this)->Priority().OrderingValue();
+  }
   // Signals if connection to mobile must be closed after sending this message
   bool is_final;
 };
@@ -104,14 +108,18 @@ struct MessageFromHmi : public utils::SharedPtr<Message> {
   explicit MessageFromHmi(const utils::SharedPtr<Message>& message)
       : utils::SharedPtr<Message>(message) {}
   // PrioritizedQueue requres this method to decide which priority to assign
-  size_t PriorityOrder() const { return (*this)->Priority().OrderingValue(); }
+  size_t PriorityOrder() const {
+    return (*this)->Priority().OrderingValue();
+  }
 };
 
 struct MessageToHmi : public utils::SharedPtr<Message> {
   explicit MessageToHmi(const utils::SharedPtr<Message>& message)
       : utils::SharedPtr<Message>(message) {}
   // PrioritizedQueue requres this method to decide which priority to assign
-  size_t PriorityOrder() const { return (*this)->Priority().OrderingValue(); }
+  size_t PriorityOrder() const {
+    return (*this)->Priority().OrderingValue();
+  }
 };
 
 typedef threads::MessageLoopThread<utils::PrioritizedQueue<MessageFromMobile>>

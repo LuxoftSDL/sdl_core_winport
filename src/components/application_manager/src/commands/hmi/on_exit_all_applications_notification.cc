@@ -32,8 +32,8 @@
 
 #include "application_manager/commands/hmi/on_exit_all_applications_notification.h"
 
-#include <sys/types.h>
 #include <signal.h>
+#include <sys/types.h>
 
 #if defined(OS_POSIX)
 #include <unistd.h>

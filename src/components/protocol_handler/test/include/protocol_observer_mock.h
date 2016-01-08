@@ -33,9 +33,9 @@
 #ifndef SRC_COMPONENTS_PROTOCOL_HANDLER_TEST_INCLUDE_PROTOCOL_OBSERVER_MOCK_H_
 #define SRC_COMPONENTS_PROTOCOL_HANDLER_TEST_INCLUDE_PROTOCOL_OBSERVER_MOCK_H_
 
+#include "protocol_handler/protocol_observer.h"
 #include <gmock/gmock.h>
 #include <string>
-#include "protocol_handler/protocol_observer.h"
 
 namespace test {
 namespace components {

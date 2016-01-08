@@ -33,25 +33,25 @@
 #ifndef SRC_COMPONENTS_TRANSPORT_MANAGER_INCLUDE_TRANSPORT_MANAGER_TRANSPORT_MANAGER_IMPL_H_
 #define SRC_COMPONENTS_TRANSPORT_MANAGER_INCLUDE_TRANSPORT_MANAGER_TRANSPORT_MANAGER_IMPL_H_
 
-#include <queue>
-#include <map>
-#include <list>
-#include <vector>
-#include <utility>
 #include <algorithm>
+#include <list>
+#include <map>
+#include <queue>
+#include <utility>
+#include <vector>
 
-#include "utils/timer_thread.h"
 #include "utils/rwlock.h"
+#include "utils/timer_thread.h"
 
+#include "protocol/common.h"
+#include "transport_manager/transport_adapter/transport_adapter_listener_impl.h"
 #include "transport_manager/transport_manager.h"
 #include "transport_manager/transport_manager_listener.h"
-#include "transport_manager/transport_adapter/transport_adapter_listener_impl.h"
-#include "protocol/common.h"
 #ifdef TIME_TESTER
 #include "transport_manager/time_metric_observer.h"
 #endif  // TIME_TESTER
-#include "utils/threads/message_loop_thread.h"
 #include "transport_manager/transport_adapter/transport_adapter_event.h"
+#include "utils/threads/message_loop_thread.h"
 
 namespace transport_manager {
 

@@ -37,14 +37,14 @@
 #define strcasecmp _stricmp
 #endif
 
-#include <string>
-#include <list>
 #include <algorithm>
+#include <list>
 #include <memory>
+#include <string>
 
+#include "config_profile/profile.h"
 #include "connection_handler/connection_handler_impl.h"
 #include "transport_manager/info.h"
-#include "config_profile/profile.h"
 
 #ifdef ENABLE_SECURITY
 #include "security_manager/security_manager.h"
@@ -81,7 +81,9 @@ ConnectionHandlerImpl::ConnectionHandlerImpl()
     , connection_handler_observer_lock_(true)
     , connection_list_deleter_(&connection_list_) {}
 
-ConnectionHandlerImpl::~ConnectionHandlerImpl() { LOG4CXX_AUTO_TRACE(logger_); }
+ConnectionHandlerImpl::~ConnectionHandlerImpl() {
+  LOG4CXX_AUTO_TRACE(logger_);
+}
 
 void ConnectionHandlerImpl::Stop() {
   LOG4CXX_AUTO_TRACE(logger_);

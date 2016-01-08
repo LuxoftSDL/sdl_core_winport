@@ -31,8 +31,8 @@
  */
 
 #include "interfaces/HMI_API.h"
-#include "application_manager/event_engine/event_observer.h"
 #include "application_manager/event_engine/event_dispatcher.h"
+#include "application_manager/event_engine/event_observer.h"
 
 namespace application_manager {
 namespace event_engine {

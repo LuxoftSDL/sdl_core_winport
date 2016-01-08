@@ -34,15 +34,15 @@
 #define SRC_APPMAIN_LIFE_CYCLE_H_
 
 #ifdef MESSAGEBROKER_HMIADAPTER
-#include "hmi_message_handler/messagebroker_adapter.h"
 #include "CMessageBroker.hpp"
+#include "hmi_message_handler/messagebroker_adapter.h"
 #include "mb_tcpserver.hpp"
 #include "networking.h"  // cpplint: Include the directory when naming .h files
 #include "system.h"
 #endif  // MESSAGEBROKER_HMIADAPTER
 
-#include "utils/macro.h"
 #include "hmi_message_handler/hmi_message_handler_impl.h"
+#include "utils/macro.h"
 
 #ifdef DBUS_HMIADAPTER
 #include "hmi_message_handler/dbus_message_adapter.h"
@@ -54,10 +54,10 @@
 
 #include "application_manager/application_manager_impl.h"
 #include "connection_handler/connection_handler_impl.h"
+#include "media_manager/media_manager_impl.h"
 #include "protocol_handler/protocol_handler_impl.h"
 #include "transport_manager/transport_manager.h"
 #include "transport_manager/transport_manager_default.h"
-#include "media_manager/media_manager_impl.h"
 #include "utils/singleton.h"
 
 #ifdef TIME_TESTER

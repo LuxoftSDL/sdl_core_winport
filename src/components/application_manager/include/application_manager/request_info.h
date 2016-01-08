@@ -36,8 +36,8 @@
 #ifndef SRC_COMPONENTS_APPLICATION_MANAGER_INCLUDE_APPLICATION_MANAGER_REQUEST_INFO_H_
 #define SRC_COMPONENTS_APPLICATION_MANAGER_INCLUDE_APPLICATION_MANAGER_REQUEST_INFO_H_
 
-#include <stdint.h>
 #include <set>
+#include <stdint.h>
 
 #if defined(OS_WINDOWS)
 #define ssize_t SSIZE_T
@@ -83,29 +83,49 @@ struct RequestInfo {
 
   bool isExpired();
 
-  TimevalStruct start_time() { return start_time_; }
+  TimevalStruct start_time() {
+    return start_time_;
+  }
 
-  void update_start_time(TimevalStruct start_time) { start_time_ = start_time; }
+  void update_start_time(TimevalStruct start_time) {
+    start_time_ = start_time;
+  }
 
-  uint64_t timeout_msec() { return timeout_msec_; }
+  uint64_t timeout_msec() {
+    return timeout_msec_;
+  }
 
-  void set_timeout_msec(uint64_t timeout) { timeout_msec_ = timeout; }
+  void set_timeout_msec(uint64_t timeout) {
+    timeout_msec_ = timeout;
+  }
 
-  TimevalStruct end_time() { return end_time_; }
+  TimevalStruct end_time() {
+    return end_time_;
+  }
 
-  uint32_t app_id() { return app_id_; }
+  uint32_t app_id() {
+    return app_id_;
+  }
 
-  mobile_apis::HMILevel::eType hmi_level() { return hmi_level_; }
+  mobile_apis::HMILevel::eType hmi_level() {
+    return hmi_level_;
+  }
 
   void set_hmi_level(const mobile_apis::HMILevel::eType& level) {
     hmi_level_ = level;
   }
 
-  RequestType requst_type() const { return requst_type_; }
+  RequestType requst_type() const {
+    return requst_type_;
+  }
 
-  uint32_t requestId() { return correlation_id_; }
+  uint32_t requestId() {
+    return correlation_id_;
+  }
 
-  commands::Command* request() { return request_.get(); }
+  commands::Command* request() {
+    return request_.get();
+  }
   uint64_t hash();
   static uint64_t GenerateHash(uint32_t var1, uint32_t var2);
   static uint32_t HmiConnectoinKey;

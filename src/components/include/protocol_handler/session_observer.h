@@ -33,9 +33,9 @@
 #ifndef SRC_COMPONENTS_INCLUDE_PROTOCOL_HANDLER_SESSION_OBSERVER_H_
 #define SRC_COMPONENTS_INCLUDE_PROTOCOL_HANDLER_SESSION_OBSERVER_H_
 
+#include "transport_manager/transport_manager.h"
 #include <list>
 #include <string>
-#include "transport_manager/transport_manager.h"
 #ifdef ENABLE_SECURITY
 #include "security_manager/ssl_context.h"
 #endif  // ENABLE_SECURITY

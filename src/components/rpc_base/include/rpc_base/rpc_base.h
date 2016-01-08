@@ -33,8 +33,8 @@
 #ifndef VALIDATED_TYPES_H_
 #define VALIDATED_TYPES_H_
 
-#include <stdint.h>
 #include <map>
+#include <stdint.h>
 #include <string>
 #include <vector>
 

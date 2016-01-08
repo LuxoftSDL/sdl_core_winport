@@ -33,8 +33,8 @@
 #ifndef SRC_COMPONENTS_INCLUDE_UTILS_MESSAGE_QUEUE_H_
 #define SRC_COMPONENTS_INCLUDE_UTILS_MESSAGE_QUEUE_H_
 
-#include <queue>
 #include <algorithm>
+#include <queue>
 
 #include "utils/conditional_variable.h"
 #include "utils/lock.h"
@@ -125,8 +125,7 @@ class MessageQueue {
 };
 
 template <typename T, class Q>
-MessageQueue<T, Q>::MessageQueue()
-    : shutting_down_(false) {}
+MessageQueue<T, Q>::MessageQueue() : shutting_down_(false) {}
 
 template <typename T, class Q>
 MessageQueue<T, Q>::~MessageQueue() {}

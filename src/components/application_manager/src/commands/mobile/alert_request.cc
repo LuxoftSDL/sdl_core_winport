@@ -35,9 +35,9 @@
 
 #include <string.h>
 
-#include "application_manager/message_helper.h"
 #include "application_manager/application_impl.h"
 #include "application_manager/application_manager_impl.h"
+#include "application_manager/message_helper.h"
 #include "utils/helpers.h"
 
 namespace application_manager {

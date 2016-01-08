@@ -38,8 +38,8 @@
 
 #include <gmock/gmock.h>
 
-#include "transport_manager/common.h"
 #include "protocol/common.h"
+#include "transport_manager/common.h"
 
 using ::testing::Matcher;
 using ::testing::MatcherInterface;
@@ -72,5 +72,4 @@ inline const Matcher<RawMessagePtr> RawMessageEq(RawMessagePtr msg) {
 }  // namespace components
 }  // namespace test
 
-#endif /* APPLINK_TEST_COMPONENTS_TRANSPORT_MANAGER_INCLUDE_TRANSPORT_MANAGER_RAW_MESSAGE_MATCHER_H_ \
-          */
+#endif  // APPLINK_TEST_COMPONENTS_TRANSPORT_MANAGER_INCLUDE_TRANSPORT_MANAGER_RAW_MESSAGE_MATCHER_H_

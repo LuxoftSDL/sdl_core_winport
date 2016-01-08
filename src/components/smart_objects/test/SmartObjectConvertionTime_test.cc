@@ -38,18 +38,18 @@
 
 #include "utils/shared_ptr.h"
 
-#include "smart_objects/smart_object.h"
-#include "smart_objects/smart_schema.h"
-#include "smart_objects/schema_item.h"
-#include "formatters/CFormatterJsonSDLRPCv2.hpp"
 #include "formatters/CFormatterJsonSDLRPCv1.hpp"
+#include "formatters/CFormatterJsonSDLRPCv2.hpp"
 #include "smart_objects/array_schema_item.h"
 #include "smart_objects/bool_schema_item.h"
-#include "smart_objects/object_schema_item.h"
-#include "smart_objects/string_schema_item.h"
 #include "smart_objects/enum_schema_item.h"
 #include "smart_objects/number_schema_item.h"
+#include "smart_objects/object_schema_item.h"
+#include "smart_objects/schema_item.h"
 #include "smart_objects/schema_item_parameter.h"
+#include "smart_objects/smart_object.h"
+#include "smart_objects/smart_schema.h"
+#include "smart_objects/string_schema_item.h"
 
 #include <string>
 #include <time.h>

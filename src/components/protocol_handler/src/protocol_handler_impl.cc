@@ -31,19 +31,19 @@
  */
 
 #include "protocol_handler/protocol_handler_impl.h"
-#include <memory.h>
 #include <algorithm>  // std::find
 #include <cctype>
 #include <locale>
+#include <memory.h>
 
-#include "connection_handler/connection_handler_impl.h"
 #include "config_profile/profile.h"
-#include "utils/byte_order.h"
+#include "connection_handler/connection_handler_impl.h"
 #include "protocol/common.h"
+#include "utils/byte_order.h"
 
 #ifdef ENABLE_SECURITY
-#include "security_manager/ssl_context.h"
 #include "security_manager/security_manager.h"
+#include "security_manager/ssl_context.h"
 #endif  // ENABLE_SECURITY
 
 namespace protocol_handler {
@@ -1565,7 +1565,8 @@ void ProtocolHandlerImpl::SetTimeMetricObserver(PHMetricObserver* observer) {
 
 std::string ConvertPacketDataToString(const uint8_t* data,
                                       const size_t data_size) {
-  if (0 == data_size) return std::string();
+  if (0 == data_size)
+    return std::string();
   bool is_printable_array = true;
   std::locale loc;
   const char* text = reinterpret_cast<const char*>(data);

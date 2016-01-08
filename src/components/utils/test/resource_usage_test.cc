@@ -30,12 +30,12 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include <unistd.h>
-#include "gtest/gtest.h"
 #include "utils/macro.h"
+#include "gtest/gtest.h"
+#include <unistd.h>
 
-#include "utils/resource_usage.h"
 #include "utils/file_system.h"
+#include "utils/resource_usage.h"
 
 namespace utils {
 

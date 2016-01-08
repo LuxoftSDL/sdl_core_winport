@@ -33,16 +33,16 @@
 #ifndef SRC_COMPONENTS_APPLICATION_MANAGER_INCLUDE_APPLICATION_MANAGER_MESSAGE_HELPER_H_
 #define SRC_COMPONENTS_APPLICATION_MANAGER_INCLUDE_APPLICATION_MANAGER_MESSAGE_HELPER_H_
 
-#include <map>
-#include <string>
-#include <string.h>
-#include "interfaces/MOBILE_API.h"
-#include "interfaces/HMI_API.h"
-#include "utils/macro.h"
-#include "connection_handler/device.h"
 #include "application_manager/application.h"
 #include "application_manager/vehicle_info_data.h"
+#include "connection_handler/device.h"
+#include "interfaces/HMI_API.h"
+#include "interfaces/MOBILE_API.h"
 #include "policy/policy_types.h"
+#include "utils/macro.h"
+#include <map>
+#include <string.h>
+#include <string>
 
 namespace NsSmartDeviceLink {
 namespace NsSmartObjects {

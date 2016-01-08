@@ -46,12 +46,12 @@
    (QT_VERSION < QT_VERSION_CHECK(6, 0, 0)))
 
 #if QT_4
-#include <QtDeclarative/qdeclarative.h>
 #include <QtDeclarative/QDeclarativeExtensionPlugin>
+#include <QtDeclarative/qdeclarative.h>
 typedef QDeclarativeExtensionPlugin ExtensionPlugin;
 #elif QT_5
-#include <QtQml/qqml.h>
 #include <QtQml/QQmlExtensionPlugin>
+#include <QtQml/qqml.h>
 typedef QQmlExtensionPlugin ExtensionPlugin;
 #endif  // QT_VERSION
 

@@ -33,10 +33,10 @@
 #ifndef SRC_COMPONENTS_INCLUDE_TRANSPORT_MANAGER_TRANSPORT_MANAGER_H_
 #define SRC_COMPONENTS_INCLUDE_TRANSPORT_MANAGER_TRANSPORT_MANAGER_H_
 
-#include "transport_manager/common.h"
-#include "transport_manager/transport_manager_listener.h"
-#include "transport_manager/transport_adapter/transport_adapter_event.h"
 #include "protocol/common.h"
+#include "transport_manager/common.h"
+#include "transport_manager/transport_adapter/transport_adapter_event.h"
+#include "transport_manager/transport_manager_listener.h"
 
 namespace transport_manager {
 

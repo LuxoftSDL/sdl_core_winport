@@ -39,8 +39,8 @@
 #include <QtGui/QGraphicsSceneMouseEvent>
 #define IMAGE "QDeclarativeImage"
 #elif QT_5
-#include <QtGui/QImage>
 #include <QtCore/QEvent>
+#include <QtGui/QImage>
 #define IMAGE "QQuickImage"
 #endif  // QT_VERSION
 
@@ -69,8 +69,10 @@ void MaskedContainer::componentComplete() {
     int itemHeight = item->height();
     int itemX = item->x();
     int itemY = item->y();
-    if (height < itemHeight + itemY) height = itemHeight + itemY;
-    if (width < itemWidth + itemX) width = itemWidth + itemX;
+    if (height < itemHeight + itemY)
+      height = itemHeight + itemY;
+    if (width < itemWidth + itemX)
+      width = itemWidth + itemX;
   }
 
   setHeight(height);
@@ -146,4 +148,6 @@ void MaskedContainer::mouseReleaseEvent(MouseEvent* mouse) {
   ungrabMouse();
 }
 
-MaskedContainer::~MaskedContainer() { delete[] mask_; }
+MaskedContainer::~MaskedContainer() {
+  delete[] mask_;
+}

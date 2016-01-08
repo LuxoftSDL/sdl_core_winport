@@ -35,8 +35,8 @@
 #ifndef SRC_COMPONENTS_QT_HMI_QML_PLUGINS_DBUS_ADAPTER_HMI_PROXY_H_
 #define SRC_COMPONENTS_QT_HMI_QML_PLUGINS_DBUS_ADAPTER_HMI_PROXY_H_
 
-#include "qt_version.h"
 #include "qml_dbus.h"
+#include "qt_version.h"
 
 #if QT_4
 #include <QtDeclarative/QDeclarativeItem>

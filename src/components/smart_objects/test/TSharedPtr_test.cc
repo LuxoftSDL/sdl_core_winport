@@ -30,10 +30,10 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include <stdlib.h>
-#include <vector>
 #include "gmock/gmock.h"
 #include "utils/shared_ptr.h"
+#include <stdlib.h>
+#include <vector>
 
 namespace test {
 namespace components {

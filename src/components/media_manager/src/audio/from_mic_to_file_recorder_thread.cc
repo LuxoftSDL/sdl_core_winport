@@ -37,8 +37,8 @@
 #include "utils/threads/thread.h"
 #endif
 
-#include <sstream>
 #include "utils/logger.h"
+#include <sstream>
 
 CREATE_LOGGERPTR_GLOBAL(logger_, "FromMicToFileRecorderThread")
 

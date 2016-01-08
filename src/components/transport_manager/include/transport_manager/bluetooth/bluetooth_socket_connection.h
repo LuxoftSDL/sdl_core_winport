@@ -38,8 +38,8 @@
 
 #include "transport_manager/transport_adapter/threaded_socket_connection.h"
 #ifdef OS_WINDOWS
-#include <ws2bth.h>
 #include <BluetoothAPIs.h>
+#include <ws2bth.h>
 #endif
 
 namespace transport_manager {

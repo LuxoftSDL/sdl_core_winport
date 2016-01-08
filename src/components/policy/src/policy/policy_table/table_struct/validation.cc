@@ -1,6 +1,6 @@
-#include <algorithm>
 #include "./types.h"
 #include "utils/logger.h"
+#include <algorithm>
 
 namespace {
 bool IsTypeInvalid(
@@ -19,7 +19,9 @@ void RemoveInvalidTypes(RequestTypes& types) {
               types.end());
 }
 
-bool PolicyBase::Validate() const { return true; }
+bool PolicyBase::Validate() const {
+  return true;
+}
 
 bool ApplicationPoliciesSection::Validate() const {
   ApplicationPolicies::iterator it_default_policy = apps.find(kDefaultApp);
@@ -112,9 +114,15 @@ bool ApplicationPoliciesSection::Validate() const {
   return true;
 }
 
-bool ApplicationParams::Validate() const { return true; }
-bool RpcParameters::Validate() const { return true; }
-bool Rpcs::Validate() const { return true; }
+bool ApplicationParams::Validate() const {
+  return true;
+}
+bool RpcParameters::Validate() const {
+  return true;
+}
+bool Rpcs::Validate() const {
+  return true;
+}
 
 bool ModuleConfig::Validate() const {
   if (PT_PRELOADED == GetPolicyTableType()) {
@@ -131,7 +139,9 @@ bool ModuleConfig::Validate() const {
   return true;
 }
 
-bool MessageString::Validate() const { return true; }
+bool MessageString::Validate() const {
+  return true;
+}
 
 bool MessageLanguages::Validate() const {
   if (PT_SNAPSHOT == GetPolicyTableType()) {
@@ -147,7 +157,9 @@ bool ConsumerFriendlyMessages::Validate() const {
   return true;
 }
 
-bool ModuleMeta::Validate() const { return true; }
+bool ModuleMeta::Validate() const {
+  return true;
+}
 
 bool AppLevel::Validate() const {
   if (PT_PRELOADED == GetPolicyTableType() ||
@@ -164,7 +176,9 @@ bool UsageAndErrorCounts::Validate() const {
   }
   return true;
 }
-bool DeviceParams::Validate() const { return true; }
+bool DeviceParams::Validate() const {
+  return true;
+}
 bool PolicyTable::Validate() const {
   if (PT_PRELOADED == GetPolicyTableType() ||
       PT_UPDATE == GetPolicyTableType()) {
@@ -174,6 +188,8 @@ bool PolicyTable::Validate() const {
   }
   return true;
 }
-bool Table::Validate() const { return true; }
+bool Table::Validate() const {
+  return true;
+}
 }  // namespace policy_table_interface_base
 }  // namespace rpc

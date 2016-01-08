@@ -33,9 +33,9 @@
 #ifndef SRC_COMPONENTS_MEDIA_MANAGER_INCLUDE_MEDIA_MANAGER_STREAMER_LISTENER_H_
 #define SRC_COMPONENTS_MEDIA_MANAGER_INCLUDE_MEDIA_MANAGER_STREAMER_LISTENER_H_
 
-#include <stdint.h>
 #include "media_manager/media_adapter_listener.h"
 #include "utils/macro.h"
+#include <stdint.h>
 
 namespace media_manager {
 class StreamerListener : public MediaAdapterListener {

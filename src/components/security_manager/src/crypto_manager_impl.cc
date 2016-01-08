@@ -33,19 +33,19 @@
 #include "security_manager/crypto_manager_impl.h"
 
 #include <openssl/bio.h>
-#include <openssl/ssl.h>
 #include <openssl/err.h>
 #include <openssl/pkcs12.h>
+#include <openssl/ssl.h>
 
 #include <fstream>
 #include <iostream>
 #include <stdio.h>
 
+#include "config_profile/profile.h"
 #include "security_manager/security_manager.h"
 #include "utils/logger.h"
 #include "utils/macro.h"
 #include "utils/scope_guard.h"
-#include "config_profile/profile.h"
 
 #define TLS1_1_MINIMAL_VERSION 0x1000103fL
 #define CONST_SSL_METHOD_MINIMAL_VERSION 0x00909000L
@@ -237,7 +237,8 @@ SSLContext* CryptoManagerImpl::CreateSSLContext() {
   }
 
   SSL* conn = SSL_new(context_);
-  if (conn == NULL) return NULL;
+  if (conn == NULL)
+    return NULL;
 
   if (mode_ == SERVER) {
     SSL_set_accept_state(conn);
