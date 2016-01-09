@@ -40,7 +40,9 @@ CREATE_LOGGERPTR_GLOBAL(logger_, "StreamerListener")
 
 StreamerListener::StreamerListener() : current_application_(0) {}
 
-StreamerListener::~StreamerListener() { OnActivityEnded(current_application_); }
+StreamerListener::~StreamerListener() {
+  OnActivityEnded(current_application_);
+}
 
 void StreamerListener::OnDataReceived(int32_t application_key,
                                       const DataForListener& data) {

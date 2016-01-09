@@ -55,7 +55,9 @@ class ConnectionHandlerTest : public ::testing::Test {
     uid = 1u;
     connection_key = connection_handler_->KeyFromPair(0, 0u);
   }
-  void TearDown() OVERRIDE { ConnectionHandlerImpl::destroy(); }
+  void TearDown() OVERRIDE {
+    ConnectionHandlerImpl::destroy();
+  }
   // Additional SetUp
   void AddTestDeviceConnection() {
     const transport_manager::DeviceHandle device_handle = 0;

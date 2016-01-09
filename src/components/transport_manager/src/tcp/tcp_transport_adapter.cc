@@ -72,7 +72,9 @@ TcpTransportAdapter::TcpTransportAdapter(const uint16_t port)
 
 TcpTransportAdapter::~TcpTransportAdapter() {}
 
-DeviceType TcpTransportAdapter::GetDeviceType() const { return TCP; }
+DeviceType TcpTransportAdapter::GetDeviceType() const {
+  return TCP;
+}
 
 void TcpTransportAdapter::Store() const {
   LOG4CXX_AUTO_TRACE(logger_);

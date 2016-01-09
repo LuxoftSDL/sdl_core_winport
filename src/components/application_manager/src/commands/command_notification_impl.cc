@@ -44,9 +44,13 @@ CommandNotificationImpl::CommandNotificationImpl(
 
 CommandNotificationImpl::~CommandNotificationImpl() {}
 
-bool CommandNotificationImpl::Init() { return true; }
+bool CommandNotificationImpl::Init() {
+  return true;
+}
 
-bool CommandNotificationImpl::CleanUp() { return true; }
+bool CommandNotificationImpl::CleanUp() {
+  return true;
+}
 
 void CommandNotificationImpl::Run() {}
 

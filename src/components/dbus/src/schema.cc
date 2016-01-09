@@ -45,7 +45,9 @@ struct Description {
 
 struct IsId : public std::unary_function<const Description*, bool> {
   explicit IsId(MessageId id) : id_(id) {}
-  bool operator()(const Description* desc) { return desc->id == id_; }
+  bool operator()(const Description* desc) {
+    return desc->id == id_;
+  }
 
  private:
   MessageId id_;
@@ -53,7 +55,9 @@ struct IsId : public std::unary_function<const Description*, bool> {
 
 struct IsName : public std::unary_function<const Description*, bool> {
   explicit IsName(const MessageName& name) : name_(name) {}
-  bool operator()(const Description* desc) { return desc->name == name_; }
+  bool operator()(const Description* desc) {
+    return desc->name == name_;
+  }
 
  private:
   MessageName name_;

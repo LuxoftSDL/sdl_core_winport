@@ -73,11 +73,17 @@ System& System::Add(const std::string& arg) {
   return *this;
 }
 
-std::string System::command() const { return command_; }
+std::string System::command() const {
+  return command_;
+}
 
-std::vector<std::string> System::argv() const { return argv_; }
+std::vector<std::string> System::argv() const {
+  return argv_;
+}
 
-bool System::Execute() { return Execute(false); }
+bool System::Execute() {
+  return Execute(false);
+}
 
 #ifdef __QNX__
 
@@ -105,7 +111,9 @@ bool System::Execute(bool wait) {
   return true;
 }
 #elif defined(OS_WINDOWS)
-bool System::Execute(bool wait) { return true; }
+bool System::Execute(bool wait) {
+  return true;
+}
 
 #elif defined(OS_POSIX)
 

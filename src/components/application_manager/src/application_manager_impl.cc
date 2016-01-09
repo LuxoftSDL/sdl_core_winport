@@ -963,7 +963,9 @@ mobile_apis::HMILevel::eType ApplicationManagerImpl::GetDefaultHmiLevel(
   return default_hmi;
 }
 
-uint32_t ApplicationManagerImpl::GenerateGrammarID() { return rand(); }
+uint32_t ApplicationManagerImpl::GenerateGrammarID() {
+  return rand();
+}
 
 uint32_t ApplicationManagerImpl::GenerateNewHMIAppID() {
   LOG4CXX_TRACE(logger_, "ENTER");

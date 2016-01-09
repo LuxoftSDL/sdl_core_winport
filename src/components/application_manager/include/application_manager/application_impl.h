@@ -86,7 +86,9 @@ class ApplicationImpl : public virtual InitialApplicationDataImpl,
    */
   virtual void ChangeSupportingAppHMIType();
 
-  inline bool is_navi() const { return is_navi_; }
+  inline bool is_navi() const {
+    return is_navi_;
+  }
   void set_is_navi(bool allow);
 
   bool video_streaming_approved() const;
@@ -369,9 +371,13 @@ class ApplicationImpl : public virtual InitialApplicationDataImpl,
   DISALLOW_COPY_AND_ASSIGN(ApplicationImpl);
 };
 
-uint32_t ApplicationImpl::hmi_app_id() const { return hmi_app_id_; }
+uint32_t ApplicationImpl::hmi_app_id() const {
+  return hmi_app_id_;
+}
 
-uint32_t ApplicationImpl::app_id() const { return app_id_; }
+uint32_t ApplicationImpl::app_id() const {
+  return app_id_;
+}
 
 const mobile_api::AudioStreamingState::eType
 ApplicationImpl::audio_streaming_state() const {
@@ -381,7 +387,9 @@ ApplicationImpl::audio_streaming_state() const {
                    : AudioStreamingState::INVALID_ENUM;
 }
 
-bool ApplicationImpl::app_allowed() const { return is_app_allowed_; }
+bool ApplicationImpl::app_allowed() const {
+  return is_app_allowed_;
+}
 
 }  // namespace application_manager
 

@@ -107,7 +107,8 @@ bool SecurityQuery::SerializeQuery(const uint8_t* const raw_data,
   header_.json_size =
       BE_TO_LE32(*reinterpret_cast<const uint32_t*>(raw_data + 8));
 
-  if (header_.json_size > raw_data_size - header_size) return false;
+  if (header_.json_size > raw_data_size - header_size)
+    return false;
 
   if (header_.json_size > 0) {
     const char* const json_data =
@@ -170,14 +171,20 @@ const SecurityQuery::QueryHeader& SecurityQuery::get_header() const {
   return header_;
 }
 
-const uint8_t* SecurityQuery::get_data() const { return &data_[0]; }
+const uint8_t* SecurityQuery::get_data() const {
+  return &data_[0];
+}
 
-size_t SecurityQuery::get_data_size() const { return data_.size(); }
+size_t SecurityQuery::get_data_size() const {
+  return data_.size();
+}
 
 const std::string& SecurityQuery::get_json_message() const {
   return json_message_;
 }
 
-uint32_t SecurityQuery::get_connection_key() const { return connection_key_; }
+uint32_t SecurityQuery::get_connection_key() const {
+  return connection_key_;
+}
 
 }  // namespace security_manager

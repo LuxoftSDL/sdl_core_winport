@@ -35,9 +35,9 @@
 
 #include "formatters/CFormatterJsonBase.hpp"
 
-void NsSmartDeviceLink::NsJSONHandler::Formatters::CFormatterJsonBase::jsonValueToObj(
-    const Json::Value& value,
-    NsSmartDeviceLink::NsSmartObjects::SmartObject& obj) {
+void NsSmartDeviceLink::NsJSONHandler::Formatters::CFormatterJsonBase::
+    jsonValueToObj(const Json::Value& value,
+                   NsSmartDeviceLink::NsSmartObjects::SmartObject& obj) {
   try {
     if (value.type() == Json::objectValue) {
       obj = NsSmartDeviceLink::NsSmartObjects::SmartObject(
@@ -55,8 +55,8 @@ void NsSmartDeviceLink::NsJSONHandler::Formatters::CFormatterJsonBase::jsonValue
       for (uint32_t i = 0; i < value.size(); i++) {
         jsonValueToObj(value[i], obj[i]);
       }
-    } else if (value.type() == Json::intValue
-        || value.type() == Json::uintValue) {
+    } else if (value.type() == Json::intValue ||
+               value.type() == Json::uintValue) {
       obj = value.asInt();
     } else if (value.type() == Json::realValue) {
       obj = value.asDouble();
@@ -71,9 +71,9 @@ void NsSmartDeviceLink::NsJSONHandler::Formatters::CFormatterJsonBase::jsonValue
 
 // ----------------------------------------------------------------------------
 
-void NsSmartDeviceLink::NsJSONHandler::Formatters::CFormatterJsonBase::objToJsonValue(
-    const NsSmartDeviceLink::NsSmartObjects::SmartObject &obj,
-    Json::Value &item) {
+void NsSmartDeviceLink::NsJSONHandler::Formatters::CFormatterJsonBase::
+    objToJsonValue(const NsSmartDeviceLink::NsSmartObjects::SmartObject& obj,
+                   Json::Value& item) {
   try {
     if (NsSmartDeviceLink::NsSmartObjects::SmartType_Array == obj.getType()) {
       item = Json::arrayValue;
@@ -85,30 +85,31 @@ void NsSmartDeviceLink::NsJSONHandler::Formatters::CFormatterJsonBase::objToJson
 
         item.append(value);
       }
-    } else if (NsSmartDeviceLink::NsSmartObjects::SmartType_Map
-        == obj.getType()) {
+    } else if (NsSmartDeviceLink::NsSmartObjects::SmartType_Map ==
+               obj.getType()) {
       item = Json::objectValue;
       std::set<std::string> keys = obj.enumerate();
 
       for (std::set<std::string>::const_iterator key = keys.begin();
-          key != keys.end(); key++) {
+           key != keys.end();
+           key++) {
         Json::Value value(Json::nullValue);
 
         objToJsonValue(obj.getElement(*key), value);
 
         item[*key] = value;
       }
-    } else if (NsSmartDeviceLink::NsSmartObjects::SmartType_Boolean
-        == obj.getType()) {
+    } else if (NsSmartDeviceLink::NsSmartObjects::SmartType_Boolean ==
+               obj.getType()) {
       item = obj.asBool();
-    } else if (NsSmartDeviceLink::NsSmartObjects::SmartType_Integer
-        == obj.getType()) {
+    } else if (NsSmartDeviceLink::NsSmartObjects::SmartType_Integer ==
+               obj.getType()) {
       item = obj.asInt();
-    } else if (NsSmartDeviceLink::NsSmartObjects::SmartType_Double
-        == obj.getType()) {
+    } else if (NsSmartDeviceLink::NsSmartObjects::SmartType_Double ==
+               obj.getType()) {
       item = obj.asDouble();
-    } else if (NsSmartDeviceLink::NsSmartObjects::SmartType_Null
-        == obj.getType()) {
+    } else if (NsSmartDeviceLink::NsSmartObjects::SmartType_Null ==
+               obj.getType()) {
       item = Json::nullValue;
     } else {
       item = obj.asString();

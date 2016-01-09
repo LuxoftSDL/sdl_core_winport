@@ -41,7 +41,9 @@ AudioStopStreamResponse::AudioStopStreamResponse(
 
 AudioStopStreamResponse::~AudioStopStreamResponse() {}
 
-void AudioStopStreamResponse::Run() { LOG4CXX_AUTO_TRACE(logger_); }
+void AudioStopStreamResponse::Run() {
+  LOG4CXX_AUTO_TRACE(logger_);
+}
 
 }  // namespace commands
 

@@ -87,7 +87,8 @@ void UsbHandler::DeviceArrived(usbd_connection* connection,
                                usbd_device_instance_t* instance) {
   for (Devices::const_iterator it = devices_.begin(); it != devices_.end();
        ++it) {
-    if ((*it)->GetDeviceInstance() == *instance) return;
+    if ((*it)->GetDeviceInstance() == *instance)
+      return;
   }
   usbd_device* device_usbd = 0;
   const int attach_rc = usbd_attach(connection, instance, 0, &device_usbd);
@@ -220,7 +221,8 @@ void UsbHandler::StartControlTransferSequence(
     }
     usbd_free(buf);
     usbd_free_urb(urb);
-    if (!submit_next) break;
+    if (!submit_next)
+      break;
   }
   usbd_close_pipe(usb_pipe);
 
@@ -229,7 +231,8 @@ void UsbHandler::StartControlTransferSequence(
 
 void ArrivedCallback(usbd_connection* connection,
                      usbd_device_instance_t* instance) {
-  if (kAoaVid == instance->ident.vendor) return;
+  if (kAoaVid == instance->ident.vendor)
+    return;
   LOG4CXX_INFO(logger_,
                "USB device arrived (path " << static_cast<int>(instance->path)
                                            << ", devno "
@@ -244,7 +247,8 @@ void ArrivedCallback(usbd_connection* connection,
 
 void ArrivedAoaCallback(usbd_connection* connection,
                         usbd_device_instance_t* instance) {
-  if (kAoaVid != instance->ident.vendor) return;
+  if (kAoaVid != instance->ident.vendor)
+    return;
   LOG4CXX_INFO(logger_,
                "USB AOA device arrived (path "
                    << static_cast<int>(instance->path)
@@ -260,7 +264,8 @@ void ArrivedAoaCallback(usbd_connection* connection,
 
 void LeftCallback(usbd_connection* connection,
                   usbd_device_instance_t* instance) {
-  if (kAoaVid == instance->ident.vendor) return;
+  if (kAoaVid == instance->ident.vendor)
+    return;
   LOG4CXX_INFO(logger_,
                "USB device left (path " << static_cast<int>(instance->path)
                                         << ", devno "
@@ -275,7 +280,8 @@ void LeftCallback(usbd_connection* connection,
 
 void LeftAoaCallback(usbd_connection* connection,
                      usbd_device_instance_t* instance) {
-  if (kAoaVid != instance->ident.vendor) return;
+  if (kAoaVid != instance->ident.vendor)
+    return;
   LOG4CXX_INFO(logger_,
                "USB AOA device left (path "
                    << static_cast<int>(instance->path)

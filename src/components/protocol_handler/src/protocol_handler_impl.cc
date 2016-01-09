@@ -1565,7 +1565,8 @@ void ProtocolHandlerImpl::SetTimeMetricObserver(PHMetricObserver* observer) {
 
 std::string ConvertPacketDataToString(const uint8_t* data,
                                       const size_t data_size) {
-  if (0 == data_size) return std::string();
+  if (0 == data_size)
+    return std::string();
   bool is_printable_array = true;
   std::locale loc;
   const char* text = reinterpret_cast<const char*>(data);

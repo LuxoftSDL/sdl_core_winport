@@ -92,7 +92,9 @@ class ThreadedSocketConnection : public Connection {
   /**
    * @brief Set variable that hold socket No.
    */
-  void set_socket(int socket) { socket_ = socket; }
+  void set_socket(int socket) {
+    socket_ = socket;
+  }
 
  protected:
   /**
@@ -116,17 +118,23 @@ class ThreadedSocketConnection : public Connection {
   /**
    * @brief Return pointer to the device adapter controller.
    */
-  TransportAdapterController* controller() { return controller_; }
+  TransportAdapterController* controller() {
+    return controller_;
+  }
 
   /**
    * @brief Return device unique identifier.
    */
-  DeviceUID device_handle() const { return device_uid_; }
+  DeviceUID device_handle() const {
+    return device_uid_;
+  }
 
   /**
    * @brief Return handle of application.
    */
-  ApplicationHandle application_handle() const { return app_handle_; }
+  ApplicationHandle application_handle() const {
+    return app_handle_;
+  }
 
  private:
   class SocketConnectionDelegate : public threads::ThreadDelegate {

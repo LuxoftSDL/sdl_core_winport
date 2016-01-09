@@ -73,8 +73,10 @@ UsbConnection::UsbConnection(const DeviceUID& device_uid,
 
 UsbConnection::~UsbConnection() {
   Finalise();
-  if (in_urb_) usbd_free_urb(in_urb_);
-  if (out_urb_) usbd_free_urb(out_urb_);
+  if (in_urb_)
+    usbd_free_urb(in_urb_);
+  if (out_urb_)
+    usbd_free_urb(out_urb_);
 
   if (in_pipe_) {
     const int close_pipe_rc = usbd_close_pipe(in_pipe_);
@@ -267,7 +269,8 @@ void UsbConnection::Finalise() {
        it = out_messages_.erase(it)) {
     controller_->DataSendFailed(device_uid_, app_handle_, *it, DataSendError());
   }
-  while (pending_in_transfer_ || pending_out_transfer_) sched_yield();
+  while (pending_in_transfer_ || pending_out_transfer_)
+    sched_yield();
 }
 
 TransportAdapter::Error UsbConnection::Disconnect() {
@@ -278,7 +281,8 @@ TransportAdapter::Error UsbConnection::Disconnect() {
 }
 
 bool UsbConnection::Init() {
-  if (!OpenEndpoints()) return false;
+  if (!OpenEndpoints())
+    return false;
 
   in_urb_ = usbd_alloc_urb(NULL);
   out_urb_ = usbd_alloc_urb(NULL);
@@ -364,7 +368,8 @@ bool UsbConnection::OpenEndpoints() {
       while (true) {
         usbd_descriptors_t* endpoint_desc = usbd_parse_descriptors(
             usbd_device_, iface_desc_node, USB_DESC_ENDPOINT, endpoint++, NULL);
-        if (NULL == endpoint_desc) break;
+        if (NULL == endpoint_desc)
+          break;
         const uint8_t attributes = endpoint_desc->endpoint.bmAttributes;
         if ((attributes & 0x03) == USB_ATTRIB_BULK) {
           const uint8_t endpoint_address =
@@ -392,7 +397,8 @@ bool UsbConnection::OpenEndpoints() {
     }
   }
 
-  if (!found) return false;
+  if (!found)
+    return false;
 
   int open_pipe_rc = usbd_open_pipe(usbd_device_, in_endpoint_desc, &in_pipe_);
   if (EOK != open_pipe_rc) {

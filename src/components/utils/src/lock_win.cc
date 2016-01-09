@@ -107,7 +107,9 @@ void Lock::AssertTakenAndMarkFree() {
 }
 #endif
 
-void Lock::Init(bool is_recursive) { InitializeCriticalSection(&mutex_); }
+void Lock::Init(bool is_recursive) {
+  InitializeCriticalSection(&mutex_);
+}
 
 }  // namespace sync_primitives
 

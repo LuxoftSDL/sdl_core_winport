@@ -108,7 +108,8 @@ in_addr_t GetIfaceAddress() {
       }
     }
   }
-  if (if_addrs) freeifaddrs(if_addrs);
+  if (if_addrs)
+    freeifaddrs(if_addrs);
   return result;
 }
 static in_addr_t iface_address = GetIfaceAddress();

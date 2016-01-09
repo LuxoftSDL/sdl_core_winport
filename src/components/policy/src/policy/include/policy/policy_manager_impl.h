@@ -56,7 +56,9 @@ class PolicyManagerImpl : public PolicyManager {
                     uint16_t attempts_to_open_policy_db,
                     uint16_t open_attempt_timeout_ms);
   virtual void set_listener(PolicyListener* listener);
-  PolicyListener* listener() const { return listener_; }
+  PolicyListener* listener() const {
+    return listener_;
+  }
   virtual bool InitPT(const std::string& file_name);
   virtual bool LoadPT(const std::string& file, const BinaryMessage& pt_content);
   virtual bool ResetPT(const std::string& file_name);

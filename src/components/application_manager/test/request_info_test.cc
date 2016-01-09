@@ -250,9 +250,13 @@ TEST_F(RequestInfoTest, RequestInfoSetEqualHashTest) {
   EXPECT_EQ(0u, request_info_set.Size());
 }
 
-uint32_t MockRequest::correlation_id() const { return correlation_id_; }
+uint32_t MockRequest::correlation_id() const {
+  return correlation_id_;
+}
 
-uint32_t MockRequest::connection_key() const { return connection_key_; }
+uint32_t MockRequest::connection_key() const {
+  return connection_key_;
+}
 
 void TestRequestInfo::SetEndTime(const TimevalStruct& end_time) {
   end_time_ = end_time;

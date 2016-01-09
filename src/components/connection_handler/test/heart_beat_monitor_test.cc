@@ -98,10 +98,14 @@ class HeartBeatMonitorTest : public testing::Test {
         kConnectionHandle, 0, &connection_handler_mock, kTimeout);
   }
 
-  virtual void TearDown() { delete conn; }
+  virtual void TearDown() {
+    delete conn;
+  }
 };
 
-ACTION_P2(RemoveSession, conn, session_id) { conn->RemoveSession(session_id); }
+ACTION_P2(RemoveSession, conn, session_id) {
+  conn->RemoveSession(session_id);
+}
 
 TEST_F(HeartBeatMonitorTest, TimerNotStarted) {
   // Whithout StartHeartBeat nothing to be call

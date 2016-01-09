@@ -113,10 +113,13 @@ class TransportManagerTest : public ::testing::Test {
     pthread_mutex_lock(&test_mutex);
   }
 
-  virtual void TearDown() { pthread_mutex_unlock(&test_mutex); }
+  virtual void TearDown() {
+    pthread_mutex_unlock(&test_mutex);
+  }
 
   bool waitCond(int seconds) {
-    if (one_thread) return true;
+    if (one_thread)
+      return true;
     timespec elapsed;
     clock_gettime(CLOCK_REALTIME, &elapsed);
     elapsed.tv_sec += seconds;

@@ -76,7 +76,9 @@ class SpinMutex {
       }
     }
   }
-  void Unlock() { state_ = 0; }
+  void Unlock() {
+    state_ = 0;
+  }
   ~SpinMutex() {}
 
  private:
@@ -147,11 +149,17 @@ class Lock {
 // This class is used to automatically acquire and release the a lock
 class AutoLock {
  public:
-  explicit AutoLock(Lock& lock) : lock_(lock) { lock_.Acquire(); }
-  ~AutoLock() { lock_.Release(); }
+  explicit AutoLock(Lock& lock) : lock_(lock) {
+    lock_.Acquire();
+  }
+  ~AutoLock() {
+    lock_.Release();
+  }
 
  private:
-  Lock& GetLock() { return lock_; }
+  Lock& GetLock() {
+    return lock_;
+  }
   Lock& lock_;
 
  private:
@@ -166,7 +174,9 @@ class AutoUnlock {
   explicit AutoUnlock(AutoLock& lock) : lock_(lock.GetLock()) {
     lock_.Release();
   }
-  ~AutoUnlock() { lock_.Acquire(); }
+  ~AutoUnlock() {
+    lock_.Acquire();
+  }
 
  private:
   Lock& lock_;

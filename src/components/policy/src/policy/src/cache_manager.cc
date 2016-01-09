@@ -381,7 +381,9 @@ bool CacheManager::SetUserPermissionsForApp(
   return true;
 }
 
-bool CacheManager::UpdateRequired() const { return update_required; }
+bool CacheManager::UpdateRequired() const {
+  return update_required;
+}
 
 void CacheManager::SaveUpdateRequired(bool status) {
   update_required = status;

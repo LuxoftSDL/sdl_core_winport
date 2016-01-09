@@ -152,7 +152,8 @@ bool SQLQuery::Result() {
 
 bool SQLQuery::Exec() {
   sync_primitives::AutoLock auto_lock(bindings_lock_);
-  if (result_) return true;
+  if (result_)
+    return true;
 
   current_row_ = 0;
   uint8_t binding_count = SetBinds();
@@ -215,13 +216,17 @@ void SQLQuery::Bind(int pos, double value) {
   double_binds_.push_back(std::make_pair(pos, value));
 }
 
-void SQLQuery::Bind(int pos, bool value) { Bind(pos, static_cast<int>(value)); }
+void SQLQuery::Bind(int pos, bool value) {
+  Bind(pos, static_cast<int>(value));
+}
 
 void SQLQuery::Bind(int pos, const std::string& value) {
   string_binds_.push_back(std::make_pair(pos, value));
 }
 
-void SQLQuery::Bind(int pos) { null_binds_.push_back(pos); }
+void SQLQuery::Bind(int pos) {
+  null_binds_.push_back(pos);
+}
 
 bool SQLQuery::GetBoolean(int pos) const {
   return static_cast<bool>(GetInteger(pos));

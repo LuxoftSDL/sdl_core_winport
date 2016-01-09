@@ -150,7 +150,8 @@ class StressTestHelper : public ::testing::Test {
         break;
       }
       case 5:  // map
-        if (size <= 0) break;
+        if (size <= 0)
+          break;
 
         // std::cout << "Creating a map with size: " << size << std::endl;
         mVerifyMap[key_path] = "map";
@@ -166,7 +167,8 @@ class StressTestHelper : public ::testing::Test {
         }
         break;
       case 6:  // array
-        if (size <= 0) break;
+        if (size <= 0)
+          break;
 
         // std::cout << "Creating an array with size: " << size << std::endl;
         mVerifyMap[key_path] = "array";

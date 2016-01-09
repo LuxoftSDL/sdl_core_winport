@@ -67,7 +67,8 @@ void StateController::HmiLevelConflictResolver::operator()(
   using namespace mobile_apis;
   using namespace helpers;
   DCHECK_OR_RETURN_VOID(state_ctrl_);
-  if (to_resolve == applied_) return;
+  if (to_resolve == applied_)
+    return;
   if (Compare<HMILevel::eType, EQ, ONE>(
           state_->hmi_level(), HMILevel::HMI_FULL, HMILevel::HMI_LIMITED)) {
     HmiStatePtr cur_state = to_resolve->RegularHmiState();

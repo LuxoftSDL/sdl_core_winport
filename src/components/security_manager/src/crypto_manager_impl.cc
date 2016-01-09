@@ -237,7 +237,8 @@ SSLContext* CryptoManagerImpl::CreateSSLContext() {
   }
 
   SSL* conn = SSL_new(context_);
-  if (conn == NULL) return NULL;
+  if (conn == NULL)
+    return NULL;
 
   if (mode_ == SERVER) {
     SSL_set_accept_state(conn);

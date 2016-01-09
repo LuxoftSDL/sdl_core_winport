@@ -48,7 +48,7 @@ class PolicyManagerImplStressTest : public ::testing::Test {
  protected:
   static const std::string kNameFile;
   static const int kNumberGroups = 3;  // 10;
-  static const int kNumberFuncs = 4;  // 100;
+  static const int kNumberFuncs = 4;   // 100;
   static const int kNumberApps = 5;
   static const int kNumberAppGroups = 5;
   static PolicyManagerImpl* manager;

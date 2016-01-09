@@ -223,7 +223,9 @@ class ResumeCtrl : public app_mngr::event_engine::EventObserver {
   /**
    * @brief Updates flag for saving application data
    */
-  void ApplicationsDataUpdated() { is_data_saved_ = false; }
+  void ApplicationsDataUpdated() {
+    is_data_saved_ = false;
+  }
 
   /**
    * @brief Resume HMI Level and audio streaming state if needed

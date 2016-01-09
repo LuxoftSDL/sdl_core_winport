@@ -70,7 +70,9 @@ TransportAdapter::Error BluetoothConnectionFactory::CreateConnection(
 
 void BluetoothConnectionFactory::Terminate() {}
 
-bool BluetoothConnectionFactory::IsInitialised() const { return true; }
+bool BluetoothConnectionFactory::IsInitialised() const {
+  return true;
+}
 
 BluetoothConnectionFactory::~BluetoothConnectionFactory() {}
 

@@ -58,7 +58,9 @@ struct MessageFromHmi : public MessageSharedPointer {
   explicit MessageFromHmi(const MessageSharedPointer& message)
       : MessageSharedPointer(message) {}
   // PrioritizedQueue requres this method to decide which priority to assign
-  size_t PriorityOrder() const { return (*this)->Priority().OrderingValue(); }
+  size_t PriorityOrder() const {
+    return (*this)->Priority().OrderingValue();
+  }
 };
 
 struct MessageToHmi : public MessageSharedPointer {
@@ -66,7 +68,9 @@ struct MessageToHmi : public MessageSharedPointer {
   explicit MessageToHmi(const MessageSharedPointer& message)
       : MessageSharedPointer(message) {}
   // PrioritizedQueue requres this method to decide which priority to assign
-  size_t PriorityOrder() const { return (*this)->Priority().OrderingValue(); }
+  size_t PriorityOrder() const {
+    return (*this)->Priority().OrderingValue();
+  }
 };
 
 typedef threads::MessageLoopThread<utils::PrioritizedQueue<MessageFromHmi> >

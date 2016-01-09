@@ -58,8 +58,12 @@ class PrioritizedQueue {
     queues_[message_priority].push(message);
     ++total_size_;
   }
-  size_t size() const { return total_size_; }
-  bool empty() const { return queues_.empty(); }
+  size_t size() const {
+    return total_size_;
+  }
+  bool empty() const {
+    return queues_.empty();
+  }
   void swap(PrioritizedQueue<M>& x) {
     std::swap(queues_, x.queues_);
     std::swap(total_size_, x.total_size_);

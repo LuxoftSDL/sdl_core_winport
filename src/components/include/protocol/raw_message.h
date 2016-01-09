@@ -93,7 +93,9 @@ class RawMessage {
   /**
    * \brief Type of service message belongs to
    */
-  ServiceType service_type() const { return service_type_; }
+  ServiceType service_type() const {
+    return service_type_;
+  }
   /**
    * \brief Specifies current state of message in queue.
    * if false message is "ready to be processed"

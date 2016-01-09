@@ -261,7 +261,9 @@ class StateController : public event_engine::EventObserver {
    * @brief state_context getter for state_context
    * @return
    */
-  const StateContext& state_context() const { return state_context_; }
+  const StateContext& state_context() const {
+    return state_context_;
+  }
 
  private:
   /**

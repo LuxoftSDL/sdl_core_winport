@@ -61,7 +61,9 @@ TcpSocketConnection::TcpSocketConnection(const DeviceUID& device_uid,
 
 TcpSocketConnection::~TcpSocketConnection() {}
 
-bool TcpSocketConnection::Establish(ConnectError** error) { return true; }
+bool TcpSocketConnection::Establish(ConnectError** error) {
+  return true;
+}
 
 TcpServerOiginatedSocketConnection::TcpServerOiginatedSocketConnection(
     const DeviceUID& device_uid,

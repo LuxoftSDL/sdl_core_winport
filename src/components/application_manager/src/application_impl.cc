@@ -189,7 +189,9 @@ void ApplicationImpl::ChangeSupportingAppHMIType() {
   }
 }
 
-void ApplicationImpl::set_is_navi(bool allow) { is_navi_ = allow; }
+void ApplicationImpl::set_is_navi(bool allow) {
+  is_navi_ = allow;
+}
 
 bool ApplicationImpl::is_voice_communication_supported() const {
   return is_voice_communication_application_;
@@ -322,22 +324,30 @@ const smart_objects::SmartObject* ApplicationImpl::active_message() const {
   return active_message_;
 }
 
-const Version& ApplicationImpl::version() const { return version_; }
+const Version& ApplicationImpl::version() const {
+  return version_;
+}
 
 void ApplicationImpl::set_hmi_application_id(uint32_t hmi_app_id) {
   hmi_app_id_ = hmi_app_id;
 }
 
-const std::string& ApplicationImpl::name() const { return app_name_; }
+const std::string& ApplicationImpl::name() const {
+  return app_name_;
+}
 
 void application_manager::ApplicationImpl::set_folder_name(
     const std::string& folder_name) {
   folder_name_ = folder_name;
 }
 
-const std::string ApplicationImpl::folder_name() const { return folder_name_; }
+const std::string ApplicationImpl::folder_name() const {
+  return folder_name_;
+}
 
-bool ApplicationImpl::is_media_application() const { return is_media_; }
+bool ApplicationImpl::is_media_application() const {
+  return is_media_;
+}
 
 const mobile_api::HMILevel::eType ApplicationImpl::hmi_level() const {
   using namespace mobile_apis;
@@ -380,9 +390,13 @@ connection_handler::DeviceHandle ApplicationImpl::device() const {
   return device_;
 }
 
-void ApplicationImpl::set_version(const Version& ver) { version_ = ver; }
+void ApplicationImpl::set_version(const Version& ver) {
+  version_ = ver;
+}
 
-void ApplicationImpl::set_name(const std::string& name) { app_name_ = name; }
+void ApplicationImpl::set_name(const std::string& name) {
+  app_name_ = name;
+}
 
 void ApplicationImpl::set_is_media_application(bool is_media) {
   is_media_ = is_media;
@@ -594,9 +608,13 @@ void ApplicationImpl::set_device(connection_handler::DeviceHandle device) {
   device_ = device;
 }
 
-uint32_t ApplicationImpl::get_grammar_id() const { return grammar_id_; }
+uint32_t ApplicationImpl::get_grammar_id() const {
+  return grammar_id_;
+}
 
-void ApplicationImpl::set_grammar_id(uint32_t value) { grammar_id_ = value; }
+void ApplicationImpl::set_grammar_id(uint32_t value) {
+  grammar_id_ = value;
+}
 
 void ApplicationImpl::ResetDataInNone() {
   put_file_in_none_count_ = 0;
@@ -604,7 +622,9 @@ void ApplicationImpl::ResetDataInNone() {
   list_files_in_none_count_ = 0;
 }
 
-bool ApplicationImpl::has_been_activated() const { return has_been_activated_; }
+bool ApplicationImpl::has_been_activated() const {
+  return has_been_activated_;
+}
 
 bool ApplicationImpl::set_activated(bool is_active) {
   has_been_activated_ = is_active;
@@ -624,7 +644,9 @@ void ApplicationImpl::set_is_resuming(bool is_resuming) {
   is_resuming_ = is_resuming;
 }
 
-bool ApplicationImpl::is_resuming() const { return is_resuming_; }
+bool ApplicationImpl::is_resuming() const {
+  return is_resuming_;
+}
 
 bool ApplicationImpl::AddFile(AppFile& file) {
   if (app_files_.count(file.file_name) == 0) {
@@ -708,7 +730,9 @@ bool ApplicationImpl::UnsubscribeFromIVI(uint32_t vehicle_info_type) {
   return subscribed_vehicle_info_.erase(vehicle_info_type);
 }
 
-UsageStatistics& ApplicationImpl::usage_report() { return usage_report_; }
+UsageStatistics& ApplicationImpl::usage_report() {
+  return usage_report_;
+}
 
 bool ApplicationImpl::IsCommandLimitsExceeded(
     mobile_apis::FunctionID::eType cmd_id, TLimitSource source) {
@@ -825,7 +849,9 @@ DataAccessor<VehicleInfoSubscriptions> ApplicationImpl::SubscribedIVI() const {
                                                 vi_lock_);
 }
 
-const std::string& ApplicationImpl::curHash() const { return hash_val_; }
+const std::string& ApplicationImpl::curHash() const {
+  return hash_val_;
+}
 
 bool ApplicationImpl::is_application_data_changed() const {
   return is_application_data_changed_;

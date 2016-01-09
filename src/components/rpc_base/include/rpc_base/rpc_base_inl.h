@@ -80,7 +80,9 @@ inline bool PrimitiveType::is_initialized() const {
   return value_state_ != kUninitialized;
 }
 
-inline bool PrimitiveType::is_valid() const { return value_state_ == kValid; }
+inline bool PrimitiveType::is_valid() const {
+  return value_state_ == kValid;
+}
 
 inline void PrimitiveType::ReportErrors(ValidationReport* report) const {
   switch (value_state_) {
@@ -147,7 +149,9 @@ inline Boolean& Boolean::operator=(bool new_val) {
   return *this;
 }
 
-inline Boolean::operator bool() const { return value_; }
+inline Boolean::operator bool() const {
+  return value_;
+}
 
 /*
  * Integer class

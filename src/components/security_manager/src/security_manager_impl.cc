@@ -337,7 +337,8 @@ bool SecurityManagerImpl::ProccessInternalError(
   Json::Reader reader;
   const bool parsingSuccessful =
       reader.parse(inMessage->get_json_message(), root);
-  if (!parsingSuccessful) return false;
+  if (!parsingSuccessful)
+    return false;
   LOG4CXX_DEBUG(logger_,
                 "Received InternalError id " << root[kErrId].asString()
                                              << ", text: "
@@ -410,6 +411,8 @@ void SecurityManagerImpl::SendQuery(const SecurityQuery& query,
   }
 }
 
-const char* SecurityManagerImpl::ConfigSection() { return "Security Manager"; }
+const char* SecurityManagerImpl::ConfigSection() {
+  return "Security Manager";
+}
 
 }  // namespace security_manager

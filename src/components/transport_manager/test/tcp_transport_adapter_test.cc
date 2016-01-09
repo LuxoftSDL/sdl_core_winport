@@ -132,7 +132,8 @@ class ClientTcpSocket {
   bool Connect(uint16_t server_port) {
     socket_ = socket(AF_INET, SOCK_STREAM, 0);
     std::cout << "socket is " << socket_ << "\n\n";
-    if (socket_ < 0) return false;
+    if (socket_ < 0)
+      return false;
 
     struct sockaddr_in addr;
     memset((char*)&addr, 0, sizeof(addr));
@@ -167,7 +168,9 @@ class ClientTcpSocket {
     }
   }
 
-  void Disconnect() { close(socket_); }
+  void Disconnect() {
+    close(socket_);
+  }
 
  private:
   uint16_t port_;
@@ -199,7 +202,9 @@ class TcpAdapterTest : public ::testing::Test {
     pthread_cond_init(&suspend_cond_, 0);
   }
 
-  uint16_t ChoosePort() { return getpid() % 1000 + 3000; }
+  uint16_t ChoosePort() {
+    return getpid() % 1000 + 3000;
+  }
 
   virtual void SetUp() {
     const TransportAdapter::Error error = transport_adapter_->Init();
@@ -211,11 +216,14 @@ class TcpAdapterTest : public ::testing::Test {
     ASSERT_TRUE(transport_adapter_->IsInitialised());
   }
 
-  virtual void TearDown() { transport_adapter_->StopClientListening(); }
+  virtual void TearDown() {
+    transport_adapter_->StopClientListening();
+  }
 
   virtual ~TcpAdapterTest() {
     pthread_mutex_lock(&suspend_mutex_);
-    if (!finished_) suspended_ = true;
+    if (!finished_)
+      suspended_ = true;
     struct timeval now;
     gettimeofday(&now, NULL);
     timespec abs_time;
@@ -242,7 +250,9 @@ class TcpAdapterTest : public ::testing::Test {
     pthread_mutex_unlock(&suspend_mutex_);
   }
 
-  uint16_t port() const { return port_; }
+  uint16_t port() const {
+    return port_;
+  }
 
   const uint16_t port_;
   TransportAdapter* transport_adapter_;

@@ -81,7 +81,9 @@ ConnectionHandlerImpl::ConnectionHandlerImpl()
     , connection_handler_observer_lock_(true)
     , connection_list_deleter_(&connection_list_) {}
 
-ConnectionHandlerImpl::~ConnectionHandlerImpl() { LOG4CXX_AUTO_TRACE(logger_); }
+ConnectionHandlerImpl::~ConnectionHandlerImpl() {
+  LOG4CXX_AUTO_TRACE(logger_);
+}
 
 void ConnectionHandlerImpl::Stop() {
   LOG4CXX_AUTO_TRACE(logger_);

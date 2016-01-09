@@ -744,7 +744,9 @@ void PolicyManagerImpl::ResetRetrySequence() {
   update_status_manager_.OnResetRetrySequence();
 }
 
-int PolicyManagerImpl::TimeoutExchange() { return retry_sequence_timeout_; }
+int PolicyManagerImpl::TimeoutExchange() {
+  return retry_sequence_timeout_;
+}
 
 const std::vector<int> PolicyManagerImpl::RetrySequenceDelaysSeconds() {
   sync_primitives::AutoLock auto_lock(retry_sequence_lock_);
