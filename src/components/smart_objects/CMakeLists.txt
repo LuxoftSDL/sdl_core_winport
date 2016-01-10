@@ -42,10 +42,8 @@ set (SOURCES
     ${SMART_OBJECTS_SRC_DIR}/schema_item.cc
     ${SMART_OBJECTS_SRC_DIR}/always_false_schema_item.cc
     ${SMART_OBJECTS_SRC_DIR}/always_true_schema_item.cc
-    ${SMART_OBJECTS_SRC_DIR}/default_shema_item.cc
     ${SMART_OBJECTS_SRC_DIR}/bool_schema_item.cc
     ${SMART_OBJECTS_SRC_DIR}/number_schema_item.cc
-    ${SMART_OBJECTS_SRC_DIR}/enum_schema_item.cc
     ${SMART_OBJECTS_SRC_DIR}/string_schema_item.cc
     ${SMART_OBJECTS_SRC_DIR}/object_schema_item.cc
     ${SMART_OBJECTS_SRC_DIR}/array_schema_item.cc
