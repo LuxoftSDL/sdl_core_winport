@@ -34,7 +34,7 @@
 #define SRC_COMPONENTS_APPLICATION_MANAGER_INCLUDE_APPLICATION_MANAGER_RESUMPTION_RESUMPTION_DATA_JSON_H_
 
 #include "application_manager/resumption/resumption_data.h"
-#include "json/json.h"
+#include "utils/json_utils.h"
 
 namespace resumption {
 
@@ -187,20 +187,20 @@ class ResumptionDataJson : public ResumptionData {
    * @param device_id unique id of device.
    * @return the reference to the record in applications array.
    */
-  Json::Value& GetFromSavedOrAppend(const std::string& policy_app_id,
-                                    const std::string& device_id) const;
+  utils::json::JsonValue::Ref GetFromSavedOrAppend(
+      const std::string& policy_app_id, const std::string& device_id) const;
 
   /**
    * @brief Get applications for resumption of LastState
    * @return applications for resumption of LastState
    */
-  Json::Value& GetSavedApplications() const;
+  utils::json::JsonValue::Ref GetSavedApplications() const;
 
   /**
    * @brief Get Resumption section of LastState
    * @return Resumption section of LastState in Json
    */
-  Json::Value& GetResumptionData() const;
+  utils::json::JsonValue::Ref GetResumptionData() const;
 
   /**
    * @brief GetObjectIndex allows to obtain specified object index from
@@ -216,7 +216,7 @@ class ResumptionDataJson : public ResumptionData {
    * @brief Set applications for resumption to LastState
    * @parems apps_json applications to write in LastState
    */
-  void SetSavedApplication(Json::Value& apps_json);
+  void SetSavedApplication(utils::json::JsonValue::Ref apps_json);
 
   /**
    * @brief Setup IgnOff time to LastState

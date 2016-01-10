@@ -31,19 +31,19 @@ Copyright (c) 2013, Ford Motor Company
  POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include <vector>
-#include <string>
-#include <stdio.h>
-#include "application_manager/commands/mobile/system_request.h"
-#include "application_manager/application_manager_impl.h"
 #include "application_manager/application_impl.h"
+#include "application_manager/application_manager_impl.h"
+#include "application_manager/commands/mobile/system_request.h"
 #include "application_manager/policies/policy_handler.h"
-#include "interfaces/MOBILE_API.h"
 #include "config_profile/profile.h"
-#include "utils/file_system.h"
 #include "formatters/CFormatterJsonBase.hpp"
-#include "json/json.h"
+#include "interfaces/MOBILE_API.h"
+#include "utils/file_system.h"
 #include "utils/helpers.h"
+#include "utils/json_utils.h"
+#include <stdio.h>
+#include <string>
+#include <vector>
 
 #if defined(_MSC_VER)
 #define snprintf _snprintf_s
@@ -165,17 +165,19 @@ void SystemRequest::Run() {
 
   if (mobile_apis::RequestType::QUERY_APPS == request_type) {
     using namespace NsSmartDeviceLink::NsJSONHandler::Formatters;
+    using namespace utils::json;
 
     smart_objects::SmartObject sm_object;
-    Json::Reader reader;
-    std::string json(binary_data.begin(), binary_data.end());
-    Json::Value root;
-    if (!reader.parse(json.c_str(), root)) {
+    std::string json_string(binary_data.begin(), binary_data.end());
+
+    JsonValue::ParseResult parse_result = JsonValue::Parse(json_string);
+    if (!parse_result.second) {
       LOG4CXX_DEBUG(logger_, "Unable to parse query_app json file.");
       return;
     }
+    JsonValue& root_json = parse_result.first;
 
-    CFormatterJsonBase::jsonValueToObj(root, sm_object);
+    CFormatterJsonBase::jsonValueToObj(root_json, sm_object);
 
     if (!ValidateQueryAppData(sm_object)) {
       SendResponse(false, mobile_apis::Result::INVALID_DATA);
