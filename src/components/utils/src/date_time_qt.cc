@@ -43,7 +43,7 @@ const uint64_t kDeltaEpochInMicrosecs = 11644473600000000;
 namespace date_time {
 
 TimevalStruct DateTime::getCurrentTime() {
-  qint64 tmpres = QDateTime::currentMSecsSinceEpoch();
+  const qint64 tmpres = QDateTime::currentMSecsSinceEpoch();
   TimevalStruct tv;
 
   tmpres -= kDeltaEpochInMicrosecs;
@@ -134,8 +134,10 @@ bool DateTime::Equal(const TimevalStruct& time1, const TimevalStruct& time2) {
 
 TimeCompare date_time::DateTime::compareTime(const TimevalStruct& time1,
                                              const TimevalStruct& time2) {
-  if (Greater(time1, time2)) return GREATER;
-  if (Less(time1, time2)) return LESS;
+  if (Greater(time1, time2))
+    return GREATER;
+  if (Less(time1, time2))
+    return LESS;
   return EQUAL;
 }
 
