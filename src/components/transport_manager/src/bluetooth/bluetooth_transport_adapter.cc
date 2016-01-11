@@ -34,20 +34,20 @@
  */
 
 #include <errno.h>
-#include <sys/types.h>
 #include <sys/socket.h>
+#include <sys/types.h>
 #include <unistd.h>
 
+#include <bluetooth/bluetooth.h>
 #include <iomanip>
 #include <set>
-#include <bluetooth/bluetooth.h>
 
 #include "resumption/last_state.h"
 
-#include "transport_manager/bluetooth/bluetooth_transport_adapter.h"
-#include "transport_manager/bluetooth/bluetooth_device_scanner.h"
 #include "transport_manager/bluetooth/bluetooth_connection_factory.h"
 #include "transport_manager/bluetooth/bluetooth_device.h"
+#include "transport_manager/bluetooth/bluetooth_device_scanner.h"
+#include "transport_manager/bluetooth/bluetooth_transport_adapter.h"
 
 #include "utils/logger.h"
 
@@ -68,6 +68,7 @@ DeviceType BluetoothTransportAdapter::GetDeviceType() const {
 }
 
 void BluetoothTransportAdapter::Store() const {
+  using namespace utils::json;
   LOG4CXX_TRACE(logger_, "enter");
   Json::Value bluetooth_adapter_dictionary;
   Json::Value devices_dictionary;
@@ -110,8 +111,8 @@ void BluetoothTransportAdapter::Store() const {
     }
   }
   bluetooth_adapter_dictionary["devices"] = devices_dictionary;
-  resumption::LastState::instance()
-      ->dictionary["TransportManager"]["BluetoothAdapter"] =
+  JsonValue& dictionary = resumption::LastState::instance()->dictionary();
+  dictionary["TransportManager"]["BluetoothAdapter"] =
       bluetooth_adapter_dictionary;
   LOG4CXX_TRACE(logger_, "exit");
 }
@@ -119,11 +120,12 @@ void BluetoothTransportAdapter::Store() const {
 bool BluetoothTransportAdapter::Restore() {
   LOG4CXX_TRACE(logger_, "enter");
   bool errors_occured = false;
-  const Json::Value bluetooth_adapter_dictionary =
-      resumption::LastState::instance()
-          ->dictionary["TransportManager"]["BluetoothAdapter"];
-  const Json::Value devices_dictionary =
+  const JsonValue& dictionary = resumption::LastState::instance()->dictionary();
+  const JsonValue::Ref bluetooth_adapter_dictionary =
+      dictionary["TransportManager"]["BluetoothAdapter"];
+  const JsonValue::Ref devices_dictionary =
       bluetooth_adapter_dictionary["devices"];
+
   for (Json::Value::const_iterator i = devices_dictionary.begin();
        i != devices_dictionary.end();
        ++i) {
