@@ -41,9 +41,15 @@ CREATE_LOGGERPTR_GLOBAL(logger_, "Utils")
 
 ConditionalVariable::ConditionalVariable() : cond_var_() {}
 
-void ConditionalVariable::NotifyOne() { cond_var_.wakeOne(); }
+ConditionalVariable::~ConditionalVariable() {}
 
-void ConditionalVariable::Broadcast() { cond_var_.wakeAll(); }
+void ConditionalVariable::NotifyOne() {
+  cond_var_.wakeOne();
+}
+
+void ConditionalVariable::Broadcast() {
+  cond_var_.wakeAll();
+}
 
 bool ConditionalVariable::Wait(Lock& lock) {
   lock.AssertTakenAndMarkFree();
