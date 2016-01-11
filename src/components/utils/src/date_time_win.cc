@@ -151,8 +151,10 @@ bool DateTime::Equal(const TimevalStruct& time1, const TimevalStruct& time2) {
 
 TimeCompare date_time::DateTime::compareTime(const TimevalStruct& time1,
                                              const TimevalStruct& time2) {
-  if (Greater(time1, time2)) return GREATER;
-  if (Less(time1, time2)) return LESS;
+  if (Greater(time1, time2))
+    return GREATER;
+  if (Less(time1, time2))
+    return LESS;
   return EQUAL;
 }
 

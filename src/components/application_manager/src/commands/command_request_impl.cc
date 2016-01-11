@@ -71,11 +71,17 @@ CommandRequestImpl::CommandRequestImpl(const MessageSharedPtr& message)
 
 CommandRequestImpl::~CommandRequestImpl() {}
 
-bool CommandRequestImpl::Init() { return true; }
+bool CommandRequestImpl::Init() {
+  return true;
+}
 
-bool CommandRequestImpl::CheckPermissions() { return CheckAllowedParameters(); }
+bool CommandRequestImpl::CheckPermissions() {
+  return CheckAllowedParameters();
+}
 
-bool CommandRequestImpl::CleanUp() { return true; }
+bool CommandRequestImpl::CleanUp() {
+  return true;
+}
 
 void CommandRequestImpl::Run() {}
 

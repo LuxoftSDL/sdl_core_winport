@@ -9,7 +9,9 @@ class SdlAppsListModel : public QAbstractListModel {
  public:
   explicit SdlAppsListModel(QObject* parent = 0);
 
-  int rowCount(const QModelIndex& parent) const { return m_data.size(); }
+  int rowCount(const QModelIndex& parent) const {
+    return m_data.size();
+  }
 
   QVariant data(const QModelIndex& index, int role) const {
     return m_data.values().at(index.row());

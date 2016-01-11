@@ -675,7 +675,9 @@ class CacheManager : public CacheManagerInterface {
                 policy_table::PolicyTable& pt);
 
 #ifdef BUILD_TESTS
-  utils::SharedPtr<policy_table::Table> GetPT() const { return pt_; }
+  utils::SharedPtr<policy_table::Table> GetPT() const {
+    return pt_;
+  }
 #endif
 
  private:

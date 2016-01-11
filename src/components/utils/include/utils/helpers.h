@@ -67,9 +67,13 @@ bool NEQ(T what, T to) {
   return !EQ<T>(what, to);
 }
 
-inline bool ALL(bool what, bool to) { return what && to; }
+inline bool ALL(bool what, bool to) {
+  return what && to;
+}
 
-inline bool ONE(bool what, bool to) { return what || to; }
+inline bool ONE(bool what, bool to) {
+  return what || to;
+}
 
 template <typename T,
           bool (*CompareType)(T, T),

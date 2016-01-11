@@ -1224,7 +1224,9 @@ void PolicyHandler::OnCertificateUpdated(const std::string& certificate_data) {
   }
 }
 
-bool PolicyHandler::CanUpdate() { return 0 != GetAppIdForSending(); }
+bool PolicyHandler::CanUpdate() {
+  return 0 != GetAppIdForSending();
+}
 
 void PolicyHandler::RemoveDevice(const std::string& device_id) {
   LOG4CXX_AUTO_TRACE(logger_);

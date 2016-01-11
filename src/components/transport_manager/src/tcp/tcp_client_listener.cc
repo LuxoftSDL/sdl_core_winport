@@ -163,7 +163,9 @@ void TcpClientListener::Terminate() {
   socket_ = -1;
 }
 
-bool TcpClientListener::IsInitialised() const { return thread_; }
+bool TcpClientListener::IsInitialised() const {
+  return thread_;
+}
 
 TcpClientListener::~TcpClientListener() {
   LOG4CXX_AUTO_TRACE(logger_);

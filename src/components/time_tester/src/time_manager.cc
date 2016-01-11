@@ -61,7 +61,9 @@ TimeManager::TimeManager()
   thread_ = threads::CreateThread("TimeManager", streamer_);
 }
 
-TimeManager::~TimeManager() { Stop(); }
+TimeManager::~TimeManager() {
+  Stop();
+}
 
 void TimeManager::Init(protocol_handler::ProtocolHandlerImpl* ph) {
   LOG4CXX_AUTO_TRACE(logger_);
@@ -98,7 +100,9 @@ TimeManager::Streamer::Streamer(TimeManager* const server)
     , client_socket_fd_(0)
     , stop_flag_(false) {}
 
-TimeManager::Streamer::~Streamer() { Stop(); }
+TimeManager::Streamer::~Streamer() {
+  Stop();
+}
 
 void TimeManager::Streamer::threadMain() {
   LOG4CXX_AUTO_TRACE(logger_);

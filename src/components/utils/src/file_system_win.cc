@@ -423,7 +423,9 @@ void file_system::MakeAbsolutePath(std::string& path) {
   }
 }
 
-std::string file_system::GetPathDelimiter() { return "\\"; }
+std::string file_system::GetPathDelimiter() {
+  return "\\";
+}
 
 std::string file_system::ConcatPath(const std::string& str1,
                                     const std::string& str2) {

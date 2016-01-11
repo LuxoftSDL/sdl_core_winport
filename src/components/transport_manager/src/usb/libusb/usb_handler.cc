@@ -55,11 +55,17 @@ class UsbHandler::ControlTransferSequenceState {
                                PlatformUsbDevice* device);
   ~ControlTransferSequenceState();
   void Finish();
-  bool Finished() const { return finished_; }
+  bool Finished() const {
+    return finished_;
+  }
   UsbControlTransfer* CurrentTransfer();
   UsbControlTransfer* Next();
-  UsbHandler* usb_handler() const { return usb_handler_; }
-  PlatformUsbDevice* device() const { return device_; }
+  UsbHandler* usb_handler() const {
+    return usb_handler_;
+  }
+  PlatformUsbDevice* device() const {
+    return device_;
+  }
 
  private:
   UsbHandler* usb_handler_;
@@ -500,7 +506,9 @@ UsbHandler::ControlTransferSequenceState::CurrentTransfer() {
   return finished_ ? NULL : *current_transfer_;
 }
 
-void UsbHandler::ControlTransferSequenceState::Finish() { finished_ = true; }
+void UsbHandler::ControlTransferSequenceState::Finish() {
+  finished_ = true;
+}
 
 UsbHandler::UsbHandlerDelegate::UsbHandlerDelegate(UsbHandler* handler)
     : handler_(handler) {}

@@ -64,7 +64,9 @@ class TestThreadDelegate : public threads::ThreadDelegate {
     cond_var_.NotifyOne();
   }
 
-  bool check_value() const { return check_value_; }
+  bool check_value() const {
+    return check_value_;
+  }
 
  private:
   bool check_value_;
@@ -114,7 +116,8 @@ TEST(PosixThreadTest,
   // Name must be large enough to keep 16 symbols. Read previous comment
   char name[MAX_SIZE];
   int result = pthread_getname_np(thread->thread_handle(), name, sizeof(name));
-  if (!result) EXPECT_EQ(std::string("new thread with"), std::string(name));
+  if (!result)
+    EXPECT_EQ(std::string("new thread with"), std::string(name));
   cond_var_.WaitFor(test_lock, 10000);
   EXPECT_TRUE(threadDelegate->check_value());
   DeleteThread(thread);
@@ -304,7 +307,8 @@ TEST(PosixThreadTest,
   // Name must be large enough to keep 16 symbols. Read previous comment
   char name[MAX_SIZE];
   int result = pthread_getname_np(thread->thread_handle(), name, sizeof(name));
-  if (!result) EXPECT_EQ(test_thread_name, std::string(name));
+  if (!result)
+    EXPECT_EQ(test_thread_name, std::string(name));
   // Stop thread
   thread->stop();
   EXPECT_TRUE(

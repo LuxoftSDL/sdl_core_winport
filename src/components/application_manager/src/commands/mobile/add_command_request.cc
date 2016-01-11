@@ -474,7 +474,9 @@ bool AddCommandRequest::IsWhiteSpaceExist() {
   return false;
 }
 
-bool AddCommandRequest::BothSend() const { return send_vr_ && send_ui_; }
+bool AddCommandRequest::BothSend() const {
+  return send_vr_ && send_ui_;
+}
 
 void AddCommandRequest::RemoveCommand() {
   LOG4CXX_AUTO_TRACE(logger_);

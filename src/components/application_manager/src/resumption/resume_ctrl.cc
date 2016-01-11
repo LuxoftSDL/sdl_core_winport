@@ -354,7 +354,9 @@ void ResumeCtrl::StartAppHmiStateResumption(ApplicationSharedPtr application) {
   }
 }
 
-void ResumeCtrl::ResetLaunchTime() { launch_time_ = time(NULL); }
+void ResumeCtrl::ResetLaunchTime() {
+  launch_time_ = time(NULL);
+}
 
 bool ResumeCtrl::CheckPersistenceFilesForResumption(
     ApplicationSharedPtr application) {
@@ -667,7 +669,9 @@ bool ResumeCtrl::CheckDelayAfterIgnOn() {
   return seconds_from_sdl_start <= wait_time;
 }
 
-time_t ResumeCtrl::launch_time() const { return launch_time_; }
+time_t ResumeCtrl::launch_time() const {
+  return launch_time_;
+}
 
 time_t ResumeCtrl::GetIgnOffTime() {
   return resumption_storage_->GetIgnOffTime();

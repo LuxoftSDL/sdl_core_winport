@@ -41,12 +41,15 @@ namespace dbms {
 SQLQuery::SQLQuery(SQLDatabase* db)
     : db_(*db), query_(""), statement_(NULL), error_(SQLITE_OK) {}
 
-SQLQuery::~SQLQuery() { Finalize(); }
+SQLQuery::~SQLQuery() {
+  Finalize();
+}
 
 bool SQLQuery::Prepare(const std::string& query) {
   Finalize();
   sync_primitives::AutoLock auto_lock(statement_lock_);
-  if (statement_) return false;
+  if (statement_)
+    return false;
   error_ = sqlite3_prepare(db_.conn(),
                            query.c_str(),
                            static_cast<int>(query.length()),
@@ -100,7 +103,9 @@ void SQLQuery::Bind(int pos, double value) {
   error_ = sqlite3_bind_double(statement_, pos + 1, value);
 }
 
-void SQLQuery::Bind(int pos, bool value) { Bind(pos, static_cast<int>(value)); }
+void SQLQuery::Bind(int pos, bool value) {
+  Bind(pos, static_cast<int>(value));
+}
 
 void SQLQuery::Bind(int pos, const std::string& value) {
   // In SQLite the number of position for binding starts since 1.
@@ -111,7 +116,9 @@ void SQLQuery::Bind(int pos, const std::string& value) {
                              SQLITE_TRANSIENT);
 }
 
-bool SQLQuery::GetBoolean(int pos) const { return GetInteger(pos) != 0; }
+bool SQLQuery::GetBoolean(int pos) const {
+  return GetInteger(pos) != 0;
+}
 
 int SQLQuery::GetInteger(int pos) const {
   return sqlite3_column_int(statement_, pos);
@@ -148,7 +155,9 @@ void SQLQuery::Bind(int pos) {
   error_ = sqlite3_bind_null(statement_, pos + 1);
 }
 
-SQLError SQLQuery::LastError() const { return SQLError(Error(error_)); }
+SQLError SQLQuery::LastError() const {
+  return SQLError(Error(error_));
+}
 
 int64_t SQLQuery::LastInsertId() const {
   return sqlite3_last_insert_rowid(db_.conn());

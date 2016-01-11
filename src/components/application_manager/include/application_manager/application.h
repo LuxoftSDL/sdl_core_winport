@@ -673,38 +673,50 @@ class Application : public virtual InitialApplicationData,
    *
    * @return true if registered, false otherwise.
    */
-  bool IsRegistered() const { return app_state_ == kRegistered; }
+  bool IsRegistered() const {
+    return app_state_ == kRegistered;
+  }
 
   /**
    * @brief MarkRegistered allows to mark application as registered.
    */
-  void MarkRegistered() { app_state_ = kRegistered; }
+  void MarkRegistered() {
+    app_state_ = kRegistered;
+  }
 
   /**
    * @brief MarkUnregistered allows to mark application as unregistered.
    */
-  void MarkUnregistered() { app_state_ = kWaitingForRegistration; }
+  void MarkUnregistered() {
+    app_state_ = kWaitingForRegistration;
+  }
 
   /**
    * @brief schemaUrl contains application's url (for 4th protocol version)
    *
    * @return application's url.
    */
-  std::string SchemaUrl() const { return url_; }
+  std::string SchemaUrl() const {
+    return url_;
+  }
 
   /**
    * @brief SetShemaUrl allows to store schema url for application.
    *
    * @param url url to store.
    */
-  void SetShemaUrl(const std::string& url) { url_ = url; }
+  void SetShemaUrl(const std::string& url) {
+    url_ = url;
+  }
 
   /**
    * @brief packagName allows to obtain application's package name.
    *
    * @return pakage name.
    */
-  std::string PackageName() const { return package_name_; }
+  std::string PackageName() const {
+    return package_name_;
+  }
 
   /**
    * @brief SetPackageName allows to store package name for application.
@@ -721,19 +733,25 @@ class Application : public virtual InitialApplicationData,
    *
    * @return device the device id.
    */
-  std::string GetDeviceId() const { return device_id_; }
+  std::string GetDeviceId() const {
+    return device_id_;
+  }
 
   /**
    * @brief Returns is application should be greyed out on HMI
    */
-  bool is_greyed_out() const { return is_greyed_out_; }
+  bool is_greyed_out() const {
+    return is_greyed_out_;
+  }
 
   /**
    * @brief Sets application as should be greyed out on HMI
    * @param is_greyed_out True, if should be greyed out on HMI,
    * otherwise - false
    */
-  void set_greyed_out(bool is_greyed_out) { is_greyed_out_ = is_greyed_out; }
+  void set_greyed_out(bool is_greyed_out) {
+    is_greyed_out_ = is_greyed_out;
+  }
   /**
    * @brief Load persistent files from application folder.
    */

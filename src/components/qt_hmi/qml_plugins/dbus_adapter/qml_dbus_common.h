@@ -85,8 +85,10 @@ inline void PutArgToMap(QVariantMap& map, const char* name, const T& v) {
 
 inline bool GetArgFromMap(const QVariantMap& map, const char* name, int& v) {
   QVariantMap::const_iterator it = map.find(name);
-  if (map.end() == it) return false;
-  if (it->type() != QVariant::Int) return false;
+  if (map.end() == it)
+    return false;
+  if (it->type() != QVariant::Int)
+    return false;
   v = it->toInt();
   return true;
 }
@@ -95,16 +97,20 @@ inline bool GetArgFromMap(const QVariantMap& map,
                           const char* name,
                           QString& v) {
   QVariantMap::const_iterator it = map.find(name);
-  if (map.end() == it) return false;
-  if (it->type() != QVariant::String) return false;
+  if (map.end() == it)
+    return false;
+  if (it->type() != QVariant::String)
+    return false;
   v = it->toString();
   return true;
 }
 
 inline bool GetArgFromMap(const QVariantMap& map, const char* name, bool& v) {
   QVariantMap::const_iterator it = map.find(name);
-  if (map.end() == it) return false;
-  if (it->type() != QVariant::Bool) return false;
+  if (map.end() == it)
+    return false;
+  if (it->type() != QVariant::Bool)
+    return false;
   v = it->toBool();
   return true;
 }
@@ -118,41 +124,49 @@ inline bool isNumber(QVariant v) {
 
 inline bool GetArgFromMap(const QVariantMap& map, const char* name, double& v) {
   QVariantMap::const_iterator it = map.find(name);
-  if (map.end() == it) return false;
-  if (!isNumber(*it)) return false;
+  if (map.end() == it)
+    return false;
+  if (!isNumber(*it))
+    return false;
   v = it->toDouble();
   return true;
 }
 
 inline bool VariantToValue(const QVariant& variant, int& v) {
-  if (variant.type() != QVariant::Int) return false;
+  if (variant.type() != QVariant::Int)
+    return false;
   v = variant.toInt();
   return true;
 }
 
 inline bool VariantToValue(const QVariant& variant, QString& v) {
-  if (variant.type() != QVariant::String) return false;
+  if (variant.type() != QVariant::String)
+    return false;
   v = variant.toString();
   return true;
 }
 
 inline bool VariantToValue(const QVariant& variant, bool& v) {
-  if (variant.type() != QVariant::Bool) return false;
+  if (variant.type() != QVariant::Bool)
+    return false;
   v = variant.toBool();
   return true;
 }
 
 inline bool VariantToValue(const QVariant& variant, double& v) {
-  if (variant.type() != QVariant::Double) return false;
+  if (variant.type() != QVariant::Double)
+    return false;
   v = variant.toDouble();
   return true;
 }
 
 inline bool VariantToValue(const QVariant& variant, QStringList& v) {
-  if (variant.type() != QVariant::List) return false;
+  if (variant.type() != QVariant::List)
+    return false;
   QList<QVariant> list = variant.toList();
   for (QList<QVariant>::const_iterator i = list.begin(); i != list.end(); ++i) {
-    if (i->type() != QVariant::String) return false;
+    if (i->type() != QVariant::String)
+      return false;
     v.append(i->toString());
   }
   return true;
@@ -160,7 +174,8 @@ inline bool VariantToValue(const QVariant& variant, QStringList& v) {
 
 template <typename T>
 bool VariantToValue(const QVariant& variant, QList<T>& v) {
-  if (variant.type() != QVariant::List) return false;
+  if (variant.type() != QVariant::List)
+    return false;
   QList<T> spare;
   QList<QVariant> list = variant.toList();
   for (QList<QVariant>::const_iterator i = list.begin(); i != list.end(); ++i) {
@@ -204,14 +219,17 @@ inline bool GetArgFromMap(const QVariantMap& map,
                           const char* name,
                           QList<T>& v) {
   QVariantMap::const_iterator it = map.find(name);
-  if (map.end() == it) return false;
+  if (map.end() == it)
+    return false;
   const QVariant& variant = *it;
-  if (variant.type() != QVariant::List) return false;
+  if (variant.type() != QVariant::List)
+    return false;
   QList<QVariant> list = variant.toList();
   for (QList<QVariant>::const_iterator i = list.begin(); i != list.end(); ++i) {
     T t;
     bool ok = VariantToValue(*i, t);
-    if (!ok) return false;
+    if (!ok)
+      return false;
     v.append(t);
   }
   return true;
@@ -221,7 +239,8 @@ template <typename T>
 inline void PutArgToMap(QVariantMap& map,
                         const char* name,
                         const OptionalArgument<T>& v) {
-  if (v.presence) map.insert(name, ValueToVariant(v.val));
+  if (v.presence)
+    map.insert(name, ValueToVariant(v.val));
 }
 
 template <typename T>

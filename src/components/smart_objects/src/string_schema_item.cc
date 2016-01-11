@@ -59,7 +59,9 @@ Errors::eType CStringSchemaItem::validate(const SmartObject& Object) {
   return Errors::OK;
 }
 
-SmartType CStringSchemaItem::getSmartType() const { return SmartType_String; }
+SmartType CStringSchemaItem::getSmartType() const {
+  return SmartType_String;
+}
 
 std::string CStringSchemaItem::getDefaultValue() const {
   return std::string("");

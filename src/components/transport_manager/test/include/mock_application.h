@@ -70,7 +70,9 @@ class MockApplication {
   MockApplication(const MockDevice* device, ApplicationHandle id);
   void Start();
   void Stop();
-  const std::string& socket_name() const { return socket_name_; }
+  const std::string& socket_name() const {
+    return socket_name_;
+  }
 };
 
 }  // namespace transport_manager

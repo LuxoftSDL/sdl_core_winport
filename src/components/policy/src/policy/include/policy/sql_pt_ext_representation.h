@@ -81,7 +81,9 @@ class SQLPTExtRepresentation : public SQLPTRepresentation,
   std::vector<UserFriendlyMessage> GetUserFriendlyMsg(
       const std::vector<std::string>& msg_codes, const std::string& language);
 
-  bool IncreaseStatisticsData(StatisticsType type) { return true; }
+  bool IncreaseStatisticsData(StatisticsType type) {
+    return true;
+  }
   bool SetAppRegistrationLanguage(const std::string& app_id,
                                   LanguageType type,
                                   const std::string& language) {
@@ -96,9 +98,15 @@ class SQLPTExtRepresentation : public SQLPTRepresentation,
 
   bool SetSystemLanguage(const std::string& language);
 
-  int GetKmFromSuccessfulExchange() { return true; }
-  int GetDayFromScsExchange() { return true; }
-  int GetIgnitionsFromScsExchange() { return true; }
+  int GetKmFromSuccessfulExchange() {
+    return true;
+  }
+  int GetDayFromScsExchange() {
+    return true;
+  }
+  int GetIgnitionsFromScsExchange() {
+    return true;
+  }
 
   bool GetFunctionalGroupNames(FunctionalGroupNames& names);
   bool CleanupUnpairedDevices(const DeviceIds& device_ids) const;

@@ -57,7 +57,9 @@ namespace threads {
 
 CREATE_LOGGERPTR_GLOBAL(logger_, "Utils")
 
-void sleep(uint32_t ms) { usleep(ms * 1000); }
+void sleep(uint32_t ms) {
+  usleep(ms * 1000);
+}
 
 size_t Thread::kMinStackSize =
     PTHREAD_STACK_MIN; /* Ubuntu : 16384 ; QNX : 256; */
@@ -139,7 +141,8 @@ void* Thread::threadFunc(void* arg) {
 
 void Thread::SetNameForId(const PlatformThreadHandle& thread_id,
                           std::string name) {
-  if (name.size() > THREAD_NAME_SIZE) name.erase(THREAD_NAME_SIZE);
+  if (name.size() > THREAD_NAME_SIZE)
+    name.erase(THREAD_NAME_SIZE);
   const int rc = pthread_setname_np(thread_id, name.c_str());
   if (rc != EOK) {
     LOG4CXX_WARN(logger_,
@@ -161,9 +164,13 @@ Thread::Thread(const char* name, ThreadDelegate* delegate)
     , finalized_(false)
     , thread_created_(false) {}
 
-bool Thread::start() { return start(thread_options_); }
+bool Thread::start() {
+  return start(thread_options_);
+}
 
-PlatformThreadHandle Thread::CurrentId() { return pthread_self(); }
+PlatformThreadHandle Thread::CurrentId() {
+  return pthread_self();
+}
 
 bool Thread::start(const ThreadOptions& options) {
   LOG4CXX_AUTO_TRACE(logger_);
@@ -306,7 +313,9 @@ Thread* CreateThread(const char* name, ThreadDelegate* delegate) {
   return thread;
 }
 
-void DeleteThread(Thread* thread) { delete thread; }
+void DeleteThread(Thread* thread) {
+  delete thread;
+}
 
 }  // namespace threads
 

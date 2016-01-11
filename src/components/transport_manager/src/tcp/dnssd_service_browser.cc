@@ -68,7 +68,9 @@ void DnssdServiceBrowser::Terminate() {
   }
 }
 
-bool DnssdServiceBrowser::IsInitialised() const { return initialised_; }
+bool DnssdServiceBrowser::IsInitialised() const {
+  return initialised_;
+}
 
 DnssdServiceBrowser::DnssdServiceBrowser(TransportAdapterController* controller)
     : controller_(controller)

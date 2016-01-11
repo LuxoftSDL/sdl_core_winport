@@ -56,7 +56,9 @@ struct SecurityMessage : public SecurityQueryPtr {
   explicit SecurityMessage(const SecurityQueryPtr& message)
       : SecurityQueryPtr(message) {}
   // PrioritizedQueue requires this method to decide which priority to assign
-  size_t PriorityOrder() const { return 0; }
+  size_t PriorityOrder() const {
+    return 0;
+  }
 };
 typedef utils::PrioritizedQueue<SecurityMessage> SecurityMessageQueue;
 typedef threads::MessageLoopThread<SecurityMessageQueue> SecurityMessageLoop;

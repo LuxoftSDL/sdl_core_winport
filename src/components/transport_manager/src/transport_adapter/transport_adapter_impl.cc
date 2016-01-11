@@ -880,7 +880,9 @@ TMMetricObserver* TransportAdapterImpl::GetTimeMetricObserver() {
 
 void TransportAdapterImpl::Store() const {}
 
-bool TransportAdapterImpl::Restore() { return true; }
+bool TransportAdapterImpl::Restore() {
+  return true;
+}
 
 bool TransportAdapterImpl::ToBeAutoConnected(DeviceSptr device) const {
   return false;

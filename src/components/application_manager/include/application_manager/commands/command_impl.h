@@ -125,7 +125,9 @@ class CommandImpl : public Command {
  *  If request need to terminate itself, it should override this function false
  * @return allowed_to_terminate_ value
  */
-  virtual bool AllowedToTerminate() { return allowed_to_terminate_; }
+  virtual bool AllowedToTerminate() {
+    return allowed_to_terminate_;
+  }
 
   /**
   * @brief SetAllowedToTerminate set up allowed to terminate flag.

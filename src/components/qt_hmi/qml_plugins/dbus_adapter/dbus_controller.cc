@@ -65,7 +65,8 @@ void DBusController::sendReply(QVariant asyncObject, QVariant data) {
 }
 
 void DBusController::sendReply(QVariant data) {
-  if (!message) return;
+  if (!message)
+    return;
   QDBusMessage msg = message->createReply();
   if (!fill(msg, data.toMap())) {
     QDBusConnection::sessionBus().send(message->createErrorReply(

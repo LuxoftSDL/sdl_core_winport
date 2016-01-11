@@ -64,9 +64,13 @@ void deinit_logger() {
   fclose(output_file);
 }
 
-bool logs_enabled() { return is_logs_enabled; }
+bool logs_enabled() {
+  return is_logs_enabled;
+}
 
-void set_logs_enabled(bool state) { is_logs_enabled = state; }
+void set_logs_enabled(bool state) {
+  is_logs_enabled = state;
+}
 
 bool push_log(const std::string& logger,
               LogLevel level,

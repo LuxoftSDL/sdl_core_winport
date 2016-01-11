@@ -85,7 +85,8 @@ class DBusMessageControllerTest : public ::testing::Test {
   }
 
   bool waitCond(int seconds) {
-    if (one_thread) return true;
+    if (one_thread)
+      return true;
     timespec elapsed;
     clock_gettime(CLOCK_REALTIME, &elapsed);
     elapsed.tv_sec += seconds;

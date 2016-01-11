@@ -63,7 +63,9 @@ void utils::SharedLibrary::Unload() {
   }
 }
 
-bool utils::SharedLibrary::IsLoaded() const { return handle_ != NULL; }
+bool utils::SharedLibrary::IsLoaded() const {
+  return handle_ != NULL;
+}
 
 void* utils::SharedLibrary::GetSymbol(const char* name) {
   void* result = NULL;

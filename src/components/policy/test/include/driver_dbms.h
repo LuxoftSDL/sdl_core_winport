@@ -46,13 +46,19 @@ namespace policy {
 class DBMS {
  public:
   explicit DBMS(std::string db_name) : db_name_(db_name), conn_(0) {}
-  ~DBMS() { Close(); }
+  ~DBMS() {
+    Close();
+  }
   bool Open() {
     conn_ = qdb_connect(db_name_.c_str(), 0);
     return conn_ != NULL;
   }
-  void Close() { qdb_disconnect(conn_); }
-  bool Exec(const char* query) { return -1 != qdb_statement(conn_, query); }
+  void Close() {
+    qdb_disconnect(conn_);
+  }
+  bool Exec(const char* query) {
+    return -1 != qdb_statement(conn_, query);
+  }
   int FetchOneInt(const char* query) {
     int stmt = qdb_stmt_init(conn_, query, strlen(query) + 1);
     qdb_stmt_exec(conn_, stmt, NULL, 0);
@@ -101,8 +107,12 @@ class DBMS {
 class DBMS {
  public:
   explicit DBMS(std::string file_name) : file_name_(file_name), conn_(0) {}
-  ~DBMS() { Close(); }
-  bool Open() { return SQLITE_OK == sqlite3_open(file_name_.c_str(), &conn_); }
+  ~DBMS() {
+    Close();
+  }
+  bool Open() {
+    return SQLITE_OK == sqlite3_open(file_name_.c_str(), &conn_);
+  }
   void Close() {
     sqlite3_close(conn_);
     remove(file_name_.c_str());

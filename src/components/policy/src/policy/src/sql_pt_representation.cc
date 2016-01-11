@@ -423,7 +423,9 @@ bool SQLPTRepresentation::Close() {
   return !db_->HasErrors();
 }
 
-VehicleData SQLPTRepresentation::GetVehicleData() { return VehicleData(); }
+VehicleData SQLPTRepresentation::GetVehicleData() {
+  return VehicleData();
+}
 
 bool SQLPTRepresentation::Drop() {
   Query query(db());
@@ -435,7 +437,9 @@ bool SQLPTRepresentation::Drop() {
   return true;
 }
 
-void SQLPTRepresentation::WriteDb() { db_->Backup(); }
+void SQLPTRepresentation::WriteDb() {
+  db_->Backup();
+}
 
 bool SQLPTRepresentation::Clear() {
   Query query(db());
@@ -1674,6 +1678,8 @@ void SQLPTRepresentation::SetPreloaded(bool value) {
   }
 }
 
-bool SQLPTRepresentation::SetVINValue(const std::string& value) { return true; }
+bool SQLPTRepresentation::SetVINValue(const std::string& value) {
+  return true;
+}
 
 }  // namespace policy

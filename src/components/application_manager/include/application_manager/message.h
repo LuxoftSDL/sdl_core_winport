@@ -103,7 +103,9 @@ class Message {
   void set_data_size(size_t data_size);
   void set_payload_size(size_t payload_size);
 
-  protocol_handler::MessagePriority Priority() const { return priority_; }
+  protocol_handler::MessagePriority Priority() const {
+    return priority_;
+  }
 
  private:
   int32_t function_id_;     // @remark protocol V2.

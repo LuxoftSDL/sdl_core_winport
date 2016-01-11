@@ -132,6 +132,8 @@ void AudioStreamSenderThread::exitThreadMain() {
   setShouldBeStopped(true);
 }
 
-uint32_t AudioStreamSenderThread::session_key() const { return session_key_; }
+uint32_t AudioStreamSenderThread::session_key() const {
+  return session_key_;
+}
 
 }  // namespace media_manager

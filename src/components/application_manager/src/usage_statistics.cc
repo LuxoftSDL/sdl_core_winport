@@ -113,7 +113,9 @@ void UsageStatistics::RecordPolicyRejectedRpcCall() {
   ++count_of_rejected_rpc_calls_;
 }
 
-void UsageStatistics::RecordAppUserSelection() { ++count_of_user_selections_; }
+void UsageStatistics::RecordAppUserSelection() {
+  ++count_of_user_selections_;
+}
 
 void UsageStatistics::RecordRunAttemptsWhileRevoked() {
   ++count_of_run_attempts_while_revoked_;
@@ -123,6 +125,8 @@ void UsageStatistics::RecordRemovalsForBadBehavior() {
   ++count_of_removals_for_bad_behavior_;
 }
 
-void UsageStatistics::RecordTLSError() { ++count_of_tls_error_; }
+void UsageStatistics::RecordTLSError() {
+  ++count_of_tls_error_;
+}
 
 }  // namespace application_manager

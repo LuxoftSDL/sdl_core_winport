@@ -97,7 +97,9 @@ TransportAdapter::Error UsbConnectionFactory::CreateConnection(
 
 void UsbConnectionFactory::Terminate() {}
 
-bool UsbConnectionFactory::IsInitialised() const { return true; }
+bool UsbConnectionFactory::IsInitialised() const {
+  return true;
+}
 
 UsbConnectionFactory::~UsbConnectionFactory() {}
 

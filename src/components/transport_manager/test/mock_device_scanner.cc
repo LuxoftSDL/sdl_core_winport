@@ -70,7 +70,9 @@ void MockDeviceScanner::reset() {
   devices_.clear();
 }
 
-bool MockDeviceScanner::IsInitialised() const { return is_initialized_; }
+bool MockDeviceScanner::IsInitialised() const {
+  return is_initialized_;
+}
 
 void MockDeviceScanner::AddDevice(const std::string& name,
                                   const std::string& unique_id,

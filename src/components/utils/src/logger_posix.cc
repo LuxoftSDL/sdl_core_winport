@@ -57,9 +57,13 @@ void deinit_logger() {
   delete message_loop_thread;
 }
 
-bool logs_enabled() { return is_logs_enabled; }
+bool logs_enabled() {
+  return is_logs_enabled;
+}
 
-void set_logs_enabled(bool state) { is_logs_enabled = state; }
+void set_logs_enabled(bool state) {
+  is_logs_enabled = state;
+}
 
 bool push_log(log4cxx::LoggerPtr logger,
               log4cxx::LevelPtr level,

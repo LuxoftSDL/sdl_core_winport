@@ -60,50 +60,50 @@ bool Resources::GetProcInfo(Resources::PidStats& output) {
     return false;
   }
   uint32_t num_succes = sscanf(proc_buf.c_str(),
-                               "%d"  // pid
-                               " %*s"  // com
-                               " %c"  // state
-                               " %d"  // ppid
-                               " %d"  // pgrp
-                               " %d"  // session
-                               " %d"  // tty_nr
-                               " %d"  // tpgid
-                               " %u"  // flags
-                               " %lu"  // minflt
-                               " %lu"  // cminflt
-                               " %lu"  // majflt
-                               " %lu"  // cmajflt
-                               " %lu"  // utime
-                               " %lu"  // stime
-                               " %ld"  // cutime
-                               " %ld"  // cstime
-                               " %ld"  // priority
-                               " %ld"  // nice
-                               " %ld"  // num_threads
-                               " %ld"  // itrealvalue
+                               "%d"     // pid
+                               " %*s"   // com
+                               " %c"    // state
+                               " %d"    // ppid
+                               " %d"    // pgrp
+                               " %d"    // session
+                               " %d"    // tty_nr
+                               " %d"    // tpgid
+                               " %u"    // flags
+                               " %lu"   // minflt
+                               " %lu"   // cminflt
+                               " %lu"   // majflt
+                               " %lu"   // cmajflt
+                               " %lu"   // utime
+                               " %lu"   // stime
+                               " %ld"   // cutime
+                               " %ld"   // cstime
+                               " %ld"   // priority
+                               " %ld"   // nice
+                               " %ld"   // num_threads
+                               " %ld"   // itrealvalue
                                " %llu"  // starttime
-                               " %lu"  // vsize
-                               " %ld"  // rss
-                               " %lu"  // rsslim
-                               " %lu"  // startcode
-                               " %lu"  // endcode
-                               " %lu"  // startstack
-                               " %lu"  // kstkesp
-                               " %lu"  // kstkip
-                               " %lu"  // signal
-                               " %lu"  // blocked
-                               " %lu"  // sigignore
-                               " %lu"  // sigcatch
-                               " %lu"  // wchan
-                               " %lu"  // nswap
-                               " %lu"  // cnswap
-                               " %d"  // exit_signal
-                               " %d"  // processor
-                               " %u"  // rt_priority
-                               " %u"  // policy
+                               " %lu"   // vsize
+                               " %ld"   // rss
+                               " %lu"   // rsslim
+                               " %lu"   // startcode
+                               " %lu"   // endcode
+                               " %lu"   // startstack
+                               " %lu"   // kstkesp
+                               " %lu"   // kstkip
+                               " %lu"   // signal
+                               " %lu"   // blocked
+                               " %lu"   // sigignore
+                               " %lu"   // sigcatch
+                               " %lu"   // wchan
+                               " %lu"   // nswap
+                               " %lu"   // cnswap
+                               " %d"    // exit_signal
+                               " %d"    // processor
+                               " %u"    // rt_priority
+                               " %u"    // policy
                                " %llu"  // delayacct_blkio_ticks
-                               " %lu"  // guest_time
-                               " %ld"  // cguest_time
+                               " %lu"   // guest_time
+                               " %ld"   // cguest_time
                                ,
                                &(output.pid),
                                &(output.state),

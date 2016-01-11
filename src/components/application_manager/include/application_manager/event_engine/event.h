@@ -115,7 +115,9 @@ class Event {
   DISALLOW_COPY_AND_ASSIGN(Event);
 };
 
-const Event::EventID& Event::id() const { return id_; }
+const Event::EventID& Event::id() const {
+  return id_;
+}
 
 const smart_objects::SmartObject& Event::smart_object() const {
   return response_so_;

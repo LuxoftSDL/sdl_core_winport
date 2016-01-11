@@ -102,9 +102,13 @@ void logger::deinit_logger() {
   message_loop_thread = NULL;
 }
 
-bool logger::logs_enabled() { return is_logs_enabled; }
+bool logger::logs_enabled() {
+  return is_logs_enabled;
+}
 
-void logger::set_logs_enabled(bool state) { is_logs_enabled = state; }
+void logger::set_logs_enabled(bool state) {
+  is_logs_enabled = state;
+}
 
 bool logger::push_log(const std::string& logger,
                       const LogLevel level,
