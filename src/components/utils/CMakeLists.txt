@@ -65,7 +65,6 @@ if(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
             ${UTILS_SRC_DIR}/threads/thread_delegate_win.cc
             ${UTILS_SRC_DIR}/threads/async_runner.cc
             ${UTILS_SRC_DIR}/string_utils.cc
-            ${UTILS_SRC_DIR}/socket_win.cc
             ${UTILS_SRC_DIR}/pipe_win.cc
             ${UTILS_SRC_DIR}/shared_library_qt.cc
             ${UTILS_SRC_DIR}/socket_qt.cc

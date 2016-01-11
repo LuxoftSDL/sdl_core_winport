@@ -63,13 +63,13 @@
   friend utils::deleters::Deleter<TypeName>::~Deleter()
 
 #ifdef DEBUG
-#define ASSERT(condition) \
-  do {                    \
-    DEINIT_LOGGER();      \
-    assert(condition);    \
+#define SDL_ASSERT(condition) \
+  do {                        \
+    DEINIT_LOGGER();          \
+    assert(condition);        \
   } while (false)
 #else  // RELEASE
-#define ASSERT(condition)                                        \
+#define SDL_ASSERT(condition)                                    \
   fprintf(stderr,                                                \
           "Failed condition \"" #condition "\" [%s:%d][%s]\n\n", \
           __FILE__,                                              \
@@ -88,7 +88,7 @@
                                           << ':'                  \
                                           << __LINE__             \
                                           << ']');                \
-    ASSERT((condition));                                          \
+    SDL_ASSERT((condition));                                      \
   }
 
 /*
@@ -106,7 +106,7 @@
                                           << ':'                  \
                                           << __LINE__             \
                                           << ']');                \
-    ASSERT((condition));                                          \
+    SDL_ASSERT((condition));                                      \
     return (return_value);                                        \
   }
 /*
