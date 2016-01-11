@@ -57,7 +57,7 @@ namespace {
 
 void cleanup(void* arg) {
   LOG4CXX_AUTO_TRACE(logger_);
-  Thread* thread = reinterpret_cast<Thread*>(arg);
+  Thread* thread = static_cast<Thread*>(arg);
   sync_primitives::AutoLock auto_lock(thread->state_lock_);
   thread->isThreadRunning_ = false;
   thread->state_cond_.Broadcast();
