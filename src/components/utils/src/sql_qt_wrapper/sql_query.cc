@@ -145,7 +145,7 @@ std::string SQLQuery::query() const {
 }
 
 bool SQLQuery::IsNull(int pos) const {
-  return query_.boundValue(pos).isNull();
+  return query_.value(pos).isNull();
 }
 
 void SQLQuery::Bind(int pos, int value) {
