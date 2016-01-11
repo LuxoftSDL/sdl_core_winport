@@ -129,12 +129,8 @@ class RWLock {
   void ReleaseForWriting();
 
  private:
-#ifdef QT_PORT
-  QReadWriteLock* rwlock_;
-#else
   class Impl;
   Impl* impl_;
-#endif
 
   DISALLOW_COPY_AND_ASSIGN(RWLock);
 };

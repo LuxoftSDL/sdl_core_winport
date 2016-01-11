@@ -38,30 +38,84 @@ namespace sync_primitives {
 
 CREATE_LOGGERPTR_GLOBAL(logger_, "Utils")
 
-RWLock::RWLock() {
+class RWLock::Impl {
+ public:
+  Impl();
+  ~Impl();
+
+  void AcquireForReading();
+  bool TryAcquireForReading();
+  void AcquireForWriting();
+  bool TryAcquireForWriting();
+  void ReleaseForReading();
+  void ReleaseForWriting();
+
+ private:
+  QReadWriteLock* rwlock_;
+
+  DISALLOW_COPY_AND_ASSIGN(Impl);
+};
+
+}  // namespace sync_primitives
+
+sync_primitives::RWLock::RWLock() : impl_(new RWLock::Impl) {}
+
+sync_primitives::RWLock::~RWLock() { delete impl_; }
+
+void sync_primitives::RWLock::AcquireForReading() {
+  impl_->AcquireForReading();
+}
+
+bool sync_primitives::RWLock::TryAcquireForReading() {
+  return impl_->TryAcquireForReading();
+}
+
+void sync_primitives::RWLock::AcquireForWriting() {
+  impl_->AcquireForWriting();
+}
+
+bool sync_primitives::RWLock::TryAcquireForWriting() {
+  return impl_->TryAcquireForWriting();
+}
+
+void sync_primitives::RWLock::ReleaseForReading() {
+  impl_->ReleaseForReading();
+}
+
+void sync_primitives::RWLock::ReleaseForWriting() {
+  impl_->ReleaseForWriting();
+}
+
+sync_primitives::RWLock::Impl::Impl() {
   rwlock_ = new QReadWriteLock;
   if (!rwlock_) {
     LOG4CXX_ERROR(logger_, "Failed to initialize rwlock");
   }
 }
 
-RWLock::~RWLock() {
+sync_primitives::RWLock::Impl::~Impl() {
   if (rwlock_) {
     delete rwlock_;
     rwlock_ = 0;
   }
 }
 
-void RWLock::AcquireForReading() { rwlock_->lockForRead(); }
+void sync_primitives::RWLock::Impl::AcquireForReading() {
+  rwlock_->lockForRead();
+}
 
-bool RWLock::TryAcquireForReading() { return rwlock_->tryLockForRead(); }
+bool sync_primitives::RWLock::Impl::TryAcquireForReading() {
+  return rwlock_->tryLockForRead();
+}
 
-void RWLock::AcquireForWriting() { rwlock_->lockForWrite(); }
+void sync_primitives::RWLock::Impl::AcquireForWriting() {
+  rwlock_->lockForWrite();
+}
 
-bool RWLock::TryAcquireForWriting() { return rwlock_->tryLockForWrite(); }
+bool sync_primitives::RWLock::Impl::TryAcquireForWriting() {
+  return rwlock_->tryLockForWrite();
+}
 
-void RWLock::ReleaseForReading() { rwlock_->unlock(); }
+void sync_primitives::RWLock::Impl::ReleaseForReading() { rwlock_->unlock(); }
 
-void RWLock::ReleaseForWriting() { rwlock_->unlock(); }
-
-}  // namespace sync_primitives
+void sync_primitives::RWLock::Impl::ReleaseForWriting() { rwlock_->unlock(); }
