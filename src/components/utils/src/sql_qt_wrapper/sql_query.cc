@@ -125,7 +125,7 @@ uint32_t SQLQuery::GetUInteger(int pos) {
 int64_t SQLQuery::GetLongInt(int pos) {
   PreparePullValue(query_);
   const QVariant val = query_.value(pos);
-  return val.toULongLong();
+  return static_cast<int64_t>(val.toULongLong());
 }
 
 double SQLQuery::GetDouble(int pos) {
