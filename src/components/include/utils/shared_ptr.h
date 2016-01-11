@@ -39,7 +39,7 @@
 
 #include "utils/macro.h"
 #ifdef QT_PORT
-#include <QAtomicPointer>
+#include <QAtomicInt>
 #else
 #include "utils/atomic.h"
 #endif
@@ -311,7 +311,7 @@ utils::SharedPtr<OtherObjectType> utils::SharedPtr<
     casted_pointer.mReferenceCounter = pointer.mReferenceCounter;
     if (0 != casted_pointer.mReferenceCounter) {
 #ifdef QT_PORT
-      casted_pointer.mReferenceCounter->deref();
+      casted_pointer.mReferenceCounter->ref();
 #else
       atomic_post_inc(casted_pointer.mReferenceCounter);
 #endif
@@ -371,7 +371,7 @@ template <typename ObjectType>
 inline void SharedPtr<ObjectType>::dropReference() {
   if (0 != mReferenceCounter) {
 #ifdef QT_PORT
-    if (1 == *(mReferenceCounter--)) {
+    if (1 == (*mReferenceCounter)--) {
 #else
     if (1 == atomic_post_dec(mReferenceCounter)) {
 #endif
