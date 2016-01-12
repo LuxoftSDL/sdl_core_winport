@@ -39,6 +39,7 @@
 #include <QVariant>
 
 #include <cassert>
+#include <limits>
 
 #include "sql_qt_wrapper/sql_database.h"
 
@@ -125,7 +126,13 @@ uint32_t SQLQuery::GetUInteger(int pos) {
 int64_t SQLQuery::GetLongInt(int pos) {
   PreparePullValue(query_);
   const QVariant val = query_.value(pos);
-  return static_cast<int64_t>(val.toULongLong());
+  const qulonglong value = val.toULongLong();
+  const qulonglong max_value =
+      static_cast<qulonglong>(std::numeric_limits<int64_t>::max());
+  DCHECK(value <= max_value);
+
+  return std::min(std::numeric_limits<int64_t>::max(),
+                  static_cast<int64_t>(value));
 }
 
 double SQLQuery::GetDouble(int pos) {
