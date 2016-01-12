@@ -31,13 +31,12 @@
  */
 
 #include "protocol_handler_metric.h"
-#include "json/json.h"
 #include "json_keys.h"
 
 namespace time_tester {
 
 Json::Value ProtocolHandlerMecticWrapper::GetJsonMetric() {
-  Json::Value result = MetricWrapper::GetJsonMetric();
+  utils::json::JsonValue result = MetricWrapper::GetJsonMetric();
   result[strings::logger] = "ProtocolHandler";
   result[strings::begin] =
       Json::Int64(date_time::DateTime::getuSecs(message_metric->begin));

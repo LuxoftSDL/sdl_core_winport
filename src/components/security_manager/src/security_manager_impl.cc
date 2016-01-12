@@ -35,7 +35,7 @@
 #include "protocol_handler/protocol_packet.h"
 #include "utils/logger.h"
 #include "utils/byte_order.h"
-#include "json/json.h"
+#include "utils/json_utils.h"
 
 namespace security_manager {
 
@@ -330,19 +330,19 @@ bool SecurityManagerImpl::ProccessHandshakeData(
 
 bool SecurityManagerImpl::ProccessInternalError(
     const SecurityMessage& inMessage) {
+  std::string json_message = inMessage->get_json_message();
   LOG4CXX_INFO(logger_,
-               "Received InternalError with Json message"
-                   << inMessage->get_json_message());
-  Json::Value root;
-  Json::Reader reader;
-  const bool parsingSuccessful =
-      reader.parse(inMessage->get_json_message(), root);
-  if (!parsingSuccessful)
+               "Received InternalError with Json message" << json_message);
+  using namespace utils::json;
+  JsonValue::ParseResult parse_result = JsonValue::Parse(json_message);
+  if (!parse_result.second) {
     return false;
+  }
+  JsonValue& root_json = parse_result.first;
   LOG4CXX_DEBUG(logger_,
-                "Received InternalError id " << root[kErrId].asString()
+                "Received InternalError id " << root_json[kErrId].AsString()
                                              << ", text: "
-                                             << root[kErrText].asString());
+                                             << root_json[kErrText].AsString());
   return true;
 }
 void SecurityManagerImpl::SendHandshakeBinData(const uint32_t connection_key,
@@ -363,10 +363,11 @@ void SecurityManagerImpl::SendInternalError(const uint32_t connection_key,
                                             const uint8_t& error_id,
                                             const std::string& erorr_text,
                                             const uint32_t seq_number) {
-  Json::Value value;
+  using namespace utils::json;
+  JsonValue value;
   value[kErrId] = error_id;
   value[kErrText] = erorr_text;
-  const std::string error_str = value.toStyledString();
+  const std::string error_str = value.ToJson();
   SecurityQuery::QueryHeader header(
       SecurityQuery::NOTIFICATION,
       SecurityQuery::SEND_INTERNAL_ERROR,

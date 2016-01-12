@@ -36,18 +36,18 @@
 #include <errno.h>
 #include <sys/types.h>
 
-#include <ws2bth.h>
 #include <BluetoothAPIs.h>
 #include <sstream>
+#include <ws2bth.h>
 
+#include "resumption/last_state.h"
 #include <iomanip>
 #include <set>
-#include "resumption/last_state.h"
 
-#include "transport_manager/bluetooth/bluetooth_transport_adapter.h"
-#include "transport_manager/bluetooth/bluetooth_device_scanner.h"
 #include "transport_manager/bluetooth/bluetooth_connection_factory.h"
 #include "transport_manager/bluetooth/bluetooth_device.h"
+#include "transport_manager/bluetooth/bluetooth_device_scanner.h"
+#include "transport_manager/bluetooth/bluetooth_transport_adapter.h"
 
 #include "utils/logger.h"
 
@@ -121,8 +121,8 @@ void BluetoothTransportAdapter::Store() const {
     }
   }
   bluetooth_adapter_dictionary["devices"] = devices_dictionary;
-  resumption::LastState::instance()
-      ->dictionary["TransportManager"]["BluetoothAdapter"] =
+  JsonValue& dictionary = resumption::LastState::instance()->dictionary;
+  dictionary["TransportManager"]["BluetoothAdapter"] =
       bluetooth_adapter_dictionary;
   LOG4CXX_TRACE(logger_, "exit");
 }
@@ -130,6 +130,7 @@ void BluetoothTransportAdapter::Store() const {
 bool BluetoothTransportAdapter::Restore() {
   LOG4CXX_AUTO_TRACE(logger_);
   bool errors_occured = false;
+
   const Json::Value bluetooth_adapter_dictionary =
       resumption::LastState::instance()
           ->dictionary["TransportManager"]["BluetoothAdapter"];
