@@ -42,6 +42,7 @@
 #include <limits>
 
 #include "sql_qt_wrapper/sql_database.h"
+#include "utils/macro.h"
 
 namespace utils {
 namespace dbms {
@@ -129,10 +130,10 @@ int64_t SQLQuery::GetLongInt(int pos) {
   const qulonglong value = val.toULongLong();
   const qulonglong max_value =
       static_cast<qulonglong>(std::numeric_limits<int64_t>::max());
-  DCHECK(value <= max_value);
 
-  return std::min(std::numeric_limits<int64_t>::max(),
-                  static_cast<int64_t>(value));
+  DCHECK_OR_RETURN(value <= max_value, max_value);
+
+  return static_cast<int64_t>(value);
 }
 
 double SQLQuery::GetDouble(int pos) {
