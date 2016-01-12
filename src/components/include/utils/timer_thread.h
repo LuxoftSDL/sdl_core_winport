@@ -46,6 +46,7 @@
 #include "utils/timer_thread.h"
 #include "utils/threads/thread.h"
 #include "utils/threads/thread_delegate.h"
+#include "utils/atomic_object.h"
 
 namespace timer {
 // TODO(AKutsan): Remove this logger after bugfix
@@ -205,7 +206,7 @@ class TimerThread {
     uint32_t timeout_milliseconds_;
     sync_primitives::Lock state_lock_;
     sync_primitives::ConditionalVariable termination_condition_;
-    volatile bool stop_flag_;
+    sync_primitives::atomic_bool stop_flag_;
 
     sync_primitives::Lock restart_flag_lock_;
     volatile bool restart_flag_;
@@ -393,10 +394,7 @@ void TimerThread<T>::TimerDelegate::threadMain() {
 template <class T>
 void TimerThread<T>::TimerLooperDelegate::threadMain() {
   using sync_primitives::ConditionalVariable;
-  sync_primitives::Lock lock;
-  lock.Acquire();
   TimerDelegate::stop_flag_ = false;
-  lock.Release();
   while (!TimerDelegate::stop_flag_) {
     int32_t wait_milliseconds_left = TimerDelegate::get_timeout();
     sync_primitives::AutoLock auto_lock(TimerDelegate::state_lock_);

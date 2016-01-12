@@ -43,14 +43,14 @@ const uint64_t kDeltaEpochInMicrosecs = 11644473600000000;
 namespace date_time {
 
 TimevalStruct DateTime::getCurrentTime() {
-  const qint64 tmpres = QDateTime::currentMSecsSinceEpoch();
+  const qint64 tmpres =
+      QDateTime::currentMSecsSinceEpoch() - kDeltaEpochInMicrosecs;
   TimevalStruct tv;
 
-  tmpres -= kDeltaEpochInMicrosecs;
   // Finally change microseconds to seconds and place in the seconds value.
   // The modulus picks up the microseconds.
-  tv.tv_sec = (long)(tmpres / 1000000UL);
-  tv.tv_usec = (long)(tmpres % 1000000UL);
+  tv.tv_sec = (long)(tmpres / MICROSECONDS_IN_SECOND);
+  tv.tv_usec = (long)(tmpres % MICROSECONDS_IN_SECOND);
 
   return tv;
 }
