@@ -35,12 +35,11 @@
 
 #if defined(OS_POSIX)
 #include <pthread.h>
-#elif defined(OS_WINDOWS)
+#elif defined(WIN_NATIVE)
 #include "utils/winhdr.h"
-#if defined(QT_PORT)
+#elif defined(QT_PORT)
 #include <QtCore>
 #include <QThread>
-#endif
 #else
 #error "Thread is not defined for this platform"
 #endif
@@ -59,12 +58,10 @@ namespace threads {
 
 #if defined(OS_POSIX)
 typedef pthread_t PlatformThreadHandle;
-#elif defined(OS_WINDOWS)
-#if defined(WIN_NATIVE)
+#elif defined(WIN_NATIVE)
 typedef HANDLE PlatformThreadHandle;
 #elif defined(QT_PORT)
 typedef Qt::HANDLE PlatformThreadHandle;
-#endif
 #else
 #error "Thread is not defined for this platform"
 #endif
@@ -98,7 +95,7 @@ void sleep(uint32_t ms);
 Thread* CreateThread(const char* name, ThreadDelegate* delegate);
 void DeleteThread(Thread* thread);
 
-#ifdef QT_PORT
+#if defined(QT_PORT)
 class Thread : public QObject {
   Q_OBJECT
 #else
@@ -245,7 +242,7 @@ class Thread {
  *       This constructor made private to prevent
  *       Thread object to be created on stack
  */
-#ifdef QT_PORT
+#if defined(QT_PORT)
   Thread(const char* name, ThreadDelegate* delegate, QObject* parent = 0);
 
   QFuture<void> future_;

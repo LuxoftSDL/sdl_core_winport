@@ -124,7 +124,7 @@
                                           << ':'                  \
                                           << __LINE__             \
                                           << ']');                \
-    ASSERT((condition));                                          \
+    SDL_ASSERT((condition));                                      \
     return;                                                       \
   }
 

@@ -1,5 +1,5 @@
 ﻿/*
- * Copyright (c) 2013, Ford Motor Company
+ * Copyright (c) 2015, Ford Motor Company
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -37,7 +37,7 @@
 #include <string.h>
 #include <cstring>
 #include "utils/logger.h"
-#include "QMutex"
+#include <QMutex>
 
 namespace sync_primitives {
 
@@ -71,9 +71,6 @@ Lock::~Lock() {
     delete mutex_;
     mutex_ = 0;
   }
-  if (mutex_ != 0) {
-    LOG4CXX_ERROR(logger_, "Failed to destroy mutex " << &mutex_);
-  }
 }
 
 void Lock::Acquire() {
@@ -92,9 +89,8 @@ bool Lock::Try() {
     lock_taken_++;
 #endif
     return true;
-  } else {
-    return false;
   }
+  return false;
 }
 
 #ifndef NDEBUG
@@ -105,7 +101,7 @@ void Lock::AssertFreeAndMarkTaken() {
   lock_taken_++;
 }
 void Lock::AssertTakenAndMarkFree() {
-  if (lock_taken_ == 0) {
+  if (!lock_taken_) {
     NOTREACHED();
   }
   lock_taken_--;

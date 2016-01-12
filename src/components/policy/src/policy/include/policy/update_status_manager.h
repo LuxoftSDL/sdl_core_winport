@@ -179,7 +179,7 @@ class UpdateStatusManager {
     void updateTimeOut(const uint32_t timeout_ms);
 
     volatile uint32_t timeout_;
-    volatile bool stop_flag_;
+    sync_primitives::atomic_bool stop_flag_;
     sync_primitives::Lock state_lock_;
     sync_primitives::ConditionalVariable termination_condition_;
     UpdateStatusManager* update_status_manager_;

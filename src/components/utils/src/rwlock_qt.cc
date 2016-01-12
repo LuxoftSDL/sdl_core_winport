@@ -32,7 +32,7 @@
 
 #include "utils/rwlock.h"
 #include "utils/logger.h"
-#include "QReadWriteLock"
+#include <QReadWriteLock>
 
 namespace sync_primitives {
 
@@ -60,7 +60,9 @@ class RWLock::Impl {
 
 sync_primitives::RWLock::RWLock() : impl_(new RWLock::Impl) {}
 
-sync_primitives::RWLock::~RWLock() { delete impl_; }
+sync_primitives::RWLock::~RWLock() {
+  delete impl_;
+}
 
 void sync_primitives::RWLock::AcquireForReading() {
   impl_->AcquireForReading();
@@ -105,7 +107,11 @@ void sync_primitives::RWLock::Impl::AcquireForReading() {
 }
 
 bool sync_primitives::RWLock::Impl::TryAcquireForReading() {
-  return rwlock_->tryLockForRead();
+  if (!rwlock_->tryLockForRead()) {
+    LOG4CXX_WARN(logger_, "Failed to acquire rwlock for reading");
+    return false;
+  }
+  return true;
 }
 
 void sync_primitives::RWLock::Impl::AcquireForWriting() {
@@ -113,9 +119,17 @@ void sync_primitives::RWLock::Impl::AcquireForWriting() {
 }
 
 bool sync_primitives::RWLock::Impl::TryAcquireForWriting() {
-  return rwlock_->tryLockForWrite();
+  if (!rwlock_->tryLockForWrite()) {
+    LOG4CXX_WARN(logger_, "Failed to acquire rwlock for writing");
+    return false;
+  }
+  return true;
 }
 
-void sync_primitives::RWLock::Impl::ReleaseForReading() { rwlock_->unlock(); }
+void sync_primitives::RWLock::Impl::ReleaseForReading() {
+  rwlock_->unlock();
+}
 
-void sync_primitives::RWLock::Impl::ReleaseForWriting() { rwlock_->unlock(); }
+void sync_primitives::RWLock::Impl::ReleaseForWriting() {
+  rwlock_->unlock();
+}

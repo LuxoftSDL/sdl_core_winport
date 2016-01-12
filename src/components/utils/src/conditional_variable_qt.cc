@@ -53,7 +53,7 @@ void ConditionalVariable::Broadcast() {
 
 bool ConditionalVariable::Wait(Lock& lock) {
   lock.AssertTakenAndMarkFree();
-  const bool wait_status = cond_var_.wait(lock.mutex_, INFINITE);
+  const bool wait_status = cond_var_.wait(lock.mutex_);
   lock.AssertFreeAndMarkTaken();
   if (!wait_status) {
     LOG4CXX_ERROR(logger_, "Failed to wait for conditional variable");
@@ -63,15 +63,7 @@ bool ConditionalVariable::Wait(Lock& lock) {
 }
 
 bool ConditionalVariable::Wait(AutoLock& auto_lock) {
-  Lock& lock = auto_lock.GetLock();
-  lock.AssertTakenAndMarkFree();
-  const bool wait_status = cond_var_.wait(lock.mutex_, INFINITE);
-  lock.AssertFreeAndMarkTaken();
-  if (!wait_status) {
-    LOG4CXX_ERROR(logger_, "Failed to wait for conditional variable");
-    return false;
-  }
-  return true;
+  return Wait(auto_lock.GetLock());
 }
 
 ConditionalVariable::WaitStatus ConditionalVariable::WaitFor(

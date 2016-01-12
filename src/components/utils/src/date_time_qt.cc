@@ -38,7 +38,7 @@
 
 namespace {
 const uint64_t kDeltaEpochInMicrosecs = 11644473600000000;
-}
+}  // namespace
 
 namespace date_time {
 

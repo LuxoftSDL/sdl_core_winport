@@ -35,12 +35,11 @@
 #if defined(OS_POSIX)
 #include <pthread.h>
 #include <sched.h>
-#elif defined(OS_WINDOWS)
+#elif defined(WIN_NATIVE)
 #include "utils/winhdr.h"
-#if defined(QT_PORT)
+#elif defined(QT_PORT)
 #include <QThread>
 #include <QMutex>
-#endif
 #else
 #error "Lock is not defined for this platform"
 #endif
@@ -55,12 +54,10 @@ namespace sync_primitives {
 namespace impl {
 #if defined(OS_POSIX)
 typedef pthread_mutex_t PlatformMutex;
-#elif defined(OS_WINDOWS)
-#if defined(QT_PORT)
+#elif defined(QT_PORT)
 typedef QMutex PlatformMutex;
-#else defined(WIN_NATIVE)
+#elif defined(WIN_NATIVE)
 typedef CRITICAL_SECTION PlatformMutex;
-#endif
 #else
 #error "Lock is not defined for this platform"
 #endif

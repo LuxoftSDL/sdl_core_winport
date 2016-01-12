@@ -32,10 +32,6 @@
 #ifndef SRC_COMPONENTS_INCLUDE_UTILS_RWLOCK_H_
 #define SRC_COMPONENTS_INCLUDE_UTILS_RWLOCK_H_
 
-#if defined(QT_PORT)
-#include <QtCore>
-#endif
-
 #include "utils/macro.h"
 
 namespace sync_primitives {
