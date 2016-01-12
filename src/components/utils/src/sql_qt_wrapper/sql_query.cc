@@ -39,8 +39,10 @@
 #include <QVariant>
 
 #include <cassert>
+#include <limits>
 
 #include "sql_qt_wrapper/sql_database.h"
+#include "utils/macro.h"
 
 namespace utils {
 namespace dbms {
@@ -125,7 +127,13 @@ uint32_t SQLQuery::GetUInteger(int pos) {
 int64_t SQLQuery::GetLongInt(int pos) {
   PreparePullValue(query_);
   const QVariant val = query_.value(pos);
-  return val.toULongLong();
+  const qulonglong value = val.toULongLong();
+  const qulonglong max_value =
+      static_cast<qulonglong>(std::numeric_limits<int64_t>::max());
+
+  DCHECK_OR_RETURN(value <= max_value, max_value);
+
+  return static_cast<int64_t>(value);
 }
 
 double SQLQuery::GetDouble(int pos) {
@@ -145,7 +153,7 @@ std::string SQLQuery::query() const {
 }
 
 bool SQLQuery::IsNull(int pos) const {
-  return query_.boundValue(pos).isNull();
+  return query_.value(pos).isNull();
 }
 
 void SQLQuery::Bind(int pos, int value) {
