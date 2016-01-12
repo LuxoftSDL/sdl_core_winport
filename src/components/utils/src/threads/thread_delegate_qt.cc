@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013-2015, Ford Motor Company
+ * Copyright (c) 2015, Ford Motor Company
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -29,75 +29,32 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
+#include "utils/threads/thread_delegate.h"
 
-#ifndef SRC_COMPONENTS_INCLUDE_UTILS_THREADS_THREAD_DELEGATE_H_
-#define SRC_COMPONENTS_INCLUDE_UTILS_THREADS_THREAD_DELEGATE_H_
-
-#include "utils/lock.h"
-#ifdef QT_PORT
 #include <QtCore>
-#endif
+
+#include "utils/threads/thread.h"
+#include "utils/lock.h"
 
 namespace threads {
 
-enum ThreadState { kInit = 0, kStarted = 1, kStopReq = 2 };
-
-class Thread;
-
-/**
- * Thread procedure interface.
- * Look for "threads/thread.h" for example
- */
-#ifdef QT_PORT
-class ThreadDelegate : public QObject {
-  Q_OBJECT
-#else
-class ThreadDelegate {
-#endif
- public:
-  ThreadDelegate() : state_(kInit), thread_(NULL) {}
-  /**
-   * \brief Thread procedure.
-   */
-  virtual void threadMain() = 0;
-
-#ifdef QT_PORT
-  Q_SIGNAL void close_thread();
-#endif
-  /**
-   * Should be called to free all resources allocated in threadMain
-   * and exiting threadMain
-   * This function should be blocking and return only when threadMain() will be
-   * finished in other case segmantation failes are possible
-   */
-  virtual void exitThreadMain();
-
-  virtual ~ThreadDelegate();
-
-  Thread* thread() const {
-    return thread_;
+ThreadDelegate::~ThreadDelegate() {
+  if (thread_) {
+    thread_->set_delegate(NULL);
   }
+}
 
-  void set_thread(Thread* thread);
-
-  bool ImproveState(unsigned int to) {
-    state_lock_.Lock();
-    if ((state_ + 1 == to) || (to == kInit && state_ == kStopReq)) {
-      state_ = to;
-    }
-    state_lock_.Unlock();
-    return state_ == to;
+void ThreadDelegate::exitThreadMain() {
+  if (thread_) {
+    thread_->cleanup();
+    emit close_thread();
   }
+}
 
-  unsigned int state() const {
-    return state_;
-  }
-
- private:
-  volatile unsigned int state_;
-  sync_primitives::SpinMutex state_lock_;
-  Thread* thread_;
-};
-
+void ThreadDelegate::set_thread(Thread* thread) {
+  DCHECK(thread);
+  thread_ = thread;
+  QObject::connect(this, SIGNAL(close_thread()), thread_, SLOT(deleteLater()));
+}
+#include "moc_thread_delegate.cpp"
 }  // namespace threads
-#endif  // SRC_COMPONENTS_INCLUDE_UTILS_THREADS_THREAD_DELEGATE_H_

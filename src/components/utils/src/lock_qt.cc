@@ -1,5 +1,5 @@
-/*
- * Copyright (c) 2013-2015, Ford Motor Company
+﻿/*
+ * Copyright (c) 2015, Ford Motor Company
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,74 +30,89 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef SRC_COMPONENTS_INCLUDE_UTILS_THREADS_THREAD_DELEGATE_H_
-#define SRC_COMPONENTS_INCLUDE_UTILS_THREADS_THREAD_DELEGATE_H_
-
 #include "utils/lock.h"
-#ifdef QT_PORT
-#include <QtCore>
+#include <errno.h>
+#include <stdint.h>
+#include <stdio.h>
+#include <string.h>
+#include <cstring>
+#include "utils/logger.h"
+#include <QMutex>
+
+namespace sync_primitives {
+
+CREATE_LOGGERPTR_GLOBAL(logger_, "Utils")
+
+Lock::Lock()
+#ifndef NDEBUG
+    : lock_taken_(0)
+    , is_mutex_recursive_(false)
+#endif  // NDEBUG
+{
+  Init(false);
+}
+
+Lock::Lock(bool is_recursive)
+#ifndef NDEBUG
+    : lock_taken_(0)
+    , is_mutex_recursive_(is_recursive)
+#endif  // NDEBUG
+{
+  Init(is_recursive);
+}
+
+Lock::~Lock() {
+#ifndef NDEBUG
+  if (lock_taken_ > 0) {
+    LOG4CXX_ERROR(logger_, "Destroying non-released mutex " << &mutex_);
+  }
+#endif
+  if (mutex_) {
+    delete mutex_;
+    mutex_ = 0;
+  }
+}
+
+void Lock::Acquire() {
+  mutex_->lock();
+  AssertFreeAndMarkTaken();
+}
+
+void Lock::Release() {
+  AssertTakenAndMarkFree();
+  mutex_->unlock();
+}
+
+bool Lock::Try() {
+  if (mutex_->tryLock()) {
+#ifndef NDEBUG
+    lock_taken_++;
+#endif
+    return true;
+  }
+  return false;
+}
+
+#ifndef NDEBUG
+void Lock::AssertFreeAndMarkTaken() {
+  if ((lock_taken_ > 0) && !is_mutex_recursive_) {
+    NOTREACHED();
+  }
+  lock_taken_++;
+}
+void Lock::AssertTakenAndMarkFree() {
+  if (!lock_taken_) {
+    NOTREACHED();
+  }
+  lock_taken_--;
+}
 #endif
 
-namespace threads {
+void Lock::Init(bool is_recursive) {
+  const QMutex::RecursionMode mutex_type =
+      is_recursive ? QMutex::Recursive : QMutex::NonRecursive;
 
-enum ThreadState { kInit = 0, kStarted = 1, kStopReq = 2 };
+  mutex_ = new QMutex(mutex_type);
+}
 
-class Thread;
-
-/**
- * Thread procedure interface.
- * Look for "threads/thread.h" for example
- */
-#ifdef QT_PORT
-class ThreadDelegate : public QObject {
-  Q_OBJECT
-#else
-class ThreadDelegate {
-#endif
- public:
-  ThreadDelegate() : state_(kInit), thread_(NULL) {}
-  /**
-   * \brief Thread procedure.
-   */
-  virtual void threadMain() = 0;
-
-#ifdef QT_PORT
-  Q_SIGNAL void close_thread();
-#endif
-  /**
-   * Should be called to free all resources allocated in threadMain
-   * and exiting threadMain
-   * This function should be blocking and return only when threadMain() will be
-   * finished in other case segmantation failes are possible
-   */
-  virtual void exitThreadMain();
-
-  virtual ~ThreadDelegate();
-
-  Thread* thread() const {
-    return thread_;
-  }
-
-  void set_thread(Thread* thread);
-
-  bool ImproveState(unsigned int to) {
-    state_lock_.Lock();
-    if ((state_ + 1 == to) || (to == kInit && state_ == kStopReq)) {
-      state_ = to;
-    }
-    state_lock_.Unlock();
-    return state_ == to;
-  }
-
-  unsigned int state() const {
-    return state_;
-  }
-
- private:
-  volatile unsigned int state_;
-  sync_primitives::SpinMutex state_lock_;
-  Thread* thread_;
-};
-
-}  // namespace threads
-#endif  // SRC_COMPONENTS_INCLUDE_UTILS_THREADS_THREAD_DELEGATE_H_
+}  // namespace sync_primitives

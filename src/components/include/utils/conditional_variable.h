@@ -34,8 +34,10 @@
 
 #if defined(OS_POSIX)
 #include <pthread.h>
-#elif defined(OS_WINDOWS)
+#elif defined(WIN_NATIVE)
 #include "utils/winhdr.h"
+#elif defined(QT_PORT)
+#include <QtCore>
 #else
 #error "Condition variable is not defined for this platform"
 #endif
@@ -50,8 +52,10 @@ class Lock;
 namespace impl {
 #if defined(OS_POSIX)
 typedef pthread_cond_t PlatformConditionalVariable;
-#elif defined(OS_WINDOWS)
+#elif defined(WIN_NATIVE)
 typedef CONDITION_VARIABLE PlatformConditionalVariable;
+#elif defined(QT_PORT)
+typedef QWaitCondition PlatformConditionalVariable;
 #else
 #error "Condition variable is not defined for this platform"
 #endif

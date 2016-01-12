@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013-2015, Ford Motor Company
+ * Copyright (c) 2015, Ford Motor Company
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -29,75 +29,56 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-
-#ifndef SRC_COMPONENTS_INCLUDE_UTILS_THREADS_THREAD_DELEGATE_H_
-#define SRC_COMPONENTS_INCLUDE_UTILS_THREADS_THREAD_DELEGATE_H_
+#include "utils/conditional_variable.h"
 
 #include "utils/lock.h"
-#ifdef QT_PORT
-#include <QtCore>
-#endif
+#include "utils/logger.h"
+#include "QWaitCondition"
 
-namespace threads {
+namespace sync_primitives {
 
-enum ThreadState { kInit = 0, kStarted = 1, kStopReq = 2 };
+CREATE_LOGGERPTR_GLOBAL(logger_, "Utils")
 
-class Thread;
+ConditionalVariable::ConditionalVariable() : cond_var_() {}
 
-/**
- * Thread procedure interface.
- * Look for "threads/thread.h" for example
- */
-#ifdef QT_PORT
-class ThreadDelegate : public QObject {
-  Q_OBJECT
-#else
-class ThreadDelegate {
-#endif
- public:
-  ThreadDelegate() : state_(kInit), thread_(NULL) {}
-  /**
-   * \brief Thread procedure.
-   */
-  virtual void threadMain() = 0;
+ConditionalVariable::~ConditionalVariable() {}
 
-#ifdef QT_PORT
-  Q_SIGNAL void close_thread();
-#endif
-  /**
-   * Should be called to free all resources allocated in threadMain
-   * and exiting threadMain
-   * This function should be blocking and return only when threadMain() will be
-   * finished in other case segmantation failes are possible
-   */
-  virtual void exitThreadMain();
+void ConditionalVariable::NotifyOne() {
+  cond_var_.wakeOne();
+}
 
-  virtual ~ThreadDelegate();
+void ConditionalVariable::Broadcast() {
+  cond_var_.wakeAll();
+}
 
-  Thread* thread() const {
-    return thread_;
+bool ConditionalVariable::Wait(Lock& lock) {
+  lock.AssertTakenAndMarkFree();
+  const bool wait_status = cond_var_.wait(lock.mutex_);
+  lock.AssertFreeAndMarkTaken();
+  if (!wait_status) {
+    LOG4CXX_ERROR(logger_, "Failed to wait for conditional variable");
+    return false;
   }
+  return true;
+}
 
-  void set_thread(Thread* thread);
+bool ConditionalVariable::Wait(AutoLock& auto_lock) {
+  return Wait(auto_lock.GetLock());
+}
 
-  bool ImproveState(unsigned int to) {
-    state_lock_.Lock();
-    if ((state_ + 1 == to) || (to == kInit && state_ == kStopReq)) {
-      state_ = to;
-    }
-    state_lock_.Unlock();
-    return state_ == to;
+ConditionalVariable::WaitStatus ConditionalVariable::WaitFor(
+    AutoLock& auto_lock, int32_t milliseconds) {
+  Lock& lock = auto_lock.GetLock();
+  if (lock.is_mutex_recursive_) {
+    LOG4CXX_ERROR(logger_, "Cannot wait on recursive mutexes");
   }
-
-  unsigned int state() const {
-    return state_;
+  lock.AssertTakenAndMarkFree();
+  const bool timedwait_status = cond_var_.wait(lock.mutex_, milliseconds);
+  lock.AssertFreeAndMarkTaken();
+  if (timedwait_status) {
+    return kNoTimeout;
   }
+  return kTimeout;
+}
 
- private:
-  volatile unsigned int state_;
-  sync_primitives::SpinMutex state_lock_;
-  Thread* thread_;
-};
-
-}  // namespace threads
-#endif  // SRC_COMPONENTS_INCLUDE_UTILS_THREADS_THREAD_DELEGATE_H_
+}  // namespace sync_primitives

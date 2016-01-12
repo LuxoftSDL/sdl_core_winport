@@ -1,36 +1,36 @@
-# Copyright (c) 2015, Ford Motor Company
-# All rights reserved.
+#Copyright(c)2015, Ford Motor Company
+#All rights reserved.
 #
-# Redistribution and use in source and binary forms, with or without
-# modification, are permitted provided that the following conditions are met:
+#Redistribution and use in source and binary forms, with or without
+#modification, are permitted provided that the following conditions are met:
 #
-# Redistributions of source code must retain the above copyright notice, this
-# list of conditions and the following disclaimer.
+#Redistributions of source code must retain the above copyright notice, this
+#list of conditions and the following disclaimer.
 #
-# Redistributions in binary form must reproduce the above copyright notice,
-# this list of conditions and the following
-# disclaimer in the documentation and/or other materials provided with the
-# distribution.
+#Redistributions in binary form must reproduce the above copyright notice,
+#this list of conditions and the following
+#disclaimer in the documentation and / or other materials provided with the
+#distribution.
 #
-# Neither the name of the Ford Motor Company nor the names of its contributors
-# may be used to endorse or promote products derived from this software
-# without specific prior written permission.
+#Neither the name of the Ford Motor Company nor the names of its contributors
+#may be used to endorse or promote products derived from this software
+#without specific prior written permission.
 #
-# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
-# AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
-# IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
-# ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
-# LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
-# CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
-# SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
-# INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
-# CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
-# ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
-# POSSIBILITY OF SUCH DAMAGE.
-
+#THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+#AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+#IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+#ARE DISCLAIMED.IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+#LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+#CONSEQUENTIAL DAMAGES(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+#SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+#INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+#CONTRACT, STRICT LIABILITY, OR TORT(INCLUDING NEGLIGENCE OR OTHERWISE)
+#ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+#POSSIBILITY OF SUCH DAMAGE.
 
 set(UTILS_INCLUDE_DIR ${COMPONENTS_DIR}/utils/include)
 set(UTILS_SRC_DIR ${COMPONENTS_DIR}/utils/src)
+set(THREAD_INCLUDE_DIR ${COMPONENTS_DIR}/include/utils/threads/)
 
 include_directories (
   ${UTILS_INCLUDE_DIR}
@@ -52,25 +52,36 @@ if(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
                 )
 
       set (src ${UTILS_SRC_DIR}/bitstream.cc
-           ${UTILS_SRC_DIR}/conditional_variable_win.cc
+           ${UTILS_SRC_DIR}/conditional_variable_qt.cc
             ${UTILS_SRC_DIR}/file_system_qt.cc
-            ${UTILS_SRC_DIR}/lock_win.cc
-            ${UTILS_SRC_DIR}/rwlock_win.cc
-            ${UTILS_SRC_DIR}/date_time_win.cc
+            ${UTILS_SRC_DIR}/lock_qt.cc
+            ${UTILS_SRC_DIR}/rwlock_qt.cc
+            ${UTILS_SRC_DIR}/date_time_qt.cc
             ${UTILS_SRC_DIR}/system.cc
             ${UTILS_SRC_DIR}/signals_win.cc
             ${UTILS_SRC_DIR}/gen_hash.cc
             ${UTILS_SRC_DIR}/threads/thread_validator.cc
-            ${UTILS_SRC_DIR}/threads/win_thread.cc
-            ${UTILS_SRC_DIR}/threads/thread_delegate_win.cc
+            ${UTILS_SRC_DIR}/threads/thread_qt.cc
+            ${UTILS_SRC_DIR}/threads/thread_delegate_qt.cc
             ${UTILS_SRC_DIR}/threads/async_runner.cc
             ${UTILS_SRC_DIR}/string_utils.cc
             ${UTILS_SRC_DIR}/pipe_win.cc
             ${UTILS_SRC_DIR}/shared_library_qt.cc
             ${UTILS_SRC_DIR}/socket_qt.cc
+            ${THREAD_INCLUDE_DIR}/thread.h
     )
+       EXECUTE_PROCESS(COMMAND ${CMAKE_COMMAND} -E copy_if_different
+          ${THREAD_INCLUDE_DIR}/thread.h
+          ${UTILS_SRC_DIR}/threads/thread.h)
+       EXECUTE_PROCESS(COMMAND ${CMAKE_COMMAND} -E copy_if_different
+          ${THREAD_INCLUDE_DIR}/thread_delegate.h
+          ${UTILS_SRC_DIR}/threads/thread_delegate.h)
 
-  else(QT_PORT) #WIN_NATIVE
+    SET(CMAKE_INCLUDE_CURRENT_DIR ON)
+    qt5_generate_moc( qthread.cc moc_thread.cpp)
+    qt5_generate_moc( thread_delegate_qt.cc moc_thread_delegate.cpp)
+
+  else() #WIN_NATIVE
     file (GLOB inc ${UTILS_INCLUDE_DIR}/utils/*.h)
     set (src
             ${UTILS_SRC_DIR}/bitstream.cc

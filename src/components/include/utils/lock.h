@@ -35,8 +35,11 @@
 #if defined(OS_POSIX)
 #include <pthread.h>
 #include <sched.h>
-#elif defined(OS_WINDOWS)
+#elif defined(WIN_NATIVE)
 #include "utils/winhdr.h"
+#elif defined(QT_PORT)
+#include <QThread>
+#include <QMutex>
 #else
 #error "Lock is not defined for this platform"
 #endif
@@ -51,7 +54,9 @@ namespace sync_primitives {
 namespace impl {
 #if defined(OS_POSIX)
 typedef pthread_mutex_t PlatformMutex;
-#elif defined(OS_WINDOWS)
+#elif defined(QT_PORT)
+typedef QMutex PlatformMutex;
+#elif defined(WIN_NATIVE)
 typedef CRITICAL_SECTION PlatformMutex;
 #else
 #error "Lock is not defined for this platform"
@@ -62,16 +67,28 @@ class SpinMutex {
  public:
   SpinMutex() : state_(0) {}
   void Lock() {
+#ifdef QT_PORT
+    if (state_.testAndSetAcquire(0, 1)) {
+#else
     if (atomic_post_set(&state_) == 0) {
+#endif
       return;
     }
     for (;;) {
 #if defined(OS_POSIX)
       sched_yield();
 #elif defined(OS_WINDOWS)
+#if defined(WIN_NATIVE)
       SwitchToThread();
+#elif defined(QT_PORT)
+      QThread::yieldCurrentThread();
 #endif
+#endif
+#ifdef QT_PORT
+      if (state_ == 0 && state_.testAndSetAcquire(0, 1)) {
+#else
       if (state_ == 0 && atomic_post_set(&state_) == 0) {
+#endif
         return;
       }
     }
@@ -82,7 +99,11 @@ class SpinMutex {
   ~SpinMutex() {}
 
  private:
+#ifdef QT_PORT
+  QAtomicInteger<unsigned int> state_;
+#else
   volatile unsigned int state_;
+#endif
 };
 
 /* Platform-indepenednt NON-RECURSIVE lock (mutex) wrapper
@@ -118,7 +139,11 @@ class Lock {
   bool Try();
 
  private:
+#if defined(QT_PORT)
+  impl::PlatformMutex* mutex_;
+#else
   impl::PlatformMutex mutex_;
+#endif
 
 #ifndef NDEBUG
   /**
