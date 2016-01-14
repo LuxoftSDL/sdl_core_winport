@@ -37,10 +37,13 @@
 #include "utils/macro.h"
 
 #if defined(_MSC_VER)
+#include "utils/winhdr.h"
 typedef SSIZE_T ssize_t;
 #endif
 
 namespace utils {
+
+static const char* kSDLStreamingPipeBase = "\\\\.\\pipe\\";
 
 class Pipe {
  public:
