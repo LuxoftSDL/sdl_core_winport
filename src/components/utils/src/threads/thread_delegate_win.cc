@@ -44,17 +44,6 @@ ThreadDelegate::~ThreadDelegate() {
   }
 }
 
-void ThreadDelegate::exitThreadMain() {
-  if (thread_) {
-    thread_->cleanup();
-    if (thread_->thread_handle() == GetCurrentThread()) {
-      ExitThread(NULL);
-    } else {
-      TerminateThread(thread_->thread_handle(), NULL);
-    }
-  }
-}
-
 void ThreadDelegate::set_thread(Thread* thread) {
   DCHECK(thread);
   thread_ = thread;

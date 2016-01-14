@@ -60,14 +60,6 @@ void sleep(uint32_t ms) {
 /* Parameter is not actual for Windows platform */
 size_t Thread::kMinStackSize = 0;
 
-void Thread::cleanup(void* arg) {
-  LOG4CXX_AUTO_TRACE(logger_);
-  Thread* thread = reinterpret_cast<Thread*>(arg);
-  sync_primitives::AutoLock auto_lock(thread->state_lock_);
-  thread->isThreadRunning_ = false;
-  thread->state_cond_.Broadcast();
-}
-
 void* Thread::threadFunc(void* arg) {
   // 0 - state_lock unlocked
   //     stopped   = 0
@@ -135,11 +127,6 @@ Thread::Thread(const char* name, ThreadDelegate* delegate)
 
 bool Thread::start() {
   return start(thread_options_);
-}
-
-void Thread::cleanup() {
-  sync_primitives::AutoLock auto_lock(state_lock_);
-  cleanup(this);
 }
 
 PlatformThreadHandle Thread::CurrentId() {

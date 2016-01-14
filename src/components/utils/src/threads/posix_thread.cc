@@ -53,6 +53,18 @@ const int EOK = 0;
 
 const size_t THREAD_NAME_SIZE = 15;
 
+namespace {
+
+void cleanup(void* arg) {
+  LOG4CXX_AUTO_TRACE(logger_);
+  Thread* thread = static_cast<Thread*>(arg);
+  sync_primitives::AutoLock auto_lock(thread->state_lock_);
+  thread->isThreadRunning_ = false;
+  thread->state_cond_.Broadcast();
+}
+
+}  // namespace
+
 namespace threads {
 
 CREATE_LOGGERPTR_GLOBAL(logger_, "Utils")
@@ -63,14 +75,6 @@ void sleep(uint32_t ms) {
 
 size_t Thread::kMinStackSize =
     PTHREAD_STACK_MIN; /* Ubuntu : 16384 ; QNX : 256; */
-
-void Thread::cleanup(void* arg) {
-  LOG4CXX_AUTO_TRACE(logger_);
-  Thread* thread = reinterpret_cast<Thread*>(arg);
-  sync_primitives::AutoLock auto_lock(thread->state_lock_);
-  thread->isThreadRunning_ = false;
-  thread->state_cond_.Broadcast();
-}
 
 void* Thread::threadFunc(void* arg) {
   // 0 - state_lock unlocked

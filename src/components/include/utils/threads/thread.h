@@ -123,10 +123,6 @@ class Thread {
    */
   bool start(const ThreadOptions& options);
 
-#if defined(OS_WINDOWS)
-  void cleanup();
-#endif
-
   sync_primitives::Lock& delegate_lock() {
     return delegate_lock_;
   }
@@ -235,7 +231,6 @@ class Thread {
   Thread(const char* name, ThreadDelegate* delegate);
   virtual ~Thread();
   static void* threadFunc(void* arg);
-  static void cleanup(void* arg);
   DISALLOW_COPY_AND_ASSIGN(Thread);
 };
 

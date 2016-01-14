@@ -46,16 +46,6 @@ ThreadDelegate::~ThreadDelegate() {
   }
 }
 
-void ThreadDelegate::exitThreadMain() {
-  if (thread_) {
-    if (thread_->thread_handle() == pthread_self()) {
-      pthread_exit(NULL);
-    } else {
-      pthread_cancel(thread_->thread_handle());
-    }
-  }
-}
-
 void ThreadDelegate::set_thread(Thread* thread) {
   DCHECK(thread);
   thread_ = thread;
