@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015, Ford Motor Company
+ * Copyright (c) 2016, Ford Motor Company
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -29,8 +29,6 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-#if defined(OS_WINDOWS)
-
 #include <errno.h>
 #include <limits.h>
 #include <stddef.h>
@@ -62,7 +60,7 @@ size_t Thread::kMinStackSize = 0;
 
 void Thread::cleanup(void* arg) {
   LOG4CXX_AUTO_TRACE(logger_);
-  Thread* thread = reinterpret_cast<Thread*>(arg);
+  Thread* thread = static_cast<Thread*>(arg);
   sync_primitives::AutoLock auto_lock(thread->state_lock_);
   thread->isThreadRunning_ = false;
   thread->state_cond_.Broadcast();
@@ -84,7 +82,7 @@ void* Thread::threadFunc(void* arg) {
   LOG4CXX_DEBUG(logger_,
                 "Thread #" << GetCurrentThreadId() << " started successfully");
 
-  threads::Thread* thread = reinterpret_cast<Thread*>(arg);
+  threads::Thread* thread = static_cast<Thread*>(arg);
   DCHECK(thread);
 
   thread->state_lock_.Acquire();
@@ -137,11 +135,6 @@ bool Thread::start() {
   return start(thread_options_);
 }
 
-void Thread::cleanup() {
-  sync_primitives::AutoLock auto_lock(state_lock_);
-  cleanup(this);
-}
-
 PlatformThreadHandle Thread::CurrentId() {
   return GetCurrentThread();
 }
@@ -192,17 +185,19 @@ bool Thread::start(const ThreadOptions& options) {
 
 void Thread::stop() {
   LOG4CXX_AUTO_TRACE(logger_);
-  sync_primitives::AutoLock auto_lock(state_lock_);
+  {
+    sync_primitives::AutoLock auto_lock(state_lock_);
 
-  stopped_ = true;
+    stopped_ = true;
+    LOG4CXX_DEBUG(logger_,
+                  "Stopping thread #" << handle_ << " \"" << name_ << " \"");
 
-  LOG4CXX_DEBUG(logger_,
-                "Stopping thread #" << handle_ << " \"" << name_ << " \"");
-
-  if (delegate_ && isThreadRunning_) {
-    delegate_->exitThreadMain();
+    if (delegate_ && isThreadRunning_) {
+      delegate_->exitThreadMain();
+    }
   }
 
+  cleanup(static_cast<void*>(this));
   LOG4CXX_DEBUG(logger_,
                 "Stopped thread #" << handle_ << " \"" << name_ << " \"");
 }
@@ -244,5 +239,3 @@ void DeleteThread(Thread* thread) {
 }
 
 }  // namespace threads
-
-#endif  // OS_WINDOWS

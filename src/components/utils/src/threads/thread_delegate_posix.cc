@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015, Ford Motor Company
+ * Copyright (c) 2016, Ford Motor Company
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -29,8 +29,6 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-#if defined(OS_POSIX)
-
 #include "utils/threads/thread_delegate.h"
 
 #include <pthread.h>
@@ -62,5 +60,3 @@ void ThreadDelegate::set_thread(Thread* thread) {
 }
 
 }  // namespace threads
-
-#endif  // OS_POSIX
