@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015, Ford Motor Company
+ * Copyright (c) 2016, Ford Motor Company
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -29,8 +29,6 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-#if defined(OS_POSIX)
-
 #include "utils/file_system.h"
 #include "utils/logger.h"
 
@@ -475,5 +473,3 @@ std::string file_system::RetrieveFileNameFromPath(const std::string& path) {
       std::max(slash_pos != std::string::npos ? slash_pos + 1 : 0,
                back_slash_pos != std::string::npos ? back_slash_pos + 1 : 0));
 }
-
-#endif  // OS_POSIX
