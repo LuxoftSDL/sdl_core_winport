@@ -29,34 +29,45 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-#ifndef SRC_COMPONENTS_UTILS_INCLUDE_UTILS_PIPE_H_
-#define SRC_COMPONENTS_UTILS_INCLUDE_UTILS_PIPE_H_
-
-#include <string>
-#include <cstdint>
-#include <cstddef>
+#ifndef SRC_COMPONENTS_INCLUDE_UTILS_PIMPL_IMPL_H_
+#define SRC_COMPONENTS_INCLUDE_UTILS_PIMPL_IMPL_H_
 
 #include "utils/pimpl.h"
+#include <algorithm>
 
-namespace utils {
+template <typename Impl>
+utils::Pimpl<Impl>::Pimpl()
+    : impl_(new Impl) {}
 
-class Pipe {
- public:
-  Pipe(const std::string& name);
+template <typename Impl>
+utils::Pimpl<Impl>::Pimpl(utils::Pimpl<Impl>& rhs) {
+  Swap(rhs);
+}
 
-  bool Open();
-  void Close();
-  bool IsOpen() const;
+template <typename Impl>
+utils::Pimpl<Impl>::~Pimpl() {
+  delete impl_;
+}
 
-  bool Write(const uint8_t* buffer,
-             size_t bytes_to_write,
-             size_t& bytes_written);
+template <typename Impl>
+utils::Pimpl<Impl>& utils::Pimpl<Impl>::operator=(utils::Pimpl<Impl>& rhs) {
+  Swap(rhs);
+  return *this;
+}
 
- private:
-  class Impl;
-  Pimpl<Impl> impl_;
-};
+template <typename Impl>
+Impl* utils::Pimpl<Impl>::operator->() const {
+  return impl_;
+}
 
-}  // namespace utils
+template <typename Impl>
+Impl& utils::Pimpl<Impl>::operator&() const {
+  return *impl_;
+}
 
-#endif  // SRC_COMPONENTS_UTILS_INCLUDE_UTILS_PIPE_H_
+template <typename Impl>
+void utils::Pimpl<Impl>::Swap(utils::Pimpl<Impl>& rhs) {
+  std::swap(this->impl_, rhs.impl_);
+}
+
+#endif  // SRC_COMPONENTS_INCLUDE_UTILS_PIMPL_IMPL_H_

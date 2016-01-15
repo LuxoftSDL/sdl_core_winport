@@ -30,144 +30,91 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 #include <string>
-#include <algorithm>
+#include <cstdint>
 #include <cstddef>
-
 #include <QtNetwork>
-#include "utils/pipe.h"
 
-CREATE_LOGGERPTR_GLOBAL(logger_ptr, "Utils.QtPipe")
+#include "utils/winhdr.h"
+#include "utils/pipe.h"
+#include "utils/pimpl_impl.h"
+#include "utils/logger.h"
+#include "utils/file_system.h"
+
+CREATE_LOGGERPTR_GLOBAL(logger_ptr, "Utils.Pipe")
+
+namespace {
+const std::string kPlatformPipePrefix = "\\\\.\\pipe\\";
+}  // namespace
 
 namespace utils {
 
-////////////////////////////////////////////////////////////////////////////////
-/// class utils::Pipe::Impl
-////////////////////////////////////////////////////////////////////////////////
 class Pipe::Impl {
  public:
+  friend Pipe;
+
   Impl();
   ~Impl();
 
-  Impl& operator=(Impl& rh);
-
-  bool isValid() const;
-
-  bool Create(const std::string& name);
-
   bool Open();
-  bool Close();
+  void Close();
+  bool IsOpen() const;
 
-  ssize_t Write(const char* buf, std::size_t length);
+  bool Write(const uint8_t* buffer,
+             size_t bytes_to_write,
+             size_t& bytes_written);
 
  private:
+  QString name_;
   QLocalServer* server_socket_;
   QLocalSocket* client_socket_;
-  QString name_;
 };
 
 }  // namespace utils
 
 ////////////////////////////////////////////////////////////////////////////////
-/// class utils::Pipe
+/// utils::Pipe::Impl
 ////////////////////////////////////////////////////////////////////////////////
-utils::Pipe::Pipe() : impl_(new Pipe::Impl()) {}
 
-utils::Pipe::~Pipe() {
-  delete impl_;
-}
-
-utils::Pipe::Pipe(Pipe& rh) {
-  impl_ = new Pipe::Impl();
-  *impl_ = *rh.impl_;
-}
-
-utils::Pipe& utils::Pipe::operator=(Pipe& rh) {
-  if (this != &rh) {
-    Pipe tmp(rh);
-    this->Swap(tmp);
-  }
-  return *this;
-}
-
-bool utils::Pipe::Valid() const {
-  return impl_->isValid();
-}
-
-bool utils::Pipe::Create(const std::string& name) {
-  return impl_->Create(name);
-}
-
-bool utils::Pipe::Open() {
-  return impl_->Open();
-}
-
-bool utils::Pipe::Close() {
-  return impl_->Close();
-}
-
-ssize_t utils::Pipe::Write(const char* buf, std::size_t length) {
-  return impl_->Write(buf, length);
-}
-
-utils::Pipe::Pipe(Pipe::Impl* impl) : impl_(impl) {}
-
-void utils::Pipe::Swap(Pipe& rh) {
-  qSwap(this->impl_, rh.impl_);
-}
-
-utils::Pipe::Impl::Impl() : server_socket_(NULL), client_socket_(NULL) {}
+utils::Pipe::Impl::Impl()
+    : name_(), server_socket_(NULL), client_socket_(NULL) {}
 
 utils::Pipe::Impl::~Impl() {
   Close();
 }
 
-utils::Pipe::Impl& utils::Pipe::Impl::operator=(Impl& rh) {
-  Close();
-  qSwap(server_socket_, rh.server_socket_);
-  qSwap(client_socket_, rh.client_socket_);
-  rh.name_ = "";
-  return *this;
-}
-
-bool utils::Pipe::Impl::isValid() const {
-  return server_socket_ != NULL;
-}
-
-bool utils::Pipe::Impl::Create(const std::string& name) {
-  if (!Close()) {
-    return false;
+bool utils::Pipe::Impl::Open() {
+  if (IsOpen()) {
+    LOG4CXX_WARN(logger_ptr,
+                 "Named pipe: " << name_.toStdString() << " is already opened");
+    return true;
   }
   server_socket_ = new QLocalServer();
-  const QString stream_path(name.c_str());
-  const QStringList stream_path_list = stream_path.split(QDir::separator());
-  name_ = kSDLStreamingPipeBase;
-  name_.append(stream_path_list.back());
   server_socket_->setSocketOptions(QLocalServer::WorldAccessOption);
-  return server_socket_->listen(name_);
-}
-
-bool utils::Pipe::Impl::Open() {
-  if (!server_socket_->isListening()) {
-    LOG4CXX_WARN(
-        logger_ptr,
-        "Failed listening: " << server_socket_->errorString().toStdString());
+  if (!server_socket_->listen(name_)) {
+    delete server_socket_;
+    server_socket_ = NULL;
+    LOG4CXX_ERROR(logger_ptr,
+                  "Cannot create named pipe: " << name_.toStdString());
     return false;
   }
   if (server_socket_->waitForNewConnection(-1)) {
     client_socket_ = server_socket_->nextPendingConnection();
   }
   if (!client_socket_) {
-    LOG4CXX_WARN(logger_ptr,
-                 "Failed to get new connection: "
-                     << server_socket_->errorString().toStdString());
+    delete server_socket_;
+    server_socket_ = NULL;
+    LOG4CXX_ERROR(logger_ptr,
+                  "Cannot connect to named pipe: " << name_.toStdString());
     return false;
   }
   return true;
 }
 
-bool utils::Pipe::Impl::Close() {
-  if (!client_socket_ && !server_socket_) {
-    return true;
+void utils::Pipe::Impl::Close() {
+  if (!IsOpen()) {
+    LOG4CXX_WARN(logger_ptr,
+                 "Named pipe: " << name_.toStdString() << " is not opened");
+    return;
   }
   if (client_socket_) {
     client_socket_->disconnectFromServer();
@@ -179,20 +126,62 @@ bool utils::Pipe::Impl::Close() {
   client_socket_ = NULL;
   delete server_socket_;
   server_socket_ = NULL;
-  name_ = "";
+}
+
+bool utils::Pipe::Impl::IsOpen() const {
+  return NULL != server_socket_ && NULL != client_socket_;
+}
+
+bool utils::Pipe::Impl::Write(const uint8_t* buffer,
+                              size_t bytes_to_write,
+                              size_t& bytes_written) {
+  bytes_written = 0;
+  if (!IsOpen()) {
+    LOG4CXX_ERROR(logger_ptr,
+                  "Named pipe: " << name_.toStdString() << " is not opened");
+    return false;
+  }
+  if (bytes_to_write == 0) {
+    LOG4CXX_WARN(logger_ptr, "Trying to write 0 bytes");
+    return true;
+  }
+  qint64 written = client_socket_->write(reinterpret_cast<const char*>(buffer),
+                                         static_cast<qint64>(bytes_to_write));
+  if (-1 == written) {
+    LOG4CXX_ERROR(logger_ptr,
+                  "Cannot write to named pipe: " << name_.toStdString());
+    return false;
+  }
+  client_socket_->waitForBytesWritten();
+  client_socket_->flush();
+  bytes_written = static_cast<size_t>(written);
   return true;
 }
 
-ssize_t utils::Pipe::Impl::Write(const char* buf, std::size_t length) {
-  if (!client_socket_) {
-    LOG4CXX_WARN(
-        logger_ptr,
-        "Failed to send: " << server_socket_->errorString().toStdString());
-    return -1;
-  }
-  ssize_t ret_val = static_cast<ssize_t>(
-      client_socket_->write(buf, static_cast<qint64>(length)));
-  client_socket_->waitForBytesWritten();
-  client_socket_->flush();
-  return ret_val;
+////////////////////////////////////////////////////////////////////////////////
+/// utils::Pipe
+////////////////////////////////////////////////////////////////////////////////
+
+utils::Pipe::Pipe(const std::string& name) {
+  impl_->name_ =
+      (kPlatformPipePrefix + file_system::RetrieveFileNameFromPath(name))
+          .c_str();
+}
+
+bool utils::Pipe::Open() {
+  return impl_->Open();
+}
+
+void utils::Pipe::Close() {
+  impl_->Close();
+}
+
+bool utils::Pipe::IsOpen() const {
+  return impl_->IsOpen();
+}
+
+bool utils::Pipe::Write(const uint8_t* buffer,
+                        size_t bytes_to_write,
+                        size_t& bytes_written) {
+  return impl_->Write(buffer, bytes_to_write, bytes_written);
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014, Ford Motor Company
+ * Copyright (c) 2016, Ford Motor Company
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -45,54 +45,50 @@ PipeStreamerAdapter::~PipeStreamerAdapter() {}
 
 PipeStreamerAdapter::PipeStreamer::PipeStreamer(
     PipeStreamerAdapter* const adapter, const std::string& named_pipe_path)
-    : Streamer(adapter), named_pipe_path_(named_pipe_path) {}
+    : Streamer(adapter), pipe_(named_pipe_path) {}
 
 PipeStreamerAdapter::PipeStreamer::~PipeStreamer() {}
 
 bool PipeStreamerAdapter::PipeStreamer::Connect() {
   LOG4CXX_AUTO_TRACE(logger);
+
   if (!file_system::CreateDirectoryRecursively(
           profile::Profile::instance()->app_storage_folder())) {
     LOG4CXX_ERROR(logger, "Cannot create app folder");
     return false;
   }
 
-  if (!pipe_.Create(named_pipe_path_)) {
-    LOG4CXX_ERROR(logger, "Cannot create pipe " << named_pipe_path_);
-    return false;
-  }
-
   if (!pipe_.Open()) {
-    LOG4CXX_ERROR(logger, "Cannot open pipe for writing " << named_pipe_path_);
+    LOG4CXX_ERROR(logger, "Cannot open pipe");
     return false;
   }
 
-  LOG4CXX_INFO(logger,
-               "Pipe " << named_pipe_path_ << " was successfuly created");
+  LOG4CXX_INFO(logger, "Streamer connected to pipe");
   return true;
 }
 
 void PipeStreamerAdapter::PipeStreamer::Disconnect() {
   LOG4CXX_AUTO_TRACE(logger);
+
   pipe_.Close();
+  LOG4CXX_INFO(logger, "Streamer disconnected from pipe");
 }
 
 bool PipeStreamerAdapter::PipeStreamer::Send(
     protocol_handler::RawMessagePtr msg) {
   LOG4CXX_AUTO_TRACE(logger);
-  size_t ret =
-      pipe_.Write(reinterpret_cast<const char*>(msg->data()), msg->data_size());
-  if (-1 == ret) {
-    LOG4CXX_ERROR(logger, "Failed writing data to pipe " << named_pipe_path_);
+
+  size_t sent = 0;
+  if (!pipe_.Write(msg->data(), msg->data_size(), sent)) {
+    LOG4CXX_ERROR(logger, "Cannot write to pipe");
     return false;
   }
 
-  if (ret != msg->data_size()) {
-    LOG4CXX_WARN(logger,
-                 "Couldn't write all the data to pipe " << named_pipe_path_);
+  if (sent != msg->data_size()) {
+    LOG4CXX_WARN(logger, "Couldn't write all the data to pipe");
   }
 
-  LOG4CXX_INFO(logger, "Streamer::sent " << msg->data_size());
+  LOG4CXX_INFO(logger, "Streamer sent to pipe " << sent << " bytes");
   return true;
 }
 
