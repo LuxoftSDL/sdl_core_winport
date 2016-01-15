@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015, Ford Motor Company
+ * Copyright (c) 2016, Ford Motor Company
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -32,43 +32,30 @@
 #ifndef SRC_COMPONENTS_UTILS_INCLUDE_UTILS_PIPE_H_
 #define SRC_COMPONENTS_UTILS_INCLUDE_UTILS_PIPE_H_
 
-#include <cstdint>
 #include <string>
-#include "utils/macro.h"
+#include <cstdint>
+#include <cstddef>
 
-#if defined(_MSC_VER)
-#include "utils/winhdr.h"
-typedef SSIZE_T ssize_t;
-#endif
+#include "utils/pimpl.h"
 
 namespace utils {
 
-static const char* kSDLStreamingPipeBase = "\\\\.\\pipe\\";
-
 class Pipe {
  public:
-  Pipe();
+  Pipe(const std::string& name);
   ~Pipe();
 
-  Pipe(Pipe& rh);
-  Pipe& operator=(Pipe& rh);
-
-  bool Valid() const;
-
-  bool Create(const std::string& name);
-
   bool Open();
-  bool Close();
+  void Close();
+  bool IsOpen() const;
 
-  ssize_t Write(const char* buf, size_t length);
-
-  void Swap(Pipe& rh);
+  bool Write(const uint8_t* buffer,
+             size_t bytes_to_write,
+             size_t& bytes_written);
 
  private:
   class Impl;
-  explicit Pipe(Impl* impl);
-
-  Impl* impl_;
+  Pimpl<Impl> impl_;
 };
 
 }  // namespace utils

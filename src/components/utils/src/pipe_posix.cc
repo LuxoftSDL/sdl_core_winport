@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015, Ford Motor Company
+ * Copyright (c) 2016, Ford Motor Company
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,153 +30,136 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 #include <string>
-#include <algorithm>
+#include <cstdint>
+#include <cstddef>
+#include <unistd.h>
+#include <sys/types.h>
+#include <sys/stat.h>
 
-#include "utils/winhdr.h"
 #include "utils/pipe.h"
+#include "utils/pimpl_impl.h"
+#include "utils/logger.h"
 
-namespace std {
-
-template <>
-void swap<utils::Pipe>(utils::Pipe& lhs, utils::Pipe& rhs) {
-  lhs.Swap(rhs);
-}
-
-}  // namespace std
+CREATE_LOGGERPTR_GLOBAL(logger_ptr, "Utils.Pipe")
 
 namespace utils {
 
 class Pipe::Impl {
  public:
+  friend Pipe;
+
   Impl();
-  explicit Impl(int pipe);
   ~Impl();
 
-  Impl(Impl& rh);
-  Impl& operator=(Impl& rh);
-
-  bool Valid() const;
-
-  bool Create(const std::string& name);
-
   bool Open();
-  bool Close();
+  void Close();
+  bool IsOpen() const;
 
-  ssize_t Write(const char* buf, size_t length);
+  bool Write(const uint8_t* buffer,
+             size_t bytes_to_write,
+             size_t& bytes_written);
 
  private:
-  int pipe_;
   std::string name_;
+  int handle_;
 };
 
 }  // namespace utils
 
-utils::Pipe::Pipe() : impl_(new Pipe::Impl()) {}
+////////////////////////////////////////////////////////////////////////////////
+/// utils::Pipe
+////////////////////////////////////////////////////////////////////////////////
 
-utils::Pipe::~Pipe() {
-  delete impl_;
+utils::Pipe::Pipe(const std::string& name) {
+  impl_->name_ = name;
 }
 
-utils::Pipe::Pipe(Pipe& rh) {
-  impl_ = new Pipe::Impl();
-  *impl_ = *rh.impl_;
-}
-
-utils::Pipe& utils::Pipe::operator=(Pipe& rh) {
-  if (this != &rh) {
-    Pipe tmp(rh);
-    this->Swap(tmp);
-  }
-  return *this;
-}
-
-bool utils::Pipe::Valid() const {
-  return impl_->Valid();
-}
-
-bool utils::Pipe::Create(const std::string& name) {
-  return impl_->Create(name);
-}
+utils::Pipe::~Pipe() {}
 
 bool utils::Pipe::Open() {
   return impl_->Open();
 }
 
-bool utils::Pipe::Close() {
-  return impl_->Close();
+void utils::Pipe::Close() {
+  impl_->Close();
 }
 
-ssize_t utils::Pipe::Write(const char* buf, size_t length) {
-  return impl_->Write(buf, length);
+bool utils::Pipe::IsOpen() const {
+  return impl_->IsOpen();
 }
 
-utils::Pipe::Pipe(Pipe::Impl* impl) : impl_(impl) {}
-
-void utils::Pipe::Swap(Pipe& rh) {
-  std::swap(this->impl_, rh.impl_);
+bool utils::Pipe::Write(const uint8_t* buffer,
+                        size_t bytes_to_write,
+                        size_t& bytes_written) {
+  return impl_->Write(buffer, bytes_to_write, bytes_written);
 }
 
-utils::Pipe::Impl::Impl() : pipe_(NULL) {}
+////////////////////////////////////////////////////////////////////////////////
+/// utils::Pipe::Impl
+////////////////////////////////////////////////////////////////////////////////
 
-utils::Pipe::Impl::Impl(HANDLE pipe)
-    : pipe_(INVALID_HANDLE_VALUE == pipe ? NULL : pipe) {}
+utils::Pipe::Impl::Impl() : name_(), handle_(0) {}
 
 utils::Pipe::Impl::~Impl() {
   Close();
 }
 
-utils::Pipe::Impl::Impl(Impl& rh) : pipe_(rh.pipe_) {
-  rh.pipe_ = NULL;
-  rh.name_ = "";
-}
-
-utils::Pipe::Impl& utils::Pipe::Impl::operator=(Impl& rh) {
-  Close();
-  pipe_ = rh.pipe_;
-  rh.pipe_ = NULL;
-  rh.name_ = "";
-  return *this;
-}
-
-bool utils::Pipe::Impl::Valid() const {
-  return pipe_ != NULL;
-}
-
-bool utils::Pipe::Impl::Create(const std::string& name) {
-  if (!Close()) {
-    return false;
-  }
-  pipe_ = mkfifo(name.c_str(), S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
-  if (INVALID_HANDLE_VALUE == pipe_) {
-    pipe_ = NULL;
-    return false;
-  }
-  name_ = name;
-  return true;
-}
-
 bool utils::Pipe::Impl::Open() {
-  if (NULL == pipe_ || -1 == open(name_, O_RDWR, 0)) {
-    return false;
-  }
-  return true;
-}
-
-bool utils::Pipe::Impl::Close() {
-  if (NULL == pipe_) {
+  if (IsOpen()) {
+    LOG4CXX_WARN(logger_ptr, "Named pipe: " << name_ << " is already opened");
     return true;
   }
-  if (-1 == close(pipe_) || -1 == unlink(name_)) {
+  handle_ = mkfifo(name_.c_str(), S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
+  if (-1 == handle_) {
+    handle_ = 0;
+    LOG4CXX_ERROR(logger_ptr, "Cannot create named pipe: " << name_);
     return false;
   }
-  pipe_ = NULL;
-  name_ = "";
+  if (-1 == open(name_, O_RDWR, 0)) {
+    unlink(handle_);
+    handle_ = NULL;
+    LOG4CXX_ERROR(logger_ptr, "Cannot connect to named pipe: " << name_);
+    return false;
+  }
   return true;
 }
 
-ssize_t utils::Pipe::Impl::Write(const char* buf, size_t length) {
-  if (NULL == pipe_) {
-    return -1;
+void utils::Pipe::Impl::Close() {
+  if (!IsOpen()) {
+    LOG4CXX_WARN(logger_ptr, "Named pipe: " << name_ << " is not opened");
+    return;
   }
-  return write(pipe_, buf, length);
+  if (-1 == close(handle_)) {
+    LOG4CXX_WARN(logger_ptr, "Cannot disconnect from named pipe: " << name_);
+  }
+  if (-1 == unlink(handle_)) {
+    LOG4CXX_WARN(logger_ptr, "Cannot delete named pipe: " << name_);
+  }
+  handle_ = NULL;
+}
+
+bool utils::Pipe::Impl::IsOpen() const {
+  return NULL != handle_;
+}
+
+bool utils::Pipe::Impl::Write(const uint8_t* buffer,
+                              size_t bytes_to_write,
+                              size_t& bytes_written) {
+  bytes_written = 0;
+  if (!IsOpen()) {
+    LOG4CXX_ERROR(logger_ptr, "Named pipe: " << name_ << " is not opened");
+    return false;
+  }
+  if (bytes_to_write == 0) {
+    LOG4CXX_WARN(logger_ptr, "Trying to write 0 bytes");
+    return true;
+  }
+  const ssize_t written =
+      write(handle_, static_cast<const void*>(buffer), bytes_to_write);
+  if (-1 == written) {
+    LOG4CXX_ERROR(logger_ptr, "Cannot write to named pipe: " << name_);
+    return false;
+  }
+  bytes_written = static_cast<size_t>(written);
+  return true;
 }
