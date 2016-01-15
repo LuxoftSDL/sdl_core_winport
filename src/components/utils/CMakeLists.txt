@@ -70,6 +70,17 @@ if(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
             ${UTILS_SRC_DIR}/socket_qt.cc
     )
 
+    EXECUTE_PROCESS(COMMAND ${CMAKE_COMMAND} -E copy_if_different
+                  ${THREAD_INCLUDE_DIR}/thread.h
+                  ${UTILS_SRC_DIR}/threads/thread.h)
+    EXECUTE_PROCESS(COMMAND ${CMAKE_COMMAND} -E copy_if_different
+                  ${THREAD_INCLUDE_DIR}/thread_delegate.h
+                  ${UTILS_SRC_DIR}/threads/thread_delegate.h)
+
+    SET(CMAKE_INCLUDE_CURRENT_DIR ON)
+    qt5_generate_moc( qthread.cc moc_thread.cpp)
+    qt5_generate_moc( thread_delegate_qt.cc moc_thread_delegate.cpp)
+
   else() #WIN_NATIVE
     file (GLOB inc ${UTILS_INCLUDE_DIR}/utils/*.h)
     set (src
