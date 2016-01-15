@@ -59,7 +59,6 @@ class PipeStreamerAdapter : public StreamerAdapter {
     virtual bool Send(protocol_handler::RawMessagePtr msg);
 
    private:
-    std::string named_pipe_path_;
     utils::Pipe pipe_;
   };
 };
