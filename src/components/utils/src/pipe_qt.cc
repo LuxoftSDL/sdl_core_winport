@@ -72,34 +72,6 @@ class Pipe::Impl {
 }  // namespace utils
 
 ////////////////////////////////////////////////////////////////////////////////
-/// utils::Pipe
-////////////////////////////////////////////////////////////////////////////////
-
-utils::Pipe::Pipe(const std::string& name) {
-  impl_->name_ =
-      (kPlatformPipePrefix + file_system::RetrieveFileNameFromPath(name))
-          .c_str();
-}
-
-bool utils::Pipe::Open() {
-  return impl_->Open();
-}
-
-void utils::Pipe::Close() {
-  impl_->Close();
-}
-
-bool utils::Pipe::IsOpen() const {
-  return impl_->IsOpen();
-}
-
-bool utils::Pipe::Write(const uint8_t* buffer,
-                        size_t bytes_to_write,
-                        size_t& bytes_written) {
-  return impl_->Write(buffer, bytes_to_write, bytes_written);
-}
-
-////////////////////////////////////////////////////////////////////////////////
 /// utils::Pipe::Impl
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -184,4 +156,32 @@ bool utils::Pipe::Impl::Write(const uint8_t* buffer,
   client_socket_->flush();
   bytes_written = static_cast<size_t>(written);
   return true;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+/// utils::Pipe
+////////////////////////////////////////////////////////////////////////////////
+
+utils::Pipe::Pipe(const std::string& name) {
+  impl_->name_ =
+      (kPlatformPipePrefix + file_system::RetrieveFileNameFromPath(name))
+          .c_str();
+}
+
+bool utils::Pipe::Open() {
+  return impl_->Open();
+}
+
+void utils::Pipe::Close() {
+  impl_->Close();
+}
+
+bool utils::Pipe::IsOpen() const {
+  return impl_->IsOpen();
+}
+
+bool utils::Pipe::Write(const uint8_t* buffer,
+                        size_t bytes_to_write,
+                        size_t& bytes_written) {
+  return impl_->Write(buffer, bytes_to_write, bytes_written);
 }
