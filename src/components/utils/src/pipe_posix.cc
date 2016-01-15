@@ -74,8 +74,6 @@ utils::Pipe::Pipe(const std::string& name) {
   impl_->name_ = name;
 }
 
-utils::Pipe::~Pipe() {}
-
 bool utils::Pipe::Open() {
   return impl_->Open();
 }
@@ -117,7 +115,7 @@ bool utils::Pipe::Impl::Open() {
   }
   if (-1 == open(name_, O_RDWR, 0)) {
     unlink(handle_);
-    handle_ = NULL;
+    handle_ = 0;
     LOG4CXX_ERROR(logger_ptr, "Cannot connect to named pipe: " << name_);
     return false;
   }
@@ -135,11 +133,11 @@ void utils::Pipe::Impl::Close() {
   if (-1 == unlink(handle_)) {
     LOG4CXX_WARN(logger_ptr, "Cannot delete named pipe: " << name_);
   }
-  handle_ = NULL;
+  handle_ = 0;
 }
 
 bool utils::Pipe::Impl::IsOpen() const {
-  return NULL != handle_;
+  return 0 != handle_;
 }
 
 bool utils::Pipe::Impl::Write(const uint8_t* buffer,

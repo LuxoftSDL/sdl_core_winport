@@ -44,7 +44,7 @@ CREATE_LOGGERPTR_GLOBAL(logger_ptr, "Utils.Pipe")
 
 namespace {
 const std::string kPlatformPipePrefix = "\\\\.\\pipe\\";
-}
+}  // namespace
 
 namespace utils {
 
@@ -80,8 +80,6 @@ utils::Pipe::Pipe(const std::string& name) {
       (kPlatformPipePrefix + file_system::RetrieveFileNameFromPath(name))
           .c_str();
 }
-
-utils::Pipe::~Pipe() {}
 
 bool utils::Pipe::Open() {
   return impl_->Open();

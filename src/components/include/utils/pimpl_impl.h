@@ -32,13 +32,12 @@
 #ifndef SRC_COMPONENTS_INCLUDE_UTILS_PIMPL_IMPL_H_
 #define SRC_COMPONENTS_INCLUDE_UTILS_PIMPL_IMPL_H_
 
-#include <algorithm>
 #include "utils/pimpl.h"
+#include <algorithm>
 
 template <typename Impl>
-utils::Pimpl<Impl>::Pimpl() {
-  impl_ = new Impl;
-}
+utils::Pimpl<Impl>::Pimpl()
+    : impl_(new Impl) {}
 
 template <typename Impl>
 utils::Pimpl<Impl>::Pimpl(utils::Pimpl<Impl>& rhs) {

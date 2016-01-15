@@ -45,7 +45,7 @@ namespace {
 const std::string kPlatformPipePrefix = "\\\\.\\pipe\\";
 DWORD kInBufferSize = 1024;
 DWORD kOutBufferSize = 1024;
-}
+}  // namespace
 
 namespace utils {
 
@@ -79,8 +79,6 @@ utils::Pipe::Pipe(const std::string& name) {
   impl_->name_ =
       kPlatformPipePrefix + file_system::RetrieveFileNameFromPath(name);
 }
-
-utils::Pipe::~Pipe() {}
 
 bool utils::Pipe::Open() {
   return impl_->Open();
