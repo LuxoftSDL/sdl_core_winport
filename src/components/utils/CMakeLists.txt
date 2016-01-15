@@ -31,6 +31,7 @@
 
 set(UTILS_INCLUDE_DIR ${COMPONENTS_DIR}/utils/include)
 set(UTILS_SRC_DIR ${COMPONENTS_DIR}/utils/src)
+set(THREAD_INCLUDE_DIR ${COMPONENTS_DIR}/include/utils/threads/)
 
 include_directories (
   ${UTILS_INCLUDE_DIR}
@@ -61,8 +62,8 @@ if(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
             ${UTILS_SRC_DIR}/signals_win.cc
             ${UTILS_SRC_DIR}/gen_hash.cc
             ${UTILS_SRC_DIR}/threads/thread_validator.cc
-            ${UTILS_SRC_DIR}/threads/win_thread.cc
-            ${UTILS_SRC_DIR}/threads/thread_delegate_win.cc
+            ${UTILS_SRC_DIR}/threads/thread_qt.cc
+            ${UTILS_SRC_DIR}/threads/thread_delegate_qt.cc
             ${UTILS_SRC_DIR}/threads/async_runner.cc
             ${UTILS_SRC_DIR}/string_utils.cc
             ${UTILS_SRC_DIR}/pipe_qt.cc
