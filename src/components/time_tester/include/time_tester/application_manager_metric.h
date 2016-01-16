@@ -48,7 +48,7 @@ class ApplicationManagerMetricWrapper : public MetricWrapper {
       message_metric;
 
  protected:
-  virtual Json::Value GetJsonMetric();
+  virtual utils::json::JsonValue GetJsonMetric();
 };
 }
 #endif  // SRC_COMPONENTS_TIME_TESTER_INCLUDE_TIME_TESTER_APPLICATION_MANAGER_MECTRIC_WRAPPER_H_
