@@ -32,11 +32,11 @@
 
 #include "application_manager/message_helper.h"
 
+#include <algorithm>
+#include <map>
 #include <set>
 #include <string>
-#include <algorithm>
 #include <utility>
-#include <map>
 
 #include "application_manager/application.h"
 #include "application_manager/application_manager_impl.h"
@@ -47,15 +47,16 @@
 #include "interfaces/MOBILE_API.h"
 #include "smart_objects/enum_schema_item.h"
 #include "utils/file_system.h"
+#include "utils/logger.h"
 #include "utils/macro.h"
 #include "utils/make_shared.h"
-#include "utils/logger.h"
 #include "utils/make_shared.h"
 #include "utils/string_utils.h"
+#include "utils/json_utils.h"
 
-#include "formatters/formatter_json_rpc.h"
-#include "formatters/CFormatterJsonSDLRPCv2.hpp"
 #include "formatters/CFormatterJsonSDLRPCv1.hpp"
+#include "formatters/CFormatterJsonSDLRPCv2.hpp"
+#include "formatters/formatter_json_rpc.h"
 
 #if defined(_MSC_VER)
 #define snprintf _snprintf_s
@@ -2129,6 +2130,7 @@ void application_manager::MessageHelper::SendQueryApps(
     uint32_t connection_key) {
   using namespace mobile_apis;
   using namespace smart_objects;
+  using namespace utils::json;
 
   policy::PolicyHandler* policy_handler = policy::PolicyHandler::instance();
 
@@ -2140,8 +2142,8 @@ void application_manager::MessageHelper::SendQueryApps(
   (*content)[strings::msg_params][strings::timeout] =
       policy_handler->TimeoutExchange();
 
-  Json::Value http;
-  Json::Value& http_header =
+  JsonValue http;
+  JsonValueRef http_header =
       http[http_request::httpRequest][http_request::headers];
 
   const int timeout = policy_handler->TimeoutExchange();
@@ -2157,7 +2159,7 @@ void application_manager::MessageHelper::SendQueryApps(
   http_header[http_request::charset] = "utf-8";
   http_header[http_request::content_lenght] = 0;
 
-  std::string data = http_header.toStyledString();
+  std::string data = http_header.ToJson();
   std::vector<uint8_t> binary_data(data.begin(), data.end());
 
   (*content)[strings::params][strings::binary_data] = SmartObject(binary_data);
@@ -2188,8 +2190,6 @@ void MessageHelper::SendOnPermissionsChangeNotification(
   smart_objects::SmartObject& msg_params = *p_msg_params;
 
   content[strings::msg_params] = msg_params;
-
-  // content[strings::msg_params][strings::app_id] = connection_key;
 
   content[strings::msg_params]["permissionItem"] =
       smart_objects::SmartObject(smart_objects::SmartType_Array);
