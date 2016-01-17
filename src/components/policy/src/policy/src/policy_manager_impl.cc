@@ -35,14 +35,14 @@
 #include <set>
 #include <queue>
 #include <iterator>
-#include "json/reader.h"
-#include "json/writer.h"
 #include "policy/policy_table.h"
 #include "policy/pt_representation.h"
 #include "policy/policy_helper.h"
 #include "utils/file_system.h"
 #include "utils/logger.h"
 #include "utils/date_time.h"
+#include "utils/json_utils.h"
+#include "utils/make_shared.h"
 #include "policy/cache_manager.h"
 #include "policy/update_status_manager.h"
 
@@ -79,35 +79,36 @@ void PolicyManagerImpl::set_listener(PolicyListener* listener) {
 
 utils::SharedPtr<policy_table::Table> PolicyManagerImpl::Parse(
     const BinaryMessage& pt_content) {
+  using namespace utils::json;
   std::string json(pt_content.begin(), pt_content.end());
-  Json::Value value;
-  Json::Reader reader;
-  if (reader.parse(json.c_str(), value)) {
-    return new policy_table::Table(&value);
-  } else {
+
+  JsonValue::ParseResult parse_result = JsonValue::Parse(json);
+  if (!parse_result.second) {
     return utils::SharedPtr<policy_table::Table>();
   }
+  JsonValue& root_json = parse_result.first;
+  return utils::MakeShared<policy_table::Table>(&value);
 }
 
 #else
 
 utils::SharedPtr<policy_table::Table> PolicyManagerImpl::ParseArray(
     const BinaryMessage& pt_content) {
+  using namespace utils::json;
   std::string json(pt_content.begin(), pt_content.end());
-  Json::Value value;
-  Json::Reader reader;
-  if (reader.parse(json.c_str(), value)) {
-    // For PT Update received from SDL Server.
-    if (value["data"].size() != 0) {
-      Json::Value data = value["data"];
-      // First Element in
-      return new policy_table::Table(&data[0]);
-    } else {
-      return new policy_table::Table(&value);
-    }
-  } else {
+
+  JsonValue::ParseResult parse_result = JsonValue::Parse(json);
+  if (!parse_result.second) {
     return utils::SharedPtr<policy_table::Table>();
   }
+  const JsonValue& root_json = parse_result.first;
+  // For PT Update received from SDL Server.
+  if (root_json.HasMember("data") && root_json["data"].Size()) {
+    const JsonValueRef data = root_json["data"];
+    // First Element in
+    return utils::MakeShared<policy_table::Table>(data[0u]);
+  }
+  return utils::MakeShared<policy_table::Table>(root_json);
 }
 
 #endif
@@ -247,9 +248,8 @@ void PolicyManagerImpl::RequestPTUpdate() {
 
   IsPTValid(policy_table_snapshot, policy_table::PT_SNAPSHOT);
 
-  Json::Value value = policy_table_snapshot->ToJsonValue();
-  Json::FastWriter writer;
-  std::string message_string = writer.write(value);
+  const std::string message_string =
+      policy_table_snapshot->ToJsonValue().ToJson(false);
 
   LOG4CXX_DEBUG(logger_, "Snapshot contents is : " << message_string);
 

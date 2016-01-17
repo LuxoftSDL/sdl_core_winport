@@ -39,9 +39,7 @@
 #include <cmath>
 
 #include "utils/file_system.h"
-#include "json/reader.h"
-#include "json/features.h"
-#include "json/writer.h"
+#include "utils/json_utils.h"
 #include "utils/logger.h"
 #ifdef OS_WINDOWS
 #define strncasecmp _strnicmp
@@ -1147,6 +1145,7 @@ bool CacheManager::LoadFromBackup() {
 
 bool CacheManager::LoadFromFile(const std::string& file_name,
                                 policy_table::Table& table) {
+  using namespace utils::json;
   LOG4CXX_AUTO_TRACE(logger_);
   BinaryMessage json_string;
   if (!file_system::ReadBinaryFile(file_name, json_string)) {
@@ -1154,24 +1153,20 @@ bool CacheManager::LoadFromFile(const std::string& file_name,
     return false;
   }
 
-  Json::Value value;
-  Json::Reader reader(Json::Features::strictMode());
   std::string json(json_string.begin(), json_string.end());
-  if (!reader.parse(json.c_str(), value)) {
-    LOG4CXX_FATAL(
-        logger_,
-        "Preloaded PT is corrupted: " << reader.getFormattedErrorMessages());
+  JsonValue::ParseResult parse_result = JsonValue::Parse(json);
+  if (!parse_result.second) {
+    LOG4CXX_FATAL(logger_, "Preloaded PT is corrupted.");
     return false;
   }
+  const JsonValue& value = parse_result.first;
 
   LOG4CXX_TRACE(logger_, "Start create PT");
   sync_primitives::AutoLock locker(cache_lock_);
 
-  table = policy_table::Table(&value);
+  table = policy_table::Table(value);
 
-  Json::StyledWriter s_writer;
-  LOG4CXX_DEBUG(logger_, "PT out:");
-  LOG4CXX_DEBUG(logger_, s_writer.write(table.ToJsonValue()));
+  LOG4CXX_DEBUG(logger_, "PT out:\n" << table.ToJsonValue().ToJson());
 
   if (!table.is_valid()) {
     rpc::ValidationReport report("policy_table");

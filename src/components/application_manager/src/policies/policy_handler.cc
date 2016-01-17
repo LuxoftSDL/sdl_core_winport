@@ -41,8 +41,6 @@
 #include "connection_handler/connection_handler.h"
 #include "utils/macro.h"
 #include "utils/date_time.h"
-#include "json/value.h"
-#include "json/writer.h"
 #include "config_profile/profile.h"
 #include "application_manager/usage_statistics.h"
 #include "policy/policy_types.h"
