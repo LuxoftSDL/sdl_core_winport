@@ -40,8 +40,6 @@
 #include <iterator>
 #include <limits>
 
-#include "utils/macro.h"
-
 namespace {
 
 const QVariant kNullVariant = QVariant();
@@ -290,6 +288,7 @@ utils::json::JsonValueRef::JsonValueRef(JsonValue::Storage& storage,
 }
 
 void utils::json::JsonValueRef::Clear() {
+  DCHECK(IsValid());
   ClearStorage(*storage_);
 }
 

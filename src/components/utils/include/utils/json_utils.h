@@ -43,6 +43,8 @@
 #include "json/json.h"
 #endif
 
+#include "utils/macro.h"
+
 namespace utils {
 namespace json {
 
@@ -183,6 +185,8 @@ class JsonValue {
 
 class JsonValueRef {
  public:
+  JsonValueRef();
+
   JsonValueRef& operator=(const JsonValue& rhs);
 
   JsonValueRef& operator=(const JsonValueRef& rhs);
@@ -252,6 +256,8 @@ class JsonValueRef {
   JsonValueRef Append(const JsonValue& value);
 
   void Clear();
+
+  bool IsValid() const;
 
  private:
   friend class JsonValue;
@@ -589,6 +595,8 @@ inline JsonValueRef JsonValue::Append(const JsonValue& value) {
 /// class JsonValueRef implementation
 ////////////////////////////////////////////////////////////////////////////////
 
+inline JsonValueRef::JsonValueRef() : storage_(NULL), kind_(None) {}
+
 inline JsonValueRef::JsonValueRef(JsonValue::Storage& storage)
     : storage_(&storage), kind_(None) {}
 
@@ -603,49 +611,60 @@ inline JsonValueRef& JsonValueRef::operator=(const JsonValueRef& rhs) {
 }
 
 inline JsonValueRef JsonValueRef::operator[](const char* key) {
+  DCHECK(IsValid());
   return JsonValueRef(*storage_, key);
 }
 
 inline JsonValueRef JsonValueRef::operator[](const std::string& key) {
+  DCHECK(IsValid());
   return (*this)[key.c_str()];
 }
 
 inline JsonValueRef JsonValueRef::operator[](
     utils::json::JsonValue::ArrayIndex index) {
+  DCHECK(IsValid());
   return JsonValueRef(*storage_, index);
 }
 
 inline const JsonValueRef JsonValueRef::operator[](
     utils::json::JsonValue::ArrayIndex index) const {
+  DCHECK(IsValid());
   return JsonValueRef(*storage_, index);
 }
 
 inline const JsonValueRef JsonValueRef::operator[](const char* key) const {
+  DCHECK(IsValid());
   return JsonValueRef(*storage_, key);
 }
 
 inline const JsonValueRef JsonValueRef::operator[](
     const std::string& key) const {
+  DCHECK(IsValid());
   return (*this)[key.c_str()];
 }
 
 inline JsonValue::Members JsonValueRef::GetMemberNames() const {
+  DCHECK(IsValid());
   return JsonValue(*storage_).GetMemberNames();
 }
 
 inline bool JsonValueRef::HasMember(const char* key) const {
+  DCHECK(IsValid());
   return JsonValue(*storage_).HasMember(key);
 }
 
 inline bool JsonValueRef::HasMember(const std::string& key) const {
+  DCHECK(IsValid());
   return HasMember(key.c_str());
 }
 
 inline std::string JsonValueRef::ToJson(const bool styled) const {
+  DCHECK(IsValid());
   return JsonValue(*storage_).ToJson(styled);
 }
 
 inline JsonValueRef JsonValueRef::Append(const JsonValue& value) {
+  DCHECK(IsValid());
   return (*this)[Size()] = value;
 }
 
@@ -654,82 +673,106 @@ inline JsonValue::ArrayIndex JsonValueRef::Size() const {
 }
 
 inline ValueType::Type JsonValueRef::Type() const {
+  DCHECK(IsValid());
   return JsonValue(*storage_).Type();
 }
 
 inline bool JsonValueRef::IsString() const {
+  DCHECK(IsValid());
   return JsonValue(*storage_).IsString();
 }
 
 inline bool JsonValueRef::IsBool() const {
+  DCHECK(IsValid());
   return JsonValue(*storage_).IsBool();
 }
 
 inline bool JsonValueRef::IsDouble() const {
+  DCHECK(IsValid());
   return JsonValue(*storage_).IsDouble();
 }
 
 inline bool JsonValueRef::IsInt() const {
+  DCHECK(IsValid());
   return JsonValue(*storage_).IsInt();
 }
 
 inline bool JsonValueRef::IsUInt() const {
+  DCHECK(IsValid());
   return JsonValue(*storage_).IsUInt();
 }
 
 inline bool JsonValueRef::IsObject() const {
+  DCHECK(IsValid());
   return JsonValue(*storage_).IsObject();
 }
 
 inline bool JsonValueRef::IsNull() const {
+  DCHECK(IsValid());
   return JsonValue(*storage_).IsNull();
 }
 
 inline bool JsonValueRef::IsEmpty() const {
+  DCHECK(IsValid());
   return JsonValue(*storage_).IsEmpty();
 }
 
 inline bool JsonValueRef::IsArray() const {
+  DCHECK(IsValid());
   return JsonValue(*storage_).IsArray();
 }
 
 inline std::string JsonValueRef::AsString() const {
+  DCHECK(IsValid());
   return JsonValue(*storage_).AsString();
 }
 
 inline JsonValue::Int JsonValueRef::AsInt() const {
+  DCHECK(IsValid());
   return JsonValue(*storage_).AsInt();
 }
 
 inline JsonValue::UInt JsonValueRef::AsUInt() const {
+  DCHECK(IsValid());
   return JsonValue(*storage_).AsUInt();
 }
 
 inline bool JsonValueRef::AsBool() const {
+  DCHECK(IsValid());
   return JsonValue(*storage_).AsBool();
 }
 
 inline double JsonValueRef::AsDouble() const {
+  DCHECK(IsValid());
   return JsonValue(*storage_).AsDouble();
 }
 
 inline JsonValueRef::operator JsonValue() const {
+  DCHECK(IsValid());
   return JsonValue(*storage_);
 }
 
+inline bool JsonValueRef::IsValid() const {
+  return storage_ != NULL;
+}
+
 inline JsonValue::iterator JsonValueRef::begin() {
+  DCHECK(IsValid());
   return JsonValue::iterator(storage_, 0, JsonValueRef::GetKind(Type()));
 }
 
 inline JsonValue::iterator JsonValueRef::end() {
+  DCHECK(IsValid());
   return JsonValue::iterator(storage_, Size(), JsonValueRef::GetKind(Type()));
 }
 
 inline JsonValue::const_iterator JsonValueRef::begin() const {
+  DCHECK(IsValid());
   return JsonValue::const_iterator(storage_, 0, JsonValueRef::GetKind(Type()));
 }
 
 inline JsonValue::const_iterator JsonValueRef::end() const {
+  DCHECK(IsValid());
   return JsonValue::const_iterator(
       storage_, Size(), JsonValueRef::GetKind(Type()));
 }

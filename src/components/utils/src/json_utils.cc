@@ -33,8 +33,6 @@
 
 #include <iterator>
 
-#include "utils/macro.h"
-
 namespace {
 
 Json::Value CreateStorage(const utils::json::ValueType::Type type) {
@@ -139,6 +137,7 @@ utils::json::JsonValueRef::JsonValueRef(JsonValue::Storage& storage,
 }
 
 void utils::json::JsonValueRef::Clear() {
+  DCHECK(IsValid());
   storage_->clear();
 }
 
