@@ -130,7 +130,8 @@ bool file_system::Write(const std::string& file_name,
 std::ofstream* file_system::Open(const std::string& file_name,
                                  std::ios_base::openmode mode) {
   std::ofstream* file = new std::ofstream();
-  file->open(file_name.c_str(), std::ios_base::binary | mode);
+  file->open(QString(file_name.c_str()).toStdWString(),
+             std::ios_base::binary | mode);
   if (file->is_open()) {
     return file;
   }
@@ -224,7 +225,8 @@ std::vector<std::string> file_system::ListFiles(
 bool file_system::WriteBinaryFile(const std::string& name,
                                   const std::vector<uint8_t>& contents) {
   using namespace std;
-  ofstream output(name.c_str(), ios_base::binary | ios_base::trunc);
+  ofstream output(QString(name.c_str()).toStdWString(),
+                  ios_base::binary | ios_base::trunc);
   output.write(reinterpret_cast<const char*>(&contents.front()),
                contents.size());
   return output.good();
@@ -236,7 +238,8 @@ bool file_system::ReadBinaryFile(const std::string& name,
     return false;
   }
 
-  std::ifstream file(name.c_str(), std::ios_base::binary);
+  std::ifstream file(QString(name.c_str()).toStdWString(),
+                     std::ios_base::binary);
   std::ostringstream ss;
   ss << file.rdbuf();
   const std::string& s = ss.str();
@@ -251,7 +254,7 @@ bool file_system::ReadFile(const std::string& name, std::string& result) {
     return false;
   }
 
-  std::ifstream file(name.c_str());
+  std::ifstream file(QString(name.c_str()).toStdWString());
   std::ostringstream ss;
   ss << file.rdbuf();
   result = ss.str();
@@ -264,7 +267,7 @@ const std::string file_system::ConvertPathForURL(const std::string& path) {
 }
 
 bool file_system::CreateFile(const std::string& path) {
-  std::ofstream file(path);
+  std::ofstream file(QString(path.c_str()).toStdWString());
   if (!(file.is_open())) {
     return false;
   } else {
@@ -321,6 +324,7 @@ std::string file_system::ConcatPath(const std::string& str1,
                                     const std::string& str3) {
   return ConcatPath(ConcatPath(str1, str2), str3);
 }
+
 std::string file_system::RetrieveFileNameFromPath(const std::string& path) {
   QFile fname(path.c_str());
   QFileInfo file_info(fname.fileName());

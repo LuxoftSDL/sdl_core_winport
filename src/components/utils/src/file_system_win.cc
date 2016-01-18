@@ -46,16 +46,60 @@
 
 #pragma comment(lib, "Shlwapi.lib")
 
+namespace {
+
+/**
+  * @brief Converts UTF-8 string to wide string
+  * @param str String to be converted
+  * @return Result wide string
+  */
+std::wstring ConvertUTF8ToWString(const std::string& str) {
+  if (str.empty()) {
+    return std::wstring();
+  }
+  int size = MultiByteToWideChar(
+      CP_UTF8, 0, &str[0], static_cast<int>(str.size()), NULL, 0);
+  std::wstring wide_str(size, 0);
+  MultiByteToWideChar(
+      CP_UTF8, 0, &str[0], static_cast<int>(str.size()), &wide_str[0], size);
+  return wide_str;
+}
+
+/**
+  * @brief Converts wide string to UTF-8 string
+  * @param str String to be converted
+  * @return Result UTF-8 string
+  */
+std::string ConvertWStringToUTF8(const std::wstring& str) {
+  if (str.empty()) {
+    return std::string();
+  }
+  int size = WideCharToMultiByte(
+      CP_UTF8, 0, &str[0], static_cast<int>(str.size()), NULL, 0, NULL, NULL);
+  std::string utf8_str(size, 0);
+  WideCharToMultiByte(CP_UTF8,
+                      0,
+                      &str[0],
+                      static_cast<int>(str.size()),
+                      &utf8_str[0],
+                      size,
+                      NULL,
+                      NULL);
+  return utf8_str;
+}
+
+}  // namespace
+
 uint64_t file_system::GetAvailableDiskSpace(const std::string& path) {
   DWORD sectors_per_cluster;
   DWORD bytes_per_sector;
   DWORD number_of_free_clusters;
 
-  const BOOL res = GetDiskFreeSpace(path.c_str(),
-                                    &sectors_per_cluster,
-                                    &bytes_per_sector,
-                                    &number_of_free_clusters,
-                                    NULL);
+  const BOOL res = GetDiskFreeSpaceW(ConvertUTF8ToWString(path).c_str(),
+                                     &sectors_per_cluster,
+                                     &bytes_per_sector,
+                                     &number_of_free_clusters,
+                                     NULL);
   if (0 != res) {
     return number_of_free_clusters * sectors_per_cluster * bytes_per_sector;
   } else {
@@ -66,7 +110,7 @@ uint64_t file_system::GetAvailableDiskSpace(const std::string& path) {
 int64_t file_system::FileSize(const std::string& path) {
   if (file_system::FileExists(path)) {
     struct _stat file_info = {0};
-    _stat(path.c_str(), &file_info);
+    _wstat(ConvertUTF8ToWString(path).c_str(), &file_info);
     return file_info.st_size;
   }
   return 0;
@@ -79,18 +123,19 @@ size_t file_system::DirectorySize(const std::string& path) {
   }
 
   const std::string find_string = ConcatPath(path, "*");
-  WIN32_FIND_DATA ffd;
+  WIN32_FIND_DATAW ffd;
 
-  HANDLE find = FindFirstFile(find_string.c_str(), &ffd);
+  HANDLE find = FindFirstFileW(ConvertUTF8ToWString(find_string).c_str(), &ffd);
   if (INVALID_HANDLE_VALUE == find) {
     return size;
   }
 
   do {
     if (FILE_ATTRIBUTE_DIRECTORY == ffd.dwFileAttributes) {
-      if (strncmp(ffd.cFileName, ".", 1) != 0 &&
-          strncmp(ffd.cFileName, "..", 2) != 0) {
-        size += DirectorySize(ffd.cFileName);
+      const std::string utf8_file_name = ConvertWStringToUTF8(ffd.cFileName);
+      if (strncmp(utf8_file_name.c_str(), ".", 1) != 0 &&
+          strncmp(utf8_file_name.c_str(), "..", 2) != 0) {
+        size += DirectorySize(utf8_file_name);
       }
     } else {
       uint64_t file_size = 0;
@@ -100,7 +145,7 @@ size_t file_system::DirectorySize(const std::string& path) {
 
       size += file_size;
     }
-  } while (FindNextFile(find, &ffd) != 0);
+  } while (FindNextFileW(find, &ffd) != 0);
 
   FindClose(find);
   return size;
@@ -108,7 +153,7 @@ size_t file_system::DirectorySize(const std::string& path) {
 
 std::string file_system::CreateDirectory(const std::string& name) {
   if (!DirectoryExists(name)) {
-    _mkdir(name.c_str());
+    _wmkdir(ConvertUTF8ToWString(name).c_str());
   }
   return name;
 }
@@ -128,7 +173,7 @@ bool file_system::CreateDirectoryRecursively(const std::string& path) {
       pos = path.length();
     }
     if (!DirectoryExists(path.substr(0, pos))) {
-      if (0 != _mkdir(path.substr(0, pos).c_str())) {
+      if (0 != _wmkdir(ConvertUTF8ToWString(path.substr(0, pos)).c_str())) {
         ret_val = false;
       }
     }
@@ -138,21 +183,21 @@ bool file_system::CreateDirectoryRecursively(const std::string& path) {
 
 bool file_system::IsDirectory(const std::string& name) {
   struct _stat status = {0};
-  if (-1 == _stat(name.c_str(), &status)) {
+  if (-1 == _wstat(ConvertUTF8ToWString(name).c_str(), &status)) {
     return false;
   }
   return S_IFDIR == status.st_mode;
 }
 
 bool file_system::DirectoryExists(const std::string& name) {
-  DWORD attrib = GetFileAttributes(name.c_str());
+  DWORD attrib = GetFileAttributesW(ConvertUTF8ToWString(name).c_str());
   return (attrib != INVALID_FILE_ATTRIBUTES &&
           (attrib & FILE_ATTRIBUTE_DIRECTORY));
 }
 
 bool file_system::FileExists(const std::string& name) {
   struct _stat status = {0};
-  if (-1 == _stat(name.c_str(), &status)) {
+  if (-1 == _wstat(ConvertUTF8ToWString(name).c_str(), &status)) {
     return false;
   }
   return true;
@@ -161,7 +206,8 @@ bool file_system::FileExists(const std::string& name) {
 bool file_system::Write(const std::string& file_name,
                         const std::vector<uint8_t>& data,
                         std::ios_base::openmode mode) {
-  std::ofstream file(file_name.c_str(), std::ios_base::binary | mode);
+  std::ofstream file(ConvertUTF8ToWString(file_name),
+                     std::ios_base::binary | mode);
   if (file.is_open()) {
     for (uint32_t i = 0; i < data.size(); ++i) {
       file << data[i];
@@ -175,7 +221,7 @@ bool file_system::Write(const std::string& file_name,
 std::ofstream* file_system::Open(const std::string& file_name,
                                  std::ios_base::openmode mode) {
   std::ofstream* file = new std::ofstream();
-  file->open(file_name.c_str(), std::ios_base::binary | mode);
+  file->open(ConvertUTF8ToWString(file_name), std::ios_base::binary | mode);
   if (file->is_open()) {
     return file;
   }
@@ -212,7 +258,7 @@ std::string file_system::CurrentWorkingDirectory() {
 
 bool file_system::DeleteFile(const std::string& name) {
   if (FileExists(name) && IsWritingAllowed(name)) {
-    return !remove(name.c_str());
+    return !_wremove(ConvertUTF8ToWString(name).c_str());
   }
   return false;
 }
@@ -223,23 +269,24 @@ void file_system::RemoveDirectoryContent(const std::string& directory_path) {
   }
 
   const std::string find_string = ConcatPath(directory_path, "*");
-  WIN32_FIND_DATA ffd;
+  WIN32_FIND_DATAW ffd;
 
-  HANDLE find = FindFirstFile(find_string.c_str(), &ffd);
+  HANDLE find = FindFirstFileW(ConvertUTF8ToWString(find_string).c_str(), &ffd);
   if (INVALID_HANDLE_VALUE == find) {
     return;
   }
 
   do {
     if (FILE_ATTRIBUTE_DIRECTORY == ffd.dwFileAttributes) {
-      if (strncmp(ffd.cFileName, ".", 1) != 0 &&
-          strncmp(ffd.cFileName, "..", 2) != 0) {
-        RemoveDirectory(ffd.cFileName, true);
+      const std::string utf8_file_name = ConvertWStringToUTF8(ffd.cFileName);
+      if (strncmp(utf8_file_name.c_str(), ".", 1) != 0 &&
+          strncmp(utf8_file_name.c_str(), "..", 2) != 0) {
+        RemoveDirectory(utf8_file_name, true);
       }
     } else {
-      remove(ffd.cFileName);
+      _wremove(ffd.cFileName);
     }
-  } while (FindNextFile(find, &ffd) != 0);
+  } while (FindNextFileW(find, &ffd) != 0);
 
   FindClose(find);
 }
@@ -250,13 +297,13 @@ bool file_system::RemoveDirectory(const std::string& directory_path,
     if (is_recursively) {
       RemoveDirectoryContent(directory_path);
     }
-    return !_rmdir(directory_path.c_str());
+    return !_wrmdir(ConvertUTF8ToWString(directory_path).c_str());
   }
   return false;
 }
 
 bool file_system::IsAccessible(const std::string& name, int32_t how) {
-  return !_access(name.c_str(), how);
+  return !_waccess(ConvertUTF8ToWString(name).c_str(), how);
 }
 
 bool file_system::IsWritingAllowed(const std::string& name) {
@@ -275,18 +322,18 @@ std::vector<std::string> file_system::ListFiles(
   }
 
   const std::string find_string = ConcatPath(directory_name, "*");
-  WIN32_FIND_DATA ffd;
+  WIN32_FIND_DATAW ffd;
 
-  HANDLE find = FindFirstFile(find_string.c_str(), &ffd);
+  HANDLE find = FindFirstFileW(ConvertUTF8ToWString(find_string).c_str(), &ffd);
   if (INVALID_HANDLE_VALUE == find) {
     return list_files;
   }
 
   do {
     if (FILE_ATTRIBUTE_DIRECTORY != ffd.dwFileAttributes) {
-      list_files.push_back(ffd.cFileName);
+      list_files.push_back(ConvertWStringToUTF8(ffd.cFileName));
     }
-  } while (FindNextFile(find, &ffd) != 0);
+  } while (FindNextFileW(find, &ffd) != 0);
 
   FindClose(find);
   return list_files;
@@ -295,7 +342,8 @@ std::vector<std::string> file_system::ListFiles(
 bool file_system::WriteBinaryFile(const std::string& name,
                                   const std::vector<uint8_t>& contents) {
   using namespace std;
-  ofstream output(name.c_str(), ios_base::binary | ios_base::trunc);
+  ofstream output(ConvertUTF8ToWString(name),
+                  ios_base::binary | ios_base::trunc);
   output.write(reinterpret_cast<const char*>(&contents.front()),
                contents.size());
   return output.good();
@@ -307,7 +355,7 @@ bool file_system::ReadBinaryFile(const std::string& name,
     return false;
   }
 
-  std::ifstream file(name.c_str(), std::ios_base::binary);
+  std::ifstream file(ConvertUTF8ToWString(name), std::ios_base::binary);
   std::ostringstream ss;
   ss << file.rdbuf();
   const std::string& s = ss.str();
@@ -322,7 +370,7 @@ bool file_system::ReadFile(const std::string& name, std::string& result) {
     return false;
   }
 
-  std::ifstream file(name.c_str());
+  std::ifstream file(ConvertUTF8ToWString(name));
   std::ostringstream ss;
   ss << file.rdbuf();
   result = ss.str();
@@ -359,7 +407,7 @@ const std::string file_system::ConvertPathForURL(const std::string& path) {
 }
 
 bool file_system::CreateFile(const std::string& path) {
-  std::ofstream file(path);
+  std::ofstream file(ConvertUTF8ToWString(path));
   if (!(file.is_open())) {
     return false;
   } else {
@@ -370,7 +418,7 @@ bool file_system::CreateFile(const std::string& path) {
 
 uint64_t file_system::GetFileModificationTime(const std::string& path) {
   struct _stat info;
-  _stat(path.c_str(), &info);
+  _wstat(ConvertUTF8ToWString(path).c_str(), &info);
   return static_cast<uint64_t>(info.st_mtime);
 }
 
