@@ -1,5 +1,5 @@
 ﻿/*
- * Copyright (c) 2015, Ford Motor Company
+ * Copyright (c) 2015-2016, Ford Motor Company
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -31,13 +31,7 @@
  */
 
 #include "utils/lock.h"
-#include <errno.h>
-#include <stdint.h>
-#include <stdio.h>
-#include <string.h>
-#include <cstring>
 #include "utils/logger.h"
-#include <QMutex>
 
 namespace sync_primitives {
 
@@ -63,14 +57,12 @@ Lock::Lock(bool is_recursive)
 
 Lock::~Lock() {
 #ifndef NDEBUG
-  if (lock_taken_ > 0) {
+  if (0 < lock_taken_) {
     LOG4CXX_ERROR(logger_, "Destroying non-released mutex " << &mutex_);
   }
 #endif
-  if (mutex_) {
-    delete mutex_;
-    mutex_ = 0;
-  }
+  delete mutex_;
+  mutex_ = NULL;
 }
 
 void Lock::Acquire() {
@@ -95,7 +87,7 @@ bool Lock::Try() {
 
 #ifndef NDEBUG
 void Lock::AssertFreeAndMarkTaken() {
-  if ((lock_taken_ > 0) && !is_mutex_recursive_) {
+  if ((0 < lock_taken_) && !is_mutex_recursive_) {
     NOTREACHED();
   }
   lock_taken_++;

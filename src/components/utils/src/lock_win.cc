@@ -1,5 +1,5 @@
 ﻿/*
- * Copyright (c) 2015, Ford Motor Company
+ * Copyright (c) 2015-2016, Ford Motor Company
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -32,11 +32,6 @@
 #if defined(OS_WINDOWS)
 
 #include "utils/lock.h"
-#include <errno.h>
-#include <stdint.h>
-#include <stdio.h>
-#include <string.h>
-#include <cstring>
 #include "utils/logger.h"
 
 namespace sync_primitives {

@@ -33,7 +33,7 @@
 
 #include "utils/lock.h"
 #include "utils/logger.h"
-#include "QWaitCondition"
+#include <QWaitCondition>
 
 namespace sync_primitives {
 
@@ -52,6 +52,9 @@ void ConditionalVariable::Broadcast() {
 }
 
 bool ConditionalVariable::Wait(Lock& lock) {
+  // Disable wait recursive mutexes. Added for compatible with Qt.
+  // Actual Qt version (5.5) cannot support waiting on recursive mutex.
+  DCHECK(!lock.is_mutex_recursive_);
   lock.AssertTakenAndMarkFree();
   const bool wait_status = cond_var_.wait(lock.mutex_);
   lock.AssertFreeAndMarkTaken();
@@ -69,9 +72,9 @@ bool ConditionalVariable::Wait(AutoLock& auto_lock) {
 ConditionalVariable::WaitStatus ConditionalVariable::WaitFor(
     AutoLock& auto_lock, int32_t milliseconds) {
   Lock& lock = auto_lock.GetLock();
-  if (lock.is_mutex_recursive_) {
-    LOG4CXX_ERROR(logger_, "Cannot wait on recursive mutexes");
-  }
+  // Disable wait recursive mutexes. Added for compatible with Qt.
+  // Actual Qt version (5.5) cannot support waiting on recursive mutex.
+  DCHECK(!lock.is_mutex_recursive_);
   lock.AssertTakenAndMarkFree();
   const bool timedwait_status = cond_var_.wait(lock.mutex_, milliseconds);
   lock.AssertFreeAndMarkTaken();

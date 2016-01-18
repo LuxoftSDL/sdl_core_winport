@@ -99,6 +99,8 @@ void DeleteThread(Thread* thread);
 #if defined(QT_PORT)
 class Thread : public QObject {
   Q_OBJECT
+ public slots:
+  void thread_cancelled_exit();
 #else
 class Thread {
 #endif
@@ -241,8 +243,8 @@ class Thread {
  */
 #if defined(QT_PORT)
   Thread(const char* name, ThreadDelegate* delegate, QObject* parent = 0);
-
   QFuture<void> future_;
+  QFutureWatcher<void> thread_watcher_;
 #else
   Thread(const char* name, ThreadDelegate* delegate);
 #endif

@@ -70,7 +70,9 @@ if(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
             ${UTILS_SRC_DIR}/shared_library_qt.cc
             ${UTILS_SRC_DIR}/socket_qt.cc
     )
-
+    # Files copied for the Qt MOC.
+    # Because MOC is looking headre nearby with *.cc
+    # This headers include in .git exception. see .gitignore
     EXECUTE_PROCESS(COMMAND ${CMAKE_COMMAND} -E copy_if_different
                   ${THREAD_INCLUDE_DIR}/thread.h
                   ${UTILS_SRC_DIR}/threads/thread.h)

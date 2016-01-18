@@ -62,7 +62,8 @@ class ThreadDelegate {
   virtual void threadMain() = 0;
 
 #ifdef QT_PORT
-  Q_SIGNAL void close_thread();
+  Q_SIGNAL void exit_thread();
+  Q_SIGNAL void terminate_thread();
 #endif
   /**
    * Should be called to free all resources allocated in threadMain

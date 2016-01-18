@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015, Ford Motor Company
+ * Copyright (c) 2016, Ford Motor Company
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -31,7 +31,6 @@
  */
 
 #include <QDateTime>
-#include "utils/winhdr.h"
 #include <stdint.h>
 
 #include "utils/date_time.h"

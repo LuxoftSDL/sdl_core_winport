@@ -31,8 +31,6 @@
  */
 #include "utils/threads/thread_delegate.h"
 
-#include <QtCore>
-
 #include "utils/threads/thread.h"
 #include "utils/lock.h"
 
@@ -46,15 +44,20 @@ ThreadDelegate::~ThreadDelegate() {
 
 void ThreadDelegate::exitThreadMain() {
   if (thread_) {
-    thread_->cleanup();
-    emit close_thread();
+    if (thread_->thread_handle() == QThread::currentThreadId()) {
+      emit exit_thread();
+    } else {
+      emit terminate_thread();
+    }
   }
 }
 
 void ThreadDelegate::set_thread(Thread* thread) {
   DCHECK(thread);
   thread_ = thread;
-  QObject::connect(this, SIGNAL(close_thread()), thread_, SLOT(deleteLater()));
+  QObject::connect(this, SIGNAL(exit_thread()), thread_, SLOT(deleteLater()));
+  QObject::connect(
+      this, SIGNAL(terminate_thread()), thread_, SLOT(thread_cancelled_exit()));
 }
 #include "moc_thread_delegate.cpp"
 }  // namespace threads

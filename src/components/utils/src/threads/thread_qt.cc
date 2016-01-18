@@ -30,14 +30,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include <errno.h>
-#include <limits.h>
-#include <stddef.h>
-#include <signal.h>
-
 #include "utils/threads/thread.h"
-#include "qthread.h"
-#include "utils/atomic.h"
 #include "utils/threads/thread_delegate.h"
 #include "utils/logger.h"
 
@@ -51,11 +44,11 @@ void sleep(uint32_t ms) {
   QThread::msleep(ms);
 }
 
-size_t Thread::kMinStackSize = 0; /* Ubuntu : 16384 ; QNX : 256; */
+size_t Thread::kMinStackSize = 0;
 
 void Thread::cleanup(void* arg) {
   LOG4CXX_AUTO_TRACE(logger_);
-  Thread* thread = reinterpret_cast<Thread*>(arg);
+  Thread* thread = static_cast<Thread*>(arg);
   sync_primitives::AutoLock auto_lock(thread->state_lock_);
   thread->isThreadRunning_ = false;
   thread->state_cond_.Broadcast();
@@ -66,7 +59,7 @@ void* Thread::threadFunc(void* arg) {
                 "Thread #" << QThread::currentThread()
                            << " started successfully");
 
-  threads::Thread* thread = reinterpret_cast<Thread*>(arg);
+  threads::Thread* thread = static_cast<Thread*>(arg);
   DCHECK(thread);
 
   thread->state_lock_.Acquire();
@@ -107,6 +100,7 @@ void Thread::SetNameForId(const PlatformThreadHandle& thread_id,
 
 Thread::Thread(const char* name, ThreadDelegate* delegate, QObject* parent)
     : QObject(parent)
+    , isThreadCancelledExitCode(false)
     , name_(name ? name : "undefined")
     , delegate_(delegate)
     , handle_(0)
@@ -123,13 +117,13 @@ bool Thread::start() {
   return true;
 }
 
-void Thread::cleanup() {
-  sync_primitives::AutoLock auto_lock(state_lock_);
-  cleanup(this);
-}
-
 PlatformThreadHandle Thread::CurrentId() {
   return QThread::currentThread();
+}
+
+void Thread::thread_cancelled_exit() {
+  emit thread_watcher_.canceled();
+  deleteLater();
 }
 
 bool Thread::start(const ThreadOptions& options) {
@@ -156,6 +150,7 @@ bool Thread::start(const ThreadOptions& options) {
   // state_lock 1
   if (!thread_created_) {
     future_ = QtConcurrent::run(threadFunc, this);
+    thread_watcher_.setFuture(future_);
     handle_ = QThread::currentThreadId();
     if (NULL != handle_) {
       LOG4CXX_DEBUG(logger_, "Created thread: " << name_);
@@ -181,6 +176,9 @@ void Thread::stop() {
 
   LOG4CXX_DEBUG(logger_,
                 "Stopping thread #" << handle_ << " \"" << name_ << " \"");
+  if (thread_watcher_.isCanceled()) {
+    cleanup(static_cast<void*>(this));
+  }
 
   if (delegate_ && isThreadRunning_) {
     delegate_->exitThreadMain();

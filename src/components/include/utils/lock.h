@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013-2015, Ford Motor Company
+ * Copyright (c) 2013-2016, Ford Motor Company
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -55,7 +55,7 @@ namespace impl {
 #if defined(OS_POSIX)
 typedef pthread_mutex_t PlatformMutex;
 #elif defined(QT_PORT)
-typedef QMutex PlatformMutex;
+typedef QMutex* PlatformMutex;
 #elif defined(WIN_NATIVE)
 typedef CRITICAL_SECTION PlatformMutex;
 #else
@@ -77,12 +77,10 @@ class SpinMutex {
     for (;;) {
 #if defined(OS_POSIX)
       sched_yield();
-#elif defined(OS_WINDOWS)
-#if defined(WIN_NATIVE)
+#elif defined(WIN_NATIVE)
       SwitchToThread();
 #elif defined(QT_PORT)
-      QThread::yieldCurrentThread();
-#endif
+    QThread::yieldCurrentThread();
 #endif
 #ifdef QT_PORT
       if (state_ == 0 && state_.testAndSetAcquire(0, 1)) {
@@ -139,11 +137,7 @@ class Lock {
   bool Try();
 
  private:
-#if defined(QT_PORT)
-  impl::PlatformMutex* mutex_;
-#else
   impl::PlatformMutex mutex_;
-#endif
 
 #ifndef NDEBUG
   /**

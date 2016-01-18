@@ -1,5 +1,5 @@
 ﻿/*
- * Copyright (c) 2013, Ford Motor Company
+ * Copyright (c) 2013-2016, Ford Motor Company
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -34,8 +34,6 @@
 #include "utils/lock.h"
 #include <errno.h>
 #include <stdint.h>
-#include <stdio.h>
-#include <string.h>
 #include <cstring>
 #include "utils/logger.h"
 

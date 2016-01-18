@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015, Ford Motor Company
+ * Copyright (c) 2015-2016, Ford Motor Company
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -90,16 +90,11 @@ void sync_primitives::RWLock::ReleaseForWriting() {
 
 sync_primitives::RWLock::Impl::Impl() {
   rwlock_ = new QReadWriteLock;
-  if (!rwlock_) {
-    LOG4CXX_ERROR(logger_, "Failed to initialize rwlock");
-  }
 }
 
 sync_primitives::RWLock::Impl::~Impl() {
-  if (rwlock_) {
-    delete rwlock_;
-    rwlock_ = 0;
-  }
+  delete rwlock_;
+  rwlock_ = NULL;
 }
 
 void sync_primitives::RWLock::Impl::AcquireForReading() {
