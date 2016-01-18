@@ -186,8 +186,13 @@ void Thread::stop() {
   LOG4CXX_AUTO_TRACE(logger_);
   sync_primitives::AutoLock auto_lock(state_lock_);
 
+  // We should check thread exit code for kThreadCancelledExitCode
+  // because we need to perform cleanup in case thread has been terminated.
+  // If thread is still running - usual sequence with exitThreadMain will be
+  // used
   DWORD exit_code;
-  if (0 != GetExitCodeThread(handle_, &exit_code) && -1 == exit_code) {
+  if (0 != GetExitCodeThread(handle_, &exit_code) &&
+      kThreadCancelledExitCode == exit_code) {
     cleanup(static_cast<void*>(this));
   }
 

@@ -57,6 +57,7 @@ namespace threads {
 typedef pthread_t PlatformThreadHandle;
 #elif defined(OS_WINDOWS)
 typedef HANDLE PlatformThreadHandle;
+const int32_t kThreadCancelledExitCode = -1;
 #else
 #error "Thread is not defined for this platform"
 #endif
