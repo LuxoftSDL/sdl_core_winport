@@ -31,19 +31,19 @@
  */
 
 #include "transport_manager_metric.h"
-#include "json/json.h"
 #include "json_keys.h"
 #include "application_manager/smart_object_keys.h"
 
 namespace time_tester {
 
-Json::Value TransportManagerMecticWrapper::GetJsonMetric() {
-  Json::Value result = MetricWrapper::GetJsonMetric();
+utils::json::JsonValue TransportManagerMecticWrapper::GetJsonMetric() {
+  using namespace utils::json;
+  JsonValue result = MetricWrapper::GetJsonMetric();
   result[strings::logger] = "TransportManager";
   result[strings::begin] =
-      Json::Int64(date_time::DateTime::getuSecs(message_metric->begin));
+      JsonValue::Int(date_time::DateTime::getuSecs(message_metric->begin));
   result[strings::end] =
-      Json::Int64(date_time::DateTime::getuSecs(message_metric->end));
+      JsonValue::Int(date_time::DateTime::getuSecs(message_metric->end));
   result[strings::data_size] = static_cast<uint32_t>(message_metric->data_size);
   return result;
 }

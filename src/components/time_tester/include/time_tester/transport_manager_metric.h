@@ -45,7 +45,7 @@ class TransportManagerMecticWrapper : public MetricWrapper {
       message_metric;
 
  protected:
-  virtual Json::Value GetJsonMetric();
+  virtual utils::json::JsonValue GetJsonMetric();
 };
 }  // namespace time_tester
 #endif  // SRC_COMPONENTS_TIME_TESTER_INCLUDE_TIME_TESTER_TRANSPORT_MANAGER_MECTRIC_H_

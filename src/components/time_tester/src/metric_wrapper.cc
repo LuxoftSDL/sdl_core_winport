@@ -20,8 +20,8 @@ std::string MetricWrapper::GetStyledString() {
   return GetJsonMetric().toStyledString();
 }
 
-Json::Value MetricWrapper::GetJsonMetric() {
-  Json::Value result;
+utils::json::JsonValue MetricWrapper::GetJsonMetric() {
+  utils::json::JsonValue result;
   if (resources) {
     result[strings::stime] = resources->stime;
     result[strings::utime] = resources->utime;

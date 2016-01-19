@@ -36,13 +36,14 @@
 
 namespace time_tester {
 
-Json::Value ApplicationManagerMetricWrapper::GetJsonMetric() {
-  Json::Value result = MetricWrapper::GetJsonMetric();
+utils::json::JsonValue ApplicationManagerMetricWrapper::GetJsonMetric() {
+  using namespace utils::json;
+  JsonValue result = MetricWrapper::GetJsonMetric();
   result[strings::logger] = "ApplicationManager";
   result[strings::begin] =
-      Json::Int64(date_time::DateTime::getuSecs(message_metric->begin));
+      JsonValue::Int(date_time::DateTime::getuSecs(message_metric->begin));
   result[strings::end] =
-      Json::Int64(date_time::DateTime::getuSecs(message_metric->end));
+      JsonValue::Int(date_time::DateTime::getuSecs(message_metric->end));
   const NsSmartDeviceLink::NsSmartObjects::SmartObject& params =
       message_metric->message->getElement(application_manager::strings::params);
   result[strings::correlation_id] =

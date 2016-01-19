@@ -35,7 +35,7 @@
 
 #include <string>
 #include "utils/resource_usage.h"
-#include "json/json.h"
+#include "utils/json_utils.h"
 
 namespace time_tester {
 
@@ -52,7 +52,7 @@ class MetricWrapper {
   virtual ~MetricWrapper();
 
  protected:
-  virtual Json::Value GetJsonMetric();
+  virtual utils::json::JsonValue GetJsonMetric();
   void Clear();
 };
 

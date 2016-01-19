@@ -35,9 +35,9 @@
 
 #include <string>
 
+#include "utils/json_utils.h"
 #include "utils/macro.h"
 #include "utils/singleton.h"
-#include "json/json.h"
 
 namespace resumption {
 
@@ -49,9 +49,9 @@ class LastState : public utils::Singleton<LastState> {
   void SaveToFileSystem();
 
   /**
-   * @brief public dictionary
+   * @brief refference to dictionary
    */
-  Json::Value dictionary;
+  utils::json::JsonValue& dictionary();
 
  private:
   /**
@@ -68,6 +68,8 @@ class LastState : public utils::Singleton<LastState> {
    * @brief Private destructor
    */
   ~LastState();
+
+  utils::json::JsonValue dictionary_;
 
   DISALLOW_COPY_AND_ASSIGN(LastState);
 

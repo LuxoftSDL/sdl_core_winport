@@ -46,7 +46,7 @@ class ProtocolHandlerMecticWrapper : public MetricWrapper {
       message_metric;
 
  protected:
-  virtual Json::Value GetJsonMetric();
+  virtual utils::json::JsonValue GetJsonMetric();
 };
 }  // namespace time_tester
 #endif  // SRC_COMPONENTS_TIME_TESTER_INCLUDE_TIME_TESTER_PROTOCOL_HANDLER_MECTRIC_H_

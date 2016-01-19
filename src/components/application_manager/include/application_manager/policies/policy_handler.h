@@ -53,10 +53,6 @@
 #include "application_manager/application_manager_impl.h"
 #include "utils/shared_library.h"
 
-namespace Json {
-class Value;
-}
-
 namespace policy {
 typedef std::vector<uint32_t> AppIds;
 typedef std::vector<uint32_t> DeviceHandles;
