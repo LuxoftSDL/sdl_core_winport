@@ -42,81 +42,78 @@ namespace file_system {
 
 /**
  * @brief Get available disc space.
- *
- * @param path to directory
+ * @param utf8_path path to directory
  * @return free disc space.
  */
-uint64_t GetAvailableDiskSpace(const std::string& path);
+uint64_t GetAvailableDiskSpace(const std::string& utf8_path);
 
 /*
  * @brief Get size of current directory
- *
- * @param path to directory
+ * @param utf8_path path to directory
  */
-size_t DirectorySize(const std::string& path);
+size_t DirectorySize(const std::string& utf8_path);
 
 /*
  * @brief Get size of current file
- *
- * @param path to file
+ * @param utf8_path path to file
  * @return size of file, return 0 if file not exist
  */
-int64_t FileSize(const std::string& path);
+int64_t FileSize(const std::string& utf8_path);
 
 /**
  * @brief Creates directory
- * @param name path to directory
+ * @param utf8_path path to directory
  * @return path to created directory.
  */
-std::string CreateDirectory(const std::string& name);
+std::string CreateDirectory(const std::string& utf8_path);
 
 /**
  * @brief Creates directory recursively
- * @param path - full path to directory
+ * @param utf8_path full path to directory
  * @return return true if directory was created or already exist
  */
-bool CreateDirectoryRecursively(const std::string& path);
+bool CreateDirectoryRecursively(const std::string& utf8_path);
 
 /**
   * @brief Checks the file to see whether the file is a directory
-  * @param name path to file
+  * @param utf8_path path to file
   * @return returns true if file is directory.
   */
-bool IsDirectory(const std::string& name);
+bool IsDirectory(const std::string& utf8_path);
 
 /**
   * @brief Is directory exist
-  * @param name path to directory
+  * @param utf8_path path to directory
   * @return returns true if directory is exists.
   */
-bool DirectoryExists(const std::string& name);
+bool DirectoryExists(const std::string& utf8_path);
 
 /**
   * @brief Is file exist
-  * @param name path to file
+  * @param utf8_path path to file
   * @return returns true if file is exists.
   */
-bool FileExists(const std::string& name);
+bool FileExists(const std::string& utf8_path);
 
 /**
   * @brief Writes to file
   *
   * @remark - create file if it doesn't exist
-  * @param name path to file
+  * @param utf8_path path to file
   * @param data data to write
   * @return returns true if the operation is successfully.
   */
-bool Write(const std::string& file_name,
+bool Write(const std::string& utf8_path,
            const std::vector<uint8_t>& data,
            std::ios_base::openmode mode = std::ios_base::out);
 
 /**
   * @brief Opens file stream for writing
-  * @param file_name path to file to write data to
+  * @param utf8_path path to file to write data to
   * @return returns pointer to opened stream in case of success;
   * otherwise returns NULL
   */
-std::ofstream* Open(const std::string& file_name,
+std::ofstream* Open(const std::string& utf8_path,
                     std::ios_base::openmode mode = std::ios_base::out);
 
 /**
@@ -139,7 +136,6 @@ void Close(std::ofstream* file_stream);
 /**
   * @brief Returns current working directory path
   * If filename begins with "/", return unchanged filename
-  * @param name file name
   * @return returns full file path.
   */
 std::string CurrentWorkingDirectory();
@@ -147,133 +143,135 @@ std::string CurrentWorkingDirectory();
 /**
   * @brief Removes file
   *
-  * @param name path to file
+  * @param utf8_path path to file
   * @return returns true if the file is successfully deleted.
   */
-bool DeleteFile(const std::string& name);
+bool DeleteFile(const std::string& utf8_path);
 
 /**
  * @brief Removes directory.
  *
- * @param directory_path path to directory.
+ * @param utf8_path path to directory.
  * @param is_recursively true if you need delete directory recursively,
  * otherwise false.
  * @return returns true if the directory is successfully deleted.
  */
-bool RemoveDirectory(const std::string& directory_path, bool is_recursively);
+bool RemoveDirectory(const std::string& utf8_path, bool is_recursively);
 
 /**
   * @brief Check access rights
   *
-  * @param name path to file.
+  * @param utf8_path path to file.
   * @param how Read/write attribute.
   * @return returns true if file has the given mode.
   */
-bool IsAccessible(const std::string& name, int32_t how);
+bool IsAccessible(const std::string& utf8_path, int32_t how);
 
 /**
   * @brief Check access rights for writing
   *
-  * @param name path to file or folder
+  * @param utf8_path path to file or folder
   * @return returns true if has access rights.
   */
-bool IsWritingAllowed(const std::string& name);
+bool IsWritingAllowed(const std::string& utf8_path);
 
 /**
   * @brief Check access rights for reading
   *
-  * @param name path to file.
+  * @param utf8_path path to file.
   * @return returns true if file has access rights.
   */
-bool IsReadingAllowed(const std::string& name);
+bool IsReadingAllowed(const std::string& utf8_path);
 
 /**
   * @brief Lists all files in given directory
   *
-  * @param name path to directory.
+  * @param utf8_path path to directory.
   * @return returns list of files.
   */
-std::vector<std::string> ListFiles(const std::string& directory_name);
+std::vector<std::string> ListFiles(const std::string& utf8_path);
 
 /**
  * @brief Creates or overwrites file with given binary contents
- * @param name path to the file
+ * @param utf8_path path to the file
  * @param contents data to be written into the file
  * @returns true if file write succeeded
  */
-bool WriteBinaryFile(const std::string& name,
+bool WriteBinaryFile(const std::string& utf8_path,
                      const std::vector<uint8_t>& contents);
 
 /**
   * @brief Reads from file
   *
-  * @param name path to file
+  * @param utf8_path path to file
   * @param result read data
   * @return returns true if the operation is successfully.
   */
-bool ReadBinaryFile(const std::string& name, std::vector<uint8_t>& result);
+bool ReadBinaryFile(const std::string& utf8_path, std::vector<uint8_t>& result);
 
-bool ReadFile(const std::string& name, std::string& result);
+bool ReadFile(const std::string& utf8_path, std::string& result);
 
 /**
   * @brief Convert special symbols in system path to percent-encoded
   *
-  * @param name path to file
+  * @param utf8_path path to file
   * @return returns converted path.
 */
-const std::string ConvertPathForURL(const std::string& path);
+const std::string ConvertPathForURL(const std::string& utf8_path);
 
 /**
   * @brief Create empty file
   *
-  * @param name path to file
+  * @param utf8_path path to file
   * @return if result success return true
 */
-bool CreateFile(const std::string& path);
+bool CreateFile(const std::string& utf8_path);
 
 /**
  * @brief Get modification time of file
- * @param path Path to file
+ * @param utf8_path Path to file
  * @return Modification time in nanoseconds
  */
-uint64_t GetFileModificationTime(const std::string& path);
+uint64_t GetFileModificationTime(const std::string& utf8_path);
 
 /**
   * @brief Copy file from source to destination
   *
-  * @param src Source file path
-  * @param dst Destination file path
+  * @param utf8_src_path Source file path
+  * @param utf8_dst_path Destination file path
   * @return if result success return true
 */
-bool CopyFile(const std::string& src, const std::string& dst);
+bool CopyFile(const std::string& utf8_src_path,
+              const std::string& utf8_dst_path);
 
 /**
   * @brief Move file from source to destination
   *
-  * @param src Source file path
-  * @param dst Destination file path
+  * @param utf8_src_path Source file path
+  * @param utf8_dst_path Destination file path
   * @return if result success return true
 */
-bool MoveFile(const std::string& src, const std::string& dst);
+bool MoveFile(const std::string& utf8_src_path,
+              const std::string& utf8_dst_path);
 
 /**
   * @brief Removes files and subdirectories of specified directory
-  * @param directory_path Path to directory
+  * @param utf8_path Path to directory
   */
-void RemoveDirectoryContent(const std::string& directory_path);
+void RemoveDirectoryContent(const std::string& utf8_path);
 
 /**
   * @brief Checks if path is relative or not
-  * @param path Path to check
+  * @param utf8_path Path to check
   * @return True if path is relative, otherwise false
   */
-bool IsRelativePath(const std::string& path);
+bool IsRelativePath(const std::string& utf8_path);
 
 /**
   * @brief Converts path from relative to absolute
-  * @param path Path to convert
+  * @param utf8_path Path to convert
   */
-void MakeAbsolutePath(std::string& path);
+void MakeAbsolutePath(std::string& utf8_path);
 
 /**
   * @brief Returns platform specific path delimiter
@@ -283,21 +281,22 @@ std::string GetPathDelimiter();
 
 /**
   * @brief Concatenates strings to platform specific path
-  * @param str Strings to be concatenated
+  * @param utf8_path Strings to be concatenated
   * @return Concatenated path string
   */
-std::string ConcatPath(const std::string& str1, const std::string& str2);
-std::string ConcatPath(const std::string& str1,
-                       const std::string& str2,
-                       const std::string& str3);
+std::string ConcatPath(const std::string& utf8_path1,
+                       const std::string& utf8_path2);
+std::string ConcatPath(const std::string& utf8_path1,
+                       const std::string& utf8_path2,
+                       const std::string& utf8_path3);
 
 /**
   * @brief Retrieves file name from path by
   * removing all before last path delimiter
-  * @param path Path to process
+  * @param utf8_path Path to process
   * @return File name without path
   */
-std::string RetrieveFileNameFromPath(const std::string& path);
+std::string RetrieveFileNameFromPath(const std::string& utf8_path);
 
 }  // namespace file_system
 
