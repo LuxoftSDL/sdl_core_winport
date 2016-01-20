@@ -310,13 +310,6 @@ bool file_system::IsRelativePath(const std::string& utf8_path) {
   return QDir::isRelativePath(utf8_path.c_str());
 }
 
-void file_system::MakeAbsolutePath(std::string& utf8_path) {
-  if (!IsRelativePath(utf8_path)) {
-    return;
-  }
-  utf8_path = ConcatPath(CurrentWorkingDirectory(), utf8_path);
-}
-
 std::string file_system::ConcatPath(const std::string& utf8_path1,
                                     const std::string& utf8_path2) {
   return utf8_path1 + GetPathDelimiter() + utf8_path2;

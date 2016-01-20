@@ -268,12 +268,6 @@ void RemoveDirectoryContent(const std::string& utf8_path);
 bool IsRelativePath(const std::string& utf8_path);
 
 /**
-  * @brief Converts path from relative to absolute
-  * @param utf8_path Path to convert
-  */
-void MakeAbsolutePath(std::string& utf8_path);
-
-/**
   * @brief Returns platform specific path delimiter
   * @return Delimiter string
   */

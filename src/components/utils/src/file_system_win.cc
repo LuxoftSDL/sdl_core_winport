@@ -44,8 +44,6 @@
 #include "utils/file_system.h"
 #include "utils/string_utils.h"
 
-#pragma comment(lib, "Shlwapi.lib")
-
 namespace {
 
 /**
@@ -460,23 +458,7 @@ bool file_system::MoveFile(const std::string& utf8_src_path,
 }
 
 bool file_system::IsRelativePath(const std::string& utf8_path) {
-  return static_cast<bool>(PathIsRelative(utf8_path.c_str()));
-}
-
-void file_system::MakeAbsolutePath(std::string& utf8_path) {
-  TCHAR buffer[MAX_PATH];
-  // Handle the case when we receive abs linux path.
-  // Removal of the leading slash will allow to get
-  // correct path from the GetFullPathName
-  int offset = 0;
-  if (utf8_path.find("/") == 0) {
-    offset = 1;
-  }
-  const DWORD size =
-      GetFullPathName(utf8_path.c_str() + offset, MAX_PATH, buffer, NULL);
-  if (size != 0) {
-    utf8_path.assign(buffer);
-  }
+  return std::string::npos == utf8_path.find(":");
 }
 
 std::string file_system::GetPathDelimiter() {
@@ -487,6 +469,7 @@ std::string file_system::ConcatPath(const std::string& utf8_path1,
                                     const std::string& utf8_path2) {
   return utf8_path1 + GetPathDelimiter() + utf8_path2;
 }
+
 std::string file_system::ConcatPath(const std::string& utf8_path1,
                                     const std::string& utf8_path2,
                                     const std::string& utf8_path3) {

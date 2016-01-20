@@ -866,7 +866,8 @@ void Profile::UpdateValues() {
                   kAppConfigFolderKey);
 
   if (file_system::IsRelativePath(app_config_folder_)) {
-    file_system::MakeAbsolutePath(app_config_folder_);
+    app_config_folder_ = file_system::ConcatPath(
+        file_system::CurrentWorkingDirectory(), app_config_folder_);
   }
 
   LOG_UPDATED_VALUE(app_config_folder_, kAppConfigFolderKey, kMainSection);
@@ -878,7 +879,8 @@ void Profile::UpdateValues() {
                   kAppStorageFolderKey);
 
   if (file_system::IsRelativePath(app_storage_folder_)) {
-    file_system::MakeAbsolutePath(app_storage_folder_);
+    app_storage_folder_ = file_system::ConcatPath(
+        file_system::CurrentWorkingDirectory(), app_storage_folder_);
   }
 
   LOG_UPDATED_VALUE(app_storage_folder_, kAppStorageFolderKey, kMainSection);
@@ -890,7 +892,8 @@ void Profile::UpdateValues() {
                   kAppResourseFolderKey);
 
   if (file_system::IsRelativePath(app_resourse_folder_)) {
-    file_system::MakeAbsolutePath(app_resourse_folder_);
+    app_resourse_folder_ = file_system::ConcatPath(
+        file_system::CurrentWorkingDirectory(), app_resourse_folder_);
   }
 
   LOG_UPDATED_VALUE(app_resourse_folder_, kAppResourseFolderKey, kMainSection);
@@ -913,7 +916,8 @@ void Profile::UpdateValues() {
                   kAppIconsFolderKey);
 
   if (file_system::IsRelativePath(app_icons_folder_)) {
-    file_system::MakeAbsolutePath(app_icons_folder_);
+    app_icons_folder_ = file_system::ConcatPath(
+        file_system::CurrentWorkingDirectory(), app_icons_folder_);
   }
 
   LOG_UPDATED_VALUE(app_icons_folder_, kAppIconsFolderKey, kSDL4Section);
@@ -1385,8 +1389,10 @@ void Profile::UpdateValues() {
                   kDefaultSystemFilesPath,
                   kMainSection,
                   kSystemFilesPathKey);
+
   if (file_system::IsRelativePath(system_files_path_)) {
-    file_system::MakeAbsolutePath(system_files_path_);
+    system_files_path_ = file_system::ConcatPath(
+        file_system::CurrentWorkingDirectory(), system_files_path_);
   }
 
   LOG_UPDATED_VALUE(system_files_path_, kSystemFilesPathKey, kMainSection);

@@ -445,13 +445,6 @@ bool file_system::IsRelativePath(const std::string& utf8_path) {
   return '/' != utf8_path[0];
 }
 
-void file_system::MakeAbsolutePath(std::string& utf8_path) {
-  if (!IsRelativePath(utf8_path)) {
-    return;
-  }
-  utf8_path = ConcatPath(CurrentWorkingDirectory(), utf8_path);
-}
-
 std::string file_system::GetPathDelimiter() {
   return "/";
 }
