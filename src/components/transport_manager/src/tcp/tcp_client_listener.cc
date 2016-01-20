@@ -195,18 +195,6 @@ void SetKeepaliveOptions(const int fd) {
   settings.onoff = 1;
   settings.keepalivetime = keepidle * 1000;
   settings.keepaliveinterval = keepintvl * 1000;
-  // TO DO: check if corerrect setup socket options.
-  // For example posix setup socket options
-  /*  setsockopt(fd, SOL_SOCKET, SO_KEEPALIVE, (const char*)&yes, sizeof(yes));
-  **  setsockopt(fd, IPPROTO_TCP, TCP_KEEPIDLE, (const char*)&keepidle,
-  *sizeof(keepidle));
-  **setsockopt(fd, IPPROTO_TCP, TCP_KEEPCNT, (const char*)&keepcnt,
-  *sizeof(keepcnt));
-  **setsockopt(fd, IPPROTO_TCP, TCP_KEEPINTVL, (const char*)&keepintvl,
-  *sizeof(keepintvl));
-  **  setsockopt(fd, IPPROTO_TCP, SO_SNDTIMEO, (const char*)&user_timeout,
-  **	  sizeof(user_timeout));
-  */
 
   DWORD bytesReturned;
   WSAOVERLAPPED overlapped;
