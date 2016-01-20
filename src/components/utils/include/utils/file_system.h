@@ -125,7 +125,7 @@ std::ofstream* Open(const std::string& utf8_path,
   */
 bool Write(std::ofstream* const file_stream,
            const uint8_t* data,
-           uint32_t data_size);
+           size_t data_size);
 
 /**
   * @brief Closes file stream
@@ -194,11 +194,11 @@ std::vector<std::string> ListFiles(const std::string& utf8_path);
 /**
  * @brief Creates or overwrites file with given binary contents
  * @param utf8_path path to the file
- * @param contents data to be written into the file
+ * @param data data to be written into the file
  * @returns true if file write succeeded
  */
 bool WriteBinaryFile(const std::string& utf8_path,
-                     const std::vector<uint8_t>& contents);
+                     const std::vector<uint8_t>& data);
 
 /**
   * @brief Reads from file

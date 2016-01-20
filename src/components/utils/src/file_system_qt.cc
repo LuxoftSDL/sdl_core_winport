@@ -33,9 +33,6 @@
 #include "utils/logger.h"
 #include "utils/string_utils.h"
 
-#include <sys/stat.h>
-#include <sys/types.h>
-#include <sstream>
 #include <QtCore>
 #include <QStorageInfo>
 #include <QDir>
@@ -43,15 +40,31 @@
 #include <QFileInfo>
 #include <QUrl>
 
-#include <io.h>
 #include <fstream>
 #include <cstddef>
-#include <algorithm>
 
 #define R_OK 4
 #define W_OK 2
 
-CREATE_LOGGERPTR_GLOBAL(logger_, "Utils")
+namespace {
+
+/**
+  * @brief Converts UTF-8 string to wide string
+  * @param str String to be converted
+  * @return Result wide string
+  */
+std::wstring ConvertUTF8ToWString(const std::string& utf8_str) {
+  if (utf8_str.empty()) {
+    return std::wstring();
+  }
+  QString extended_utf8_str(utils::ReplaceString(utf8_str, "/", "\\").c_str());
+  if (!file_system::IsRelativePath(utf8_str)) {
+    extended_utf8_str = "\\\\?\\" + extended_utf8_str;
+  }
+  return extended_utf8_str.toStdWString();
+}
+
+}  // namespace
 
 uint64_t file_system::GetAvailableDiskSpace(const std::string& utf8_path) {
   QStorageInfo mstor(QString(utf8_path.c_str()));
@@ -116,41 +129,35 @@ bool file_system::FileExists(const std::string& utf8_path) {
 bool file_system::Write(const std::string& utf8_path,
                         const std::vector<uint8_t>& data,
                         std::ios_base::openmode mode) {
-  QByteArray text(reinterpret_cast<uint8_t>(data.data()), data.size());
-  QFile file(QString(utf8_path.c_str()));
-  file.open(QIODevice::WriteOnly | static_cast<QIODevice::OpenModeFlag>(mode));
-  if (file.isOpen()) {
-    file.write(text);
-    file.close();
-    return true;
+  std::ofstream file(ConvertUTF8ToWString(utf8_path),
+                     std::ios_base::binary | mode);
+  if (!file.is_open()) {
+    return false;
   }
-  return false;
+  file.write(reinterpret_cast<const char*>(&data[0]), data.size());
+  file.close();
+  return file.good();
 }
 
 std::ofstream* file_system::Open(const std::string& utf8_path,
                                  std::ios_base::openmode mode) {
   std::ofstream* file = new std::ofstream();
-  file->open(QString(utf8_path.c_str()).toStdWString(),
-             std::ios_base::binary | mode);
-  if (file->is_open()) {
-    return file;
+  file->open(ConvertUTF8ToWString(utf8_path), std::ios_base::binary | mode);
+  if (!file->is_open()) {
+    delete file;
+    return NULL;
   }
-
-  delete file;
-  return NULL;
+  return file;
 }
 
 bool file_system::Write(std::ofstream* const file_stream,
                         const uint8_t* data,
-                        uint32_t data_size) {
-  bool result = false;
-  if (file_stream) {
-    for (size_t i = 0; i < data_size; ++i) {
-      (*file_stream) << data[i];
-    }
-    result = true;
+                        size_t data_size) {
+  if (!file_stream) {
+    return false;
   }
-  return result;
+  file_stream->write(reinterpret_cast<const char*>(&data[0]), data_size);
+  return file_stream->good();
 }
 
 void file_system::Close(std::ofstream* file_stream) {
@@ -222,41 +229,34 @@ std::vector<std::string> file_system::ListFiles(const std::string& utf8_path) {
 }
 
 bool file_system::WriteBinaryFile(const std::string& utf8_path,
-                                  const std::vector<uint8_t>& contents) {
-  using namespace std;
-  ofstream output(QString(utf8_path.c_str()).toStdWString(),
-                  ios_base::binary | ios_base::trunc);
-  output.write(reinterpret_cast<const char*>(&contents.front()),
-               contents.size());
-  return output.good();
+                                  const std::vector<uint8_t>& data) {
+  QFile file(QString(utf8_path.c_str()));
+  if (!file.open(QIODevice::WriteOnly)) {
+    return false;
+  }
+  return data.size() ==
+         file.write(reinterpret_cast<const char*>(&data[0]), data.size());
 }
 
 bool file_system::ReadBinaryFile(const std::string& utf8_path,
                                  std::vector<uint8_t>& result) {
-  if (!FileExists(utf8_path) || !IsAccessible(utf8_path, R_OK)) {
+  QFile file(QString(utf8_path.c_str()));
+  if (!file.open(QIODevice::ReadOnly)) {
     return false;
   }
-
-  std::ifstream file(QString(utf8_path.c_str()).toStdWString(),
-                     std::ios_base::binary);
-  std::ostringstream ss;
-  ss << file.rdbuf();
-  const std::string& s = ss.str();
-
-  result.resize(s.length());
-  std::copy(s.begin(), s.end(), result.begin());
+  QByteArray read = file.readAll();
+  const uint8_t* read_start = reinterpret_cast<uint8_t*>(read.data());
+  result = std::vector<uint8_t>(read_start, read_start + read.size());
   return true;
 }
 
 bool file_system::ReadFile(const std::string& utf8_path, std::string& result) {
-  if (!FileExists(utf8_path) || !IsAccessible(utf8_path, R_OK)) {
+  QFile file(QString(utf8_path.c_str()));
+  if (!file.open(QIODevice::Text)) {
     return false;
   }
-
-  std::ifstream file(QString(utf8_path.c_str()).toStdWString());
-  std::ostringstream ss;
-  ss << file.rdbuf();
-  result = ss.str();
+  QByteArray read = file.readAll();
+  result = std::string(read.data());
   return true;
 }
 
@@ -266,13 +266,11 @@ const std::string file_system::ConvertPathForURL(const std::string& utf8_path) {
 }
 
 bool file_system::CreateFile(const std::string& utf8_path) {
-  std::ofstream file(QString(utf8_path.c_str()).toStdWString());
-  if (!(file.is_open())) {
+  QFile file(QString(utf8_path.c_str()));
+  if (!file.open(QIODevice::WriteOnly)) {
     return false;
-  } else {
-    file.close();
-    return true;
   }
+  return true;
 }
 
 uint64_t file_system::GetFileModificationTime(const std::string& utf8_path) {

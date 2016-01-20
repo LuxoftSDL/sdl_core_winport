@@ -55,13 +55,21 @@ std::wstring ConvertUTF8ToWString(const std::string& utf8_str) {
   if (utf8_str.empty()) {
     return std::wstring();
   }
-  int size = MultiByteToWideChar(
-      CP_UTF8, 0, &utf8_str[0], static_cast<int>(utf8_str.size()), NULL, 0);
+  std::string extended_utf8_str(utf8_str);
+  if (!file_system::IsRelativePath(utf8_str)) {
+    extended_utf8_str = "\\\\?\\" + extended_utf8_str;
+  }
+  int size = MultiByteToWideChar(CP_UTF8,
+                                 0,
+                                 &extended_utf8_str[0],
+                                 static_cast<int>(extended_utf8_str.size()),
+                                 NULL,
+                                 0);
   std::wstring wide_str(size, 0);
   MultiByteToWideChar(CP_UTF8,
                       0,
-                      &utf8_str[0],
-                      static_cast<int>(utf8_str.size()),
+                      &extended_utf8_str[0],
+                      static_cast<int>(extended_utf8_str.size()),
                       &wide_str[0],
                       size);
   return wide_str;
@@ -211,39 +219,33 @@ bool file_system::Write(const std::string& utf8_path,
                         std::ios_base::openmode mode) {
   std::ofstream file(ConvertUTF8ToWString(utf8_path),
                      std::ios_base::binary | mode);
-  if (file.is_open()) {
-    for (uint32_t i = 0; i < data.size(); ++i) {
-      file << data[i];
-    }
-    file.close();
-    return true;
+  if (!file.is_open()) {
+    return false;
   }
-  return false;
+  file.write(reinterpret_cast<const char*>(&data[0]), data.size());
+  file.close();
+  return file.good();
 }
 
 std::ofstream* file_system::Open(const std::string& utf8_path,
                                  std::ios_base::openmode mode) {
   std::ofstream* file = new std::ofstream();
   file->open(ConvertUTF8ToWString(utf8_path), std::ios_base::binary | mode);
-  if (file->is_open()) {
-    return file;
+  if (!file->is_open()) {
+    delete file;
+    return NULL;
   }
-
-  delete file;
-  return NULL;
+  return file;
 }
 
 bool file_system::Write(std::ofstream* const file_stream,
                         const uint8_t* data,
-                        uint32_t data_size) {
-  bool result = false;
-  if (file_stream) {
-    for (size_t i = 0; i < data_size; ++i) {
-      (*file_stream) << data[i];
-    }
-    result = true;
+                        size_t data_size) {
+  if (!file_stream) {
+    return false;
   }
-  return result;
+  file_stream->write(reinterpret_cast<const char*>(&data[0]), data_size);
+  return file_stream->good();
 }
 
 void file_system::Close(std::ofstream* file_stream) {
@@ -342,12 +344,11 @@ std::vector<std::string> file_system::ListFiles(const std::string& utf8_path) {
 }
 
 bool file_system::WriteBinaryFile(const std::string& utf8_path,
-                                  const std::vector<uint8_t>& contents) {
+                                  const std::vector<uint8_t>& data) {
   using namespace std;
   ofstream output(ConvertUTF8ToWString(utf8_path),
                   ios_base::binary | ios_base::trunc);
-  output.write(reinterpret_cast<const char*>(&contents.front()),
-               contents.size());
+  output.write(reinterpret_cast<const char*>(&data.front()), data.size());
   return output.good();
 }
 

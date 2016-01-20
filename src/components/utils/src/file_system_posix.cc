@@ -160,40 +160,34 @@ bool file_system::FileExists(const std::string& utf8_path) {
 bool file_system::Write(const std::string& utf8_path,
                         const std::vector<uint8_t>& data,
                         std::ios_base::openmode mode) {
-  std::ofstream file(utf8_path.c_str(), std::ios_base::binary | mode);
-  if (file.is_open()) {
-    for (uint32_t i = 0; i < data.size(); ++i) {
-      file << data[i];
-    }
-    file.close();
-    return true;
+  std::ofstream file(utf8_path, std::ios_base::binary | mode);
+  if (!file.is_open()) {
+    return false;
   }
-  return false;
+  file.write(reinterpret_cast<const char*>(&data[0]), data.size());
+  file.close();
+  return file.good();
 }
 
 std::ofstream* file_system::Open(const std::string& utf8_path,
                                  std::ios_base::openmode mode) {
   std::ofstream* file = new std::ofstream();
-  file->open(utf8_path.c_str(), std::ios_base::binary | mode);
-  if (file->is_open()) {
-    return file;
+  file->open(utf8_path, std::ios_base::binary | mode);
+  if (!file->is_open()) {
+    delete file;
+    return NULL;
   }
-
-  delete file;
-  return NULL;
+  return file;
 }
 
 bool file_system::Write(std::ofstream* const file_stream,
                         const uint8_t* data,
-                        uint32_t data_size) {
-  bool result = false;
-  if (file_stream) {
-    for (size_t i = 0; i < data_size; ++i) {
-      (*file_stream) << data[i];
-    }
-    result = true;
+                        size_t data_size) {
+  if (!file_stream) {
+    return false;
   }
-  return result;
+  file_stream->write(reinterpret_cast<const char*>(&data[0]), data_size);
+  return file_stream->good();
 }
 
 void file_system::Close(std::ofstream* file_stream) {
@@ -326,11 +320,10 @@ std::vector<std::string> file_system::ListFiles(const std::string& utf8_path) {
 }
 
 bool file_system::WriteBinaryFile(const std::string& utf8_path,
-                                  const std::vector<uint8_t>& contents) {
+                                  const std::vector<uint8_t>& data) {
   using namespace std;
   ofstream output(utf8_path.c_str(), ios_base::binary | ios_base::trunc);
-  output.write(reinterpret_cast<const char*>(&contents.front()),
-               contents.size());
+  output.write(reinterpret_cast<const char*>(&data.front()), data.size());
   return output.good();
 }
 
