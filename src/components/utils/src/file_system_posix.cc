@@ -117,7 +117,7 @@ bool file_system::CreateDirectoryRecursively(const std::string& utf8_path) {
   bool ret_val = true;
 
   while (ret_val == true && pos <= utf8_path.length()) {
-    pos = utf8_path.find('/', pos + 1);
+    pos = utf8_path.find(GetPathDelimiter(), pos + 1);
     if (!DirectoryExists(utf8_path.substr(0, pos))) {
       if (0 != mkdir(utf8_path.substr(0, pos).c_str(), S_IRWXU)) {
         ret_val = false;

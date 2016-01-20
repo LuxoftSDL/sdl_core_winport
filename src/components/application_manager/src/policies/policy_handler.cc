@@ -122,8 +122,7 @@ const char* const kPolicyLibraryName = "Policy";
       LOG4CXX_DEBUG(logger_, "The shared library of policy is not loaded"); \
       return return_value;                                                  \
     }                                                                       \
-  \
-}
+  }
 
 #define POLICY_LIB_CHECK_VOID()                                             \
   {                                                                         \
@@ -132,8 +131,7 @@ const char* const kPolicyLibraryName = "Policy";
       LOG4CXX_DEBUG(logger_, "The shared library of policy is not loaded"); \
       return;                                                               \
     }                                                                       \
-  \
-}
+  }
 
 CREATE_LOGGERPTR_GLOBAL(logger_, "PolicyHandler")
 
@@ -1033,7 +1031,8 @@ bool PolicyHandler::SaveSnapshot(const BinaryMessage& pt_string,
       Profile::instance()->policies_snapshot_file_name();
   const std::string& system_files_path =
       Profile::instance()->system_files_path();
-  snap_path = system_files_path + '/' + policy_snapshot_file_name;
+  snap_path = system_files_path + file_system::GetPathDelimiter() +
+              policy_snapshot_file_name;
 
   bool result = false;
   if (file_system::CreateDirectoryRecursively(system_files_path)) {

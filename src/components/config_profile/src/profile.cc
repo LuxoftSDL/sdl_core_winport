@@ -203,7 +203,7 @@ const char* kDefaultHmiCapabilitiesFileName = "hmi_capabilities.json";
 const char* kDefaultPreloadedPTFileName = "sdl_preloaded_pt.json";
 const char* kDefaultServerAddress = "127.0.0.1";
 const char* kDefaultAppInfoFileName = "app_info.dat";
-const char* kDefaultSystemFilesPath = "/tmp/fs/mp/images/ivsu_cache";
+const char* kDefaultSystemFilesPath = "ivsu_cache";
 const char* kDefaultTtsDelimiter = ",";
 const uint32_t kDefaultAudioDataStoppedTimeout = 1000;
 const uint32_t kDefaultVideoDataStoppedTimeout = 1000;
@@ -1472,7 +1472,8 @@ void Profile::UpdateValues() {
                   kPolicySection,
                   kPreloadedPTKey);
 
-  preloaded_pt_file_ = app_config_folder_ + '/' + preloaded_pt_file_;
+  preloaded_pt_file_ =
+      app_config_folder_ + file_system::GetPathDelimiter() + preloaded_pt_file_;
 
   LOG_UPDATED_VALUE(preloaded_pt_file_, kPreloadedPTKey, kPolicySection);
 
