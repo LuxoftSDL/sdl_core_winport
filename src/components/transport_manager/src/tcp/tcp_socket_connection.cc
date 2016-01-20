@@ -40,7 +40,6 @@
 #include <unistd.h>
 #elif defined(OS_WINDOWS)
 #include "utils/winhdr.h"
-#pragma comment(lib, "Ws2_32.lib")
 #include <io.h>
 #endif
 

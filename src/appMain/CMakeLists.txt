@@ -172,6 +172,11 @@ if( NOT CMAKE_BUILD_TYPE )
 endif()
 
 add_executable(${PROJECT} ${HEADERS} ${SOURCES})
+
+if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
+  target_link_libraries(${PROJECT} ws2_32 ${LIBRARIES})
+endif()
+
 if(QT_PORT)
     if(EXTENDED_MEDIA_MODE)
       find_package(Qt5 REQUIRED Multimedia)

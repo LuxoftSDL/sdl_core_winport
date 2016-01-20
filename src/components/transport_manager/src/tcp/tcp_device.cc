@@ -33,11 +33,6 @@
 #include "transport_manager/tcp/tcp_device.h"
 #include "utils/logger.h"
 
-#if defined(OS_WINDOWS)
-#include "utils/winhdr.h"
-#pragma comment(lib, "Ws2_32.lib")
-#endif
-
 namespace transport_manager {
 namespace transport_adapter {
 
