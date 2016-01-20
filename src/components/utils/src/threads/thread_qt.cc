@@ -49,7 +49,6 @@ size_t Thread::kMinStackSize = 0;
 void Thread::cleanup(void* arg) {
   LOG4CXX_AUTO_TRACE(logger_);
   Thread* thread = static_cast<Thread*>(arg);
-  sync_primitives::AutoLock auto_lock(thread->state_lock_);
   thread->isThreadRunning_ = false;
   thread->state_cond_.Broadcast();
 }
@@ -100,7 +99,6 @@ void Thread::SetNameForId(const PlatformThreadHandle& thread_id,
 
 Thread::Thread(const char* name, ThreadDelegate* delegate, QObject* parent)
     : QObject(parent)
-    , isThreadCancelledExitCode(false)
     , name_(name ? name : "undefined")
     , delegate_(delegate)
     , handle_(0)
@@ -121,9 +119,8 @@ PlatformThreadHandle Thread::CurrentId() {
   return QThread::currentThread();
 }
 
-void Thread::thread_cancelled_exit() {
-  emit thread_watcher_.canceled();
-  deleteLater();
+void Thread::ThreadCancelledExit() {
+  future_.cancel();
 }
 
 bool Thread::start(const ThreadOptions& options) {
@@ -150,7 +147,6 @@ bool Thread::start(const ThreadOptions& options) {
   // state_lock 1
   if (!thread_created_) {
     future_ = QtConcurrent::run(threadFunc, this);
-    thread_watcher_.setFuture(future_);
     handle_ = QThread::currentThreadId();
     if (NULL != handle_) {
       LOG4CXX_DEBUG(logger_, "Created thread: " << name_);
@@ -176,7 +172,7 @@ void Thread::stop() {
 
   LOG4CXX_DEBUG(logger_,
                 "Stopping thread #" << handle_ << " \"" << name_ << " \"");
-  if (thread_watcher_.isCanceled()) {
+  if (future_.isCanceled()) {
     cleanup(static_cast<void*>(this));
   }
 

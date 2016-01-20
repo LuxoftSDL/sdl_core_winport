@@ -45,9 +45,19 @@ ThreadDelegate::~ThreadDelegate() {
 void ThreadDelegate::exitThreadMain() {
   if (thread_) {
     if (thread_->thread_handle() == QThread::currentThreadId()) {
-      emit exit_thread();
+      /* Qt framework implements only the asynchronous methods for thread
+       * termination,
+       * so we are inheriting from QThread the current class and call exit(-1)
+       * with wait() in this case.
+       * But this can not guarantee the immediate termination of the thread.
+       * It will be terminated later at the earliest opportunity -
+       * according with Qt paradigm.
+       * Aditional info see http://doc.qt.io/qt-5/thread-basics.html
+       */
+      exit(-1);
+      wait();
     } else {
-      emit terminate_thread();
+      emit TerminateThread();
     }
   }
 }
@@ -55,9 +65,8 @@ void ThreadDelegate::exitThreadMain() {
 void ThreadDelegate::set_thread(Thread* thread) {
   DCHECK(thread);
   thread_ = thread;
-  QObject::connect(this, SIGNAL(exit_thread()), thread_, SLOT(deleteLater()));
   QObject::connect(
-      this, SIGNAL(terminate_thread()), thread_, SLOT(thread_cancelled_exit()));
+      this, SIGNAL(TerminateThread()), thread_, SLOT(ThreadCancelledExit()));
 }
 #include "moc_thread_delegate.cpp"
 }  // namespace threads

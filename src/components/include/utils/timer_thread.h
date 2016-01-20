@@ -362,11 +362,11 @@ TimerThread<T>::TimerDelegate::~TimerDelegate() {
 template <class T>
 void TimerThread<T>::TimerDelegate::threadMain() {
   using sync_primitives::ConditionalVariable;
-  sync_primitives::AutoLock auto_lock(state_lock_);
   stop_flag_ = false;
   while (!stop_flag_) {
     // Sleep
     int32_t wait_milliseconds_left = TimerDelegate::get_timeout();
+    sync_primitives::AutoLock auto_lock(state_lock_);
     LOG4CXX_DEBUG(logger_,
                   "Milliseconds left to wait: " << wait_milliseconds_left);
     ConditionalVariable::WaitStatus wait_status =
