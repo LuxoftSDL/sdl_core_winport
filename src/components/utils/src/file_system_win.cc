@@ -167,15 +167,9 @@ std::string file_system::CreateDirectory(const std::string& utf8_path) {
 }
 
 bool file_system::CreateDirectoryRecursively(const std::string& utf8_path) {
-  size_t pos = 0;
-  bool ret_val = true;
-
-  // We have a lot of hardcoded posix paths.
-  // So lets, just in case, try to replace delimiters
   const std::string delimiter = GetPathDelimiter();
-  utils::ReplaceString(utf8_path, "/", delimiter);
-
-  while (ret_val == true && pos < utf8_path.length()) {
+  size_t pos = utf8_path.find(delimiter, 0);
+  while (pos < utf8_path.length()) {
     pos = utf8_path.find(delimiter, pos + 1);
     if (pos == std::string::npos) {
       pos = utf8_path.length();
@@ -183,11 +177,11 @@ bool file_system::CreateDirectoryRecursively(const std::string& utf8_path) {
     if (!DirectoryExists(utf8_path.substr(0, pos))) {
       if (0 !=
           _wmkdir(ConvertUTF8ToWString(utf8_path.substr(0, pos)).c_str())) {
-        ret_val = false;
+        return false;
       }
     }
   }
-  return ret_val;
+  return true;
 }
 
 bool file_system::IsDirectory(const std::string& utf8_path) {
