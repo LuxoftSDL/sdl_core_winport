@@ -55,7 +55,7 @@ uint64_t file_system::GetAvailableDiskSpace(const std::string& utf8_path) {
   }
 }
 
-int64_t file_system::FileSize(const std::string& utf8_path) {
+uint64_t file_system::FileSize(const std::string& utf8_path) {
   if (file_system::FileExists(utf8_path)) {
     struct stat file_info = {0};
     stat(utf8_path.c_str(), &file_info);
@@ -64,8 +64,8 @@ int64_t file_system::FileSize(const std::string& utf8_path) {
   return 0;
 }
 
-size_t file_system::DirectorySize(const std::string& utf8_path) {
-  size_t size = 0;
+uint64_t file_system::DirectorySize(const std::string& utf8_path) {
+  uint64_t size = 0;
   int32_t return_code = 0;
   DIR* directory = NULL;
 

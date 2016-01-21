@@ -72,14 +72,14 @@ uint64_t file_system::GetAvailableDiskSpace(const std::string& utf8_path) {
   return static_cast<uint64_t>(b_aval);
 }
 
-int64_t file_system::FileSize(const std::string& utf8_path) {
+uint64_t file_system::FileSize(const std::string& utf8_path) {
   if (file_system::FileExists(utf8_path)) {
-    return static_cast<int64_t>(QFileInfo(QString(utf8_path.c_str())).size());
+    return static_cast<uint64_t>(QFileInfo(QString(utf8_path.c_str())).size());
   }
   return 0;
 }
 
-size_t file_system::DirectorySize(const std::string& utf8_path) {
+uint64_t file_system::DirectorySize(const std::string& utf8_path) {
   quint64 size = 0;
   QFileInfo str_info(QString(utf8_path.c_str()));
   if (str_info.isDir()) {
@@ -95,7 +95,7 @@ size_t file_system::DirectorySize(const std::string& utf8_path) {
       }
     }
   }
-  return static_cast<size_t>(size);
+  return static_cast<uint64_t>(size);
 }
 
 std::string file_system::CreateDirectory(const std::string& utf8_path) {

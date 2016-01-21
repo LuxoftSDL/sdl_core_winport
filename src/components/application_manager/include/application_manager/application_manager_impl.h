@@ -879,7 +879,7 @@ class ApplicationManagerImpl
    * @param name of the app folder(make + mobile app id)
    * @return free app space.
    */
-  uint32_t GetAvailableSpaceForApp(const std::string& folder_name);
+  uint64_t GetAvailableSpaceForApp(const std::string& folder_name);
 
   /*
    * @brief returns true if HMI is cooperating

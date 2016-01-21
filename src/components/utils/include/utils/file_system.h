@@ -51,14 +51,14 @@ uint64_t GetAvailableDiskSpace(const std::string& utf8_path);
  * @brief Get size of current directory
  * @param utf8_path path to directory
  */
-size_t DirectorySize(const std::string& utf8_path);
+uint64_t DirectorySize(const std::string& utf8_path);
 
 /*
  * @brief Get size of current file
  * @param utf8_path path to file
  * @return size of file, return 0 if file not exist
  */
-int64_t FileSize(const std::string& utf8_path);
+uint64_t FileSize(const std::string& utf8_path);
 
 /**
  * @brief Creates directory

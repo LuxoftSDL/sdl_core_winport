@@ -151,7 +151,7 @@ void PutFileRequest::Run() {
         profile::Profile::instance()->app_storage_folder(),
         application->folder_name());
 
-    uint32_t space_available =
+    uint64_t space_available =
         ApplicationManagerImpl::instance()->GetAvailableSpaceForApp(
             application->folder_name());
 
