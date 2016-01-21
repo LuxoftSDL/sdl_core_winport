@@ -49,7 +49,7 @@ class Thread;
  * Look for "threads/thread.h" for example
  */
 #ifdef QT_PORT
-class ThreadDelegate : public QThread {
+class ThreadDelegate : public QObject {
   Q_OBJECT
 #else
 class ThreadDelegate {
@@ -62,7 +62,6 @@ class ThreadDelegate {
   virtual void threadMain() = 0;
 
 #ifdef QT_PORT
-  Q_SIGNAL void ExitThread();
   Q_SIGNAL void TerminateThread();
 #endif
   /**

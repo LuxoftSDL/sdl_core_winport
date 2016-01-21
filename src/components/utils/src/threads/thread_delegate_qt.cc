@@ -45,17 +45,7 @@ ThreadDelegate::~ThreadDelegate() {
 void ThreadDelegate::exitThreadMain() {
   if (thread_) {
     if (thread_->thread_handle() == QThread::currentThreadId()) {
-      /* Qt framework implements only the asynchronous methods for thread
-       * termination,
-       * so we are inheriting from QThread the current class and call exit(-1)
-       * with wait() in this case.
-       * But this can not guarantee the immediate termination of the thread.
-       * It will be terminated later at the earliest opportunity -
-       * according with Qt paradigm.
-       * Aditional info see http://doc.qt.io/qt-5/thread-basics.html
-       */
-      exit(-1);
-      wait();
+      DCHECK(!"Cannot terminate self");
     } else {
       emit TerminateThread();
     }
