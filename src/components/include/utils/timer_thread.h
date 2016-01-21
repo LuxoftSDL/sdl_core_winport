@@ -432,10 +432,7 @@ void TimerThread<T>::TimerDelegate::setTimeOut(
 
 template <class T>
 void TimerThread<T>::TimerDelegate::shouldBeStoped() {
-  {
-    sync_primitives::AutoLock auto_lock(state_lock_);
-    stop_flag_ = true;
-  }
+  stop_flag_ = true;
   {
     sync_primitives::AutoLock auto_lock(restart_flag_lock_);
     restart_flag_ = false;

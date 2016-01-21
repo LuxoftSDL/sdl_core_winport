@@ -261,7 +261,6 @@ void UpdateStatusManager::UpdateThreadDelegate::exitThreadMain() {
 
 void UpdateStatusManager::UpdateThreadDelegate::updateTimeOut(
     const uint32_t timeout_ms) {
-  sync_primitives::AutoLock auto_lock(state_lock_);
   timeout_ = timeout_ms;
   termination_condition_.NotifyOne();
 }

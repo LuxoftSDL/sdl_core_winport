@@ -178,7 +178,7 @@ class UpdateStatusManager {
     virtual void exitThreadMain();
     void updateTimeOut(const uint32_t timeout_ms);
 
-    volatile uint32_t timeout_;
+    sync_primitives::atomic_uint32 timeout_;
     sync_primitives::atomic_bool stop_flag_;
     sync_primitives::Lock state_lock_;
     sync_primitives::ConditionalVariable termination_condition_;
