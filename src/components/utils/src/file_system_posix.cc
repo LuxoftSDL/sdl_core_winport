@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015, Ford Motor Company
+ * Copyright (c) 2016, Ford Motor Company
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -29,8 +29,6 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-#if defined(OS_POSIX)
-
 #include "utils/file_system.h"
 #include "utils/logger.h"
 
@@ -48,25 +46,25 @@
 
 CREATE_LOGGERPTR_GLOBAL(logger_, "Utils")
 
-uint64_t file_system::GetAvailableDiskSpace(const std::string& path) {
+uint64_t file_system::GetAvailableDiskSpace(const std::string& utf8_path) {
   struct statvfs fsInfo = {0};
-  if (statvfs(path.c_str(), &fsInfo) == 0) {
+  if (statvfs(utf8_path.c_str(), &fsInfo) == 0) {
     return fsInfo.f_bsize * fsInfo.f_bfree;
   } else {
     return 0;
   }
 }
 
-int64_t file_system::FileSize(const std::string& path) {
-  if (file_system::FileExists(path)) {
+int64_t file_system::FileSize(const std::string& utf8_path) {
+  if (file_system::FileExists(utf8_path)) {
     struct stat file_info = {0};
-    stat(path.c_str(), &file_info);
+    stat(utf8_path.c_str(), &file_info);
     return file_info.st_size;
   }
   return 0;
 }
 
-size_t file_system::DirectorySize(const std::string& path) {
+size_t file_system::DirectorySize(const std::string& utf8_path) {
   size_t size = 0;
   int32_t return_code = 0;
   DIR* directory = NULL;
@@ -76,12 +74,12 @@ size_t file_system::DirectorySize(const std::string& path) {
   struct dirent* dir_element = &dir_element_;
 #else
   char* direntbuffer = new char[offsetof(struct dirent, d_name) +
-                                pathconf(path.c_str(), _PC_NAME_MAX) + 1];
+                                pathconf(utf8_path.c_str(), _PC_NAME_MAX) + 1];
   struct dirent* dir_element = new (direntbuffer) dirent;
 #endif
   struct dirent* result = NULL;
   struct stat file_info = {0};
-  directory = opendir(path.c_str());
+  directory = opendir(utf8_path.c_str());
   if (NULL != directory) {
     return_code = readdir_r(directory, dir_element, &result);
     for (; NULL != result && 0 == return_code;
@@ -90,7 +88,7 @@ size_t file_system::DirectorySize(const std::string& path) {
           0 == strcmp(result->d_name, ".")) {
         continue;
       }
-      std::string full_element_path = ConcatPath(path, result->d_name);
+      std::string full_element_path = ConcatPath(utf8_path, result->d_name);
       if (file_system::IsDirectory(full_element_path)) {
         size += DirectorySize(full_element_path);
       } else {
@@ -106,22 +104,22 @@ size_t file_system::DirectorySize(const std::string& path) {
   return size;
 }
 
-std::string file_system::CreateDirectory(const std::string& name) {
-  if (!DirectoryExists(name)) {
-    mkdir(name.c_str(), S_IRWXU);
+std::string file_system::CreateDirectory(const std::string& utf8_path) {
+  if (!DirectoryExists(utf8_path)) {
+    mkdir(utf8_path.c_str(), S_IRWXU);
   }
 
-  return name;
+  return utf8_path;
 }
 
-bool file_system::CreateDirectoryRecursively(const std::string& path) {
+bool file_system::CreateDirectoryRecursively(const std::string& utf8_path) {
   size_t pos = 0;
   bool ret_val = true;
 
-  while (ret_val == true && pos <= path.length()) {
-    pos = path.find('/', pos + 1);
-    if (!DirectoryExists(path.substr(0, pos))) {
-      if (0 != mkdir(path.substr(0, pos).c_str(), S_IRWXU)) {
+  while (ret_val == true && pos <= utf8_path.length()) {
+    pos = utf8_path.find('/', pos + 1);
+    if (!DirectoryExists(utf8_path.substr(0, pos))) {
+      if (0 != mkdir(utf8_path.substr(0, pos).c_str(), S_IRWXU)) {
         ret_val = false;
       }
     }
@@ -130,39 +128,39 @@ bool file_system::CreateDirectoryRecursively(const std::string& path) {
   return ret_val;
 }
 
-bool file_system::IsDirectory(const std::string& name) {
+bool file_system::IsDirectory(const std::string& utf8_path) {
   struct stat status = {0};
 
-  if (-1 == stat(name.c_str(), &status)) {
+  if (-1 == stat(utf8_path.c_str(), &status)) {
     return false;
   }
 
   return S_ISDIR(status.st_mode);
 }
 
-bool file_system::DirectoryExists(const std::string& name) {
+bool file_system::DirectoryExists(const std::string& utf8_path) {
   struct stat status = {0};
 
-  if (-1 == stat(name.c_str(), &status) || !S_ISDIR(status.st_mode)) {
+  if (-1 == stat(utf8_path.c_str(), &status) || !S_ISDIR(status.st_mode)) {
     return false;
   }
 
   return true;
 }
 
-bool file_system::FileExists(const std::string& name) {
+bool file_system::FileExists(const std::string& utf8_path) {
   struct stat status = {0};
 
-  if (-1 == stat(name.c_str(), &status)) {
+  if (-1 == stat(utf8_path.c_str(), &status)) {
     return false;
   }
   return true;
 }
 
-bool file_system::Write(const std::string& file_name,
+bool file_system::Write(const std::string& utf8_path,
                         const std::vector<uint8_t>& data,
                         std::ios_base::openmode mode) {
-  std::ofstream file(file_name.c_str(), std::ios_base::binary | mode);
+  std::ofstream file(utf8_path.c_str(), std::ios_base::binary | mode);
   if (file.is_open()) {
     for (uint32_t i = 0; i < data.size(); ++i) {
       file << data[i];
@@ -173,10 +171,10 @@ bool file_system::Write(const std::string& file_name,
   return false;
 }
 
-std::ofstream* file_system::Open(const std::string& file_name,
+std::ofstream* file_system::Open(const std::string& utf8_path,
                                  std::ios_base::openmode mode) {
   std::ofstream* file = new std::ofstream();
-  file->open(file_name.c_str(), std::ios_base::binary | mode);
+  file->open(utf8_path.c_str(), std::ios_base::binary | mode);
   if (file->is_open()) {
     return file;
   }
@@ -213,28 +211,27 @@ std::string file_system::CurrentWorkingDirectory() {
   return std::string(path);
 }
 
-bool file_system::DeleteFile(const std::string& name) {
-  if (FileExists(name) && IsAccessible(name, W_OK)) {
-    return !remove(name.c_str());
+bool file_system::DeleteFile(const std::string& utf8_path) {
+  if (FileExists(utf8_path) && IsAccessible(utf8_path, W_OK)) {
+    return !remove(utf8_path.c_str());
   }
   return false;
 }
 
-void file_system::RemoveDirectoryContent(const std::string& directory_path) {
+void file_system::RemoveDirectoryContent(const std::string& utf8_path) {
   int32_t return_code = 0;
   DIR* directory = NULL;
 #ifndef __QNXNTO__
   struct dirent dir_element_;
   struct dirent* dir_element = &dir_element_;
 #else
-  char* direntbuffer =
-      new char[offsetof(struct dirent, d_name) +
-               pathconf(directory_path.c_str(), _PC_NAME_MAX) + 1];
+  char* direntbuffer = new char[offsetof(struct dirent, d_name) +
+                                pathconf(utf8_path.c_str(), _PC_NAME_MAX) + 1];
   struct dirent* dir_element = new (direntbuffer) dirent;
 #endif
   struct dirent* result = NULL;
 
-  directory = opendir(directory_path.c_str());
+  directory = opendir(utf8_path.c_str());
 
   if (NULL != directory) {
     return_code = readdir_r(directory, dir_element, &result);
@@ -246,8 +243,7 @@ void file_system::RemoveDirectoryContent(const std::string& directory_path) {
         continue;
       }
 
-      std::string full_element_path =
-          ConcatPath(directory_path, result->d_name);
+      std::string full_element_path = ConcatPath(utf8_path, result->d_name);
       if (file_system::IsDirectory(full_element_path)) {
         RemoveDirectoryContent(full_element_path);
         rmdir(full_element_path.c_str());
@@ -263,34 +259,33 @@ void file_system::RemoveDirectoryContent(const std::string& directory_path) {
 #endif
 }
 
-bool file_system::RemoveDirectory(const std::string& directory_path,
+bool file_system::RemoveDirectory(const std::string& utf8_path,
                                   bool is_recursively) {
-  if (DirectoryExists(directory_path) && IsAccessible(directory_path, W_OK)) {
+  if (DirectoryExists(utf8_path) && IsAccessible(utf8_path, W_OK)) {
     if (is_recursively) {
-      RemoveDirectoryContent(directory_path);
+      RemoveDirectoryContent(utf8_path);
     }
 
-    return !rmdir(directory_path.c_str());
+    return !rmdir(utf8_path.c_str());
   }
   return false;
 }
 
-bool file_system::IsAccessible(const std::string& name, int32_t how) {
-  return !access(name.c_str(), how);
+bool file_system::IsAccessible(const std::string& utf8_path, int32_t how) {
+  return !access(utf8_path.c_str(), how);
 }
 
-bool file_system::IsWritingAllowed(const std::string& name) {
-  return IsAccessible(name, W_OK);
+bool file_system::IsWritingAllowed(const std::string& utf8_path) {
+  return IsAccessible(utf8_path, W_OK);
 }
 
-bool file_system::IsReadingAllowed(const std::string& name) {
-  return IsAccessible(name, R_OK);
+bool file_system::IsReadingAllowed(const std::string& utf8_path) {
+  return IsAccessible(utf8_path, R_OK);
 }
 
-std::vector<std::string> file_system::ListFiles(
-    const std::string& directory_name) {
+std::vector<std::string> file_system::ListFiles(const std::string& utf8_path) {
   std::vector<std::string> listFiles;
-  if (!DirectoryExists(directory_name)) {
+  if (!DirectoryExists(utf8_path)) {
     return listFiles;
   }
 
@@ -300,14 +295,13 @@ std::vector<std::string> file_system::ListFiles(
   struct dirent dir_element_;
   struct dirent* dir_element = &dir_element_;
 #else
-  char* direntbuffer =
-      new char[offsetof(struct dirent, d_name) +
-               pathconf(directory_name.c_str(), _PC_NAME_MAX) + 1];
+  char* direntbuffer = new char[offsetof(struct dirent, d_name) +
+                                pathconf(utf8_path.c_str(), _PC_NAME_MAX) + 1];
   struct dirent* dir_element = new (direntbuffer) dirent;
 #endif
   struct dirent* result = NULL;
 
-  directory = opendir(directory_name.c_str());
+  directory = opendir(utf8_path.c_str());
   if (NULL != directory) {
     return_code = readdir_r(directory, dir_element, &result);
 
@@ -331,22 +325,22 @@ std::vector<std::string> file_system::ListFiles(
   return listFiles;
 }
 
-bool file_system::WriteBinaryFile(const std::string& name,
+bool file_system::WriteBinaryFile(const std::string& utf8_path,
                                   const std::vector<uint8_t>& contents) {
   using namespace std;
-  ofstream output(name.c_str(), ios_base::binary | ios_base::trunc);
+  ofstream output(utf8_path.c_str(), ios_base::binary | ios_base::trunc);
   output.write(reinterpret_cast<const char*>(&contents.front()),
                contents.size());
   return output.good();
 }
 
-bool file_system::ReadBinaryFile(const std::string& name,
+bool file_system::ReadBinaryFile(const std::string& utf8_path,
                                  std::vector<uint8_t>& result) {
-  if (!FileExists(name) || !IsAccessible(name, R_OK)) {
+  if (!FileExists(utf8_path) || !IsAccessible(utf8_path, R_OK)) {
     return false;
   }
 
-  std::ifstream file(name.c_str(), std::ios_base::binary);
+  std::ifstream file(utf8_path.c_str(), std::ios_base::binary);
   std::ostringstream ss;
   ss << file.rdbuf();
   const std::string& s = ss.str();
@@ -356,21 +350,21 @@ bool file_system::ReadBinaryFile(const std::string& name,
   return true;
 }
 
-bool file_system::ReadFile(const std::string& name, std::string& result) {
-  if (!FileExists(name) || !IsAccessible(name, R_OK)) {
+bool file_system::ReadFile(const std::string& utf8_path, std::string& result) {
+  if (!FileExists(utf8_path) || !IsAccessible(utf8_path, R_OK)) {
     return false;
   }
 
-  std::ifstream file(name.c_str());
+  std::ifstream file(utf8_path.c_str());
   std::ostringstream ss;
   ss << file.rdbuf();
   result = ss.str();
   return true;
 }
 
-const std::string file_system::ConvertPathForURL(const std::string& path) {
-  std::string::const_iterator it_path = path.begin();
-  std::string::const_iterator it_path_end = path.end();
+const std::string file_system::ConvertPathForURL(const std::string& utf8_path) {
+  std::string::const_iterator it_path = utf8_path.begin();
+  std::string::const_iterator it_path_end = utf8_path.end();
 
   const std::string reserved_symbols = "!#$&'()*+,:;=?@[] ";
   std::string::const_iterator it_sym = reserved_symbols.begin();
@@ -397,8 +391,8 @@ const std::string file_system::ConvertPathForURL(const std::string& path) {
   return converted_path;
 }
 
-bool file_system::CreateFile(const std::string& path) {
-  std::ofstream file(path);
+bool file_system::CreateFile(const std::string& utf8_path) {
+  std::ofstream file(utf8_path);
   if (!(file.is_open())) {
     return false;
   } else {
@@ -407,9 +401,9 @@ bool file_system::CreateFile(const std::string& path) {
   }
 }
 
-uint64_t file_system::GetFileModificationTime(const std::string& path) {
+uint64_t file_system::GetFileModificationTime(const std::string& utf8_path) {
   struct stat info;
-  stat(path.c_str(), &info);
+  stat(utf8_path.c_str(), &info);
 #ifndef __QNXNTO__
   return static_cast<uint64_t>(info.st_mtim.tv_nsec);
 #else
@@ -417,63 +411,66 @@ uint64_t file_system::GetFileModificationTime(const std::string& path) {
 #endif
 }
 
-bool file_system::CopyFile(const std::string& src, const std::string& dst) {
-  if (!FileExists(src) || FileExists(dst) || !CreateFile(dst)) {
+bool file_system::CopyFile(const std::string& utf8_src_path,
+                           const std::string& utf8_dst_path) {
+  if (!FileExists(utf8_src_path) || FileExists(utf8_dst_path) ||
+      !CreateFile(utf8_dst_path)) {
     return false;
   }
   std::vector<uint8_t> data;
-  if (!ReadBinaryFile(src, data) || !WriteBinaryFile(dst, data)) {
-    DeleteFile(dst);
+  if (!ReadBinaryFile(utf8_src_path, data) ||
+      !WriteBinaryFile(utf8_dst_path, data)) {
+    DeleteFile(utf8_dst_path);
     return false;
   }
   return true;
 }
 
-bool file_system::MoveFile(const std::string& src, const std::string& dst) {
-  if (!CopyFile(src, dst)) {
+bool file_system::MoveFile(const std::string& utf8_src_path,
+                           const std::string& utf8_dst_path) {
+  if (!CopyFile(utf8_src_path, utf8_dst_path)) {
     return false;
   }
-  if (!DeleteFile(src)) {
-    DeleteFile(dst);
+  if (!DeleteFile(utf8_src_path)) {
+    DeleteFile(utf8_dst_path);
     return false;
   }
   return true;
 }
 
-bool file_system::IsRelativePath(const std::string& path) {
-  if (path.empty()) {
+bool file_system::IsRelativePath(const std::string& utf8_path) {
+  if (utf8_path.empty()) {
     return false;
   }
-  return '/' != path[0];
+  return '/' != utf8_path[0];
 }
 
-void file_system::MakeAbsolutePath(std::string& path) {
-  if (!IsRelativePath(path)) {
+void file_system::MakeAbsolutePath(std::string& utf8_path) {
+  if (!IsRelativePath(utf8_path)) {
     return;
   }
-  path = ConcatPath(CurrentWorkingDirectory(), path);
+  utf8_path = ConcatPath(CurrentWorkingDirectory(), utf8_path);
 }
 
 std::string file_system::GetPathDelimiter() {
   return "/";
 }
 
-std::string file_system::ConcatPath(const std::string& str1,
-                                    const std::string& str2) {
-  return str1 + GetPathDelimiter() + str2;
+std::string file_system::ConcatPath(const std::string& utf8_path1,
+                                    const std::string& utf8_path2) {
+  return utf8_path1 + GetPathDelimiter() + utf8_path2;
 }
-std::string file_system::ConcatPath(const std::string& str1,
-                                    const std::string& str2,
-                                    const std::string& str3) {
-  return ConcatPath(ConcatPath(str1, str2), str3);
+std::string file_system::ConcatPath(const std::string& utf8_path1,
+                                    const std::string& utf8_path2,
+                                    const std::string& utf8_path3) {
+  return ConcatPath(ConcatPath(utf8_path1, utf8_path2), utf8_path3);
 }
 
-std::string file_system::RetrieveFileNameFromPath(const std::string& path) {
-  size_t slash_pos = path.find_last_of("/", path.length());
-  size_t back_slash_pos = path.find_last_of("\\", path.length());
-  return path.substr(
+std::string file_system::RetrieveFileNameFromPath(
+    const std::string& utf8_path) {
+  size_t slash_pos = utf8_path.find_last_of("/", utf8_path.length());
+  size_t back_slash_pos = utf8_path.find_last_of("\\", utf8_path.length());
+  return utf8_path.substr(
       std::max(slash_pos != std::string::npos ? slash_pos + 1 : 0,
                back_slash_pos != std::string::npos ? back_slash_pos + 1 : 0));
 }
-
-#endif  // OS_POSIX
