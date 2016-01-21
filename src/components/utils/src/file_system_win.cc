@@ -205,11 +205,9 @@ bool file_system::DirectoryExists(const std::string& utf8_path) {
 }
 
 bool file_system::FileExists(const std::string& utf8_path) {
-  struct _stat status = {0};
-  if (-1 == _wstat(ConvertUTF8ToWString(utf8_path).c_str(), &status)) {
-    return false;
-  }
-  return true;
+  DWORD attrib = GetFileAttributesW(ConvertUTF8ToWString(utf8_path).c_str());
+  return (attrib != INVALID_FILE_ATTRIBUTES &&
+          !(attrib & FILE_ATTRIBUTE_DIRECTORY));
 }
 
 bool file_system::Write(const std::string& utf8_path,
@@ -418,9 +416,19 @@ bool file_system::CreateFile(const std::string& utf8_path) {
 }
 
 uint64_t file_system::GetFileModificationTime(const std::string& utf8_path) {
-  struct _stat info;
-  _wstat(ConvertUTF8ToWString(utf8_path).c_str(), &info);
-  return static_cast<uint64_t>(info.st_mtime);
+  WIN32_FIND_DATAW ffd;
+  HANDLE find = FindFirstFileW(ConvertUTF8ToWString(utf8_path).c_str(), &ffd);
+  if (INVALID_HANDLE_VALUE == find) {
+    return 0;
+  }
+
+  uint64_t modification_time = 0;
+  modification_time |= ffd.ftLastWriteTime.dwHighDateTime;
+  modification_time <<= 32;
+  modification_time |= ffd.ftLastWriteTime.dwLowDateTime;
+
+  FindClose(find);
+  return modification_time;
 }
 
 bool file_system::CopyFile(const std::string& utf8_src_path,
