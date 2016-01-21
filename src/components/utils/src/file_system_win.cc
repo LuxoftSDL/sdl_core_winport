@@ -198,14 +198,6 @@ bool file_system::CreateDirectoryRecursively(const std::string& utf8_path) {
   return true;
 }
 
-bool file_system::IsDirectory(const std::string& utf8_path) {
-  struct _stat status = {0};
-  if (-1 == _wstat(ConvertUTF8ToWString(utf8_path).c_str(), &status)) {
-    return false;
-  }
-  return S_IFDIR == status.st_mode;
-}
-
 bool file_system::DirectoryExists(const std::string& utf8_path) {
   DWORD attrib = GetFileAttributesW(ConvertUTF8ToWString(utf8_path).c_str());
   return (attrib != INVALID_FILE_ATTRIBUTES &&

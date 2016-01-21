@@ -111,11 +111,6 @@ bool file_system::CreateDirectoryRecursively(const std::string& utf8_path) {
   return dir.mkpath(QString(utf8_path.c_str()));
 }
 
-bool file_system::IsDirectory(const std::string& utf8_path) {
-  QFileInfo checkFile(QString(utf8_path.c_str()));
-  return checkFile.isDir();
-}
-
 bool file_system::DirectoryExists(const std::string& utf8_path) {
   QFileInfo checkFile(QString(utf8_path.c_str()));
   return checkFile.exists() && checkFile.isDir();

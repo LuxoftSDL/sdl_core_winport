@@ -89,7 +89,7 @@ uint64_t file_system::DirectorySize(const std::string& utf8_path) {
         continue;
       }
       std::string full_element_path = ConcatPath(utf8_path, result->d_name);
-      if (file_system::IsDirectory(full_element_path)) {
+      if (file_system::DirectoryExists(full_element_path)) {
         size += DirectorySize(full_element_path);
       } else {
         stat(full_element_path.c_str(), &file_info);
@@ -126,16 +126,6 @@ bool file_system::CreateDirectoryRecursively(const std::string& utf8_path) {
   }
 
   return ret_val;
-}
-
-bool file_system::IsDirectory(const std::string& utf8_path) {
-  struct stat status = {0};
-
-  if (-1 == stat(utf8_path.c_str(), &status)) {
-    return false;
-  }
-
-  return S_ISDIR(status.st_mode);
 }
 
 bool file_system::DirectoryExists(const std::string& utf8_path) {
@@ -238,7 +228,7 @@ void file_system::RemoveDirectoryContent(const std::string& utf8_path) {
       }
 
       std::string full_element_path = ConcatPath(utf8_path, result->d_name);
-      if (file_system::IsDirectory(full_element_path)) {
+      if (file_system::DirectoryExists(full_element_path)) {
         RemoveDirectoryContent(full_element_path);
         rmdir(full_element_path.c_str());
       } else {

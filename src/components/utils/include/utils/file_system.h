@@ -75,13 +75,6 @@ std::string CreateDirectory(const std::string& utf8_path);
 bool CreateDirectoryRecursively(const std::string& utf8_path);
 
 /**
-  * @brief Checks the file to see whether the file is a directory
-  * @param utf8_path path to file
-  * @return returns true if file is directory.
-  */
-bool IsDirectory(const std::string& utf8_path);
-
-/**
   * @brief Is directory exist
   * @param utf8_path path to directory
   * @return returns true if directory is exists.
