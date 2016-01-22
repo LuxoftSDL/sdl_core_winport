@@ -1,5 +1,5 @@
-﻿/*
- * Copyright (c) 2015-2016, Ford Motor Company
+/*
+ * Copyright (c) 2015, Ford Motor Company
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -29,83 +29,59 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-#if defined(OS_WINDOWS)
+#include "utils/conditional_variable.h"
 
 #include "utils/lock.h"
 #include "utils/logger.h"
+#include <QWaitCondition>
 
 namespace sync_primitives {
 
 CREATE_LOGGERPTR_GLOBAL(logger_, "Utils")
 
-Lock::Lock()
-#ifndef NDEBUG
-    : lock_taken_(0)
-    , is_mutex_recursive_(false)
-#endif  // NDEBUG
-{
-  Init(false);
+ConditionalVariable::ConditionalVariable() : cond_var_() {}
+
+ConditionalVariable::~ConditionalVariable() {}
+
+void ConditionalVariable::NotifyOne() {
+  cond_var_.wakeOne();
 }
 
-Lock::Lock(bool is_recursive)
-#ifndef NDEBUG
-    : lock_taken_(0)
-    , is_mutex_recursive_(is_recursive)
-#endif  // NDEBUG
-{
-  Init(is_recursive);
+void ConditionalVariable::Broadcast() {
+  cond_var_.wakeAll();
 }
 
-Lock::~Lock() {
-#ifndef NDEBUG
-  if (lock_taken_ > 0) {
-    LOG4CXX_ERROR(logger_, "Destroying non-released mutex " << &mutex_);
+bool ConditionalVariable::Wait(Lock& lock) {
+  // Disable wait recursive mutexes. Added for compatible with Qt.
+  // Actual Qt version (5.5) cannot support waiting on recursive mutex.
+  DCHECK(!lock.is_mutex_recursive_);
+  lock.AssertTakenAndMarkFree();
+  const bool wait_status = cond_var_.wait(lock.mutex_);
+  lock.AssertFreeAndMarkTaken();
+  if (!wait_status) {
+    LOG4CXX_ERROR(logger_, "Failed to wait for conditional variable");
+    return false;
   }
-#endif
-  DeleteCriticalSection(&mutex_);
+  return true;
 }
 
-void Lock::Acquire() {
-  EnterCriticalSection(&mutex_);
-  AssertFreeAndMarkTaken();
+bool ConditionalVariable::Wait(AutoLock& auto_lock) {
+  return Wait(auto_lock.GetLock());
 }
 
-void Lock::Release() {
-  AssertTakenAndMarkFree();
-  LeaveCriticalSection(&mutex_);
-}
-
-bool Lock::Try() {
-  if (TryEnterCriticalSection(&mutex_)) {
-#ifndef NDEBUG
-    lock_taken_++;
-#endif
-    return true;
+ConditionalVariable::WaitStatus ConditionalVariable::WaitFor(
+    AutoLock& auto_lock, int32_t milliseconds) {
+  Lock& lock = auto_lock.GetLock();
+  // Disable wait recursive mutexes. Added for compatible with Qt.
+  // Actual Qt version (5.5) cannot support waiting on recursive mutex.
+  DCHECK(!lock.is_mutex_recursive_);
+  lock.AssertTakenAndMarkFree();
+  const bool timedwait_status = cond_var_.wait(lock.mutex_, milliseconds);
+  lock.AssertFreeAndMarkTaken();
+  if (timedwait_status) {
+    return kNoTimeout;
   }
-  return false;
-}
-
-#ifndef NDEBUG
-void Lock::AssertFreeAndMarkTaken() {
-  if ((lock_taken_ > 0) && !is_mutex_recursive_) {
-    LOG4CXX_ERROR(logger_, "Locking already taken not recursive mutex");
-    NOTREACHED();
-  }
-  lock_taken_++;
-}
-void Lock::AssertTakenAndMarkFree() {
-  if (lock_taken_ == 0) {
-    LOG4CXX_ERROR(logger_, "Unlocking a mutex that is not taken");
-    NOTREACHED();
-  }
-  lock_taken_--;
-}
-#endif
-
-void Lock::Init(bool is_recursive) {
-  InitializeCriticalSection(&mutex_);
+  return kTimeout;
 }
 
 }  // namespace sync_primitives
-
-#endif  // OS_WINDOWS

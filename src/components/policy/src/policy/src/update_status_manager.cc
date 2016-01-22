@@ -222,7 +222,7 @@ UpdateStatusManager::UpdateThreadDelegate::UpdateThreadDelegate(
     UpdateStatusManager* update_status_manager)
     : timeout_(0)
     , stop_flag_(false)
-    , state_lock_(true)
+    , state_lock_(false)
     , update_status_manager_(update_status_manager) {
   LOG4CXX_INFO(logger_, "Create UpdateThreadDelegate");
 }
@@ -233,8 +233,8 @@ UpdateStatusManager::UpdateThreadDelegate::~UpdateThreadDelegate() {
 
 void UpdateStatusManager::UpdateThreadDelegate::threadMain() {
   LOG4CXX_DEBUG(logger_, "UpdateStatusManager thread started (started normal)");
-  sync_primitives::AutoLock auto_lock(state_lock_);
   while (false == stop_flag_) {
+    sync_primitives::AutoLock auto_lock(state_lock_);
     if (timeout_ > 0) {
       LOG4CXX_DEBUG(logger_, "Timeout is greater then 0");
       sync_primitives::ConditionalVariable::WaitStatus wait_status =
@@ -261,7 +261,6 @@ void UpdateStatusManager::UpdateThreadDelegate::exitThreadMain() {
 
 void UpdateStatusManager::UpdateThreadDelegate::updateTimeOut(
     const uint32_t timeout_ms) {
-  sync_primitives::AutoLock auto_lock(state_lock_);
   timeout_ = timeout_ms;
   termination_condition_.NotifyOne();
 }

@@ -46,6 +46,7 @@
 #include "utils/timer_thread.h"
 #include "utils/threads/thread.h"
 #include "utils/threads/thread_delegate.h"
+#include "utils/atomic_object.h"
 
 namespace timer {
 // TODO(AKutsan): Remove this logger after bugfix
@@ -205,7 +206,7 @@ class TimerThread {
     uint32_t timeout_milliseconds_;
     sync_primitives::Lock state_lock_;
     sync_primitives::ConditionalVariable termination_condition_;
-    volatile bool stop_flag_;
+    sync_primitives::atomic_bool stop_flag_;
 
     sync_primitives::Lock restart_flag_lock_;
     volatile bool restart_flag_;
@@ -342,7 +343,7 @@ template <class T>
 TimerThread<T>::TimerDelegate::TimerDelegate(TimerThread* timer_thread)
     : timer_thread_(timer_thread)
     , timeout_milliseconds_(0)
-    , state_lock_(true)
+    , state_lock_(false)
     , stop_flag_(false)
     , restart_flag_(false) {
   DCHECK(timer_thread_);
@@ -361,11 +362,11 @@ TimerThread<T>::TimerDelegate::~TimerDelegate() {
 template <class T>
 void TimerThread<T>::TimerDelegate::threadMain() {
   using sync_primitives::ConditionalVariable;
-  sync_primitives::AutoLock auto_lock(state_lock_);
   stop_flag_ = false;
   while (!stop_flag_) {
     // Sleep
     int32_t wait_milliseconds_left = TimerDelegate::get_timeout();
+    sync_primitives::AutoLock auto_lock(state_lock_);
     LOG4CXX_DEBUG(logger_,
                   "Milliseconds left to wait: " << wait_milliseconds_left);
     ConditionalVariable::WaitStatus wait_status =
@@ -393,10 +394,10 @@ void TimerThread<T>::TimerDelegate::threadMain() {
 template <class T>
 void TimerThread<T>::TimerLooperDelegate::threadMain() {
   using sync_primitives::ConditionalVariable;
-  sync_primitives::AutoLock auto_lock(TimerDelegate::state_lock_);
   TimerDelegate::stop_flag_ = false;
   while (!TimerDelegate::stop_flag_) {
     int32_t wait_milliseconds_left = TimerDelegate::get_timeout();
+    sync_primitives::AutoLock auto_lock(TimerDelegate::state_lock_);
     LOG4CXX_DEBUG(logger_,
                   "Milliseconds left to wait: " << wait_milliseconds_left);
     ConditionalVariable::WaitStatus wait_status =
@@ -431,10 +432,7 @@ void TimerThread<T>::TimerDelegate::setTimeOut(
 
 template <class T>
 void TimerThread<T>::TimerDelegate::shouldBeStoped() {
-  {
-    sync_primitives::AutoLock auto_lock(state_lock_);
-    stop_flag_ = true;
-  }
+  stop_flag_ = true;
   {
     sync_primitives::AutoLock auto_lock(restart_flag_lock_);
     restart_flag_ = false;
