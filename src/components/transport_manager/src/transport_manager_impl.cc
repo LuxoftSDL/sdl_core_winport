@@ -724,18 +724,17 @@ void TransportManagerImpl::Handle(TransportAdapterEvent event) {
       break;
     }
     case TransportAdapterListenerImpl::EventTypeEnum::ON_DISCONNECT_DONE: {
-      ConnectionInternal* connection = NULL;
       ConnectionUID id = 0;
       {
         sync_primitives::AutoReadLock lock(connections_lock_);
-        connection = GetConnection(event.device_uid, event.application_id);
+        ConnectionInternal* connection =
+            GetConnection(event.device_uid, event.application_id);
+        if (!connection) {
+          LOG4CXX_DEBUG(
+              logger_, "event_type = ON_DISCONNECT_DONE && NULL == connection");
+          break;
+        }
         id = connection->id;
-      }
-      if (NULL == connection) {
-        LOG4CXX_ERROR(logger_, "Connection not found");
-        LOG4CXX_DEBUG(logger_,
-                      "event_type = ON_DISCONNECT_DONE && NULL == connection");
-        break;
       }
       RaiseEvent(&TransportManagerListener::OnConnectionClosed, id);
       RemoveConnection(id);
@@ -843,19 +842,19 @@ void TransportManagerImpl::Handle(TransportAdapterEvent event) {
     }
     case TransportAdapterListenerImpl::EventTypeEnum::ON_RECEIVED_FAIL: {
       LOG4CXX_DEBUG(logger_, "Event ON_RECEIVED_FAIL");
-      ConnectionInternal* connection = NULL;
       ConnectionUID connection_id = 0;
       {
         sync_primitives::AutoReadLock lock(connections_lock_);
-        connection = GetConnection(event.device_uid, event.application_id);
+        ConnectionInternal* connection =
+            GetConnection(event.device_uid, event.application_id);
+        if (!connection) {
+          LOG4CXX_ERROR(logger_,
+                        "Connection ('" << event.device_uid << ", "
+                                        << event.application_id
+                                        << ") not found");
+          break;
+        }
         connection_id = connection->id;
-      }
-      if (connection == NULL) {
-        LOG4CXX_ERROR(logger_,
-                      "Connection ('" << event.device_uid << ", "
-                                      << event.application_id
-                                      << ") not found");
-        break;
       }
       RaiseEvent(&TransportManagerListener::OnTMMessageReceiveFailed,
                  connection_id,
@@ -869,24 +868,24 @@ void TransportManagerImpl::Handle(TransportAdapterEvent event) {
     }
     case TransportAdapterListenerImpl::EventTypeEnum::
         ON_UNEXPECTED_DISCONNECT: {
-      ConnectionInternal* connection = NULL;
-      ConnectionUID id = 0;
+      ConnectionUID connection_id = 0;
       {
         sync_primitives::AutoReadLock lock(connections_lock_);
-        connection = GetConnection(event.device_uid, event.application_id);
-        id = connection->id;
+        ConnectionInternal* connection =
+            GetConnection(event.device_uid, event.application_id);
+        if (!connection) {
+          LOG4CXX_ERROR(logger_,
+                        "Connection ('" << event.device_uid << ", "
+                                        << event.application_id
+                                        << ") not found");
+          break;
+        }
+        connection_id = connection->id;
       }
-      if (connection) {
-        RaiseEvent(&TransportManagerListener::OnUnexpectedDisconnect,
-                   id,
-                   *static_cast<CommunicationError*>(event.event_error.get()));
-        RemoveConnection(id);
-      } else {
-        LOG4CXX_ERROR(logger_,
-                      "Connection ('" << event.device_uid << ", "
-                                      << event.application_id
-                                      << ") not found");
-      }
+      RaiseEvent(&TransportManagerListener::OnUnexpectedDisconnect,
+                 connection_id,
+                 *static_cast<CommunicationError*>(event.event_error.get()));
+      RemoveConnection(connection_id);
       LOG4CXX_DEBUG(logger_, "eevent_type = ON_UNEXPECTED_DISCONNECT");
       break;
     }
