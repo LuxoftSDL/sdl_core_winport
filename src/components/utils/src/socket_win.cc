@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015, Ford Motor Company
+ * Copyright (c) 2016, Ford Motor Company
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -29,24 +29,25 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-#include <algorithm>
-
-#include "utils/winhdr.h"
 #include "utils/socket.h"
+#include "utils/winhdr.h"
+#include "utils/macro.h"
+#include "utils/pimpl_impl.h"
 
-CREATE_LOGGERPTR_GLOBAL(logger_ptr, "Utils")
+CREATE_LOGGERPTR_GLOBAL(logger_, "Utils")
 
 namespace {
 
 bool CloseSocket(SOCKET& socket) {
-  LOG4CXX_AUTO_TRACE(logger_ptr);
+  LOG4CXX_AUTO_TRACE(logger_);
+  LOG4CXX_DEBUG(logger_, "Closing socket " << socket);
   if (NULL == socket) {
-    LOG4CXX_DEBUG(logger_ptr,
+    LOG4CXX_DEBUG(logger_,
                   "Socket " << socket << " is not valid. Skip closing.");
     return true;
   }
   if (SOCKET_ERROR != closesocket(socket)) {
-    LOG4CXX_WARN(logger_ptr,
+    LOG4CXX_WARN(logger_,
                  "Failed to close socket " << socket << ": "
                                            << WSAGetLastError());
     return false;
@@ -65,45 +66,72 @@ class utils::TcpSocketConnection::Impl {
  public:
   Impl();
 
-  explicit Impl(SOCKET tcp_socket);
+  Impl(const SOCKET tcp_socket,
+       const HostAddress& address,
+       const uint16_t port);
 
   ~Impl();
 
-  ssize_t Send(const char* buffer, std::size_t size);
+  bool Send(const char* buffer, std::size_t size, std::size_t& bytes_written);
 
   bool Close();
 
   bool IsValid() const;
 
+  void EnableKeepalive();
+
+  int GetNativeHandle();
+
+  utils::HostAddress GetAddress() const;
+
+  uint16_t GetPort() const;
+
+  bool Connect(const HostAddress& address, const uint16_t port);
+
  private:
   SOCKET tcp_socket_;
+
+  HostAddress address_;
+
+  uint16_t port_;
 };
 
-utils::TcpSocketConnection::Impl::Impl() : tcp_socket_(NULL) {}
+utils::TcpSocketConnection::Impl::Impl()
+    : tcp_socket_(NULL), address_(), port_(0u) {}
 
-utils::TcpSocketConnection::Impl::Impl(SOCKET tcp_socket)
-    : tcp_socket_(tcp_socket) {}
+utils::TcpSocketConnection::Impl::Impl(const SOCKET tcp_socket,
+                                       const HostAddress& address,
+                                       const uint16_t port)
+    : tcp_socket_(tcp_socket), address_(address), port_(port) {}
 
 utils::TcpSocketConnection::Impl::~Impl() {
   Close();
 }
 
-ssize_t utils::TcpSocketConnection::Impl::Send(const char* buffer,
-                                               std::size_t size) {
-  LOG4CXX_AUTO_TRACE(logger_ptr);
+bool utils::TcpSocketConnection::Impl::Send(const char* buffer,
+                                            std::size_t size,
+                                            std::size_t& bytes_written) {
+  LOG4CXX_AUTO_TRACE(logger_);
+  bytes_written = 0u;
   if (!IsValid()) {
-    LOG4CXX_ERROR(logger_ptr, "Failed to send data socket is not valid");
-    return -1;
+    LOG4CXX_ERROR(logger_, "Failed to send data socket is not valid");
+    return false;
   }
   const int flags = 0;
-  int result = send(tcp_socket_, buffer, size, flags);
-  if (SOCKET_ERROR == result) {
-    LOG4CXX_ERROR(logger_ptr, "Failed to send data: " << WSAGetLastError());
+  int written = send(tcp_socket_, buffer, size, flags);
+  if (SOCKET_ERROR == written) {
+    LOG4CXX_ERROR(logger_, "Failed to send data: " << WSAGetLastError());
+    return false;
   }
-  return result;
+  bytes_written = static_cast<size_t>(written);
+  return true;
 }
 
 bool utils::TcpSocketConnection::Impl::Close() {
+  if (IsValid()) {
+    LOG4CXX_DEBUG(logger_,
+                  "Closing connection " << address_.ToString() << ":" << port_);
+  }
   return CloseSocket(tcp_socket_);
 }
 
@@ -111,39 +139,99 @@ bool utils::TcpSocketConnection::Impl::IsValid() const {
   return tcp_socket_ != NULL;
 }
 
+void utils::TcpSocketConnection::Impl::EnableKeepalive() {
+  struct tcp_keepalive settings;
+  settings.onoff = 1;
+  settings.keepalivetime = kKeepAliveTime * 1000;
+  settings.keepaliveinterval = kKeepAliveInterval * 1000;
+
+  DWORD bytesReturned;
+  WSAOVERLAPPED overlapped;
+  overlapped.hEvent = NULL;
+  WSAIoctl(tcp_socket_,
+           SIO_KEEPALIVE_VALS,
+           &settings,
+           sizeof(struct tcp_keepalive),
+           NULL,
+           0,
+           &bytesReturned,
+           &overlapped,
+           NULL);
+}
+
+int utils::TcpSocketConnection::Impl::GetNativeHandle() {
+  return tcp_socket_;
+}
+
+utils::HostAddress utils::TcpSocketConnection::Impl::GetAddress() const {
+  return address_;
+}
+
+uint16_t utils::TcpSocketConnection::Impl::GetPort() const {
+  return port_;
+}
+
+bool utils::TcpSocketConnection::Impl::Connect(const HostAddress& address,
+                                               const uint16_t port) {
+  if (IsValid()) {
+    LOG4CXX_ERROR(logger_, "Already connected. Closing existing connection.");
+    Close();
+  }
+  SOCKET client_socket = socket(AF_INET, SOCK_STREAM, 0);
+  if (INVALID_SOCKET == client_socket) {
+    LOG4CXX_ERROR(
+        logger_,
+        "Failed to create client socket. Error: " << WSAGetLastError());
+    return false;
+  }
+  sockaddr_in server_address = {0};
+  server_address.sin_family = AF_INET;
+  server_address.sin_port = static_cast<USHORT>(htons(port));
+  server_address.sin_addr.s_addr = address.ToIp4Address(false);
+  if (!connect(client_socket,
+               reinterpret_cast<sockaddr*>(&server_address),
+               sizeof(server_address)) == 0) {
+    LOG4CXX_ERROR(
+        logger_,
+        "Failed to connect to the server " << address.ToString() << ":" << port
+                                           << ". Error: "
+                                           << WSAGetLastError());
+    CloseSocket(client_socket);
+    return false;
+  }
+  tcp_socket_ = client_socket;
+  address_ = address;
+  port_ = port;
+  return true;
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 /// utils::TcpSocketConnection
 ////////////////////////////////////////////////////////////////////////////////
 
-utils::TcpSocketConnection::TcpSocketConnection() : impl_(new Impl()) {}
+// Ctor&Dtor should be in the cc file
+// to prevent inlining.
+// Otherwise the compiler will try to inline
+// and fail to find ctor of the Pimpl.
+utils::TcpSocketConnection::TcpSocketConnection() {}
 
-utils::TcpSocketConnection::TcpSocketConnection(Impl* impl) : impl_(impl) {
-  DCHECK(impl_);
-}
+utils::TcpSocketConnection::~TcpSocketConnection() {}
 
-utils::TcpSocketConnection::~TcpSocketConnection() {
-  delete impl_;
-}
-
-utils::TcpSocketConnection::TcpSocketConnection(TcpSocketConnection& rhs) {
-  Swap(rhs);
-}
-
+// This must be implemented since default assign operator takes const arg
 utils::TcpSocketConnection& utils::TcpSocketConnection::operator=(
     TcpSocketConnection& rhs) {
-  if (this != &rhs) {
-    Swap(rhs);
-  }
+  impl_ = rhs.impl_;
   return *this;
 }
 
-void utils::TcpSocketConnection::Swap(TcpSocketConnection& rhs) {
-  using std::swap;
-  swap(impl_, rhs.impl_);
+utils::TcpSocketConnection::TcpSocketConnection(Impl* impl) : impl_(impl) {
+  DCHECK(impl);
 }
 
-ssize_t utils::TcpSocketConnection::Send(const char* buffer, std::size_t size) {
-  return impl_->Send(buffer, size);
+bool utils::TcpSocketConnection::Send(const char* buffer,
+                                      std::size_t size,
+                                      std::size_t& bytes_written) {
+  return impl_->Send(buffer, size, bytes_written);
 }
 
 bool utils::TcpSocketConnection::Close() {
@@ -154,13 +242,34 @@ bool utils::TcpSocketConnection::IsValid() const {
   return impl_->IsValid();
 }
 
+void utils::TcpSocketConnection::EnableKeepalive() {
+  impl_->EnableKeepalive();
+}
+
+int utils::TcpSocketConnection::GetNativeHandle() {
+  return impl_->GetNativeHandle();
+}
+
+utils::HostAddress utils::TcpSocketConnection::GetAddress() const {
+  return impl_->GetAddress();
+}
+
+uint16_t utils::TcpSocketConnection::GetPort() const {
+  return impl_->GetPort();
+}
+
+bool utils::TcpSocketConnection::Connect(const HostAddress& address,
+                                         const uint16_t port) {
+  return impl_->Connect(address, port);
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 /// utils::ServerTcpSocket::Impl
 ////////////////////////////////////////////////////////////////////////////////
 
 class utils::TcpServerSocket::Impl {
  public:
-  explicit Impl();
+  Impl();
 
   ~Impl();
 
@@ -168,11 +277,11 @@ class utils::TcpServerSocket::Impl {
 
   bool Close();
 
-  bool Listen(const std::string& address, int port, int backlog);
+  bool Listen(const HostAddress& address,
+              const uint16_t port,
+              const int backlog);
 
   TcpSocketConnection Accept();
-
-  ssize_t Send(const char* buf, size_t length);
 
  private:
   SOCKET server_socket_;
@@ -195,79 +304,117 @@ bool utils::TcpServerSocket::Impl::Close() {
   return CloseSocket(server_socket_);
 }
 
-bool utils::TcpServerSocket::Impl::Listen(const std::string& address,
-                                          int port,
-                                          int backlog) {
-  LOG4CXX_AUTO_TRACE(logger_ptr);
+bool utils::TcpServerSocket::Impl::Listen(const HostAddress& address,
+                                          const uint16_t port,
+                                          const int backlog) {
+  LOG4CXX_AUTO_TRACE(logger_);
+  LOG4CXX_DEBUG(logger_,
+                "Start listening on " << address.ToString() << ":" << port);
+
   if (IsListening()) {
-    LOG4CXX_ERROR(logger_ptr, "Cannot listen. Already listeneing.");
+    LOG4CXX_ERROR(logger_,
+                  "Cannot listen " << address.ToString() << ":" << port
+                                   << ". Already listeneing.");
     return false;
   }
 
-  server_socket_ = socket(AF_INET, SOCK_STREAM, 0);
-  if (INVALID_SOCKET == server_socket_) {
-    LOG4CXX_ERROR(logger_ptr,
+  SOCKET server_socket = socket(AF_INET, SOCK_STREAM, 0);
+
+  if (INVALID_SOCKET == server_socket) {
+    LOG4CXX_ERROR(logger_,
                   "Failed to create server socket: " << WSAGetLastError());
-    server_socket_ = NULL;
     return false;
   }
+  LOG4CXX_DEBUG(logger_, "Created server socket " << socket);
 
   char optval = 1;
   if (SOCKET_ERROR ==
       setsockopt(
-          server_socket_, SOL_SOCKET, SO_REUSEADDR, &optval, sizeof(optval))) {
-    LOG4CXX_ERROR(logger_ptr, "Unable to set sockopt: " << WSAGetLastError());
-    server_socket_ = NULL;
+          server_socket, SOL_SOCKET, SO_REUSEADDR, &optval, sizeof(optval))) {
+    LOG4CXX_ERROR(
+        logger_,
+        "Failed to to set sockopt SO_REUSEADDR. Error: " << WSAGetLastError());
     return false;
   }
 
   struct sockaddr_in server_address = {0};
-  server_address.sin_addr.s_addr = inet_addr(address.c_str());
+  server_address.sin_addr.s_addr = address.ToIp4Address(false);
   server_address.sin_family = AF_INET;
   server_address.sin_port = htons(port);
 
-  if (SOCKET_ERROR == bind(server_socket_,
+  if (SOCKET_ERROR == bind(server_socket,
                            reinterpret_cast<struct sockaddr*>(&server_address),
                            sizeof(server_address))) {
-    LOG4CXX_ERROR(logger_ptr, "Unable to bind: " << WSAGetLastError());
-    server_socket_ = NULL;
+    LOG4CXX_ERROR(logger_,
+                  "Failed to bind to " << address.ToString() << ":" << port
+                                       << ". Error: "
+                                       << WSAGetLastError());
     return false;
   }
 
-  if (SOCKET_ERROR == listen(server_socket_, backlog)) {
-    LOG4CXX_ERROR(logger_ptr, "Unable to listen: " << WSAGetLastError());
-    server_socket_ = NULL;
+  if (SOCKET_ERROR == listen(server_socket, backlog)) {
+    LOG4CXX_WARN(logger_,
+                 "Failed to listen on " << address.ToString() << ":" << port
+                                        << ". Error: "
+                                        << WSAGetLastError());
     return false;
   }
 
+  LOG4CXX_DEBUG(logger_, "Listening on " << address.ToString() << ":" << port);
+
+  server_socket_ = server_socket;
   is_listening_ = true;
   return true;
 }
 
 utils::TcpSocketConnection utils::TcpServerSocket::Impl::Accept() {
-  LOG4CXX_AUTO_TRACE(logger_ptr);
+  LOG4CXX_AUTO_TRACE(logger_);
 
-  struct sockaddr client_addr = {0};
-  int client_addr_length = sizeof(client_addr);
-  SOCKET client_socket =
-      accept(server_socket_, &client_addr, &client_addr_length);
+  struct sockaddr_in client_address = {0};
+  int client_address_length = sizeof(client_address);
+  SOCKET client_socket = accept(server_socket_,
+                                reinterpret_cast<sockaddr*>(&client_address),
+                                &client_address_length);
   if (SOCKET_ERROR == client_socket) {
-    LOG4CXX_ERROR(logger_ptr,
+    LOG4CXX_ERROR(logger_,
                   "Failed to accept client socket: " << WSAGetLastError());
     return utils::TcpSocketConnection();
   }
-  return TcpSocketConnection(new TcpSocketConnection::Impl(client_socket));
+  if (AF_INET != client_address.sin_family) {
+    LOG4CXX_ERROR(logger_,
+                  "Address of the connected client is invalid. Not AF_INET.");
+    CloseSocket(client_socket);
+    return utils::TcpSocketConnection();
+  }
+  const HostAddress accepted_client_address(client_address.sin_addr.s_addr,
+                                            false);
+  LOG4CXX_DEBUG(
+      logger_,
+      "Accepted new client connection " << client_socket << " "
+                                        << accepted_client_address.ToString()
+                                        << ":"
+                                        << client_address.sin_port);
+  return TcpSocketConnection(new TcpSocketConnection::Impl(
+      client_socket, accepted_client_address, client_address.sin_port));
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 /// utils::TcpServerSocket
 ////////////////////////////////////////////////////////////////////////////////
 
-utils::TcpServerSocket::TcpServerSocket()
-    : impl_(new TcpServerSocket::Impl()) {}
+// Ctor&Dtor should be in the cc file
+// to prevent inlining.
+// Otherwise the compiler will try to inline
+// and fail to find ctor of the Pimpl.
+utils::TcpServerSocket::TcpServerSocket() {}
 
-utils::TcpServerSocket::~TcpServerSocket() {
-  delete impl_;
+utils::TcpServerSocket::~TcpServerSocket() {}
+
+// This must be implemented since default assign operator takes const arg
+utils::TcpServerSocket& utils::TcpServerSocket::operator=(
+    TcpServerSocket& rhs) {
+  impl_ = rhs.impl_;
+  return *this;
 }
 
 bool utils::TcpServerSocket::IsListening() const {
@@ -278,9 +425,9 @@ bool utils::TcpServerSocket::Close() {
   return impl_->Close();
 }
 
-bool utils::TcpServerSocket::Listen(const std::string& address,
-                                    int port,
-                                    int backlog) {
+bool utils::TcpServerSocket::Listen(const HostAddress& address,
+                                    const uint16_t port,
+                                    const int backlog) {
   return impl_->Listen(address, port, backlog);
 }
 

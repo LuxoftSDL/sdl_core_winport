@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015, Ford Motor Company
+ * Copyright (c) 2016, Ford Motor Company
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -33,40 +33,57 @@
 #define SRC_COMPONENTS_UTILS_INCLUDE_UTILS_SOCKET_H_
 
 #include <cstdint>
-#include <algorithm>
-#include "utils/macro.h"
+#include <string>
 
-#if defined(_MSC_VER)
-#include "utils/winhdr.h"
-typedef SSIZE_T ssize_t;
-#endif
+#include "utils/host_address.h"
+#include "utils/pimpl.h"
 
 namespace utils {
 
+class TcpServerSocket;
+
 class TcpSocketConnection {
  public:
-  class Impl;
-
   TcpSocketConnection();
-
-  TcpSocketConnection(TcpSocketConnection& rhs);
-
-  TcpSocketConnection& operator=(TcpSocketConnection& rhs);
-
-  explicit TcpSocketConnection(Impl* impl);
 
   ~TcpSocketConnection();
 
-  ssize_t Send(const char* buffer, std::size_t size);
+  TcpSocketConnection& operator=(TcpSocketConnection& rhs);
+
+  bool Send(const char* buffer,
+            const std::size_t size,
+            std::size_t& bytes_written);
+
+  bool Send(const uint8_t* buffer,
+            const std::size_t size,
+            std::size_t& bytes_written);
 
   bool Close();
 
   bool IsValid() const;
 
- private:
-  void Swap(TcpSocketConnection& rhs);
+  void EnableKeepalive();
 
-  Impl* impl_;
+  int GetNativeHandle();
+
+  HostAddress GetAddress() const;
+
+  uint16_t GetPort() const;
+
+  bool Connect(const HostAddress& address, const uint16_t port);
+
+ private:
+  class Impl;
+
+  explicit TcpSocketConnection(Impl* impl);
+
+  friend class TcpServerSocket;
+
+  Pimpl<Impl> impl_;
+
+  static const int kKeepAliveTime = 3;  // 3 seconds to disconnection detecting
+
+  static const int kKeepAliveInterval = 1;
 };
 
 class TcpServerSocket {
@@ -75,19 +92,32 @@ class TcpServerSocket {
 
   ~TcpServerSocket();
 
+  TcpServerSocket& operator=(TcpServerSocket& rhs);
+
   bool IsListening() const;
 
   bool Close();
 
-  bool Listen(const std::string& address, int port, int backlog);
+  bool Listen(const HostAddress& address,
+              const uint16_t port,
+              const int backlog);
 
   TcpSocketConnection Accept();
 
  private:
   class Impl;
-
-  Impl* impl_;
+  Pimpl<Impl> impl_;
 };
+
+////////////////////////////////////////////////////////////////////////////////
+/// Implementation
+////////////////////////////////////////////////////////////////////////////////
+
+inline bool TcpSocketConnection::Send(const uint8_t* buffer,
+                                      const std::size_t size,
+                                      std::size_t& bytes_written) {
+  return Send(reinterpret_cast<const char*>(buffer), size, bytes_written);
+}
 
 }  // namespace utils
 
