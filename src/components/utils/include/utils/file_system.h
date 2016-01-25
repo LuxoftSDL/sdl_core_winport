@@ -40,25 +40,27 @@
 
 namespace file_system {
 
+typedef uint64_t FileSizeType;
+
 /**
  * @brief Get available disc space.
  * @param utf8_path path to directory
  * @return free disc space.
  */
-uint64_t GetAvailableDiskSpace(const std::string& utf8_path);
+FileSizeType GetAvailableDiskSpace(const std::string& utf8_path);
 
 /*
  * @brief Get size of current directory
  * @param utf8_path path to directory
  */
-uint64_t DirectorySize(const std::string& utf8_path);
+FileSizeType DirectorySize(const std::string& utf8_path);
 
 /*
  * @brief Get size of current file
  * @param utf8_path path to file
  * @return size of file, return 0 if file not exist
  */
-uint64_t FileSize(const std::string& utf8_path);
+FileSizeType FileSize(const std::string& utf8_path);
 
 /**
  * @brief Creates directory

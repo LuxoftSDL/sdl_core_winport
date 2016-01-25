@@ -46,26 +46,28 @@
 
 CREATE_LOGGERPTR_GLOBAL(logger_, "Utils")
 
-uint64_t file_system::GetAvailableDiskSpace(const std::string& utf8_path) {
+file_system::FileSizeType file_system::GetAvailableDiskSpace(
+    const std::string& utf8_path) {
   struct statvfs fsInfo = {0};
   if (statvfs(utf8_path.c_str(), &fsInfo) == 0) {
     return fsInfo.f_bsize * fsInfo.f_bfree;
   } else {
-    return 0;
+    return 0u;
   }
 }
 
-uint64_t file_system::FileSize(const std::string& utf8_path) {
+file_system::FileSizeType file_system::FileSize(const std::string& utf8_path) {
   if (file_system::FileExists(utf8_path)) {
     struct stat file_info = {0};
     stat(utf8_path.c_str(), &file_info);
     return file_info.st_size;
   }
-  return 0;
+  return 0u;
 }
 
-uint64_t file_system::DirectorySize(const std::string& utf8_path) {
-  uint64_t size = 0;
+file_system::FileSizeType file_system::DirectorySize(
+    const std::string& utf8_path) {
+  FileSizeType size = 0u;
   int32_t return_code = 0;
   DIR* directory = NULL;
 

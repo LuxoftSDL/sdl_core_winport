@@ -106,7 +106,8 @@ std::string ConvertWStringToUTF8(const std::wstring& wide_str) {
 
 }  // namespace
 
-uint64_t file_system::GetAvailableDiskSpace(const std::string& utf8_path) {
+file_system::FileSizeType file_system::GetAvailableDiskSpace(
+    const std::string& utf8_path) {
   DWORD sectors_per_cluster;
   DWORD bytes_per_sector;
   DWORD number_of_free_clusters;
@@ -117,19 +118,19 @@ uint64_t file_system::GetAvailableDiskSpace(const std::string& utf8_path) {
                                      &number_of_free_clusters,
                                      NULL);
   if (0 == res) {
-    return 0;
+    return 0u;
   }
   return number_of_free_clusters * sectors_per_cluster * bytes_per_sector;
 }
 
-uint64_t file_system::FileSize(const std::string& utf8_path) {
+file_system::FileSizeType file_system::FileSize(const std::string& utf8_path) {
   WIN32_FIND_DATAW ffd;
   HANDLE find = FindFirstFileW(ConvertUTF8ToWString(utf8_path).c_str(), &ffd);
   if (INVALID_HANDLE_VALUE == find) {
-    return 0;
+    return 0u;
   }
 
-  uint64_t file_size = 0;
+  FileSizeType file_size = 0u;
   file_size |= ffd.nFileSizeHigh;
   file_size <<= 32;
   file_size |= ffd.nFileSizeLow;
@@ -138,8 +139,9 @@ uint64_t file_system::FileSize(const std::string& utf8_path) {
   return file_size;
 }
 
-uint64_t file_system::DirectorySize(const std::string& utf8_path) {
-  uint64_t size = 0;
+file_system::FileSizeType file_system::DirectorySize(
+    const std::string& utf8_path) {
+  FileSizeType size = 0u;
   if (!DirectoryExists(utf8_path)) {
     return size;
   }
@@ -160,7 +162,7 @@ uint64_t file_system::DirectorySize(const std::string& utf8_path) {
         size += DirectorySize(utf8_file_name);
       }
     } else {
-      uint64_t file_size = 0;
+      FileSizeType file_size = 0u;
       file_size |= ffd.nFileSizeHigh;
       file_size <<= 32;
       file_size |= ffd.nFileSizeLow;

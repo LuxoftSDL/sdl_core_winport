@@ -66,21 +66,24 @@ std::wstring ConvertUTF8ToWString(const std::string& utf8_str) {
 
 }  // namespace
 
-uint64_t file_system::GetAvailableDiskSpace(const std::string& utf8_path) {
+file_system::FileSizeType file_system::GetAvailableDiskSpace(
+    const std::string& utf8_path) {
   QStorageInfo mstor(QString(utf8_path.c_str()));
   qint64 b_aval = mstor.bytesAvailable();
-  return static_cast<uint64_t>(b_aval);
+  return static_cast<FileSizeType>(b_aval);
 }
 
-uint64_t file_system::FileSize(const std::string& utf8_path) {
+file_system::FileSizeType file_system::FileSize(const std::string& utf8_path) {
   if (file_system::FileExists(utf8_path)) {
-    return static_cast<uint64_t>(QFileInfo(QString(utf8_path.c_str())).size());
+    return static_cast<FileSizeType>(
+        QFileInfo(QString(utf8_path.c_str())).size());
   }
-  return 0;
+  return 0u;
 }
 
-uint64_t file_system::DirectorySize(const std::string& utf8_path) {
-  quint64 size = 0;
+file_system::FileSizeType file_system::DirectorySize(
+    const std::string& utf8_path) {
+  FileSizeType size = 0u;
   QFileInfo str_info(QString(utf8_path.c_str()));
   if (str_info.isDir()) {
     QDir dir(QString(utf8_path.c_str()));
@@ -91,11 +94,11 @@ uint64_t file_system::DirectorySize(const std::string& utf8_path) {
       if (fileInfo.isDir()) {
         size += DirectorySize(fileInfo.absoluteFilePath().toStdString());
       } else {
-        size += fileInfo.size();
+        size += static_cast<FileSizeType>(fileInfo.size());
       }
     }
   }
-  return static_cast<uint64_t>(size);
+  return size;
 }
 
 std::string file_system::CreateDirectory(const std::string& utf8_path) {
