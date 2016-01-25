@@ -46,12 +46,14 @@ namespace date_time {
 
 enum TimeCompare { LESS, EQUAL, GREATER };
 
+const uint64_t kDeltaEpochInMicrosecs = 11644473600000000u;
+const uint32_t kMillisecondsInSecond = 1000u;
+const uint32_t kMicrosecondsInMillisecond = 1000u;
+const uint32_t kMicrosecondsInSecond =
+    kMillisecondsInSecond * kMicrosecondsInMillisecond;
+
 class DateTime {
  public:
-  static const int32_t MILLISECONDS_IN_SECOND = 1000;
-  static const int32_t MICROSECONDS_IN_MILLISECONDS = 1000;
-  static const int32_t MICROSECONDS_IN_SECOND = 1000 * 1000;
-
   static TimevalStruct getCurrentTime();
 
   // return SECONDS count

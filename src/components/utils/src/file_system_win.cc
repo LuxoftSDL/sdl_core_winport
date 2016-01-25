@@ -40,9 +40,9 @@
 #include <algorithm>
 
 #include "utils/winhdr.h"
-#include "Shlwapi.h"
 #include "utils/file_system.h"
 #include "utils/string_utils.h"
+#include "utils/date_time.h"
 
 namespace {
 
@@ -130,11 +130,8 @@ file_system::FileSizeType file_system::FileSize(const std::string& utf8_path) {
     return 0u;
   }
 
-  FileSizeType file_size = 0u;
-  file_size |= ffd.nFileSizeHigh;
-  file_size <<= 32;
-  file_size |= ffd.nFileSizeLow;
-
+  FileSizeType file_size =
+      (ffd.nFileSizeHigh * (MAXDWORD + 1)) + ffd.nFileSizeLow;
   FindClose(find);
   return file_size;
 }
@@ -162,12 +159,7 @@ file_system::FileSizeType file_system::DirectorySize(
         size += DirectorySize(utf8_file_name);
       }
     } else {
-      FileSizeType file_size = 0u;
-      file_size |= ffd.nFileSizeHigh;
-      file_size <<= 32;
-      file_size |= ffd.nFileSizeLow;
-
-      size += file_size;
+      size += (ffd.nFileSizeHigh * (MAXDWORD + 1)) + ffd.nFileSizeLow;
     }
   } while (FindNextFileW(find, &ffd) != 0);
 
@@ -428,6 +420,11 @@ uint64_t file_system::GetFileModificationTime(const std::string& utf8_path) {
   modification_time |= ffd.ftLastWriteTime.dwHighDateTime;
   modification_time <<= 32;
   modification_time |= ffd.ftLastWriteTime.dwLowDateTime;
+
+  // Convert to microseconds by dividing by 10
+  modification_time /= 10;
+  modification_time -= date_time::kDeltaEpochInMicrosecs;
+  modification_time /= date_time::kMicrosecondsInSecond;
 
   FindClose(find);
   return modification_time;

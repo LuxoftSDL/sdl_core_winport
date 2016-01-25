@@ -224,7 +224,7 @@ bool CreateFile(const std::string& utf8_path);
 /**
  * @brief Get modification time of file
  * @param utf8_path Path to file
- * @return Modification time in nanoseconds
+ * @return Modification time in seconds
  */
 uint64_t GetFileModificationTime(const std::string& utf8_path);
 

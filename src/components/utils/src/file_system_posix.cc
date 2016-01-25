@@ -390,7 +390,7 @@ uint64_t file_system::GetFileModificationTime(const std::string& utf8_path) {
   struct stat info;
   stat(utf8_path.c_str(), &info);
 #ifndef __QNXNTO__
-  return static_cast<uint64_t>(info.st_mtim.tv_nsec);
+  return static_cast<uint64_t>(info.st_mtim.tv_sec);
 #else
   return static_cast<uint64_t>(info.st_mtime);
 #endif

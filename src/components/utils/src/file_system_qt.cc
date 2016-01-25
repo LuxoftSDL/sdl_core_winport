@@ -32,6 +32,7 @@
 #include "utils/file_system.h"
 #include "utils/logger.h"
 #include "utils/string_utils.h"
+#include "utils/date_time.h"
 
 #include <QtCore>
 #include <QStorageInfo>
@@ -267,7 +268,8 @@ bool file_system::CreateFile(const std::string& utf8_path) {
 
 uint64_t file_system::GetFileModificationTime(const std::string& utf8_path) {
   QFileInfo f(QString(utf8_path.c_str()));
-  return static_cast<uint64_t>(f.lastModified().toMSecsSinceEpoch());
+  return static_cast<uint64_t>(f.lastModified().toMSecsSinceEpoch() /
+                               date_time::kMillisecondsInSecond);
 }
 
 bool file_system::CopyFile(const std::string& utf8_src_path,
