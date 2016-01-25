@@ -74,11 +74,8 @@ file_system::FileSizeType file_system::GetAvailableDiskSpace(
 }
 
 file_system::FileSizeType file_system::FileSize(const std::string& utf8_path) {
-  if (file_system::FileExists(utf8_path)) {
-    return static_cast<FileSizeType>(
-        QFileInfo(QString(utf8_path.c_str())).size());
-  }
-  return 0u;
+  return static_cast<FileSizeType>(
+      QFileInfo(QString(utf8_path.c_str())).size());
 }
 
 file_system::FileSizeType file_system::DirectorySize(
