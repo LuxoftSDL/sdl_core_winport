@@ -128,8 +128,7 @@ void Close(std::ofstream* file_stream);
 
 /**
   * @brief Returns current working directory path
-  * If filename begins with "/", return unchanged filename
-  * @return returns full file path.
+  * @return Current working directory path
   */
 std::string CurrentWorkingDirectory();
 

@@ -83,9 +83,9 @@ void ListFilesRequest::Run() {
        ++it) {
     // In AppFile to application stored full path to file. In message required
     // to write only name file.
-    // Plus one required for move to next letter after '/'.
+    // Plus one required for move to next letter after delimiter.
     (*message_)[strings::msg_params][strings::filenames][i++] =
-        it->first.substr(it->first.find_last_of('/') + 1);
+        file_system::RetrieveFileNameFromPath(it->first);
   }
   (*message_)[strings::params][strings::message_type] =
       application_manager::MessageType::kResponse;

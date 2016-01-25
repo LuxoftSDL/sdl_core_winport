@@ -1473,7 +1473,7 @@ void Profile::UpdateValues() {
                   kPreloadedPTKey);
 
   preloaded_pt_file_ =
-      app_config_folder_ + file_system::GetPathDelimiter() + preloaded_pt_file_;
+      file_system::ConcatPath(app_config_folder_, preloaded_pt_file_);
 
   LOG_UPDATED_VALUE(preloaded_pt_file_, kPreloadedPTKey, kPolicySection);
 
