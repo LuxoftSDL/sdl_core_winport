@@ -265,10 +265,7 @@ const std::string file_system::ConvertPathForURL(const std::string& utf8_path) {
 
 bool file_system::CreateFile(const std::string& utf8_path) {
   QFile file(QString(utf8_path.c_str()));
-  if (!file.open(QIODevice::WriteOnly)) {
-    return false;
-  }
-  return true;
+  return file.open(QIODevice::WriteOnly));
 }
 
 uint64_t file_system::GetFileModificationTime(const std::string& utf8_path) {
