@@ -113,7 +113,7 @@ std::string file_system::CreateDirectory(const std::string& utf8_path) {
 }
 
 bool file_system::CreateDirectoryRecursively(const std::string& utf8_path) {
-  size_t pos = 0;
+  std::size_t pos = 0;
   bool ret_val = true;
 
   while (ret_val == true && pos <= utf8_path.length()) {
@@ -172,7 +172,7 @@ std::ofstream* file_system::Open(const std::string& utf8_path,
 
 bool file_system::Write(std::ofstream* const file_stream,
                         const uint8_t* data,
-                        size_t data_size) {
+                        std::size_t data_size) {
   if (!file_stream) {
     return false;
   }
@@ -187,7 +187,7 @@ void file_system::Close(std::ofstream* file_stream) {
 }
 
 std::string file_system::CurrentWorkingDirectory() {
-  const size_t filename_max_length = 1024;
+  const std::size_t filename_max_length = 1024;
   char path[filename_max_length];
   if (0 == getcwd(path, filename_max_length)) {
     LOG4CXX_WARN(logger_, "Could not get CWD");
@@ -358,7 +358,7 @@ const std::string file_system::ConvertPathForURL(const std::string& utf8_path) {
     it_sym = reserved_symbols.begin();
     for (; it_sym != it_sym_end; ++it_sym) {
       if (*it_path == *it_sym) {
-        const size_t size = 100;
+        const std::size_t size = 100;
         char percent_value[size];
         snprintf(percent_value, size, "%%%x", *it_path);
         converted_path += percent_value;
@@ -444,8 +444,8 @@ std::string file_system::ConcatPath(const std::string& utf8_path1,
 
 std::string file_system::RetrieveFileNameFromPath(
     const std::string& utf8_path) {
-  size_t slash_pos = utf8_path.find_last_of("/", utf8_path.length());
-  size_t back_slash_pos = utf8_path.find_last_of("\\", utf8_path.length());
+  std::size_t slash_pos = utf8_path.find_last_of("/", utf8_path.length());
+  std::size_t back_slash_pos = utf8_path.find_last_of("\\", utf8_path.length());
   return utf8_path.substr(
       std::max(slash_pos != std::string::npos ? slash_pos + 1 : 0,
                back_slash_pos != std::string::npos ? back_slash_pos + 1 : 0));

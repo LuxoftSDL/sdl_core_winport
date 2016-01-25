@@ -147,7 +147,7 @@ std::ofstream* file_system::Open(const std::string& utf8_path,
 
 bool file_system::Write(std::ofstream* const file_stream,
                         const uint8_t* data,
-                        size_t data_size) {
+                        std::size_t data_size) {
   if (!file_stream) {
     return false;
   }

@@ -118,7 +118,7 @@ std::ofstream* Open(const std::string& utf8_path,
   */
 bool Write(std::ofstream* const file_stream,
            const uint8_t* data,
-           size_t data_size);
+           std::size_t data_size);
 
 /**
   * @brief Closes file stream
