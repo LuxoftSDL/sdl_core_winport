@@ -2993,7 +2993,7 @@ mobile_apis::Result::eType ApplicationManagerImpl::SaveBinary(
 
   const std::string full_file_path =
       file_system::ConcatPath(file_path, file_name);
-  int64_t file_size = file_system::FileSize(full_file_path);
+  uint64_t file_size = file_system::FileSize(full_file_path);
   std::ofstream* file_stream;
   if (offset != 0) {
     if (file_size != offset) {
@@ -3026,20 +3026,20 @@ mobile_apis::Result::eType ApplicationManagerImpl::SaveBinary(
   return mobile_apis::Result::SUCCESS;
 }
 
-uint32_t ApplicationManagerImpl::GetAvailableSpaceForApp(
+uint64_t ApplicationManagerImpl::GetAvailableSpaceForApp(
     const std::string& folder_name) {
   const uint32_t app_quota = profile::Profile::instance()->app_dir_quota();
   std::string app_storage_path = file_system::ConcatPath(
       profile::Profile::instance()->app_storage_folder(), folder_name);
 
   if (file_system::DirectoryExists(app_storage_path)) {
-    size_t size_of_directory = file_system::DirectorySize(app_storage_path);
+    uint64_t size_of_directory = file_system::DirectorySize(app_storage_path);
     if (app_quota < size_of_directory) {
       return 0;
     }
 
-    uint32_t current_app_quota = app_quota - size_of_directory;
-    uint32_t available_disk_space =
+    uint64_t current_app_quota = app_quota - size_of_directory;
+    uint64_t available_disk_space =
         file_system::GetAvailableDiskSpace(app_storage_path);
 
     if (current_app_quota > available_disk_space) {

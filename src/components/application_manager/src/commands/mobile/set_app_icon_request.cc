@@ -141,8 +141,7 @@ void SetAppIconRequest::CopyToIconStorage(
     return;
   }
 
-  const uint64_t storage_size =
-      static_cast<uint64_t>(file_system::DirectorySize(icon_storage));
+  const uint64_t storage_size = file_system::DirectorySize(icon_storage);
   if (storage_max_size < (file_size + storage_size)) {
     const uint32_t icons_amount =
         profile::Profile::instance()->app_icons_amount_to_remove();
@@ -224,8 +223,7 @@ bool SetAppIconRequest::IsEnoughSpaceForIcon(const uint64_t icon_size) const {
       profile::Profile::instance()->app_icons_folder();
   const uint64_t storage_max_size = static_cast<uint64_t>(
       profile::Profile::instance()->app_icons_folder_max_size());
-  const uint64_t storage_size =
-      static_cast<uint64_t>(file_system::DirectorySize(icon_storage));
+  const uint64_t storage_size = file_system::DirectorySize(icon_storage);
   return storage_max_size >= (icon_size + storage_size);
 }
 

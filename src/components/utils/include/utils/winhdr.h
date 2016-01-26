@@ -58,8 +58,16 @@
 #undef DeleteFile
 #endif
 
+#ifdef CreateDirectory
+#undef CreateDirectory
+#endif
+
 #ifdef RemoveDirectory
 #undef RemoveDirectory
+#endif
+
+#ifdef CopyFile
+#undef CopyFile
 #endif
 
 #ifdef MoveFile

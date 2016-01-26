@@ -52,14 +52,14 @@ int64_t date_time::DateTime::getSecs(const TimevalStruct& time) {
 
 int64_t DateTime::getmSecs(const TimevalStruct& time) {
   const TimevalStruct times = ConvertionUsecs(time);
-  return static_cast<int64_t>(times.tv_sec) * MILLISECONDS_IN_SECOND +
-         times.tv_usec / MICROSECONDS_IN_MILLISECONDS;
+  return static_cast<int64_t>(times.tv_sec) * kMillisecondsInSecond +
+         times.tv_usec / kMicrosecondsInMillisecond;
 }
 
 int64_t DateTime::getuSecs(const TimevalStruct& time) {
   const TimevalStruct times = ConvertionUsecs(time);
-  return static_cast<int64_t>(times.tv_sec) * MILLISECONDS_IN_SECOND *
-             MICROSECONDS_IN_MILLISECONDS +
+  return static_cast<int64_t>(times.tv_sec) * kMillisecondsInSecond *
+             kMicrosecondsInMillisecond +
          times.tv_usec;
 }
 
@@ -81,9 +81,9 @@ int64_t DateTime::calculateTimeDiff(const TimevalStruct& time1,
 }
 
 void DateTime::AddMilliseconds(TimevalStruct& time, uint32_t milliseconds) {
-  const uint32_t sec = milliseconds / MILLISECONDS_IN_SECOND;
+  const uint32_t sec = milliseconds / kMillisecondsInSecond;
   const uint32_t usec =
-      (milliseconds % MILLISECONDS_IN_SECOND) * MICROSECONDS_IN_MILLISECONDS;
+      (milliseconds % kMillisecondsInSecond) * kMicrosecondsInMillisecond;
   time.tv_sec += sec;
   time.tv_usec += usec;
   time = ConvertionUsecs(time);
@@ -126,11 +126,11 @@ TimeCompare date_time::DateTime::compareTime(const TimevalStruct& time1,
 }
 
 TimevalStruct date_time::DateTime::ConvertionUsecs(const TimevalStruct& time) {
-  if (time.tv_usec >= MICROSECONDS_IN_SECOND) {
+  if (time.tv_usec >= kMicrosecondsInSecond) {
     TimevalStruct time1;
     time1.tv_sec = static_cast<int64_t>(time.tv_sec) +
-                   (time.tv_usec / MICROSECONDS_IN_SECOND);
-    time1.tv_usec = static_cast<int64_t>(time.tv_usec) % MICROSECONDS_IN_SECOND;
+                   (time.tv_usec / kMicrosecondsInSecond);
+    time1.tv_usec = static_cast<int64_t>(time.tv_usec) % kMicrosecondsInSecond;
     return time1;
   }
   return time;

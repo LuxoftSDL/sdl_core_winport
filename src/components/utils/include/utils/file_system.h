@@ -40,25 +40,27 @@
 
 namespace file_system {
 
+typedef uint64_t FileSizeType;
+
 /**
  * @brief Get available disc space.
  * @param utf8_path path to directory
  * @return free disc space.
  */
-uint64_t GetAvailableDiskSpace(const std::string& utf8_path);
+FileSizeType GetAvailableDiskSpace(const std::string& utf8_path);
 
 /*
  * @brief Get size of current directory
  * @param utf8_path path to directory
  */
-size_t DirectorySize(const std::string& utf8_path);
+FileSizeType DirectorySize(const std::string& utf8_path);
 
 /*
  * @brief Get size of current file
  * @param utf8_path path to file
  * @return size of file, return 0 if file not exist
  */
-int64_t FileSize(const std::string& utf8_path);
+FileSizeType FileSize(const std::string& utf8_path);
 
 /**
  * @brief Creates directory
@@ -73,13 +75,6 @@ std::string CreateDirectory(const std::string& utf8_path);
  * @return return true if directory was created or already exist
  */
 bool CreateDirectoryRecursively(const std::string& utf8_path);
-
-/**
-  * @brief Checks the file to see whether the file is a directory
-  * @param utf8_path path to file
-  * @return returns true if file is directory.
-  */
-bool IsDirectory(const std::string& utf8_path);
 
 /**
   * @brief Is directory exist
@@ -125,7 +120,7 @@ std::ofstream* Open(const std::string& utf8_path,
   */
 bool Write(std::ofstream* const file_stream,
            const uint8_t* data,
-           uint32_t data_size);
+           std::size_t data_size);
 
 /**
   * @brief Closes file stream
@@ -135,8 +130,7 @@ void Close(std::ofstream* file_stream);
 
 /**
   * @brief Returns current working directory path
-  * If filename begins with "/", return unchanged filename
-  * @return returns full file path.
+  * @return Current working directory path
   */
 std::string CurrentWorkingDirectory();
 
@@ -194,11 +188,11 @@ std::vector<std::string> ListFiles(const std::string& utf8_path);
 /**
  * @brief Creates or overwrites file with given binary contents
  * @param utf8_path path to the file
- * @param contents data to be written into the file
+ * @param data data to be written into the file
  * @returns true if file write succeeded
  */
 bool WriteBinaryFile(const std::string& utf8_path,
-                     const std::vector<uint8_t>& contents);
+                     const std::vector<uint8_t>& data);
 
 /**
   * @brief Reads from file
@@ -230,7 +224,7 @@ bool CreateFile(const std::string& utf8_path);
 /**
  * @brief Get modification time of file
  * @param utf8_path Path to file
- * @return Modification time in nanoseconds
+ * @return Modification time in seconds
  */
 uint64_t GetFileModificationTime(const std::string& utf8_path);
 
@@ -268,12 +262,6 @@ void RemoveDirectoryContent(const std::string& utf8_path);
 bool IsRelativePath(const std::string& utf8_path);
 
 /**
-  * @brief Converts path from relative to absolute
-  * @param utf8_path Path to convert
-  */
-void MakeAbsolutePath(std::string& utf8_path);
-
-/**
   * @brief Returns platform specific path delimiter
   * @return Delimiter string
   */
@@ -289,6 +277,13 @@ std::string ConcatPath(const std::string& utf8_path1,
 std::string ConcatPath(const std::string& utf8_path1,
                        const std::string& utf8_path2,
                        const std::string& utf8_path3);
+
+/**
+  * @brief Concatenates path to current working directory path
+  * @param utf8_path Path to be concatenated
+  * @return Concatenated path string
+  */
+std::string ConcatCurrentWorkingPath(const std::string& utf8_path);
 
 /**
   * @brief Retrieves file name from path by
