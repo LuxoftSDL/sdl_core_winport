@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014-2015, Ford Motor Company
+ * Copyright (c) 2016, Ford Motor Company
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,6 +30,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 #include "media_manager/audio/from_mic_to_file_recorder_thread.h"
+#include <gst/gst.h>
 
 #if defined(OS_POSIX)
 #include <unistd.h>
@@ -42,7 +43,7 @@
 
 CREATE_LOGGERPTR_GLOBAL(logger_, "FromMicToFileRecorderThread")
 
-namespace {
+namespace media_manager {
 
 gboolean HandleBusMessage(GstBus* bus, GstMessage* message, gpointer data) {
   GMainLoop* loop = static_cast<GMainLoop*>(data);
@@ -72,77 +73,93 @@ gboolean HandleBusMessage(GstBus* bus, GstMessage* message, gpointer data) {
   return true;
 }
 
-}  // namespace
+////////////////////////////////////////////////////////////////////////////////
+/// media_manager::FromMicToFileRecorderThread::Impl
+////////////////////////////////////////////////////////////////////////////////
 
-namespace media_manager {
+class FromMicToFileRecorderThread::Impl {
+ public:
+  Impl(const std::string oKey_,
+       const std::string tKey_,
+       const std::string outputFileName,
+       int32_t duration);
+  ~Impl();
 
-GMainLoop* FromMicToFileRecorderThread::loop = NULL;
+  void startGstLoop();
+  void stopGstLoop();
 
-FromMicToFileRecorderThread::FromMicToFileRecorderThread(
-    const std::string& output_file, int32_t duration)
-    : threads::ThreadDelegate()
-    , argc_(5)
-    , argv_(NULL)
-    , oKey_("-o")
-    , tKey_("-t")
-    , sleepThread_(NULL)
-    , outputFileName_(output_file) {
-  LOG4CXX_AUTO_TRACE(logger_);
-  set_record_duration(duration);
-}
+  int32_t getDuration() const;
+  void setDuration(const int32_t duration);
+  void setShouldBeStoped(const bool shouldBeStoped);
 
-FromMicToFileRecorderThread::~FromMicToFileRecorderThread() {
-  LOG4CXX_AUTO_TRACE(logger_);
-  if (sleepThread_) {
-    sleepThread_->join();
-    delete sleepThread_->delegate();
-    threads::DeleteThread(sleepThread_);
-  }
-}
+ private:
+  int32_t argc_;
+  gchar** argv_;
+  GstElement* pipeline_;
+  sync_primitives::atomic_int32 duration_;
 
-void FromMicToFileRecorderThread::set_output_file(
-    const std::string& output_file) {
-  LOG4CXX_AUTO_TRACE(logger_);
-  outputFileName_ = output_file;
-}
+  bool shouldBeStoped_;
+  sync_primitives::Lock stopFlagLock_;
 
-void FromMicToFileRecorderThread::set_record_duration(int32_t duration) {
-  LOG4CXX_AUTO_TRACE(logger_);
+  static GMainLoop* loop;
+  DISALLOW_COPY_AND_ASSIGN(Impl);
+};
+}  // namespace media_manager
+
+GMainLoop* media_manager::FromMicToFileRecorderThread::Impl::loop = NULL;
+
+media_manager::FromMicToFileRecorderThread::Impl::Impl(
+    const std::string oKey_,
+    const std::string tKey_,
+    const std::string outputFileName,
+    int32_t duration) {
+  argc_ = 5;
+  argv_ = new gchar*[argc_];
 
   std::stringstream stringStream;
   stringStream << duration / 1000;
-  durationString_ = stringStream.str();
-}
-
-void FromMicToFileRecorderThread::initArgs() {
-  LOG4CXX_AUTO_TRACE(logger_);
-
-  argv_ = new gchar*[argc_];
+  std::string durationString = stringStream.str();
 
   argv_[0] = new gchar[14];
   argv_[1] = new gchar[3];
-  argv_[2] = new gchar[outputFileName_.length() + 1];
+  argv_[2] = new gchar[outputFileName.length() + 1];
   argv_[3] = new gchar[3];
-  argv_[4] = new gchar[durationString_.length() + 1];
+  argv_[4] = new gchar[durationString.length() + 1];
 
   argv_[0] = const_cast<gchar*>(std::string("AudioManager").c_str());
   argv_[1] = const_cast<gchar*>(oKey_.c_str());
-  argv_[2] = const_cast<gchar*>(outputFileName_.c_str());
+  argv_[2] = const_cast<gchar*>(outputFileName.c_str());
   argv_[3] = const_cast<gchar*>(tKey_.c_str());
-  argv_[4] = const_cast<gchar*>(durationString_.c_str());
+  argv_[4] = const_cast<gchar*>(durationString.c_str());
 }
 
-void FromMicToFileRecorderThread::threadMain() {
-  LOG4CXX_AUTO_TRACE(logger_);
+media_manager::FromMicToFileRecorderThread::Impl::~Impl() {}
 
-  {
-    sync_primitives::AutoLock auto_lock(stopFlagLock_);
-    shouldBeStoped_ = false;
+void media_manager::FromMicToFileRecorderThread::Impl::setDuration(
+    const int32_t duration) {
+  duration_ = duration;
+}
+
+int32_t media_manager::FromMicToFileRecorderThread::Impl::getDuration() const {
+  return duration_;
+}
+
+void media_manager::FromMicToFileRecorderThread::Impl::setShouldBeStoped(
+    const bool shouldBeStoped) {
+  sync_primitives::AutoLock auto_lock(stopFlagLock_);
+  shouldBeStoped_ = shouldBeStoped;
+}
+
+void media_manager::FromMicToFileRecorderThread::Impl::stopGstLoop() {
+  if (loop) {
+    if (g_main_loop_is_running(loop)) {
+      gst_element_send_event(pipeline_, gst_event_new_eos());
+    }
   }
+}
 
-  initArgs();
-
-  GstElement* pipeline;
+void media_manager::FromMicToFileRecorderThread::Impl::startGstLoop() {
+  LOG4CXX_AUTO_TRACE(logger_);
   GstElement *alsasrc, *wavenc, *filesink;
   GstBus* bus;
 
@@ -178,6 +195,7 @@ void FromMicToFileRecorderThread::threadMain() {
     g_thread_init(NULL);
   }
 #endif
+  duration_ = static_cast<int32_t>(duration);
   // Parse the arguments
   context = g_option_context_new("-- M-AUDIO RAW");
   g_option_context_add_main_entries(context, entries, NULL);
@@ -198,10 +216,10 @@ void FromMicToFileRecorderThread::threadMain() {
   // Initialize gstreamer and setup the main loop information
   gst_init(&argc_, &argv_);
 
-  pipeline = gst_pipeline_new("vga2usb-h264");
+  pipeline_ = gst_pipeline_new("vga2usb-h264");
 
   // Set up error handling
-  bus = gst_pipeline_get_bus(GST_PIPELINE(pipeline));
+  bus = gst_pipeline_get_bus(GST_PIPELINE(pipeline_));
   gst_bus_add_watch(bus, HandleBusMessage, NULL);
   gst_object_unref(bus);
 
@@ -220,15 +238,15 @@ void FromMicToFileRecorderThread::threadMain() {
   g_object_set(G_OBJECT(filesink), "location", outfile, NULL);
 
   // Add the elements to the pipeline
-  gst_bin_add_many(GST_BIN(pipeline), alsasrc, wavenc, filesink, NULL);
+  gst_bin_add_many(GST_BIN(pipeline_), alsasrc, wavenc, filesink, NULL);
 
   // Link the elements
   gst_element_link_many(alsasrc, wavenc, filesink, NULL);
 
-  gst_element_set_state(pipeline, GST_STATE_PLAYING);
+  gst_element_set_state(pipeline_, GST_STATE_PLAYING);
 
   LOG4CXX_TRACE(logger_, "Initializing pipeline ...");
-  while (GST_STATE(pipeline) != GST_STATE_PLAYING) {
+  while (GST_STATE(pipeline_) != GST_STATE_PLAYING) {
     bool shouldBeStoped;
     {
       // FIXME(dchmerev@luxoft.com):
@@ -237,8 +255,8 @@ void FromMicToFileRecorderThread::threadMain() {
     }
 
     if (shouldBeStoped) {
-      gst_element_set_state(pipeline, GST_STATE_NULL);
-      gst_object_unref(GST_OBJECT(pipeline));
+      gst_element_set_state(pipeline_, GST_STATE_NULL);
+      gst_object_unref(GST_OBJECT(pipeline_));
       g_option_context_free(context);
 
       if (argv_) {
@@ -250,25 +268,14 @@ void FromMicToFileRecorderThread::threadMain() {
   }
   LOG4CXX_TRACE(logger_, "Pipeline started ...\n");
 
-  // Start up a timer for the pipeline
-  if (duration > 0) {
-    GstTimeout timeout;
-    timeout.pipeline = pipeline;
-    timeout.duration = duration;
-
-    sleepThread_ =
-        threads::CreateThread("SleepThread", new SleepThreadDelegate(timeout));
-    sleepThread_->start();
-  }
-
   loop = g_main_loop_new(NULL, FALSE);
 
   g_main_loop_run(loop);
 
-  gst_element_set_state(pipeline, GST_STATE_NULL);
+  gst_element_set_state(pipeline_, GST_STATE_NULL);
 
   LOG4CXX_TRACE(logger_, "Deleting pipeline\n");
-  gst_object_unref(GST_OBJECT(pipeline));
+  gst_object_unref(GST_OBJECT(pipeline_));
   g_main_loop_unref(loop);
   g_option_context_free(context);
 
@@ -276,44 +283,70 @@ void FromMicToFileRecorderThread::threadMain() {
     delete[] argv_;
     argv_ = NULL;
   }
-
   loop = NULL;
 }
 
-FromMicToFileRecorderThread::SleepThreadDelegate::SleepThreadDelegate(
-    GstTimeout timeout)
-    : threads::ThreadDelegate(), timeout_(timeout) {}
+////////////////////////////////////////////////////////////////////////////////
+/// media_manager::FromMicToFileRecorderThread::Impl
+////////////////////////////////////////////////////////////////////////////////
 
-void FromMicToFileRecorderThread::SleepThreadDelegate::threadMain() {
-  LOG4CXX_TRACE(logger_, "Sleep for " << timeout_.duration << " seconds");
+media_manager::FromMicToFileRecorderThread::FromMicToFileRecorderThread(
+    const std::string& output_file, int32_t duration)
+    : threads::ThreadDelegate()
+    , impl_(new Impl("-o", "-t", output_file, duration)) {
+  LOG4CXX_AUTO_TRACE(logger_);
+  sleep_thread_ = FromMicToFileRecorderThreadPtr(
+      new timer::TimerThread<FromMicToFileRecorderThread>(
+          "AudioFromMicSuspend",
+          this,
+          &FromMicToFileRecorderThread::onFromMicToFileRecorderThreadSuspned,
+          true));
+}
 
-  threads::sleep(timeout_.duration * 1000);
+media_manager::FromMicToFileRecorderThread::~FromMicToFileRecorderThread() {
+  LOG4CXX_AUTO_TRACE(logger_);
+  if (sleep_thread_) {
+    sleep_thread_->suspend();
+  }
+  delete impl_;
+  impl_ = NULL;
+}
 
-  if (NULL != loop) {
-    if (g_main_loop_is_running(loop)) {
-      gst_element_send_event(timeout_.pipeline, gst_event_new_eos());
-    }
+void media_manager::FromMicToFileRecorderThread::setRecordDuration(
+    int32_t duration) {
+  LOG4CXX_AUTO_TRACE(logger_);
+  impl_->setDuration(duration);
+}
+
+void media_manager::FromMicToFileRecorderThread::threadMain() {
+  LOG4CXX_AUTO_TRACE(logger_);
+
+  impl_->setShouldBeStoped(false);
+  impl_->startGstLoop();
+
+  // Start up a timer for the pipeline
+  if (impl_->getDuration() > 0) {
+    sleep_thread_->start(impl_->getDuration());
   }
 }
 
-void FromMicToFileRecorderThread::exitThreadMain() {
+void media_manager::FromMicToFileRecorderThread::
+    onFromMicToFileRecorderThreadSuspned() {
+  LOG4CXX_AUTO_TRACE(logger_);
+  impl_->stopGstLoop();
+  LOG4CXX_TRACE(logger_, "Set should be stopped flag\n");
+  impl_->setShouldBeStoped(true);
+}
+
+void media_manager::FromMicToFileRecorderThread::exitThreadMain() {
   LOG4CXX_AUTO_TRACE(logger_);
 
-  if (NULL != loop) {
-    if (g_main_loop_is_running(loop)) {
-      LOG4CXX_TRACE(logger_, "Quit loop\n");
-      g_main_loop_quit(loop);
-    }
-  }
-
-  if (sleepThread_) {
+  impl_->stopGstLoop();
+  if (sleep_thread_) {
     LOG4CXX_DEBUG(logger_, "Stop sleep thread\n");
-    sleepThread_->stop();
+    sleep_thread_->stop();
   }
 
   LOG4CXX_TRACE(logger_, "Set should be stopped flag\n");
-  sync_primitives::AutoLock auto_lock(stopFlagLock_);
-  shouldBeStoped_ = true;
+  impl_->setShouldBeStoped(true);
 }
-
-}  // namespace media_manager

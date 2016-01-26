@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014-2015, Ford Motor Company
+ * Copyright (c) 2016, Ford Motor Company
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -33,12 +33,14 @@
 #ifndef SRC_COMPONENTS_MEDIA_MANAGER_INCLUDE_MEDIA_MANAGER_AUDIO_FROM_MIC_TO_FILE_RECORDER_THREAD_H_
 #define SRC_COMPONENTS_MEDIA_MANAGER_INCLUDE_MEDIA_MANAGER_AUDIO_FROM_MIC_TO_FILE_RECORDER_THREAD_H_
 
-#include <gst/gst.h>
 #include <string>
 
 #include "utils/lock.h"
 #include "utils/threads/thread.h"
 #include "utils/threads/thread_delegate.h"
+#include "utils/atomic_object.h"
+#include "utils/timer_thread.h"
+#include "utils/shared_ptr.h"
 
 namespace media_manager {
 
@@ -50,43 +52,22 @@ class FromMicToFileRecorderThread : public threads::ThreadDelegate {
 
   void exitThreadMain();
 
-  void set_output_file(const std::string& output_file);
-  void set_record_duration(int32_t duration);
+  void setRecordDuration(int32_t duration);
+
+  void onFromMicToFileRecorderThreadSuspned();
 
  private:
-  int32_t argc_;
-  gchar** argv_;
-
-  const std::string oKey_;
-  const std::string tKey_;
-
-  static GMainLoop* loop;
-  threads::Thread* sleepThread_;
-  bool shouldBeStoped_;
-  sync_primitives::Lock stopFlagLock_;
-
-  std::string outputFileName_, durationString_;
-
-  typedef struct {
-    GstElement* pipeline;
-    gint duration;
-  } GstTimeout;
-
-  void initArgs();
+  class Impl;
+  Impl* impl_;
 
   void psleep(void* timeout);
 
-  class SleepThreadDelegate : public threads::ThreadDelegate {
-   public:
-    explicit SleepThreadDelegate(GstTimeout timeout);
+  std::string output_file_name_;
 
-    void threadMain();
+  typedef utils::SharedPtr<timer::TimerThread<FromMicToFileRecorderThread>>
+      FromMicToFileRecorderThreadPtr;
 
-   private:
-    GstTimeout timeout_;
-
-    DISALLOW_COPY_AND_ASSIGN(SleepThreadDelegate);
-  };
+  FromMicToFileRecorderThreadPtr sleep_thread_;
 
   DISALLOW_COPY_AND_ASSIGN(FromMicToFileRecorderThread);
 };
