@@ -52,9 +52,11 @@ void ConditionalVariable::Broadcast() {
 }
 
 bool ConditionalVariable::Wait(Lock& lock) {
-  // Disable wait recursive mutexes. Added for compatible with Qt.
-  // Actual Qt version (5.5) cannot support waiting on recursive mutex.
+// Disable wait recursive mutexes. Added for compatible with Qt.
+// Actual Qt version (5.5) cannot support waiting on recursive mutex.
+#ifndef NDEBUG
   DCHECK(!lock.is_mutex_recursive_);
+#endif
   lock.AssertTakenAndMarkFree();
   const bool wait_status = cond_var_.wait(lock.mutex_);
   lock.AssertFreeAndMarkTaken();
@@ -72,9 +74,11 @@ bool ConditionalVariable::Wait(AutoLock& auto_lock) {
 ConditionalVariable::WaitStatus ConditionalVariable::WaitFor(
     AutoLock& auto_lock, int32_t milliseconds) {
   Lock& lock = auto_lock.GetLock();
-  // Disable wait recursive mutexes. Added for compatible with Qt.
-  // Actual Qt version (5.5) cannot support waiting on recursive mutex.
+// Disable wait recursive mutexes. Added for compatible with Qt.
+// Actual Qt version (5.5) cannot support waiting on recursive mutex.
+#ifndef NDEBUG
   DCHECK(!lock.is_mutex_recursive_);
+#endif
   lock.AssertTakenAndMarkFree();
   const bool timedwait_status = cond_var_.wait(lock.mutex_, milliseconds);
   lock.AssertFreeAndMarkTaken();
