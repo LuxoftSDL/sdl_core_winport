@@ -279,6 +279,13 @@ std::string ConcatPath(const std::string& utf8_path1,
                        const std::string& utf8_path3);
 
 /**
+  * @brief Concatenates path to current working directory path
+  * @param utf8_path Path to be concatenated
+  * @return Concatenated path string
+  */
+std::string ConcatCurrentWorkingPath(const std::string& utf8_path);
+
+/**
   * @brief Retrieves file name from path by
   * removing all before last path delimiter
   * @param utf8_path Path to process
