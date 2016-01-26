@@ -62,8 +62,8 @@ TimevalStruct DateTime::getCurrentTime() {
 
   // Finally change microseconds to seconds and place in the seconds value.
   // The modulus picks up the microseconds.
-  tv.tv_sec = (long)(tmpres / 1000000UL);
-  tv.tv_usec = (long)(tmpres % 1000000UL);
+  tv.tv_sec = static_cast<long>(tmpres / kMicrosecondsInSecond);
+  tv.tv_usec = static_cast<long>(tmpres % kMicrosecondsInSecond);
 
   return tv;
 }
