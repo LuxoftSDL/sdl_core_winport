@@ -108,6 +108,12 @@ void ThreadedSocketConnection::Abort() {
   terminate_flag_ = true;
 }
 
+void ThreadedSocketConnection::SetSocket(
+    utils::TcpSocketConnection& socket_connection) {
+  socket_connection_ = socket_connection;
+  socket_ = socket_connection_.GetNativeHandle();
+}
+
 TransportAdapter::Error ThreadedSocketConnection::Start() {
   LOG4CXX_AUTO_TRACE(logger_);
 #if defined(OS_POSIX)
