@@ -118,6 +118,22 @@ if(EXTENDED_MEDIA_MODE)
             list(APPEND LIBRARIES
                 ${GSTREAMER_LIBRARIES}
             )
+            list(APPEND AUDIO_SOURCES
+                ${COMPONENTS_DIR}/media_manager/src/audio/from_mic_to_file_recorder_thread.cc
+            )
+        elseif(QT_PORT)
+            find_package(Qt5 REQUIRED Multimedia)
+            list(APPEND AUDIO_SOURCES
+                ${COMPONENTS_DIR}/media_manager/src/audio/from_mic_to_file_recorder_thread_qt.cc
+            )
+            # Files copied for the Qt MOC.
+            # Because MOC is looking headre nearby with *.cc
+            # This headers include in .git exception. see .gitignore
+            EXECUTE_PROCESS(COMMAND ${CMAKE_COMMAND} -E copy_if_different
+                  ${COMPONENTS_DIR}/media_manager/include/media_manager/audio/from_mic_to_file_recorder_thread.h
+                  ${COMPONENTS_DIR}/media_manager/src/audio/from_mic_to_file_recorder_thread.h)
+            SET(CMAKE_INCLUDE_CURRENT_DIR ON)
+            qt5_generate_moc( from_mic_to_file_recorder_thread_qt.cc from_mic_to_file_recorder_thread_qt.moc)
         endif()
     else()
         find_package(Gstreamer-1.0 REQUIRED)
@@ -138,17 +154,18 @@ if(EXTENDED_MEDIA_MODE)
             gobject-2.0
             glib-2.0
         )
+        list(APPEND AUDIO_SOURCES
+            ${COMPONENTS_DIR}/media_manager/src/audio/from_mic_to_file_recorder_thread.cc
+        )
     endif()
-
     list(APPEND AUDIO_INCLUDES
-        ${COMPONENTS_DIR}/media_manager/include/media_manager/audio/from_mic_recorder_adapter.h
-        ${COMPONENTS_DIR}/media_manager/include/media_manager/audio/from_mic_to_file_recorder_thread.h
+       ${COMPONENTS_DIR}/media_manager/include/media_manager/audio/from_mic_recorder_adapter.h
+       ${COMPONENTS_DIR}/media_manager/include/media_manager/audio/from_mic_to_file_recorder_thread.h
+    )
+    list(APPEND AUDIO_SOURCES
+       ${COMPONENTS_DIR}/media_manager/src/audio/from_mic_recorder_adapter.cc
     )
 
-    list(APPEND AUDIO_SOURCES
-        ${COMPONENTS_DIR}/media_manager/src/audio/from_mic_recorder_adapter.cc
-        ${COMPONENTS_DIR}/media_manager/src/audio/from_mic_to_file_recorder_thread.cc
-    )
 endif()
 
 if(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
