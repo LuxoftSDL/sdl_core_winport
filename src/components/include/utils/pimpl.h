@@ -48,6 +48,7 @@ template <typename Impl>
 class Pimpl {
  public:
   Pimpl();
+  Pimpl(Impl* impl);
   Pimpl(Pimpl& rhs);
   ~Pimpl();
 

@@ -37,7 +37,11 @@
 
 template <typename Impl>
 utils::Pimpl<Impl>::Pimpl()
-    : impl_(new Impl) {}
+    : impl_(new Impl()) {}
+
+template <typename Impl>
+utils::Pimpl<Impl>::Pimpl(Impl* impl)
+    : impl_(impl) {}
 
 template <typename Impl>
 utils::Pimpl<Impl>::Pimpl(utils::Pimpl<Impl>& rhs) {
