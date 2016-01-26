@@ -132,7 +132,7 @@ bool file_system::FileExists(const std::string& utf8_path) {
 bool file_system::Write(const std::string& utf8_path,
                         const std::vector<uint8_t>& data,
                         std::ios_base::openmode mode) {
-  if (0 == data.size()) {
+  if (data.empty()) {
     return false;
   }
   std::ofstream file(ConvertUTF8ToWString(utf8_path),
@@ -236,7 +236,7 @@ std::vector<std::string> file_system::ListFiles(const std::string& utf8_path) {
 
 bool file_system::WriteBinaryFile(const std::string& utf8_path,
                                   const std::vector<uint8_t>& data) {
-  if (0 == data.size()) {
+  if (data.empty()) {
     return false;
   }
   QFile file(QString::fromUtf8(utf8_path.c_str()));
