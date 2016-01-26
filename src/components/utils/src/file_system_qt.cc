@@ -50,6 +50,12 @@
 namespace {
 
 /**
+  * Path prefix required by OS Windows to allow
+  * processing file names longer than MAX_PATH (260) characters
+  */
+const std::string kPlatformPathPrefix = "\\\\?\\";
+
+/**
   * @brief Converts UTF-8 string to wide string
   * @param str String to be converted
   * @return Result wide string
@@ -60,7 +66,7 @@ std::wstring ConvertUTF8ToWString(const std::string& utf8_str) {
   }
   QString extended_utf8_str(utils::ReplaceString(utf8_str, "/", "\\").c_str());
   if (!file_system::IsRelativePath(utf8_str)) {
-    extended_utf8_str = "\\\\?\\" + extended_utf8_str;
+    extended_utf8_str = kPlatformPathPrefix + extended_utf8_str;
   }
   return extended_utf8_str.toStdWString();
 }
@@ -125,6 +131,9 @@ bool file_system::FileExists(const std::string& utf8_path) {
 bool file_system::Write(const std::string& utf8_path,
                         const std::vector<uint8_t>& data,
                         std::ios_base::openmode mode) {
+  if (0 == data.size()) {
+    return false;
+  }
   std::ofstream file(ConvertUTF8ToWString(utf8_path),
                      std::ios_base::binary | mode);
   if (!file.is_open()) {
@@ -149,7 +158,7 @@ std::ofstream* file_system::Open(const std::string& utf8_path,
 bool file_system::Write(std::ofstream* const file_stream,
                         const uint8_t* data,
                         std::size_t data_size) {
-  if (!file_stream) {
+  if (!file_stream || !data) {
     return false;
   }
   file_stream->write(reinterpret_cast<const char*>(&data[0]), data_size);
@@ -226,6 +235,9 @@ std::vector<std::string> file_system::ListFiles(const std::string& utf8_path) {
 
 bool file_system::WriteBinaryFile(const std::string& utf8_path,
                                   const std::vector<uint8_t>& data) {
+  if (0 == data.size()) {
+    return false;
+  }
   QFile file(QString(utf8_path.c_str()));
   if (!file.open(QIODevice::WriteOnly)) {
     return false;

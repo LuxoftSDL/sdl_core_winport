@@ -51,9 +51,8 @@ file_system::FileSizeType file_system::GetAvailableDiskSpace(
   struct statvfs fsInfo = {0};
   if (statvfs(utf8_path.c_str(), &fsInfo) == 0) {
     return fsInfo.f_bsize * fsInfo.f_bfree;
-  } else {
-    return 0u;
   }
+  return 0u;
 }
 
 file_system::FileSizeType file_system::FileSize(const std::string& utf8_path) {
@@ -152,6 +151,9 @@ bool file_system::FileExists(const std::string& utf8_path) {
 bool file_system::Write(const std::string& utf8_path,
                         const std::vector<uint8_t>& data,
                         std::ios_base::openmode mode) {
+  if (0 == data.size()) {
+    return false;
+  }
   std::ofstream file(utf8_path, std::ios_base::binary | mode);
   if (!file.is_open()) {
     return false;
@@ -175,7 +177,7 @@ std::ofstream* file_system::Open(const std::string& utf8_path,
 bool file_system::Write(std::ofstream* const file_stream,
                         const uint8_t* data,
                         std::size_t data_size) {
-  if (!file_stream) {
+  if (!file_stream || !data) {
     return false;
   }
   file_stream->write(reinterpret_cast<const char*>(&data[0]), data_size);
@@ -313,9 +315,12 @@ std::vector<std::string> file_system::ListFiles(const std::string& utf8_path) {
 
 bool file_system::WriteBinaryFile(const std::string& utf8_path,
                                   const std::vector<uint8_t>& data) {
-  using namespace std;
-  ofstream output(utf8_path.c_str(), ios_base::binary | ios_base::trunc);
-  output.write(reinterpret_cast<const char*>(&data.front()), data.size());
+  if (0 == data.size()) {
+    return false;
+  }
+  std::ofstream output(utf8_path.c_str(),
+                       std::ios_base::binary | std::ios_base::trunc);
+  output.write(reinterpret_cast<const char*>(&data[0]), data.size());
   return output.good();
 }
 
