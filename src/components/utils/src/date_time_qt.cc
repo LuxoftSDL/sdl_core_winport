@@ -29,28 +29,20 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-
 #include <QDateTime>
 #include <stdint.h>
 
 #include "utils/date_time.h"
 
-namespace {
-const uint64_t kDeltaEpochInMicrosecs = 11644473600000000;
-}  // namespace
-
 namespace date_time {
 
 TimevalStruct DateTime::getCurrentTime() {
-  const qint64 tmpres =
-      QDateTime::currentMSecsSinceEpoch() - kDeltaEpochInMicrosecs;
+  const qint64 tmpres = QDateTime::currentMSecsSinceEpoch();
+
   TimevalStruct tv;
-
-  // Finally change microseconds to seconds and place in the seconds value.
-  // The modulus picks up the microseconds.
-  tv.tv_sec = (long)(tmpres / kMicrosecondsInSecond);
-  tv.tv_usec = (long)(tmpres % kMicrosecondsInSecond);
-
+  tv.tv_sec = static_cast<long>(tmpres / kMillisecondsInSecond);
+  tv.tv_usec = static_cast<long>((tmpres % kMillisecondsInSecond) *
+                                 kMicrosecondsInMillisecond);
   return tv;
 }
 
