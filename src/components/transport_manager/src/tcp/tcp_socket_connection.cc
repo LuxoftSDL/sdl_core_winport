@@ -30,18 +30,7 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-
 #include "transport_manager/tcp/tcp_socket_connection.h"
-
-#include <memory.h>
-#include <signal.h>
-#include <errno.h>
-#ifdef OS_POSIX
-#include <unistd.h>
-#elif defined(OS_WINDOWS)
-#include "utils/winhdr.h"
-#include <io.h>
-#endif
 
 #include "utils/logger.h"
 #include "utils/threads/thread.h"
@@ -93,31 +82,19 @@ bool TcpServerOiginatedSocketConnection::Establish(ConnectError** error) {
     return false;
   }
 
-  const int socket = ::socket(AF_INET, SOCK_STREAM, 0);
-  if (socket < 0) {
-    LOG4CXX_ERROR(logger_, "Failed to create socket");
-    *error = new ConnectError();
-    return false;
-  }
-
-  struct sockaddr_in addr = {0};
-  addr.sin_family = AF_INET;
-  addr.sin_addr.s_addr = tcp_device->in_addr();
-  addr.sin_port = htons(port);
-
-  LOG4CXX_DEBUG(logger_,
-                "Connecting " << inet_ntoa(addr.sin_addr) << ":" << port);
-  if (::connect(socket, (struct sockaddr*)&addr, sizeof(addr)) < 0) {
+  const std::string address = tcp_device->Address().ToString();
+  LOG4CXX_DEBUG(logger_, "Connecting to " << address << ":" << port);
+  utils::TcpSocketConnection connection;
+  if (!connection.Connect(tcp_device->Address(), port)) {
     LOG4CXX_ERROR(logger_,
-                  "Failed to connect for application " << application_handle()
-                                                       << ", error "
-                                                       << errno);
+                  "Failed to connect to the server " << address << ":" << port
+                                                     << " for application "
+                                                     << application_handle());
     *error = new ConnectError();
-    ::close(socket);
     return false;
   }
-
-  set_socket(socket);
+  // Transfer ownership on the connection
+  SetSocket(connection);
   return true;
 }
 
