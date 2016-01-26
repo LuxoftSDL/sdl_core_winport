@@ -42,116 +42,6 @@ namespace media_manager {
 
 CREATE_LOGGERPTR_GLOBAL(logger_, "FromMicToFileRecorderThread")
 
-template <class T>
-static QVector<qreal> getBufferLevels(const T* buffer,
-                                      int frames,
-                                      int channels) {
-  QVector<qreal> max_values;
-  max_values.fill(0, channels);
-
-  for (int i = 0; i < frames; ++i) {
-    for (int j = 0; j < channels; ++j) {
-      qreal value = qAbs(qreal(buffer[i * channels + j]));
-      if (value > max_values.at(j))
-        max_values.replace(j, value);
-    }
-  }
-
-  return max_values;
-}
-
-static qreal getPeakValue(const QAudioFormat& format) {
-  // Note: Only the most common sample formats are supported
-  if (!format.isValid())
-    return qreal(0);
-
-  if (format.codec() != "audio/pcm")
-    return qreal(0);
-
-  switch (format.sampleType()) {
-    case QAudioFormat::Unknown:
-      break;
-    case QAudioFormat::Float:
-      if (format.sampleSize() != 32)  // other sample formats are not supported
-        return qreal(0);
-      return qreal(1.00003);
-    case QAudioFormat::SignedInt:
-      if (format.sampleSize() == 32)
-        return qreal(INT_MAX);
-      if (format.sampleSize() == 16)
-        return qreal(SHRT_MAX);
-      if (format.sampleSize() == 8)
-        return qreal(CHAR_MAX);
-      break;
-    case QAudioFormat::UnSignedInt:
-      if (format.sampleSize() == 32)
-        return qreal(UINT_MAX);
-      if (format.sampleSize() == 16)
-        return qreal(USHRT_MAX);
-      if (format.sampleSize() == 8)
-        return qreal(UCHAR_MAX);
-      break;
-  }
-
-  return qreal(0);
-}
-
-static QVector<qreal> getBufferLevels(const QAudioBuffer& buffer) {
-  QVector<qreal> values;
-
-  if (!buffer.format().isValid() ||
-      buffer.format().byteOrder() != QAudioFormat::LittleEndian)
-    return values;
-
-  if (buffer.format().codec() != "audio/pcm")
-    return values;
-
-  int channelCount = buffer.format().channelCount();
-  values.fill(0, channelCount);
-  qreal peak_value = getPeakValue(buffer.format());
-  if (qFuzzyCompare(peak_value, qreal(0)))
-    return values;
-
-  switch (buffer.format().sampleType()) {
-    case QAudioFormat::Unknown:
-    case QAudioFormat::UnSignedInt:
-      if (buffer.format().sampleSize() == 32)
-        values = getBufferLevels(
-            buffer.constData<quint32>(), buffer.frameCount(), channelCount);
-      if (buffer.format().sampleSize() == 16)
-        values = getBufferLevels(
-            buffer.constData<quint16>(), buffer.frameCount(), channelCount);
-      if (buffer.format().sampleSize() == 8)
-        values = getBufferLevels(
-            buffer.constData<quint8>(), buffer.frameCount(), channelCount);
-      for (int i = 0; i < values.size(); ++i)
-        values[i] = qAbs(values.at(i) - peak_value / 2) / (peak_value / 2);
-      break;
-    case QAudioFormat::Float:
-      if (buffer.format().sampleSize() == 32) {
-        values = getBufferLevels(
-            buffer.constData<float>(), buffer.frameCount(), channelCount);
-        for (int i = 0; i < values.size(); ++i)
-          values[i] /= peak_value;
-      }
-      break;
-    case QAudioFormat::SignedInt:
-      if (buffer.format().sampleSize() == 32)
-        values = getBufferLevels(
-            buffer.constData<qint32>(), buffer.frameCount(), channelCount);
-      if (buffer.format().sampleSize() == 16)
-        values = getBufferLevels(
-            buffer.constData<qint16>(), buffer.frameCount(), channelCount);
-      if (buffer.format().sampleSize() == 8)
-        values = getBufferLevels(
-            buffer.constData<qint8>(), buffer.frameCount(), channelCount);
-      for (int i = 0; i < values.size(); ++i)
-        values[i] /= peak_value;
-      break;
-  }
-  return values;
-}
-
 ////////////////////////////////////////////////////////////////////////////////
 /// media_manager::FromMicToFileRecorderThread::Impl
 ////////////////////////////////////////////////////////////////////////////////
@@ -166,8 +56,6 @@ class FromMicToFileRecorderThread::Impl : public QObject {
   void stopRecord();
   const std::string getDeviceName() const;
 
-  Q_SLOT void processBuffer(const QAudioBuffer&);
-
   int32_t getDuration() const;
   void setDuration(const int32_t duration);
   void setShouldBeStoped(const bool shouldBeStoped);
@@ -181,15 +69,13 @@ class FromMicToFileRecorderThread::Impl : public QObject {
   QString codec_;
   QString container_type_;
 
-  int32_t duration_;
-  bool shouldBeStoped_;
+  QAtomicInt duration_;
+  bool should_be_stoped_;
   sync_primitives::Lock stopFlagLock_;
-  sync_primitives::Lock flagDuration_;
 
  private:
   QAudioEncoderSettings settings_;
   QAudioRecorder* audioRecorder_;
-  QAudioProbe* audioProbe_;
   DISALLOW_COPY_AND_ASSIGN(Impl);
 };
 }  // namespace media_manager
@@ -197,23 +83,17 @@ class FromMicToFileRecorderThread::Impl : public QObject {
 media_manager::FromMicToFileRecorderThread::Impl::Impl(
     const std::string& container)
     : settings_()
-    , audioRecorder_(new QAudioRecorder(QCoreApplication::instance()))
-    , audioProbe_(new QAudioProbe) {
-  QObject::connect(audioProbe_,
-                   SIGNAL(audioBufferProbed(QAudioBuffer)),
-                   this,
-                   SLOT(processBuffer(QAudioBuffer)));
+    , audioRecorder_(new QAudioRecorder(QCoreApplication::instance())) {
   QObject::connect(audioRecorder_,
                    SIGNAL(durationChanged(qint64)),
                    this,
                    SLOT(updateProgress(qint64)));
-  audioProbe_->setSource(audioRecorder_);
-  device_ = audioRecorder_->audioInputs().first();
   LOG4CXX_INFO(logger_, "Add input device:" << device_.toStdString());
 
+  device_ = audioRecorder_->audioInputs().first();
   audioRecorder_->setAudioInput(device_);
-  codec_ = audioRecorder_->supportedAudioCodecs().first();
 
+  codec_ = audioRecorder_->supportedAudioCodecs().first();
   LOG4CXX_INFO(logger_, "Set audio codec:" << codec_.toStdString());
   settings_.setCodec(codec_);
   settings_.setSampleRate(audioRecorder_->supportedAudioSampleRates().first());
@@ -231,8 +111,6 @@ media_manager::FromMicToFileRecorderThread::Impl::Impl(
 media_manager::FromMicToFileRecorderThread::Impl::~Impl() {
   delete audioRecorder_;
   audioRecorder_ = NULL;
-  delete audioProbe_;
-  audioProbe_ = NULL;
 }
 
 void media_manager::FromMicToFileRecorderThread::Impl::updateProgress(
@@ -249,7 +127,6 @@ media_manager::FromMicToFileRecorderThread::Impl::getDeviceName() const {
 
 void media_manager::FromMicToFileRecorderThread::Impl::setDuration(
     const int32_t duration) {
-  sync_primitives::AutoLock auto_lock(flagDuration_);
   duration_ = duration;
 }
 
@@ -260,7 +137,7 @@ int32_t media_manager::FromMicToFileRecorderThread::Impl::getDuration() const {
 void media_manager::FromMicToFileRecorderThread::Impl::setShouldBeStoped(
     const bool shouldBeStoped) {
   sync_primitives::AutoLock auto_lock(stopFlagLock_);
-  shouldBeStoped_ = shouldBeStoped;
+  should_be_stoped_ = shouldBeStoped;
 }
 
 void media_manager::FromMicToFileRecorderThread::Impl::startRecord() {
@@ -270,14 +147,9 @@ void media_manager::FromMicToFileRecorderThread::Impl::startRecord() {
 }
 
 void media_manager::FromMicToFileRecorderThread::Impl::stopRecord() {
-  if (shouldBeStoped_) {
+  if (should_be_stoped_) {
     audioRecorder_->stop();
   }
-}
-
-void media_manager::FromMicToFileRecorderThread::Impl::processBuffer(
-    const QAudioBuffer& buffer) {
-  QVector<qreal> levels = getBufferLevels(buffer);
 }
 
 void media_manager::FromMicToFileRecorderThread::Impl::displayErrorMessage() {
@@ -294,24 +166,27 @@ media_manager::FromMicToFileRecorderThread::FromMicToFileRecorderThread(
     const std::string& output_file, int32_t duration)
     : threads::ThreadDelegate()
     , impl_(new Impl(output_file))
-    , sleepThread_(NULL)
-    , outputFileName_(output_file) {
+    , output_file_name_(output_file) {
   LOG4CXX_AUTO_TRACE(logger_);
-  set_record_duration(duration);
+  setRecordDuration(duration);
+  sleep_thread_ = FromMicToFileRecorderThreadPtr(
+      new timer::TimerThread<FromMicToFileRecorderThread>(
+          "AudioFromMicSuspend",
+          this,
+          &FromMicToFileRecorderThread::onFromMicToFileRecorderThreadSuspned,
+          true));
 }
 
 media_manager::FromMicToFileRecorderThread::~FromMicToFileRecorderThread() {
   LOG4CXX_AUTO_TRACE(logger_);
   delete impl_;
   impl_ = NULL;
-  if (sleepThread_) {
-    sleepThread_->join();
-    delete sleepThread_->delegate();
-    threads::DeleteThread(sleepThread_);
+  if (sleep_thread_) {
+    sleep_thread_->suspend();
   }
 }
 
-void media_manager::FromMicToFileRecorderThread::set_record_duration(
+void media_manager::FromMicToFileRecorderThread::setRecordDuration(
     int32_t duration) {
   LOG4CXX_AUTO_TRACE(logger_);
   impl_->setDuration(duration);
@@ -322,39 +197,35 @@ void media_manager::FromMicToFileRecorderThread::threadMain() {
 
   impl_->setShouldBeStoped(false);
 
-  if (outputFileName_.empty()) {
+  if (output_file_name_.empty()) {
     LOG4CXX_ERROR(logger_, "Must supply destination");
   }
 
   LOG4CXX_TRACE(logger_, "Reading from device: " << impl_->getDeviceName());
-  LOG4CXX_TRACE(logger_, "Saving pipeline output to: " << outputFileName_);
+  LOG4CXX_TRACE(logger_, "Saving pipeline output to: " << output_file_name_);
   LOG4CXX_TRACE(logger_, "Duration set to: " << impl_->getDuration());
 
   LOG4CXX_TRACE(logger_, "Audio capture started ...\n");
 
   if (impl_->getDuration() > 0) {
-    sleepThread_ = threads::CreateThread(
-        "SleepThread", new SleepThreadDelegate(impl_->getDuration()));
-    sleepThread_->start();
+    sleep_thread_->start(impl_->getDuration());
     impl_->startRecord();
   }
 }
 
-media_manager::FromMicToFileRecorderThread::SleepThreadDelegate::
-    SleepThreadDelegate(int32_t timeout)
-    : threads::ThreadDelegate(), timeout_(timeout) {}
-
-void media_manager::FromMicToFileRecorderThread::SleepThreadDelegate::
-    threadMain() {
-  LOG4CXX_TRACE(logger_, "Sleep for " << timeout_ << " seconds");
-  threads::sleep(timeout_ * 1000);
+void media_manager::FromMicToFileRecorderThread::
+    onFromMicToFileRecorderThreadSuspned() {
+  LOG4CXX_AUTO_TRACE(logger_);
+  impl_->stopRecord();
+  LOG4CXX_TRACE(logger_, "Set should be stopped flag\n");
+  impl_->setShouldBeStoped(true);
 }
 
 void media_manager::FromMicToFileRecorderThread::exitThreadMain() {
   LOG4CXX_AUTO_TRACE(logger_);
-  if (sleepThread_) {
+  if (sleep_thread_) {
     LOG4CXX_DEBUG(logger_, "Stop sleep thread\n");
-    sleepThread_->stop();
+    sleep_thread_->stop();
   }
 
   LOG4CXX_TRACE(logger_, "Set should be stopped flag\n");
