@@ -30,34 +30,7 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-
-#ifdef OS_WINDOWS
-#include "utils/winhdr.h"
-#include <io.h>
-#endif
-#ifndef SHUT_RDWR
-#define SHUT_RDWR SD_BOTH
-#endif
-
 #include "transport_manager/tcp/tcp_client_listener.h"
-#include <memory.h>
-#include <signal.h>
-#include <errno.h>
-#include <sys/types.h>
-#ifdef OS_POSIX
-#include <linux/tcp.h>
-#elif defined(__linux__)
-#include <sys/sysctl.h>
-#include <sys/socket.h>
-#include <arpa/inet.h>
-#include <unistd.h>
-#include <sys/time.h>
-#include <netinet/in.h>
-#include <netinet/tcp.h>
-#include <netinet/tcp_var.h>
-#endif  // __linux__
-
-#include <sstream>
 
 #include "utils/logger.h"
 #include "utils/threads/thread.h"
@@ -77,70 +50,22 @@ TcpClientListener::TcpClientListener(TransportAdapterController* controller,
     , enable_keepalive_(enable_keepalive)
     , controller_(controller)
     , thread_(0)
-    , socket_(-1)
+    , server_socket_()
     , thread_stop_requested_(false) {
   thread_ = threads::CreateThread("TcpClientListener",
                                   new ListeningThreadDelegate(this));
 }
 
-namespace {
-
-int CloseSocket(int socket) {
-#if defined(OS_POSIX)
-  return close(socket);
-#elif defined(OS_WINDOWS)
-  int result = closesocket(socket);
-  return result;
-#else
-#error Unsupported platform
-#endif
-}
-
-int GetErrorCode() {
-#if defined(OS_POSIX)
-  return errno;
-#elif defined(OS_WINDOWS)
-  return WSAGetLastError();
-#else
-#error Unsupported platform
-#endif
-}
-
-}  // namespace
-
 TransportAdapter::Error TcpClientListener::Init() {
   LOG4CXX_AUTO_TRACE(logger_);
   thread_stop_requested_ = false;
 
-  socket_ = socket(AF_INET, SOCK_STREAM, 0);
-  if (-1 == socket_) {
-    LOG4CXX_ERROR(logger_,
-                  "Failed to create socket. Error: " << GetErrorCode());
-    return TransportAdapter::FAIL;
-  }
-
-  sockaddr_in server_address = {0};
-  server_address.sin_family = AF_INET;
-  server_address.sin_port = htons(port_);
-  server_address.sin_addr.s_addr = INADDR_ANY;
-
-  int optval = 1;
-  setsockopt(socket_,
-             SOL_SOCKET,
-             SO_REUSEADDR,
-             reinterpret_cast<char*>(&optval),
-             sizeof(optval));
-
-  if (bind(socket_,
-           reinterpret_cast<sockaddr*>(&server_address),
-           sizeof(server_address)) != 0) {
-    LOG4CXX_ERROR(logger_, "bind() failed. Error: " << GetErrorCode());
-    return TransportAdapter::FAIL;
-  }
-
   const int kBacklog = 128;
-  if (0 != listen(socket_, kBacklog)) {
-    LOG4CXX_ERROR(logger_, "listen() failed. Error: " << GetErrorCode());
+  const utils::HostAddress address(utils::SpecialAddress::Any);
+
+  if (!server_socket_.Listen(address, port_, kBacklog)) {
+    LOG4CXX_ERROR(logger_,
+                  "Failed to listen on " << address.ToString() << ":" << port_);
     return TransportAdapter::FAIL;
   }
   return TransportAdapter::OK;
@@ -148,18 +73,9 @@ TransportAdapter::Error TcpClientListener::Init() {
 
 void TcpClientListener::Terminate() {
   LOG4CXX_AUTO_TRACE(logger_);
-  if (socket_ == -1) {
-    LOG4CXX_WARN(logger_, "Socket has been closed");
-    return;
+  if (!server_socket_.Close()) {
+    LOG4CXX_ERROR(logger_, "Failed to close server socket");
   }
-  if (shutdown(socket_, SHUT_RDWR) != 0) {
-    LOG4CXX_ERROR(logger_,
-                  "Failed to shutdown socket. Error: " << GetErrorCode());
-  }
-  if (CloseSocket(socket_) != 0) {
-    LOG4CXX_ERROR(logger_, "Failed to close socket. Error: " << GetErrorCode());
-  }
-  socket_ = -1;
 }
 
 bool TcpClientListener::IsInitialised() const {
@@ -174,128 +90,44 @@ TcpClientListener::~TcpClientListener() {
   Terminate();
 }
 
-void SetKeepaliveOptions(const int fd) {
-  LOG4CXX_AUTO_TRACE(logger_);
-  LOG4CXX_DEBUG(logger_, "fd: " << fd);
-  int yes = 1;
-  int keepidle = 3;  // 3 seconds to disconnection detecting
-  int keepcnt = 5;
-  int keepintvl = 1;
-#ifdef __linux__
-  int user_timeout = 7000;  // milliseconds
-  setsockopt(fd, SOL_SOCKET, SO_KEEPALIVE, &yes, sizeof(yes));
-  setsockopt(fd, IPPROTO_TCP, TCP_KEEPIDLE, &keepidle, sizeof(keepidle));
-  setsockopt(fd, IPPROTO_TCP, TCP_KEEPCNT, &keepcnt, sizeof(keepcnt));
-  setsockopt(fd, IPPROTO_TCP, TCP_KEEPINTVL, &keepintvl, sizeof(keepintvl));
-  setsockopt(
-      fd, IPPROTO_TCP, TCP_USER_TIMEOUT, &user_timeout, sizeof(user_timeout));
-#elif defined(OS_WINDOWS)
-  int user_timeout = 7000;  // milliseconds
-  struct tcp_keepalive settings;
-  settings.onoff = 1;
-  settings.keepalivetime = keepidle * 1000;
-  settings.keepaliveinterval = keepintvl * 1000;
-
-  DWORD bytesReturned;
-  WSAOVERLAPPED overlapped;
-  overlapped.hEvent = NULL;
-  WSAIoctl(fd,
-           SIO_KEEPALIVE_VALS,
-           &settings,
-           sizeof(struct tcp_keepalive),
-           NULL,
-           0,
-           &bytesReturned,
-           &overlapped,
-           NULL);
-#elif defined(__QNX__)  // __linux__
-  // TODO(KKolodiy): Out of order!
-  const int kMidLength = 4;
-  int mib[kMidLength];
-
-  mib[0] = CTL_NET;
-  mib[1] = AF_INET;
-  mib[2] = IPPROTO_TCP;
-  mib[3] = TCPCTL_KEEPIDLE;
-  sysctl(mib, kMidLength, NULL, NULL, &keepidle, sizeof(keepidle));
-
-  mib[0] = CTL_NET;
-  mib[1] = AF_INET;
-  mib[2] = IPPROTO_TCP;
-  mib[3] = TCPCTL_KEEPCNT;
-  sysctl(mib, kMidLength, NULL, NULL, &keepcnt, sizeof(keepcnt));
-
-  mib[0] = CTL_NET;
-  mib[1] = AF_INET;
-  mib[2] = IPPROTO_TCP;
-  mib[3] = TCPCTL_KEEPINTVL;
-  sysctl(mib, kMidLength, NULL, NULL, &keepintvl, sizeof(keepintvl));
-
-  struct timeval tval = {0};
-  tval.tv_sec = keepidle;
-  setsockopt(fd, SOL_SOCKET, SO_KEEPALIVE, &yes, sizeof(yes));
-  setsockopt(fd, IPPROTO_TCP, TCP_KEEPALIVE, &tval, sizeof(tval));
-#endif                  // __QNX__
-}
-
 void TcpClientListener::Loop() {
   LOG4CXX_AUTO_TRACE(logger_);
   while (!thread_stop_requested_) {
-    sockaddr_in client_address;
-#if defined(OS_POSIX)
-    socklen_t client_address_size = sizeof(client_address);
-#elif defined(OS_WINDOWS)
-    int client_address_size = sizeof(client_address);
-#endif
-    const int connection_fd = static_cast<int>(accept(
-        socket_, (struct sockaddr*)&client_address, &client_address_size));
+    // Wait for the new connection
+    utils::TcpSocketConnection client_connection = server_socket_.Accept();
+
     if (thread_stop_requested_) {
       LOG4CXX_DEBUG(logger_, "thread_stop_requested_");
-      CloseSocket(connection_fd);
+      client_connection.Close();
       break;
     }
 
-    if (connection_fd < 0) {
-      LOG4CXX_ERROR(logger_, "accept() failed. Error: " << GetErrorCode());
+    if (!client_connection.IsValid()) {
+      LOG4CXX_ERROR(logger_, "Failed to accept new client connection");
       continue;
     }
 
-#if defined(OS_WINDOWS)
-    // Make windows socket non-block
-    unsigned long socket_mode = 1;
-    if (!ioctlsocket(connection_fd, FIONBIO, &socket_mode) == 0) {
-      LOG4CXX_DEBUG(logger_, "Failed to set socket to non blocking mode");
-      CloseSocket(connection_fd);
-      continue;
-    }
-#endif
-
-    if (AF_INET != client_address.sin_family) {
-      LOG4CXX_DEBUG(logger_, "Address of connected client is invalid");
-      CloseSocket(connection_fd);
-      continue;
-    }
-
-    char device_name[32];
-    strncpy(device_name,
-            inet_ntoa(client_address.sin_addr),
-            sizeof(device_name) / sizeof(device_name[0]));
-    LOG4CXX_INFO(logger_, "Connected client " << device_name);
+    const utils::HostAddress client_address = client_connection.GetAddress();
+    LOG4CXX_INFO(logger_,
+                 "Connected client " << client_address.ToString() << ":"
+                                     << client_connection.GetPort());
 
     if (enable_keepalive_) {
-      SetKeepaliveOptions(connection_fd);
+      client_connection.EnableKeepalive();
     }
 
     TcpDevice* tcp_device =
-        new TcpDevice(client_address.sin_addr.s_addr, device_name);
+        new TcpDevice(client_address, client_address.ToString());
     DeviceSptr device = controller_->AddDevice(tcp_device);
     tcp_device = static_cast<TcpDevice*>(device.get());
     const ApplicationHandle app_handle =
-        tcp_device->AddIncomingApplication(connection_fd);
+        tcp_device->AddApplication(client_connection.GetPort(), true);
 
     TcpSocketConnection* connection(new TcpSocketConnection(
         device->unique_device_id(), app_handle, controller_));
-    connection->set_socket(connection_fd);
+    // Ownership on socket is transfered to connection
+    connection->SetSocket(client_connection);
+
     const TransportAdapter::Error error = connection->Start();
     if (error != TransportAdapter::OK) {
       delete connection;
@@ -307,28 +139,16 @@ void TcpClientListener::StopLoop() {
   LOG4CXX_AUTO_TRACE(logger_);
   thread_stop_requested_ = true;
   // We need to connect to the listening socket to unblock accept() call
-  int byesocket = static_cast<int>(socket(AF_INET, SOCK_STREAM, 0));
-  if (-1 == byesocket) {
+  // "0.0.0.0" is not valid address to connect to.
+  utils::TcpSocketConnection byesocket;
+  utils::HostAddress address(utils::SpecialAddress::LoopBack);
+  if (!byesocket.Connect(address, port_)) {
     LOG4CXX_ERROR(logger_,
-                  "Failed to create bye socket. Error: " << GetErrorCode());
+                  "Bye socket has failed to connect to the server "
+                      << address.ToString()
+                      << ":"
+                      << port_);
   }
-  sockaddr_in server_address = {0};
-  server_address.sin_family = AF_INET;
-  server_address.sin_port = static_cast<USHORT>(htons(port_));
-  // On windows INADDR_ANY is not the correct address for the client side
-  // Here is related discussion
-  // http://stackoverflow.com/questions/22384694/sockets-using-inaddr-any-on-client-side
-  server_address.sin_addr.s_addr = htonl(INADDR_LOOPBACK);
-  if (!connect(byesocket,
-               reinterpret_cast<sockaddr*>(&server_address),
-               sizeof(server_address)) == 0) {
-    LOG4CXX_ERROR(logger_,
-                  "Bye socket has failed to connect to the server. Error: "
-                      << GetErrorCode());
-  }
-
-  shutdown(byesocket, (int)SHUT_RDWR);
-  CloseSocket(byesocket);
 }
 
 TransportAdapter::Error TcpClientListener::StartListening() {

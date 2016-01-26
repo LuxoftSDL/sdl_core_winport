@@ -36,14 +36,10 @@
 #ifndef SRC_COMPONENTS_TRANSPORT_MANAGER_INCLUDE_TRANSPORT_MANAGER_TCP_TCP_CLIENT_LISTENER_H_
 #define SRC_COMPONENTS_TRANSPORT_MANAGER_INCLUDE_TRANSPORT_MANAGER_TCP_TCP_CLIENT_LISTENER_H_
 
-#if defined(OS_WINDOWS)
-#include "utils/winhdr.h"
-#include <iostream>
-#endif
+#include "utils/socket.h"
 
 #include "utils/threads/thread_delegate.h"
 #include "transport_manager/transport_adapter/client_connection_listener.h"
-class Thread;
 
 namespace transport_manager {
 namespace transport_adapter {
@@ -110,11 +106,8 @@ class TcpClientListener : public ClientConnectionListener {
   const bool enable_keepalive_;
   TransportAdapterController* controller_;
   threads::Thread* thread_;
-#ifdef OS_WINDOWS
-  SOCKET socket_;
-#else
-  int socket_;
-#endif
+
+  utils::TcpServerSocket server_socket_;
 
   bool thread_stop_requested_;
 
