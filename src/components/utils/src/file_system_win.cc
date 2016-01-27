@@ -160,8 +160,8 @@ file_system::FileSizeType file_system::DirectorySize(
   do {
     if (FILE_ATTRIBUTE_DIRECTORY == ffd.dwFileAttributes) {
       const std::string utf8_file_name = ConvertWStringToUTF8(ffd.cFileName);
-      if (strncmp(utf8_file_name.c_str(), ".", 1) != 0 &&
-          strncmp(utf8_file_name.c_str(), "..", 2) != 0) {
+      if (utf8_file_name.compare(kCurrentDirectoryEntry) != 0 &&
+          utf8_file_name.compare(kParentDirectoryEntry) != 0) {
         size += DirectorySize(utf8_file_name);
       }
     } else {
@@ -285,8 +285,8 @@ void file_system::RemoveDirectoryContent(const std::string& utf8_path) {
   do {
     if (FILE_ATTRIBUTE_DIRECTORY == ffd.dwFileAttributes) {
       const std::string utf8_file_name = ConvertWStringToUTF8(ffd.cFileName);
-      if (strncmp(utf8_file_name.c_str(), ".", 1) != 0 &&
-          strncmp(utf8_file_name.c_str(), "..", 2) != 0) {
+      if (utf8_file_name.compare(kCurrentDirectoryEntry) != 0 &&
+          utf8_file_name.compare(kParentDirectoryEntry) != 0) {
         RemoveDirectory(utf8_file_name, true);
       }
     } else {

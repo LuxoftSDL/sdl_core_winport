@@ -42,6 +42,9 @@ namespace file_system {
 
 typedef uint64_t FileSizeType;
 
+const std::string kCurrentDirectoryEntry = ".";
+const std::string kParentDirectoryEntry = "..";
+
 /**
  * @brief Get available disc space.
  * @param utf8_path path to directory
