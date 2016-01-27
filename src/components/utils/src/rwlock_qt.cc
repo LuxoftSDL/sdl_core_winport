@@ -29,7 +29,6 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-
 #include "utils/rwlock.h"
 #include "utils/logger.h"
 #include <QReadWriteLock>
@@ -103,7 +102,7 @@ void sync_primitives::RWLock::Impl::AcquireForReading() {
 
 bool sync_primitives::RWLock::Impl::TryAcquireForReading() {
   if (!rwlock_->tryLockForRead()) {
-    LOG4CXX_WARN(logger_, "Failed to acquire rwlock for reading");
+    LOG4CXX_DEBUG(logger_, "Cannot acquire rwlock for reading");
     return false;
   }
   return true;
@@ -115,7 +114,7 @@ void sync_primitives::RWLock::Impl::AcquireForWriting() {
 
 bool sync_primitives::RWLock::Impl::TryAcquireForWriting() {
   if (!rwlock_->tryLockForWrite()) {
-    LOG4CXX_WARN(logger_, "Failed to acquire rwlock for writing");
+    LOG4CXX_DEBUG(logger_, "Cannot acquire rwlock for writing");
     return false;
   }
   return true;
