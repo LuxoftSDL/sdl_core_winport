@@ -33,6 +33,7 @@
 #include "utils/winhdr.h"
 #include "utils/macro.h"
 #include "utils/pimpl_impl.h"
+#include "utils/socket_utils.h"
 
 CREATE_LOGGERPTR_GLOBAL(logger_, "Utils")
 
@@ -140,23 +141,8 @@ bool utils::TcpSocketConnection::Impl::IsValid() const {
 }
 
 void utils::TcpSocketConnection::Impl::EnableKeepalive() {
-  struct tcp_keepalive settings;
-  settings.onoff = 1;
-  settings.keepalivetime = kKeepAliveTime * 1000;
-  settings.keepaliveinterval = kKeepAliveInterval * 1000;
-
-  DWORD bytesReturned;
-  WSAOVERLAPPED overlapped;
-  overlapped.hEvent = NULL;
-  WSAIoctl(tcp_socket_,
-           SIO_KEEPALIVE_VALS,
-           &settings,
-           sizeof(struct tcp_keepalive),
-           NULL,
-           0,
-           &bytesReturned,
-           &overlapped,
-           NULL);
+  utils::EnableKeepalive(
+      GetNativeHandle(), kKeepAliveTimeSec, kKeepAliveIntervalSec);
 }
 
 int utils::TcpSocketConnection::Impl::GetNativeHandle() {

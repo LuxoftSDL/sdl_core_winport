@@ -35,6 +35,7 @@
 
 #include "utils/macro.h"
 #include "utils/pimpl_impl.h"
+#include "utils/socket_utils.h"
 
 CREATE_LOGGERPTR_GLOBAL(logger_, "Utils")
 
@@ -135,7 +136,8 @@ bool utils::TcpSocketConnection::Impl::IsValid() const {
 }
 
 void utils::TcpSocketConnection::Impl::EnableKeepalive() {
-  tcp_socket_->setSocketOption(QAbstractSocket::KeepAliveOption, 1);
+  utils::EnableKeepalive(
+      GetNativeHandle(), kKeepAliveTimeSec, kKeepAliveIntervalSec);
 }
 
 int utils::TcpSocketConnection::Impl::GetNativeHandle() {

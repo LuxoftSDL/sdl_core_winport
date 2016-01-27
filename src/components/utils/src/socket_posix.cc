@@ -29,13 +29,14 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
+#include "utils/socket.h"
+
 #include <sys/socket.h>
 #include <sys/types.h>
 #include <unistd.h>
-#include <algorithm>
 
-#include "utils/socket.h"
 #include "utils/macro.h"
+#include "utils/socket_utils.h"
 
 CREATE_LOGGERPTR_GLOBAL(logger_, "Utils")
 
@@ -138,48 +139,8 @@ bool utils::TcpSocketConnection::Impl::IsValid() const {
 }
 
 void utils::TcpSocketConnection::Impl::EnableKeepalive() {
-  int yes = 1;
-  int keepidle = kKeepAliveTime;
-  int keepcnt = 5;
-  int keepintvl = kKeepAliveInterval;
-#ifdef __linux__
-  int user_timeout = 7000;  // milliseconds
-  setsockopt(fd, SOL_SOCKET, SO_KEEPALIVE, &yes, sizeof(yes));
-  setsockopt(fd, IPPROTO_TCP, TCP_KEEPIDLE, &keepidle, sizeof(keepidle));
-  setsockopt(fd, IPPROTO_TCP, TCP_KEEPCNT, &keepcnt, sizeof(keepcnt));
-  setsockopt(fd, IPPROTO_TCP, TCP_KEEPINTVL, &keepintvl, sizeof(keepintvl));
-  setsockopt(
-      fd, IPPROTO_TCP, TCP_USER_TIMEOUT, &user_timeout, sizeof(user_timeout));
-#elif defined(__QNX__)
-  // TODO(KKolodiy): Out of order!
-  const int kMidLength = 4;
-  int mib[kMidLength];
-
-  mib[0] = CTL_NET;
-  mib[1] = AF_INET;
-  mib[2] = IPPROTO_TCP;
-  mib[3] = TCPCTL_KEEPIDLE;
-  sysctl(mib, kMidLength, NULL, NULL, &keepidle, sizeof(keepidle));
-
-  mib[0] = CTL_NET;
-  mib[1] = AF_INET;
-  mib[2] = IPPROTO_TCP;
-  mib[3] = TCPCTL_KEEPCNT;
-  sysctl(mib, kMidLength, NULL, NULL, &keepcnt, sizeof(keepcnt));
-
-  mib[0] = CTL_NET;
-  mib[1] = AF_INET;
-  mib[2] = IPPROTO_TCP;
-  mib[3] = TCPCTL_KEEPINTVL;
-  sysctl(mib, kMidLength, NULL, NULL, &keepintvl, sizeof(keepintvl));
-
-  struct timeval tval = {0};
-  tval.tv_sec = keepidle;
-  setsockopt(fd, SOL_SOCKET, SO_KEEPALIVE, &yes, sizeof(yes));
-  setsockopt(fd, IPPROTO_TCP, TCP_KEEPALIVE, &tval, sizeof(tval));
-#else
-#error Unsupported platform
-#endif
+  utils::EnableKeepalive(
+      GetNativeHandle(), kKeepAliveTimeSec, kKeepAliveIntervalSec);
 }
 
 int utils::TcpSocketConnection::Impl::GetNativeHandle() {

@@ -81,9 +81,10 @@ class TcpSocketConnection {
 
   Pimpl<Impl> impl_;
 
-  static const int kKeepAliveTime = 3;  // 3 seconds to disconnection detecting
+  static const int kKeepAliveTimeSec =
+      3;  // 3 seconds to disconnection detecting
 
-  static const int kKeepAliveInterval = 1;
+  static const int kKeepAliveIntervalSec = 1;
 };
 
 class TcpServerSocket {
