@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015, Ford Motor Company
+ * Copyright (c) 2016, Ford Motor Company
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -31,7 +31,7 @@
  */
 #include <string>
 #include <sstream>
-#include <cstdint>
+#include <stdio.h>
 
 #include "utils/winhdr.h"
 #include "utils/macro.h"
@@ -42,28 +42,28 @@ namespace logger {
 
 void LogMessageHandler::Handle(const LogMessage message) {
   std::string type_str;
-  switch (message.level) {
-    case LOGLEVEL_TRACE: {
+  switch (message.level_) {
+    case LogLevel::LOGLEVEL_TRACE: {
       type_str = "TRACE";
       break;
     }
-    case LOGLEVEL_DEBUG: {
+    case LogLevel::LOGLEVEL_DEBUG: {
       type_str = "DEBUG";
       break;
     }
-    case LOGLEVEL_INFO: {
+    case LogLevel::LOGLEVEL_INFO: {
       type_str = "INFO ";
       break;
     }
-    case LOGLEVEL_WARN: {
+    case LogLevel::LOGLEVEL_WARN: {
       type_str = "WARN ";
       break;
     }
-    case LOGLEVEL_ERROR: {
+    case LogLevel::LOGLEVEL_ERROR: {
       type_str = "ERROR";
       break;
     }
-    case LOGLEVEL_FATAL: {
+    case LogLevel::LOGLEVEL_FATAL: {
       type_str = "FATAL";
       break;
     }
@@ -74,27 +74,27 @@ void LogMessageHandler::Handle(const LogMessage message) {
   _snprintf_s(time_buf,
               sizeof(time_buf),
               "%i:%i:%i:%i",
-              message.time.wHour,
-              message.time.wMinute,
-              message.time.wSecond,
-              message.time.wMilliseconds);
+              message.time_.wHour,
+              message.time_.wMinute,
+              message.time_.wSecond,
+              message.time_.wMilliseconds);
 
   std::stringstream entry;
   entry << type_str << " [" << time_buf << "]"
-        << " [" << message.thread_id << "]"
-        << " [" << message.logger << "] "
-        << file_system::RetrieveFileNameFromPath(message.file_name) << ":"
-        << message.line_number << " " << message.function_name << ": "
-        << message.entry;
+        << " [" << message.thread_id_ << "]"
+        << " [" << message.logger_ << "] "
+        << file_system::RetrieveFileNameFromPath(message.location_.file_name_)
+        << ":" << message.location_.line_number_ << " "
+        << message.location_.function_name_ << ": " << message.entry_;
 
   // dump log string to console
   printf(entry.str().c_str());
   printf("\n");
   // dump log string to file
-  if (message.output_file) {
-    fprintf(message.output_file, entry.str().c_str());
-    fprintf(message.output_file, "\n");
-    fflush(message.output_file);
+  if (message.output_file_) {
+    fprintf(message.output_file_, entry.str().c_str());
+    fprintf(message.output_file_, "\n");
+    fflush(message.output_file_);
   }
 }
 
