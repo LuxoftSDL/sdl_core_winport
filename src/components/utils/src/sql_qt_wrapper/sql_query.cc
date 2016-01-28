@@ -87,6 +87,8 @@ bool SQLQuery::Next() {
 }
 
 bool SQLQuery::Reset() {
+  // Need too clear query until use it again with new data
+  Finalize();
   return true;
 }
 
