@@ -61,11 +61,6 @@ if (BUILD_BT_SUPPORT)
   list(APPEND LIBRARIES bluetooth)
 endif()
 
-if (BUILD_AVAHI_SUPPORT)
-  list(APPEND LIBRARIES avahi-client avahi-common)
-endif()
-
-
 set(SOURCES
   ${COMPONENTS_DIR}/transport_manager/test/mock_application.cc
   ${COMPONENTS_DIR}/transport_manager/test/transport_manager_test.cc
@@ -74,10 +69,9 @@ set(SOURCES
   ${COMPONENTS_DIR}/transport_manager/test/mock_device.cc
   ${COMPONENTS_DIR}/transport_manager/test/mock_device_scanner.cc
   ${COMPONENTS_DIR}/transport_manager/test/raw_message_matcher.cc
-  ${COMPONENTS_DIR}/transport_manager/test/dnssd_service_browser_test.cc
   ${COMPONENTS_DIR}/transport_manager/test/tcp_transport_adapter_test.cc
   ${COMPONENTS_DIR}/transport_manager/test/mock_transport_adapter.cc
-)          
+)
 
 create_test("transport_manager_test" "${SOURCES}" "${LIBRARIES}")
 
