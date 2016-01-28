@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015, Ford Motor Company
+ * Copyright (c) 2016, Ford Motor Company
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -29,107 +29,211 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
+#include "utils/logger.h"
+#include "utils/log_message_loop_thread.h"
+#include "utils/pimpl_impl.h"
+
 #include <QThread>
 #include <QDateTime>
 #include <QFile>
 #include <QTextStream>
+#include <stdio.h>
 
-#include "utils/logger.h"
-#include "utils/log_message_loop_thread.h"
-#include "config_profile/profile.h"
+logger::Logger::Pimpl logger::Logger::impl_;
 
 namespace {
 
-bool is_logs_enabled = false;
+QFile* log_file = NULL;
 
-const QString kLogFileName = "SmartDeviceLink.log";
-
-// Used to pass log file to the log_output_handler
-QFile* log_file_ptr = NULL;
-
-logger::LogMessageLoopThread* message_loop_thread = NULL;
-
-void log_output_handler(QtMsgType,
-                        const QMessageLogContext&,
-                        const QString& msg) {
+void HandleLogMessage(QtMsgType,
+                      const QMessageLogContext&,
+                      const QString& msg) {
   // Log to console
   fprintf(stdout, "%s\n", msg.toLocal8Bit().constData());
   // Log to file
-  if (log_file_ptr) {
-    QTextStream log_stream(log_file_ptr);
+  if (log_file && log_file->isOpen()) {
+    QTextStream log_stream(log_file);
     log_stream << msg.toLocal8Bit().constData() << endl;
   }
 }
 
 }  // namespace
 
-bool logger::init_logger(const std::string&) {
-  // TODO: (malirod) Use RAII to manage with log files
-  static QFile log_file(kLogFileName);
+////////////////////////////////////////////////////////////////////////////////
+/// logger::Logger::Impl
+////////////////////////////////////////////////////////////////////////////////
 
-  if (log_file.open(QIODevice::WriteOnly | QIODevice::Append |
-                    QIODevice::Text)) {
-    DCHECK(!log_file_ptr);
-    log_file_ptr = &log_file;
-  } else {
-    fprintf(stderr,
-            "Logging initialization has failed. Failed to open log file for "
-            "writing.\n");
+class logger::Logger::Impl {
+ public:
+  Impl();
+  ~Impl();
+
+  bool InitLogger(bool logs_enabled, const std::string& ini_file_name);
+  bool InitLogger(bool logs_enabled,
+                  LogLevel log_level,
+                  const std::string& log_file_name);
+  void DeinitLogger();
+
+  bool logs_enabled() const;
+  void set_logs_enabled(bool state);
+
+  LogLevel log_level() const;
+  void set_log_level(LogLevel level);
+
+  bool PushLog(const LoggerType& logger,
+               LogLevel level,
+               const std::string& entry,
+               const LogLocation& location);
+
+ private:
+  bool logs_enabled_;
+  LogLevel log_level_;
+  LogMessageLoopThread* message_loop_thread_;
+};
+
+logger::Logger::Impl::Impl()
+    : logs_enabled_(false)
+    , log_level_(LogLevel::LOGLEVEL_TRACE)
+    , message_loop_thread_(NULL) {}
+
+logger::Logger::Impl::~Impl() {
+  DeinitLogger();
+}
+
+bool logger::Logger::Impl::InitLogger(bool logs_enabled,
+                                      const std::string& ini_file_name) {
+  if (message_loop_thread_) {
+    return false;
   }
-
+  set_logs_enabled(logs_enabled);
+  // Ini file settings reading could be here
+  message_loop_thread_ = new LogMessageLoopThread();
   // Set qt custom log handler
-  qInstallMessageHandler(log_output_handler);
-
-  if (!message_loop_thread) {
-    message_loop_thread = new LogMessageLoopThread();
-  }
-  set_logs_enabled(profile::Profile::instance()->logs_enabled());
+  qInstallMessageHandler(HandleLogMessage);
   return true;
 }
 
-void logger::deinit_logger() {
-  CREATE_LOGGERPTR_LOCAL(logger_, "Logger");
-  LOG4CXX_DEBUG(logger_, "Logger deinitialization");
-
-  DCHECK(log_file_ptr);
-  if (log_file_ptr) {
-    log_file_ptr->close();
-    log_file_ptr = NULL;
+bool logger::Logger::Impl::InitLogger(bool logs_enabled,
+                                      LogLevel log_level,
+                                      const std::string& log_file_name) {
+  if (message_loop_thread_) {
+    return false;
   }
+  log_file = new QFile(QString(log_file_name.c_str()));
+  if (!log_file->open(QIODevice::WriteOnly | QIODevice::Append |
+                      QIODevice::Text)) {
+    return false;
+  }
+  set_logs_enabled(logs_enabled);
+  set_log_level(log_level);
+  message_loop_thread_ = new LogMessageLoopThread();
+  // Set qt custom log handler
+  qInstallMessageHandler(HandleLogMessage);
+  return true;
+}
+
+void logger::Logger::Impl::DeinitLogger() {
+  CREATE_LOGGERPTR_LOCAL(logger_, "Logger");
+  LOGGER_DEBUG(logger_, "Logger deinitialization");
 
   set_logs_enabled(false);
-  delete message_loop_thread;
-  message_loop_thread = NULL;
+  set_log_level(LogLevel::LOGLEVEL_TRACE);
+  delete message_loop_thread_;
+  message_loop_thread_ = NULL;
+
+  if (log_file) {
+    log_file->close();
+    delete log_file;
+    log_file = NULL;
+  }
 }
 
-bool logger::logs_enabled() {
-  return is_logs_enabled;
+bool logger::Logger::Impl::logs_enabled() const {
+  return logs_enabled_;
 }
 
-void logger::set_logs_enabled(bool state) {
-  is_logs_enabled = state;
+void logger::Logger::Impl::set_logs_enabled(bool state) {
+  logs_enabled_ = state;
 }
 
-bool logger::push_log(const std::string& logger,
-                      const LogLevel level,
-                      const std::string& entry,
-                      unsigned long line_number,
-                      const char* file_name,
-                      const char* function_name) {
+logger::LogLevel logger::Logger::Impl::log_level() const {
+  return log_level_;
+}
+
+void logger::Logger::Impl::set_log_level(logger::LogLevel level) {
+  log_level_ = level;
+}
+
+bool logger::Logger::Impl::PushLog(const LoggerType& logger,
+                                   LogLevel level,
+                                   const std::string& entry,
+                                   const LogLocation& location) {
   if (!logs_enabled()) {
     return false;
   }
-
+  if (level < log_level()) {
+    return false;
+  }
   LogMessage message = {logger,
                         level,
-                        QDateTime::currentDateTime(),
                         entry,
-                        line_number,
-                        file_name,
-                        function_name,
+                        location,
+                        QDateTime::currentDateTime(),
                         reinterpret_cast<uint32_t>(QThread::currentThreadId())};
 
-  message_loop_thread->PostMessage(message);
+  if (message_loop_thread_) {
+    message_loop_thread_->PostMessage(message);
+    return true;
+  }
+  return false;
+}
 
-  return true;
+////////////////////////////////////////////////////////////////////////////////
+/// logger::Logger
+////////////////////////////////////////////////////////////////////////////////
+
+bool logger::Logger::InitLogger(bool logs_enabled,
+                                const std::string& ini_file_name) {
+  return impl_->InitLogger(logs_enabled, ini_file_name);
+}
+
+bool logger::Logger::InitLogger(bool logs_enabled,
+                                LogLevel log_level,
+                                const std::string& log_file_name) {
+  return impl_->InitLogger(logs_enabled, log_level, log_file_name);
+}
+
+void logger::Logger::DeinitLogger() {
+  impl_->DeinitLogger();
+}
+
+bool logger::Logger::logs_enabled() {
+  return impl_->logs_enabled();
+}
+
+void logger::Logger::set_logs_enabled(bool state) {
+  impl_->set_logs_enabled(state);
+}
+
+logger::LogLevel logger::Logger::log_level() {
+  return impl_->log_level();
+}
+
+void logger::Logger::set_log_level(LogLevel level) {
+  impl_->set_log_level(level);
+}
+
+bool logger::Logger::PushLog(const LoggerType& logger,
+                             LogLevel level,
+                             const std::string& entry,
+                             const LogLocation& location) {
+  return impl_->PushLog(logger, level, entry, location);
+}
+
+void logger::Logger::SetLogger(logger::Logger::Pimpl& impl) {
+  impl_ = impl;
+}
+
+logger::Logger::Pimpl& logger::Logger::GetLogger() {
+  return impl_;
 }

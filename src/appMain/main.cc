@@ -104,7 +104,7 @@ int32_t main(int32_t argc, char** argv) {
 
   PLATFORM_INIT(argc, argv);
   // Logger initialization
-  INIT_LOGGER();
+  INIT_LOGGER(profile::Profile::instance()->logs_enabled());
 
   threads::Thread::SetNameForId(threads::Thread::CurrentId(), "MainThread");
 
