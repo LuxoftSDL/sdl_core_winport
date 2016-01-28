@@ -40,7 +40,7 @@
 #include "utils/logger.h"
 #include "utils/file_system.h"
 
-CREATE_LOGGERPTR_GLOBAL(logger_ptr, "Utils.Pipe")
+CREATE_LOGGERPTR_GLOBAL(logger_ptr, "Utils")
 
 namespace {
 const std::string kPlatformPipePrefix = "\\\\.\\pipe\\";

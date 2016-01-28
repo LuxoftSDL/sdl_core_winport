@@ -40,7 +40,7 @@
 #include "utils/pimpl_impl.h"
 #include "utils/logger.h"
 
-CREATE_LOGGERPTR_GLOBAL(logger_ptr, "Utils.Pipe")
+CREATE_LOGGERPTR_GLOBAL(logger_ptr, "Utils")
 
 namespace utils {
 

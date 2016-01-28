@@ -34,7 +34,7 @@
 #include "utils/winhdr.h"
 #include "utils/socket.h"
 
-CREATE_LOGGERPTR_GLOBAL(logger_ptr, "Utils.TcpSocket")
+CREATE_LOGGERPTR_GLOBAL(logger_ptr, "Utils")
 
 namespace {
 
