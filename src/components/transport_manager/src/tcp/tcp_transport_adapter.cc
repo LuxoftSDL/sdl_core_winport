@@ -51,24 +51,15 @@
 #include "utils/logger.h"
 #include "utils/threads/thread_delegate.h"
 
-#ifdef AVAHI_SUPPORT
-#include "transport_manager/tcp/dnssd_service_browser.h"
-#endif
-
 namespace transport_manager {
 namespace transport_adapter {
 
 CREATE_LOGGERPTR_GLOBAL(logger_, "TransportAdapterImpl")
 
 TcpTransportAdapter::TcpTransportAdapter(const uint16_t port)
-    : TransportAdapterImpl(
-#ifdef AVAHI_SUPPORT
-          new DnssdServiceBrowser(this),
-#else
-          NULL,
-#endif
-          new TcpConnectionFactory(this),
-          new TcpClientListener(this, port, true)) {
+    : TransportAdapterImpl(NULL,
+                           new TcpConnectionFactory(this),
+                           new TcpClientListener(this, port, true)) {
 }
 
 TcpTransportAdapter::~TcpTransportAdapter() {}
