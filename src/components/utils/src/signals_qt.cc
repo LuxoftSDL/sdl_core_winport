@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014, Ford Motor Company
+ * Copyright (c) 2016, Ford Motor Company
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -29,29 +29,38 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
+#if defined(QT_PORT)
 
-#ifndef SRC_COMPONENTS_UTILS_INCLUDE_UTILS_SIGNALS_H_
-#define SRC_COMPONENTS_UTILS_INCLUDE_UTILS_SIGNALS_H_
+#include "utils/signals.h"
+#include "utils/logger.h"
+#include <QCoreApplication>
 
-#if defined(__QNXNTO__)
-typedef void (*sighandler_t)(int);
-#elif defined(OS_WINDOWS)
-#include "utils/winhdr.h"
-#else
-#include <signal.h>
-#endif
 namespace utils {
 
-#if defined(OS_WINDOWS)
-BOOL WINAPI handle_event(HANDLE& signal_event, const char* log_event_name);
-bool SubscribeToInterruptSignal(PHANDLER_ROUTINE func);
-bool SubscribeToTerminateSignal(PHANDLER_ROUTINE func);
-bool SubscribeToFaultSignal(PHANDLER_ROUTINE func);
-#else
-bool SubscribeToInterruptSignal(sighandler_t func);
-bool SubscribeToTerminateSignal(sighandler_t func);
-bool SubscribeToFaultSignal(sighandler_t func);
-#endif
+CREATE_LOGGERPTR_GLOBAL(logger_, "Util.Signals Qt")
+
+bool SubscribeToInterruptSignal(PHANDLER_ROUTINE func) {
+  return SetConsoleCtrlHandler(func, TRUE);
+}
+
+bool SubscribeToTerminateSignal(PHANDLER_ROUTINE func) {
+  return SetConsoleCtrlHandler(func, TRUE);
+}
+
+bool SubscribeToFaultSignal(PHANDLER_ROUTINE func) {
+  return SetConsoleCtrlHandler(func, TRUE);
+}
+
+BOOL WINAPI handle_event(HANDLE& signal_event, const char* log_event_name) {
+  LOG4CXX_INFO(logger_, log_event_name);
+  QCoreApplication* const app = QCoreApplication::instance();
+  if (app) {
+    app->quit();
+    return TRUE;
+  }
+  return FALSE;
+}
+
 }  //  namespace utils
 
-#endif  //  SRC_COMPONENTS_UTILS_INCLUDE_UTILS_SIGNALS_H_
+#endif  // OS_WINDOWS

@@ -31,23 +31,30 @@
  */
 #if defined(OS_WINDOWS)
 
-#include <csignal>
-
-#include "utils/winhdr.h"
 #include "utils/signals.h"
+#include "utils/logger.h"
 
 namespace utils {
 
-bool SubscribeToInterruptSignal(sighandler_t func) {
-  return signal(SIGINT, func) != SIG_ERR;
+CREATE_LOGGERPTR_GLOBAL(logger_, "Util.Signals Win")
+
+bool SubscribeToInterruptSignal(PHANDLER_ROUTINE func) {
+  return SetConsoleCtrlHandler(func, TRUE);
 }
 
-bool SubscribeToTerminateSignal(sighandler_t func) {
-  return signal(SIGTERM, func) != SIG_ERR;
+bool SubscribeToTerminateSignal(PHANDLER_ROUTINE func) {
+  return SetConsoleCtrlHandler(func, TRUE);
 }
 
-bool SubscribeToFaultSignal(sighandler_t func) {
-  return signal(SIGSEGV, func) != SIG_ERR;
+bool SubscribeToFaultSignal(PHANDLER_ROUTINE func) {
+  return SetConsoleCtrlHandler(func, TRUE);
+}
+
+BOOL WINAPI handle_event(HANDLE& signal_event, const char* log_event_name) {
+  LOG4CXX_INFO(logger_, log_event_name);
+  SetEvent(signal_event);
+
+  return TRUE;
 }
 
 }  //  namespace utils
