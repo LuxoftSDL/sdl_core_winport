@@ -37,17 +37,17 @@
 #include "utils/winhdr.h"
 #endif
 
-#include <stdint.h>
 #include <openssl/bio.h>
-#include <openssl/ssl.h>
 #include <openssl/err.h>
-#include <string>
+#include <openssl/ssl.h>
+#include <stdint.h>
 #include <map>
+#include <string>
 
 #include "security_manager/crypto_manager.h"
 #include "security_manager/ssl_context.h"
-#include "utils/macro.h"
 #include "utils/lock.h"
+#include "utils/macro.h"
 
 #ifdef OS_WINDOWS
 #ifdef X509_NAME

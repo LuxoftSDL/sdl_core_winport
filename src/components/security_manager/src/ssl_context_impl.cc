@@ -32,12 +32,12 @@
 #include "security_manager/crypto_manager_impl.h"
 
 #include <assert.h>
-#include <openssl/bio.h>
-#include <openssl/ssl.h>
-#include <openssl/err.h>
 #include <memory.h>
-#include <map>
+#include <openssl/bio.h>
+#include <openssl/err.h>
+#include <openssl/ssl.h>
 #include <algorithm>
+#include <map>
 
 #include "utils/macro.h"
 
