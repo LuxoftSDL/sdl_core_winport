@@ -33,18 +33,23 @@
 #ifndef SRC_COMPONENTS_UTILS_INCLUDE_UTILS_SIGNALS_H_
 #define SRC_COMPONENTS_UTILS_INCLUDE_UTILS_SIGNALS_H_
 
-#if defined(__QNXNTO__) || defined(OS_WINDOWS)
+#if defined(__QNXNTO__)
 typedef void (*sighandler_t)(int);
-#else
+#elif defined(POSIX)
 #include <signal.h>
 #endif
 
 namespace utils {
 
+#if defined(OS_WINDOWS)
+bool SubscribeToInterruptSignal(PHANDLER_ROUTINE func);
+bool SubscribeToTerminateSignal(PHANDLER_ROUTINE func);
+bool SubscribeToFaultSignal(PHANDLER_ROUTINE func);
+#else
 bool SubscribeToInterruptSignal(sighandler_t func);
 bool SubscribeToTerminateSignal(sighandler_t func);
 bool SubscribeToFaultSignal(sighandler_t func);
-
+#endif
 }  //  namespace utils
 
 #endif  //  SRC_COMPONENTS_UTILS_INCLUDE_UTILS_SIGNALS_H_

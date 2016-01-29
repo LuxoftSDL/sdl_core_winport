@@ -31,23 +31,21 @@
  */
 #if defined(OS_WINDOWS)
 
-#include <csignal>
-
 #include "utils/winhdr.h"
 #include "utils/signals.h"
 
 namespace utils {
 
-bool SubscribeToInterruptSignal(sighandler_t func) {
-  return signal(SIGINT, func) != SIG_ERR;
+bool SubscribeToInterruptSignal(PHANDLER_ROUTINE func) {
+  return SetConsoleCtrlHandler(func, TRUE);
 }
 
-bool SubscribeToTerminateSignal(sighandler_t func) {
-  return signal(SIGTERM, func) != SIG_ERR;
+bool SubscribeToTerminateSignal(PHANDLER_ROUTINE func) {
+  return SetConsoleCtrlHandler(func, TRUE);
 }
 
-bool SubscribeToFaultSignal(sighandler_t func) {
-  return signal(SIGSEGV, func) != SIG_ERR;
+bool SubscribeToFaultSignal(PHANDLER_ROUTINE func) {
+  return SetConsoleCtrlHandler(func, TRUE);
 }
 
 }  //  namespace utils

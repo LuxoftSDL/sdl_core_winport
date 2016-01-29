@@ -373,7 +373,29 @@ bool LifeCycle::InitMessageSystem() {
 namespace {
 #if defined(OS_WINDOWS)
 HANDLE signal_event = NULL;
-#endif
+
+BOOL handle_event(const char* log_event_name) {
+  LOG4CXX_INFO(logger_, log_event_name);
+  SetEvent(signal_event);
+  return TRUE;
+}
+
+BOOL CALLBACK sig_handler(DWORD dwCtrlType) {
+  switch (dwCtrlType) {
+    case CTRL_C_EVENT:
+      return handle_event("CTRL_C_EVENT");
+    case CTRL_BREAK_EVENT:
+      return handle_event("CTRL_BREAK_EVENT");
+    case CTRL_CLOSE_EVENT:
+      return handle_event("CTRL_CLOSE_EVENT");
+    case CTRL_LOGOFF_EVENT:
+      return handle_event("CTRL_LOGOFF_EVENT");
+    case CTRL_SHUTDOWN_EVENT:
+      return handle_event("CTRL_SHUTDOWN_EVENT");
+  }
+  return FALSE;
+}
+#else
 void sig_handler(int sig) {
   switch (sig) {
     case SIGINT:
@@ -389,26 +411,23 @@ void sig_handler(int sig) {
       LOG4CXX_DEBUG(logger_, "Unexpected signal has been caught");
       break;
   }
-#if defined(OS_WINDOWS)
-  if (NULL != signal_event) {
-    SetEvent(signal_event);
-  }
-#endif
 }
+#endif
+
 }  //  namespace
 
 void LifeCycle::Run() {
   LOG4CXX_AUTO_TRACE(logger_);
-  // First, register signal handlers
+#if defined(OS_WINDOWS)
+  signal_event = CreateEvent(NULL, true, false, "SignalEvent");
+#endif
   if (!::utils::SubscribeToInterruptSignal(&sig_handler) ||
       !::utils::SubscribeToTerminateSignal(&sig_handler) ||
       !::utils::SubscribeToFaultSignal(&sig_handler)) {
     LOG4CXX_FATAL(logger_, "Subscribe to system signals error");
   }
-// Now wait for any signal
 #if defined(OS_WINDOWS)
-  signal_event = CreateEvent(NULL, false, false, "SignalEvent");
-  if (NULL != signal_event) {
+  if (signal_event) {
     WaitForSingleObject(signal_event, INFINITE);
   } else {
     LOG4CXX_FATAL(logger_, "Create system event error");
