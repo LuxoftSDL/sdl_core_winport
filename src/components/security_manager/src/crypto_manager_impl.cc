@@ -33,19 +33,19 @@
 #include "security_manager/crypto_manager_impl.h"
 
 #include <openssl/bio.h>
-#include <openssl/ssl.h>
 #include <openssl/err.h>
 #include <openssl/pkcs12.h>
+#include <openssl/ssl.h>
 
+#include <stdio.h>
 #include <fstream>
 #include <iostream>
-#include <stdio.h>
 
+#include "config_profile/profile.h"
 #include "security_manager/security_manager.h"
 #include "utils/logger.h"
 #include "utils/macro.h"
 #include "utils/scope_guard.h"
-#include "config_profile/profile.h"
 
 #define TLS1_1_MINIMAL_VERSION 0x1000103fL
 #define CONST_SSL_METHOD_MINIMAL_VERSION 0x00909000L
@@ -81,7 +81,10 @@ void free_ctx(SSL_CTX** ctx) {
 }
 
 CryptoManagerImpl::CryptoManagerImpl()
-    : context_(NULL), mode_(CLIENT), verify_peer_(false) {
+    : context_(NULL)
+    , mode_(CLIENT)
+    , verify_peer_(false)
+    , certificate_exists_(false) {
   LOG4CXX_AUTO_TRACE(logger_);
   sync_primitives::AutoLock lock(instance_lock_);
   instance_count_++;
@@ -263,6 +266,11 @@ std::string CryptoManagerImpl::LastError() const {
 bool CryptoManagerImpl::IsCertificateUpdateRequired() const {
   LOG4CXX_AUTO_TRACE(logger_);
 
+  if (!certificate_exists_) {
+    LOG4CXX_DEBUG(logger_, "Certificate has not bee set. Nothing to check.");
+    return false;
+  }
+
   const time_t now = time(NULL);
   const time_t cert_date = mktime(&expiration_time_);
 
@@ -332,6 +340,9 @@ bool CryptoManagerImpl::set_certificate(const std::string& cert_data) {
     LOG4CXX_ERROR(logger_, "Could not use certificate ");
     return false;
   }
+
+  certificate_exists_ = true;
+
   return true;
 }
 
