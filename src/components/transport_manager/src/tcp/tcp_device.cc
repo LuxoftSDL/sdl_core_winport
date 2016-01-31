@@ -44,6 +44,7 @@ TcpDevice::TcpDevice(const utils::HostAddress& address, const std::string& name)
     , address_(address)
     , last_handle_(0) {
   LOG4CXX_AUTO_TRACE(logger_);
+  LOG4CXX_DEBUG(logger_, "Created TCPDevice with name " << name);
 }
 
 bool TcpDevice::IsSameAs(const Device* other) const {
@@ -54,7 +55,7 @@ bool TcpDevice::IsSameAs(const Device* other) const {
   if (other_tcp_device->address_ == address_) {
     LOG4CXX_TRACE(
         logger_,
-        "exit with TRUE. Condition: other_tcp_device->in_addr_ == in_addr_");
+        "exit with TRUE. Condition: other_tcp_device->address_ == address_");
     return true;
   } else {
     LOG4CXX_TRACE(logger_, "exit with FALSE");
@@ -64,8 +65,9 @@ bool TcpDevice::IsSameAs(const Device* other) const {
 
 ApplicationList TcpDevice::GetApplicationList() const {
   LOG4CXX_AUTO_TRACE(logger_);
-  sync_primitives::AutoLock locker(applications_mutex_);
   ApplicationList app_list;
+  app_list.reserve(applications_.size());
+  sync_primitives::AutoLock locker(applications_mutex_);
   for (std::map<ApplicationHandle, Application>::const_iterator it =
            applications_.begin();
        it != applications_.end();
