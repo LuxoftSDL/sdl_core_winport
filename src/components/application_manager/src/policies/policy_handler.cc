@@ -315,19 +315,16 @@ bool PolicyHandler::PolicyEnabled() {
 
 bool PolicyHandler::CreateManager() {
   typedef PolicyManager* (*CreateManager)(
-      const std::string&, uint16_t, uint16_t);
+      const std::string&, uint16_t, uint16_t, logger::Logger::Pimpl&);
   DCHECK_OR_RETURN(policy_library_.IsLoaded(), false);
   CreateManager create_manager = reinterpret_cast<CreateManager>(
       policy_library_.GetSymbol("CreateManager"));
   if (create_manager) {
-#if defined(OS_POSIX)
-    policy_manager_ = create_manager();
-#elif defined(OS_WINDOWS)
     policy_manager_ = create_manager(
         profile::Profile::instance()->app_storage_folder(),
         profile::Profile::instance()->attempts_to_open_policy_db(),
-        profile::Profile::instance()->open_attempt_timeout_ms());
-#endif
+        profile::Profile::instance()->open_attempt_timeout_ms(),
+        GET_LOGGER());
   } else {
     LOG4CXX_WARN(logger_,
                  "Policy library loading error. Cannot get proc address");
