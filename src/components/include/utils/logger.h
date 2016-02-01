@@ -158,14 +158,11 @@ class Logger {
   } while (false)
 
 #undef LOG_WITH_LEVEL_EXT
-#define LOG_WITH_LEVEL_EXT(logger_var, level, message, file, function, line) \
+#define LOG_WITH_LEVEL_EXT(logger_var, level, message, location)             \
   do {                                                                       \
     std::stringstream accumulator;                                           \
     accumulator << message;                                                  \
-    logger::Logger::PushLog(logger_var,                                      \
-                            level,                                           \
-                            accumulator.str(),                               \
-                            logger::LogLocation(file, function, line));      \
+    logger::Logger::PushLog(logger_var, level, accumulator.str(), location); \
   } while (false)
 
 #undef LOGGER_TRACE
@@ -207,6 +204,31 @@ class Logger {
   LOGGER_ERROR(logger_var,                                                    \
                message << ", error code " << errno << " (" << strerror(errno) \
                        << ")")
+
+namespace logger {
+
+class AutoTrace {
+ public:
+  AutoTrace(const LoggerType& logger, const LogLocation& location)
+      : logger_(logger), location_(location) {
+    LOG_WITH_LEVEL_EXT(logger_, LOGLEVEL_TRACE, "Enter", location_);
+  };
+
+  ~AutoTrace() {
+    LOG_WITH_LEVEL_EXT(logger_, LOGLEVEL_TRACE, "Exit", location_);
+  };
+
+ private:
+  const LoggerType logger_;
+  const LogLocation location_;
+};
+
+}  // namespace logger
+
+#undef LOGGER_AUTO_TRACE
+#define LOGGER_AUTO_TRACE(logger_var) \
+  logger::AutoTrace auto_trace(       \
+      logger_var, logger::LogLocation(__FILE__, __FUNCTION__, __LINE__));
 
 #else  // ENABLE_LOG is OFF
 
@@ -257,6 +279,9 @@ class Logger {
 
 #undef LOGGER_ERROR_WITH_ERRNO
 #define LOGGER_ERROR_WITH_ERRNO(logger_var, message)
+
+#undef LOGGER_AUTO_TRACE
+#define LOGGER_AUTO_TRACE(logger_var)
 
 #endif  // ENABLE_LOG
 
