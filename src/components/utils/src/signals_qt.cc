@@ -29,26 +29,43 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-#if defined(QT_PORT)
-
 #include "utils/signals.h"
 #include "utils/logger.h"
 #include <QCoreApplication>
 
+CREATE_LOGGERPTR_GLOBAL(logger_, "Util")
+
+namespace {
+HANDLE signal_event = NULL;
+
+BOOL CALLBACK sig_handler(const DWORD dwCtrlType) {
+  switch (dwCtrlType) {
+    case CTRL_C_EVENT:
+      return ::utils::handle_event(signal_event,
+                                   "CTRL_C_EVENT has been caught");
+    case CTRL_BREAK_EVENT:
+      return ::utils::handle_event(signal_event,
+                                   "CTRL_BREAK_EVENT has been caught");
+    case CTRL_CLOSE_EVENT:
+      return ::utils::handle_event(signal_event,
+                                   "CTRL_CLOSE_EVENT has been caught");
+    case CTRL_LOGOFF_EVENT:
+      return ::utils::handle_event(signal_event,
+                                   "CTRL_LOGOFF_EVENT has been caught");
+    case CTRL_SHUTDOWN_EVENT:
+      return ::utils::handle_event(signal_event,
+                                   "CTRL_SHUTDOWN_EVENT has been caught");
+  }
+  return FALSE;
+}
+}  //  namespace
+
 namespace utils {
 
-CREATE_LOGGERPTR_GLOBAL(logger_, "Util.Signals Qt")
-
-bool SubscribeToInterruptSignal(PHANDLER_ROUTINE func) {
-  return SetConsoleCtrlHandler(func, TRUE);
-}
-
-bool SubscribeToTerminateSignal(PHANDLER_ROUTINE func) {
-  return SetConsoleCtrlHandler(func, TRUE);
-}
-
-bool SubscribeToFaultSignal(PHANDLER_ROUTINE func) {
-  return SetConsoleCtrlHandler(func, TRUE);
+LONG WINAPI handleException(LPEXCEPTION_POINTERS p) {
+  LOG4CXX_ERROR(logger_,
+                "Illegal storage access(SIGSEGV) signal has been caught");
+  return EXCEPTION_CONTINUE_SEARCH;
 }
 
 BOOL WINAPI handle_event(HANDLE& signal_event, const char* log_event_name) {
@@ -61,6 +78,16 @@ BOOL WINAPI handle_event(HANDLE& signal_event, const char* log_event_name) {
   return FALSE;
 }
 
-}  //  namespace utils
+void WaitForSdlObject() {
+  QCoreApplication::instance()->processEvents();
+  QCoreApplication::instance()->exec();
+}
 
-#endif  // OS_WINDOWS
+void CreateSdlEvent() {}
+
+bool SubscribeToTerminationSignals() {
+  SetConsoleCtrlHandler(&sig_handler, TRUE);
+  SetUnhandledExceptionFilter((LPTOP_LEVEL_EXCEPTION_FILTER)&handleException);
+  return true;
+}
+}  //  namespace utils

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014, Ford Motor Company
+ * Copyright (c) 2016, Ford Motor Company
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -44,9 +44,9 @@ namespace utils {
 
 #if defined(OS_WINDOWS)
 BOOL WINAPI handle_event(HANDLE& signal_event, const char* log_event_name);
-bool SubscribeToInterruptSignal(PHANDLER_ROUTINE func);
-bool SubscribeToTerminateSignal(PHANDLER_ROUTINE func);
-bool SubscribeToFaultSignal(PHANDLER_ROUTINE func);
+void CreateSdlEvent();
+void WaitForSdlObject();
+bool SubscribeToTerminationSignals();
 #else
 bool SubscribeToInterruptSignal(sighandler_t func);
 bool SubscribeToTerminateSignal(sighandler_t func);

@@ -371,25 +371,7 @@ bool LifeCycle::InitMessageSystem() {
 #endif  // MQUEUE_HMIADAPTER
 
 namespace {
-#if defined(OS_WINDOWS)
-HANDLE signal_event = NULL;
-
-BOOL CALLBACK sig_handler(DWORD dwCtrlType) {
-  switch (dwCtrlType) {
-    case CTRL_C_EVENT:
-      return ::utils::handle_event(signal_event, "CTRL_C_EVENT");
-    case CTRL_BREAK_EVENT:
-      return ::utils::handle_event(signal_event, "CTRL_BREAK_EVENT");
-    case CTRL_CLOSE_EVENT:
-      return ::utils::handle_event(signal_event, "CTRL_CLOSE_EVENT");
-    case CTRL_LOGOFF_EVENT:
-      return ::utils::handle_event(signal_event, "CTRL_LOGOFF_EVENT");
-    case CTRL_SHUTDOWN_EVENT:
-      return ::utils::handle_event(signal_event, "CTRL_SHUTDOWN_EVENT");
-  }
-  return FALSE;
-}
-#else
+#if defined(POSIX)
 void sig_handler(int sig) {
   switch (sig) {
     case SIGINT:
@@ -413,23 +395,14 @@ void sig_handler(int sig) {
 void LifeCycle::Run() {
   LOG4CXX_AUTO_TRACE(logger_);
 #if defined(OS_WINDOWS)
-  signal_event = CreateEvent(NULL, true, false, "SignalEvent");
-#endif
+  ::utils::CreateSdlEvent();
+  ::utils::SubscribeToTerminationSignals();
+  ::utils::WaitForSdlObject();
+#else
   if (!::utils::SubscribeToInterruptSignal(&sig_handler) ||
       !::utils::SubscribeToTerminateSignal(&sig_handler) ||
       !::utils::SubscribeToFaultSignal(&sig_handler)) {
     LOG4CXX_FATAL(logger_, "Subscribe to system signals error");
-  }
-#if defined(OS_WINDOWS)
-  if (signal_event) {
-#if defined(WIN_NATIVE)
-    WaitForSingleObject(signal_event, INFINITE);
-#elif defined(QT_PORT)
-    QCoreApplication::instance()->processEvents();
-    QCoreApplication::instance()->exec();
-#endif
-  } else {
-    LOG4CXX_FATAL(logger_, "Create system event error");
   }
 #endif
 }
