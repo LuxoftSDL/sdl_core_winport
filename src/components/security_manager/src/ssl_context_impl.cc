@@ -32,12 +32,12 @@
 #include "security_manager/crypto_manager_impl.h"
 
 #include <assert.h>
-#include <openssl/bio.h>
-#include <openssl/ssl.h>
-#include <openssl/err.h>
 #include <memory.h>
-#include <map>
+#include <openssl/bio.h>
+#include <openssl/err.h>
+#include <openssl/ssl.h>
 #include <algorithm>
+#include <map>
 
 #include "utils/macro.h"
 
@@ -416,6 +416,22 @@ bool CryptoManagerImpl::SSLContextImpl::IsHandshakePending() const {
   return is_handshake_pending_;
 }
 
+bool CryptoManagerImpl::SSLContextImpl::GetCertifcateDueDate(
+    struct tm& due_date) const {
+  memset(&due_date, 0, sizeof(due_date));
+  // the minimum value for day of month is 1, otherwise exception will be thrown
+  due_date.tm_mday = 1;
+
+  X509* cert = SSL_get_certificate(connection_);
+  if (!cert) {
+    return false;
+  }
+
+  asn1_time_to_tm(X509_get_notAfter(cert), due_date);
+
+  return true;
+}
+
 CryptoManagerImpl::SSLContextImpl::~SSLContextImpl() {
   SSL_shutdown(connection_);
   SSL_free(connection_);
@@ -510,6 +526,50 @@ std::string CryptoManagerImpl::SSLContextImpl::GetTextBy(X509_NAME* name,
 
   std::transform(str.begin(), str.end(), str.begin(), ::tolower);
   return str;
+}
+
+int CryptoManagerImpl::SSLContextImpl::pull_number_from_buf(char* buf,
+                                                            int* idx) const {
+  if (!idx) {
+    return 0;
+  }
+  const int val = ((buf[*idx] - '0') * 10) + buf[(*idx) + 1] - '0';
+  *idx = *idx + 2;
+  return val;
+}
+
+void CryptoManagerImpl::SSLContextImpl::asn1_time_to_tm(
+    ASN1_TIME* time, struct tm& cert_time) const {
+  char* buf = (char*)time->data;
+  int index = 0;
+  const int year = pull_number_from_buf(buf, &index);
+  if (V_ASN1_GENERALIZEDTIME == time->type) {
+    cert_time.tm_year = (year * 100 - 1900) + pull_number_from_buf(buf, &index);
+  } else {
+    cert_time.tm_year = year < 50 ? year + 100 : year;
+  }
+
+  const int mon = pull_number_from_buf(buf, &index);
+  const int day = pull_number_from_buf(buf, &index);
+  const int hour = pull_number_from_buf(buf, &index);
+  const int mn = pull_number_from_buf(buf, &index);
+
+  cert_time.tm_mon = mon - 1;
+  cert_time.tm_mday = day;
+  cert_time.tm_hour = hour;
+  cert_time.tm_min = mn;
+
+  if (buf[index] == 'Z') {
+    cert_time.tm_sec = 0;
+  }
+  if ((buf[index] == '+') || (buf[index] == '-')) {
+    const int mn = pull_number_from_buf(buf, &index);
+    const int mn1 = pull_number_from_buf(buf, &index);
+    cert_time.tm_sec = (mn * 3600) + (mn1 * 60);
+  } else {
+    const int sec = pull_number_from_buf(buf, &index);
+    cert_time.tm_sec = sec;
+  }
 }
 
 }  // namespace security_manager

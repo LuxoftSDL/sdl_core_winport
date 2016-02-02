@@ -33,10 +33,10 @@
 #ifndef SRC_COMPONENTS_INCLUDE_SECURITY_MANAGER_SSL_CONTEXT_H_
 #define SRC_COMPONENTS_INCLUDE_SECURITY_MANAGER_SSL_CONTEXT_H_
 
-#include <cstddef>  // for size_t typedef
-#include <string>
 #include <ctype.h>
 #include <algorithm>
+#include <cstddef>  // for size_t typedef
+#include <string>
 
 // TODO(EZamakhov): update brief info
 /**
@@ -112,6 +112,7 @@ class SSLContext {
                        size_t* out_data_size) = 0;
   virtual bool IsInitCompleted() const = 0;
   virtual bool IsHandshakePending() const = 0;
+  virtual bool GetCertifcateDueDate(struct tm& due_date) const = 0;
   virtual size_t get_max_block_size(size_t mtu) const = 0;
   virtual std::string LastError() const = 0;
 

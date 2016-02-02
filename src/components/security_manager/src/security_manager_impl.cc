@@ -31,11 +31,11 @@
  */
 
 #include "security_manager/security_manager_impl.h"
-#include "security_manager/crypto_manager_impl.h"
 #include "protocol_handler/protocol_packet.h"
-#include "utils/logger.h"
+#include "security_manager/crypto_manager_impl.h"
 #include "utils/byte_order.h"
 #include "utils/json_utils.h"
+#include "utils/logger.h"
 
 namespace security_manager {
 
@@ -188,8 +188,11 @@ void SecurityManagerImpl::StartHandshake(uint32_t connection_key) {
     return;
   }
 
-  if (crypto_manager_->IsCertificateUpdateRequired()) {
-    NotifyOnCertififcateUpdateRequired();
+  struct tm cert_due_time;
+  if (ssl_context->GetCertifcateDueDate(cert_due_time)) {
+    if (crypto_manager_->IsCertificateUpdateRequired(cert_due_time)) {
+      NotifyOnCertififcateUpdateRequired();
+    }
   }
 
   if (ssl_context->IsInitCompleted()) {
