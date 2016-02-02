@@ -371,7 +371,7 @@ bool LifeCycle::InitMessageSystem() {
 #endif  // MQUEUE_HMIADAPTER
 
 namespace {
-#if defined(POSIX)
+#if defined(OS_POSIX)
 void sig_handler(int sig) {
   switch (sig) {
     case SIGINT:
@@ -398,7 +398,7 @@ void LifeCycle::Run() {
   ::utils::CreateSdlEvent();
   ::utils::SubscribeToTerminationSignals();
   ::utils::WaitForSdlObject();
-#else
+#elif defined(OS_POSIX)
   if (!::utils::SubscribeToInterruptSignal(&sig_handler) ||
       !::utils::SubscribeToTerminateSignal(&sig_handler) ||
       !::utils::SubscribeToFaultSignal(&sig_handler)) {
