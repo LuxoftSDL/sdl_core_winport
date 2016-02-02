@@ -151,6 +151,7 @@ class CryptoManagerImpl : public CryptoManager {
   std::string certificate_data_;
   bool verify_peer_;
   size_t hours_before_update_;
+  bool certificate_exists_;
   DISALLOW_COPY_AND_ASSIGN(CryptoManagerImpl);
 };
 }  // namespace security_manager
