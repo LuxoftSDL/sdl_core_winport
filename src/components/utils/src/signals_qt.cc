@@ -31,6 +31,7 @@
  */
 #include "utils/signals.h"
 #include "utils/logger.h"
+#include <QCoreApplication>
 
 CREATE_LOGGERPTR_GLOBAL(logger_, "Util")
 
@@ -57,22 +58,20 @@ void sigHandler(int sig) {
 
 namespace utils {
 
-void handleSigs(HANDLE& signal_event, const char* log_event_name) {
+void handleSigs(HANDLE& signal_handle, const char* log_event_name) {
   LOG4CXX_INFO(logger_, log_event_name);
-  SetEvent(signal_event);
-}
-
-void WaitForSdlObject() {
-  if (signal_handle) {
-    WaitForSingleObject(signal_handle, INFINITE);
-  } else {
-    LOG4CXX_FATAL(logger_, "Create system event error");
+  QCoreApplication* const app = QCoreApplication::instance();
+  if (app) {
+    app->quit();
   }
 }
 
-void CreateSdlEvent() {
-  signal_handle = CreateEvent(NULL, true, false, "SignalEvent");
+void WaitForSdlObject() {
+  QCoreApplication::instance()->processEvents();
+  QCoreApplication::instance()->exec();
 }
+
+void CreateSdlEvent() {}
 
 void SubscribeToTerminationSignals() {
   if ((signal(SIGINT, &sigHandler) == SIG_ERR) ||

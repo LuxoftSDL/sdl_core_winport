@@ -371,9 +371,7 @@ bool LifeCycle::InitMessageSystem() {
 #endif  // MQUEUE_HMIADAPTER
 
 namespace {
-#if defined(OS_WINDOWS)
-HANDLE signal_event = NULL;
-#endif
+#if defined(OS_POSIX)
 void sig_handler(int sig) {
   switch (sig) {
     case SIGINT:
@@ -389,29 +387,22 @@ void sig_handler(int sig) {
       LOG4CXX_DEBUG(logger_, "Unexpected signal has been caught");
       break;
   }
-#if defined(OS_WINDOWS)
-  if (NULL != signal_event) {
-    SetEvent(signal_event);
-  }
-#endif
 }
+#endif
+
 }  //  namespace
 
 void LifeCycle::Run() {
   LOG4CXX_AUTO_TRACE(logger_);
-  // First, register signal handlers
+#if defined(OS_WINDOWS)
+  ::utils::CreateSdlEvent();
+  ::utils::SubscribeToTerminationSignals();
+  ::utils::WaitForSdlObject();
+#elif defined(OS_POSIX)
   if (!::utils::SubscribeToInterruptSignal(&sig_handler) ||
       !::utils::SubscribeToTerminateSignal(&sig_handler) ||
       !::utils::SubscribeToFaultSignal(&sig_handler)) {
     LOG4CXX_FATAL(logger_, "Subscribe to system signals error");
-  }
-// Now wait for any signal
-#if defined(OS_WINDOWS)
-  signal_event = CreateEvent(NULL, false, false, "SignalEvent");
-  if (NULL != signal_event) {
-    WaitForSingleObject(signal_event, INFINITE);
-  } else {
-    LOG4CXX_FATAL(logger_, "Create system event error");
   }
 #endif
 }
