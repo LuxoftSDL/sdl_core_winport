@@ -46,9 +46,9 @@ uint32_t ToInetAddress(const utils::SpecialAddress::Type address) {
       return htonl(INADDR_ANY);
     case utils::SpecialAddress::LoopBack:
       return htonl(INADDR_LOOPBACK);
+    default:
+      DCHECK_OR_RETURN(!"Unsupported special address", htonl(INADDR_ANY));
   }
-  DCHECK(!"Unsupported special address");
-  return htonl(INADDR_ANY);
 }
 
 }  // namespace
