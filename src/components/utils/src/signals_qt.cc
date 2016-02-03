@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014, Ford Motor Company
+ * Copyright (c) 2016, Ford Motor Company
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -31,6 +31,7 @@
  */
 #include "utils/signals.h"
 #include "utils/logger.h"
+#include <QCoreApplication>
 
 CREATE_LOGGERPTR_GLOBAL(logger_, "Util")
 
@@ -69,21 +70,20 @@ LONG WINAPI handleException(LPEXCEPTION_POINTERS p) {
 
 BOOL WINAPI handle_event(HANDLE& signal_event, const char* log_event_name) {
   LOG4CXX_INFO(logger_, log_event_name);
-  SetEvent(signal_event);
-  return TRUE;
+  QCoreApplication* const app = QCoreApplication::instance();
+  if (app) {
+    app->quit();
+    return TRUE;
+  }
+  return FALSE;
 }
 
 void WaitForSdlObject() {
-  if (signal_event) {
-    WaitForSingleObject(signal_event, INFINITE);
-  } else {
-    LOG4CXX_FATAL(logger_, "Create system event error");
-  }
+  QCoreApplication::instance()->processEvents();
+  QCoreApplication::instance()->exec();
 }
 
-void CreateSdlEvent() {
-  signal_event = CreateEvent(NULL, true, false, "SignalEvent");
-}
+void CreateSdlEvent() {}
 
 bool SubscribeToTerminationSignals() {
   SetConsoleCtrlHandler(&sig_handler, TRUE);
