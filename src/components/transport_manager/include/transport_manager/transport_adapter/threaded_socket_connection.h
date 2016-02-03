@@ -51,6 +51,7 @@ typedef long ssize_t;
 #include "protocol/common.h"
 #include "utils/threads/thread_delegate.h"
 #include "utils/lock.h"
+#include "utils/socket.h"
 
 using ::transport_manager::transport_adapter::Connection;
 
@@ -90,11 +91,9 @@ class ThreadedSocketConnection : public Connection {
   TransportAdapter::Error Start();
 
   /**
-   * @brief Set variable that hold socket No.
+   * @brief Set variable that hold socket No. Takes the ownership.
    */
-  void set_socket(int socket) {
-    socket_ = socket;
-  }
+  void SetSocket(utils::TcpSocketConnection& socket_connection);
 
  protected:
   /**
@@ -163,6 +162,8 @@ class ThreadedSocketConnection : public Connection {
   FrameQueue frames_to_send_;
   mutable sync_primitives::Lock frames_to_send_mutex_;
 
+  utils::TcpSocketConnection socket_connection_;
+  // temporal holder for the hative handle.. Will be removed later.
   int socket_;
 
 #if defined(OS_POSIX)

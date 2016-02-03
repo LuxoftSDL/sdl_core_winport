@@ -29,43 +29,45 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-#ifndef SRC_COMPONENTS_INCLUDE_UTILS_PIMPL_H_
-#define SRC_COMPONENTS_INCLUDE_UTILS_PIMPL_H_
+#ifndef SRC_COMPONENTS_UTILS_INCLUDE_UTILS_HOST_ADDRESS_H_
+#define SRC_COMPONENTS_UTILS_INCLUDE_UTILS_HOST_ADDRESS_H_
+
+#include <cstdint>
+#include <string>
 
 namespace utils {
 
-/**
- * @brief Pimpl
- *
- * Holds pointer to Impl object.
- * Impl object creates in Pimpl constructor
- * and deletes in destructor like auto_ptr does.
- * Assignment and copying of Pimpl instance causes Impl pointers swapping.
- *
- * @tparam Impl Type of Impl to be wrapped
- **/
-template <typename Impl>
-class Pimpl {
- public:
-  Pimpl();
-  Pimpl(Impl* impl);
-  Pimpl(Pimpl& rhs);
-  ~Pimpl();
+namespace SpecialAddress {
+enum Type { Any, LoopBack };
+}  // namespace SpecialAddress
 
-  Pimpl& operator=(Pimpl& rhs);
-  Impl* operator->() const;
-  Impl& operator&() const;
+class HostAddress {
+ public:
+  HostAddress();
+
+  explicit HostAddress(const SpecialAddress::Type address);
+
+  explicit HostAddress(const std::string& ip4_address);
+
+  HostAddress(const uint32_t ip4_address, const bool is_host_byte_order);
+
+  bool operator==(const HostAddress& address) const;
+
+  bool operator==(const SpecialAddress::Type address) const;
+
+  inline bool operator!=(const HostAddress& address) const;
+
+  inline bool operator!=(const SpecialAddress::Type address) const;
+
+  uint32_t ToIp4Address(const bool is_host_byte_order) const;
+
+  std::string ToString() const;
 
  private:
-  Impl* impl_;
-
-  /**
-   * @brief Swaps Impl pointers
-   * @param rhs Reference to Pimpl to be swapped with this
-   **/
-  void Swap(Pimpl& rhs);
+  // Address in the network byte order
+  uint32_t ip4_;
 };
 
 }  // namespace utils
 
-#endif  // SRC_COMPONENTS_INCLUDE_UTILS_PIMPL_H_
+#endif  // SRC_COMPONENTS_UTILS_INCLUDE_UTILS_HOST_ADDRESS_H_

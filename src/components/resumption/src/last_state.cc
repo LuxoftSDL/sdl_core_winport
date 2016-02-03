@@ -67,9 +67,15 @@ void resumption::LastState::LoadFromFileSystem() {
     return;
   }
 
+  if (buffer.empty()) {
+    LOG4CXX_DEBUG(logger_, "Buffer is empty.");
+    return;
+  }
+
   JsonValue::ParseResult parse_result = JsonValue::Parse(buffer);
   if (!parse_result.second) {
-    LOG4CXX_WARN(logger_, "Failed to load last state. Cannot parse json");
+    LOG4CXX_WARN(logger_,
+                 "Failed to load last state. Cannot parse json:\n" << buffer);
     return;
   }
   dictionary_ = parse_result.first;

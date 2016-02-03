@@ -51,6 +51,9 @@ if(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
                 ${UTILS_INCLUDE_DIR}/utils/string_utils.h
                 ${UTILS_INCLUDE_DIR}/utils/system.h
                 ${UTILS_INCLUDE_DIR}/utils/json_utils.h
+                ${UTILS_INCLUDE_DIR}/utils/host_address.h
+                ${UTILS_INCLUDE_DIR}/utils/socket.h
+                ${UTILS_INCLUDE_DIR}/utils/socket_utils.h
                 )
 
       set (src ${UTILS_SRC_DIR}/bitstream.cc
@@ -71,6 +74,8 @@ if(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
             ${UTILS_SRC_DIR}/shared_library_qt.cc
             ${UTILS_SRC_DIR}/socket_qt.cc
             ${UTILS_SRC_DIR}/json_utils_qt.cc
+            ${UTILS_SRC_DIR}/host_address.cc
+            ${UTILS_SRC_DIR}/socket_utils.cc
     )
     # Files copied for the Qt MOC.
     # Because MOC is looking headre nearby with *.cc
@@ -109,6 +114,8 @@ if(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
             ${UTILS_SRC_DIR}/shared_library_win.cc
             ${UTILS_SRC_DIR}/socket_win.cc
             ${UTILS_SRC_DIR}/json_utils.cc
+            ${UTILS_SRC_DIR}/host_address.cc
+            ${UTILS_SRC_DIR}/socket_utils.cc
     )
   endif()
   if(ENABLE_LOG)
@@ -161,6 +168,8 @@ else()
       ${UTILS_SRC_DIR}/pipe_posix.cc
       ${UTILS_SRC_DIR}/shared_library_posix.cc
       ${UTILS_SRC_DIR}/json_utils.cc
+      ${UTILS_SRC_DIR}/host_address.cc
+      ${UTILS_SRC_DIR}/socket_utils.cc
     )
     if(ENABLE_LOG)
       list(APPEND SOURCES

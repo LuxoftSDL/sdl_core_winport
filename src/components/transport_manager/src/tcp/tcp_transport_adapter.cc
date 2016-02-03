@@ -86,9 +86,7 @@ void TcpTransportAdapter::Store() const {
         DeviceSptr::static_pointer_cast<TcpDevice>(device);
     JsonValue device_dictionary;
     device_dictionary["name"] = tcp_device->name();
-    struct in_addr address;
-    address.s_addr = tcp_device->in_addr();
-    device_dictionary["address"] = std::string(inet_ntoa(address));
+    device_dictionary["address"] = tcp_device->Address().ToString();
     JsonValue applications_dictionary;
     ApplicationList app_ids = tcp_device->GetApplicationList();
     for (ApplicationList::const_iterator j = app_ids.begin();
@@ -100,13 +98,7 @@ void TcpTransportAdapter::Store() const {
         int port = tcp_device->GetApplicationPort(app_handle);
         if (port != -1) {  // don't want to store incoming applications
           JsonValue application_dictionary;
-          char port_record[12];
-#if defined(OS_WINDOWS)
-          _snprintf(port_record, sizeof(port_record), "%d", port);
-#else
-          snprintf(port_record, sizeof(port_record), "%d", port);
-#endif
-          application_dictionary["port"] = std::string(port_record);
+          application_dictionary["port"] = port;
           applications_dictionary.Append(application_dictionary);
         }
       }
@@ -135,13 +127,8 @@ bool TcpTransportAdapter::Restore() {
        ++devices_itr) {
     const JsonValueRef device_dictionary = *devices_itr;
     std::string name = device_dictionary["name"].AsString();
-    std::string address_record = device_dictionary["address"].AsString();
-#if defined(OS_WINDOWS)
-    uint32_t address = inet_addr(address_record.c_str());
-#else
-    in_addr_t address = inet_addr(address_record.c_str());
-#endif
-    TcpDevice* tcp_device = new TcpDevice(address, name);
+    std::string address = device_dictionary["address"].AsString();
+    TcpDevice* tcp_device = new TcpDevice(utils::HostAddress(address), name);
     DeviceSptr device(tcp_device);
     AddDevice(device);
     const JsonValueRef applications_dictionary =
@@ -152,9 +139,8 @@ bool TcpTransportAdapter::Restore() {
          applications_itr != applications_end;
          ++applications_itr) {
       const JsonValueRef application_dictionary = *applications_itr;
-      std::string port_record = application_dictionary["port"].AsString();
-      int port = atoi(port_record.c_str());
-      ApplicationHandle app_handle = tcp_device->AddDiscoveredApplication(port);
+      int port = application_dictionary["port"].AsInt();
+      ApplicationHandle app_handle = tcp_device->AddApplication(port, false);
       if (Error::OK != Connect(device->unique_device_id(), app_handle)) {
         errors_occurred = true;
       }

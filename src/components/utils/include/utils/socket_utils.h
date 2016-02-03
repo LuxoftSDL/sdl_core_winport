@@ -29,43 +29,15 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-#ifndef SRC_COMPONENTS_INCLUDE_UTILS_PIMPL_H_
-#define SRC_COMPONENTS_INCLUDE_UTILS_PIMPL_H_
+#ifndef SRC_COMPONENTS_UTILS_INCLUDE_UTILS_SOCKET_UTILS_H_
+#define SRC_COMPONENTS_UTILS_INCLUDE_UTILS_SOCKET_UTILS_H_
 
 namespace utils {
 
-/**
- * @brief Pimpl
- *
- * Holds pointer to Impl object.
- * Impl object creates in Pimpl constructor
- * and deletes in destructor like auto_ptr does.
- * Assignment and copying of Pimpl instance causes Impl pointers swapping.
- *
- * @tparam Impl Type of Impl to be wrapped
- **/
-template <typename Impl>
-class Pimpl {
- public:
-  Pimpl();
-  Pimpl(Impl* impl);
-  Pimpl(Pimpl& rhs);
-  ~Pimpl();
-
-  Pimpl& operator=(Pimpl& rhs);
-  Impl* operator->() const;
-  Impl& operator&() const;
-
- private:
-  Impl* impl_;
-
-  /**
-   * @brief Swaps Impl pointers
-   * @param rhs Reference to Pimpl to be swapped with this
-   **/
-  void Swap(Pimpl& rhs);
-};
+void EnableKeepalive(int socket,
+                     int keepalive_time_sec,
+                     int keepalive_Interval_sec);
 
 }  // namespace utils
 
-#endif  // SRC_COMPONENTS_INCLUDE_UTILS_PIMPL_H_
+#endif  // SRC_COMPONENTS_UTILS_INCLUDE_UTILS_SOCKET_UTILS_H_
