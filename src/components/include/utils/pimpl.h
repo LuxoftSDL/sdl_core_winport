@@ -45,19 +45,19 @@ namespace utils {
 template <typename Impl>
 class SwapAssigner {
  public:
-  void operator()(Impl* lhs, Impl* rhs) const;
+  void operator()(Impl& lhs, Impl& rhs) const;
 };
 
 template <typename Impl>
 class CopyAssigner {
  public:
-  void operator()(Impl* lhs, Impl* rhs) const;
+  void operator()(Impl& lhs, Impl& rhs) const;
 };
 
 template <typename Impl>
 class NonCopyAssigner {
  public:
-  void operator()(Impl* lhs, Impl* rhs) const;
+  void operator()(Impl& lhs, Impl& rhs) const;
 };
 
 /**

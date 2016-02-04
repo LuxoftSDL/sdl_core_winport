@@ -36,17 +36,17 @@
 #include <algorithm>
 
 template <typename Impl>
-void utils::SwapAssigner<Impl>::operator()(Impl* lhs, Impl* rhs) const {
+void utils::SwapAssigner<Impl>::operator()(Impl& lhs, Impl& rhs) const {
   std::swap(lhs, rhs);
 }
 
 template <typename Impl>
-void utils::CopyAssigner<Impl>::operator()(Impl* lhs, Impl* rhs) const {
-  *lhs = *rhs;
+void utils::CopyAssigner<Impl>::operator()(Impl& lhs, Impl& rhs) const {
+  lhs = rhs;
 }
 
 template <typename Impl>
-void utils::NonCopyAssigner<Impl>::operator()(Impl* lhs, Impl* rhs) const {
+void utils::NonCopyAssigner<Impl>::operator()(Impl& lhs, Impl& rhs) const {
   DCHECK_OR_RETURN_VOID(false);
 }
 
@@ -66,14 +66,14 @@ utils::Pimpl<Impl, Assigner>::~Pimpl() {
 template <typename Impl, typename Assigner>
 utils::Pimpl<Impl, Assigner>::Pimpl(utils::Pimpl<Impl, Assigner>& rhs) {
   Assigner assigner;
-  assigner(this->impl_, rhs.impl_);
+  assigner(*this->impl_, *rhs.impl_);
 }
 
 template <typename Impl, typename Assigner>
 utils::Pimpl<Impl, Assigner>& utils::Pimpl<Impl, Assigner>::operator=(
     utils::Pimpl<Impl, Assigner>& rhs) {
   Assigner assigner;
-  assigner(this->impl_, rhs.impl_);
+  assigner(*this->impl_, *rhs.impl_);
   return *this;
 }
 
