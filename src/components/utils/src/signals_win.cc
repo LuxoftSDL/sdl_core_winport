@@ -38,34 +38,30 @@ CREATE_LOGGERPTR_GLOBAL(logger_, "Util")
 namespace {
 HANDLE signal_handle = NULL;
 
+void HandleSignals(HANDLE& signal_handle, const char* log_name) {
+  LOG4CXX_INFO(logger_, log_name);
+  SetEvent(signal_handle);
+}
+
 void SigHandler(int sig) {
   switch (sig) {
     case SIGINT:
-      ::utils::HandleSignals(static_cast<void*>(signal_handle),
-                             "SIGINT signal has been caught");
+      HandleSignals(signal_handle, "SIGINT signal has been caught");
       break;
     case SIGTERM:
-      ::utils::HandleSignals(static_cast<void*>(signal_handle),
-                             "SIGTERM signal has been caught");
+      HandleSignals(signal_handle, "SIGTERM signal has been caught");
       break;
     case SIGSEGV:
-      ::utils::HandleSignals(static_cast<void*>(signal_handle),
-                             "SIGSEGV signal has been caught");
+      HandleSignals(signal_handle, "SIGSEGV signal has been caught");
       break;
     default:
-      ::utils::HandleSignals(static_cast<void*>(signal_handle),
-                             "Unexpected signal has been caught");
+      HandleSignals(signal_handle, "Unexpected signal has been caught");
       break;
   }
 }
 }  //  namespace
 
 namespace utils {
-
-void HandleSignals(void* signal_handle, const char* log_name) {
-  LOG4CXX_INFO(logger_, log_name);
-  SetEvent(static_cast<HANDLE>(signal_handle));
-}
 
 void WaitForSdlExecute() {
   if (signal_handle) {

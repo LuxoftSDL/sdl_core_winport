@@ -40,7 +40,6 @@ typedef void (*sighandler_t)(int);
 #endif
 
 namespace utils {
-void HandleSignals(void* signal_handle, const char* log_name);
 void CreateSdlEvent();
 void WaitForSdlExecute();
 void SubscribeToTerminationSignals();

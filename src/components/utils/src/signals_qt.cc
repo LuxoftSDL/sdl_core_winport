@@ -37,27 +37,7 @@ CREATE_LOGGERPTR_GLOBAL(logger_, "Util")
 
 namespace {
 
-void SigHandler(int sig) {
-  switch (sig) {
-    case SIGINT:
-      ::utils::HandleSignals(NULL, "SIGINT signal has been caught");
-      break;
-    case SIGTERM:
-      ::utils::HandleSignals(NULL, "SIGTERM signal has been caught");
-      break;
-    case SIGSEGV:
-      ::utils::HandleSignals(NULL, "SIGSEGV signal has been caught");
-      break;
-    default:
-      ::utils::HandleSignals(NULL, "Unexpected signal has been caught");
-      break;
-  }
-}
-}  //  namespace
-
-namespace utils {
-
-void HandleSignals(void* signal_handle, const char* log_name) {
+void HandleSignals(const char* log_name) {
   LOG4CXX_INFO(logger_, log_name);
   QCoreApplication* const app = QCoreApplication::instance();
   if (!app) {
@@ -65,6 +45,26 @@ void HandleSignals(void* signal_handle, const char* log_name) {
   }
   app->quit();
 }
+
+void SigHandler(int sig) {
+  switch (sig) {
+    case SIGINT:
+      HandleSignals("SIGINT signal has been caught");
+      break;
+    case SIGTERM:
+      HandleSignals("SIGTERM signal has been caught");
+      break;
+    case SIGSEGV:
+      HandleSignals("SIGSEGV signal has been caught");
+      break;
+    default:
+      HandleSignals("Unexpected signal has been caught");
+      break;
+  }
+}
+}  //  namespace
+
+namespace utils {
 
 void WaitForSdlExecute() {
   QCoreApplication::instance()->processEvents();
