@@ -37,7 +37,7 @@
 
 #include "utils/signals.h"
 
-namespace utils {
+namespace {
 
 bool SubscribeToInterruptSignal(sighandler_t func) {
   struct sigaction act;
@@ -66,6 +66,37 @@ bool SubscribeToFaultSignal(sighandler_t func) {
   return sigaction(SIGSEGV, &act, NULL) == 0;
 }
 
+void SigHandler(int sig) {
+  switch (sig) {
+    case SIGINT:
+      LOG4CXX_INFO("SIGINT signal has been caught");
+      break;
+    case SIGTERM:
+      LOG4CXX_INFO("SIGTERM signal has been caught");
+      break;
+    case SIGSEGV:
+      LOG4CXX_INFO("SIGSEGV signal has been caught");
+      break;
+    default:
+      LOG4CXX_INFO("Unexpected signal has been caught");
+      break;
+  }
+}
+}  //  namespace
+
+namespace utils {
+
+void WaitForSdlExecute() {
+  pause();
+}
+
+void SubscribeToTerminationSignals() {
+  if (!SubscribeToInterruptSignal(&SigHandler) ||
+      !SubscribeToTerminateSignal(&SigHandler) ||
+      !SubscribeToFaultSignal(&SigHandler)) {
+    LOG4CXX_FATAL(logger_, "Subscribe to system signals error");
+  }
+}
 }  //  namespace utils
 
 #endif  // OS_POSIX

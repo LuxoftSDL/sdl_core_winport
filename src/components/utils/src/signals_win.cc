@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014, Ford Motor Company
+ * Copyright (c) 2016, Ford Motor Company
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -29,27 +29,57 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-#if defined(OS_WINDOWS)
-
-#include <csignal>
-
 #include "utils/winhdr.h"
 #include "utils/signals.h"
+#include "utils/logger.h"
+
+CREATE_LOGGERPTR_GLOBAL(logger_, "Util")
+
+namespace {
+HANDLE signal_handle = NULL;
+
+void HandleSignals(HANDLE& signal_handle, const char* log_name) {
+  LOG4CXX_INFO(logger_, log_name);
+  SetEvent(signal_handle);
+}
+
+void SigHandler(int sig) {
+  switch (sig) {
+    case SIGINT:
+      HandleSignals(signal_handle, "SIGINT signal has been caught");
+      break;
+    case SIGTERM:
+      HandleSignals(signal_handle, "SIGTERM signal has been caught");
+      break;
+    case SIGSEGV:
+      HandleSignals(signal_handle, "SIGSEGV signal has been caught");
+      break;
+    default:
+      HandleSignals(signal_handle, "Unexpected signal has been caught");
+      break;
+  }
+}
+}  //  namespace
 
 namespace utils {
 
-bool SubscribeToInterruptSignal(sighandler_t func) {
-  return signal(SIGINT, func) != SIG_ERR;
+void WaitForSdlExecute() {
+  if (signal_handle) {
+    WaitForSingleObject(signal_handle, INFINITE);
+  } else {
+    LOG4CXX_FATAL(logger_, "SDL is not subscribed to signal events");
+  }
 }
 
-bool SubscribeToTerminateSignal(sighandler_t func) {
-  return signal(SIGTERM, func) != SIG_ERR;
+void CreateSdlEvent() {
+  signal_handle = CreateEvent(NULL, true, false, "SignalEvent");
 }
 
-bool SubscribeToFaultSignal(sighandler_t func) {
-  return signal(SIGSEGV, func) != SIG_ERR;
+void SubscribeToTerminationSignals() {
+  if ((signal(SIGINT, &SigHandler) == SIG_ERR) ||
+      (signal(SIGTERM, &SigHandler) == SIG_ERR) ||
+      (signal(SIGSEGV, &SigHandler) == SIG_ERR)) {
+    LOG4CXX_FATAL(logger_, "Subscribe to system signals error");
+  }
 }
-
 }  //  namespace utils
-
-#endif  // OS_WINDOWS
