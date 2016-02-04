@@ -37,6 +37,7 @@
 #include "utils/macro.h"
 #include "utils/log_message_loop_thread.h"
 #include "utils/file_system.h"
+#include "utils/string_utils.h"
 
 namespace logger {
 
@@ -85,7 +86,10 @@ void LogMessageHandler::Handle(const LogMessage message) {
         << " [" << message.logger_ << "] "
         << file_system::RetrieveFileNameFromPath(message.location_.file_name_)
         << ":" << message.location_.line_number_ << " "
-        << message.location_.function_name_ << ": " << message.entry_;
+        << message.location_.function_name_ << ": "
+        // we have to replace % character with %% because
+        // printf() below recognizes % character as formatter start
+        << utils::ReplaceString(message.entry_, "%", "%%");
 
   // dump log string to console
   printf(entry.str().c_str());
