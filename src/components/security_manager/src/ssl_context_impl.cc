@@ -150,13 +150,13 @@ void CryptoManagerImpl::SSLContextImpl::PrintCertData(
     char* subj = X509_NAME_oneline(subj_name, NULL, 0);
     if (subj) {
       std::replace(subj, subj + strlen(subj), '/', ' ');
-      LOG4CXX_DEBUG(logger_, cert_owner << " subject:" << subj);
+      LOGGER_DEBUG(logger_, cert_owner << " subject:" << subj);
       OPENSSL_free(subj);
     }
     char* issuer = X509_NAME_oneline(X509_get_issuer_name(cert), NULL, 0);
     if (issuer) {
       std::replace(issuer, issuer + strlen(issuer), '/', ' ');
-      LOG4CXX_DEBUG(logger_, cert_owner << " issuer:" << issuer);
+      LOGGER_DEBUG(logger_, cert_owner << " issuer:" << issuer);
       OPENSSL_free(issuer);
     }
 
@@ -164,10 +164,10 @@ void CryptoManagerImpl::SSLContextImpl::PrintCertData(
     ASN1_TIME* notAfter = X509_get_notAfter(cert);
 
     if (notBefore) {
-      LOG4CXX_DEBUG(logger_, " Start date: " << (char*)notBefore->data);
+      LOGGER_DEBUG(logger_, " Start date: " << (char*)notBefore->data);
     }
     if (notAfter) {
-      LOG4CXX_DEBUG(logger_, " End date: " << (char*)notAfter->data);
+      LOGGER_DEBUG(logger_, " End date: " << (char*)notAfter->data);
     }
   }
 }
@@ -198,7 +198,7 @@ CryptoManagerImpl::SSLContextImpl::CheckCertContext() {
   const std::string& sn = GetTextBy(subj_name, NID_serialNumber);
 
   if (hsh_context_.expected_cn.compare(cn) != 0) {
-    LOG4CXX_ERROR(logger_,
+    LOGGER_ERROR(logger_,
                   "Trying to run handshake with wrong app name: "
                       << cn
                       << ". Expected app name: "
@@ -207,7 +207,7 @@ CryptoManagerImpl::SSLContextImpl::CheckCertContext() {
   }
 
   if (hsh_context_.expected_sn.compare(sn) != 0) {
-    LOG4CXX_ERROR(logger_,
+    LOGGER_ERROR(logger_,
                   "Trying to run handshake with wrong app id: "
                       << sn
                       << ". Expected app id: "
@@ -219,13 +219,13 @@ CryptoManagerImpl::SSLContextImpl::CheckCertContext() {
 
 bool CryptoManagerImpl::SSLContextImpl::ReadHandshakeData(
     const uint8_t** const out_data, size_t* out_data_size) {
-  LOG4CXX_AUTO_TRACE(logger_);
+  LOGGER_AUTO_TRACE(logger_);
   sync_primitives::AutoLock locker(ssl_locker_);
   const size_t pend = BIO_ctrl_pending(bioOut_);
-  LOG4CXX_DEBUG(logger_, "Available " << pend << " bytes for handshake");
+  LOGGER_DEBUG(logger_, "Available " << pend << " bytes for handshake");
 
   if (pend > 0) {
-    LOG4CXX_DEBUG(logger_, "Reading handshake data");
+    LOGGER_DEBUG(logger_, "Reading handshake data");
     EnsureBufferSizeEnough(pend);
 
     const int read_count = BIO_read(bioOut_, buffer_, pend);
@@ -233,7 +233,7 @@ bool CryptoManagerImpl::SSLContextImpl::ReadHandshakeData(
       *out_data_size = read_count;
       *out_data = buffer_;
     } else {
-      LOG4CXX_WARN(logger_, "BIO read fail");
+      LOGGER_WARN(logger_, "BIO read fail");
       is_handshake_pending_ = false;
       ResetConnection();
       return false;
@@ -245,7 +245,7 @@ bool CryptoManagerImpl::SSLContextImpl::ReadHandshakeData(
 
 bool CryptoManagerImpl::SSLContextImpl::WriteHandshakeData(
     const uint8_t* const in_data, size_t in_data_size) {
-  LOG4CXX_AUTO_TRACE(logger_);
+  LOGGER_AUTO_TRACE(logger_);
   sync_primitives::AutoLock locker(ssl_locker_);
   if (in_data && in_data_size) {
     const int ret = BIO_write(bioIn_, in_data, in_data_size);
@@ -284,7 +284,7 @@ CryptoManagerImpl::SSLContextImpl::ProcessSuccessHandshake() {
     return result;
   }
 
-  LOG4CXX_DEBUG(logger_, "SSL handshake successfully finished");
+  LOGGER_DEBUG(logger_, "SSL handshake successfully finished");
   // Handshake is successful
   bioFilter_ = BIO_new(BIO_f_ssl());
   BIO_set_ssl(bioFilter_, connection_, BIO_NOCLOSE);
@@ -309,7 +309,7 @@ CryptoManagerImpl::SSLContextImpl::ProcessHandshakeError(
   if (error != SSL_ERROR_WANT_READ) {
     const long error = SSL_get_verify_result(connection_);
     SetHandshakeError(error);
-    LOG4CXX_WARN(logger_,
+    LOGGER_WARN(logger_,
                  "Handshake failed with error "
                      << " -> "
                      << SSL_get_error(connection_, error)
@@ -335,7 +335,7 @@ SSLContext::HandshakeResult CryptoManagerImpl::SSLContextImpl::DoHandshakeStep(
     size_t in_data_size,
     const uint8_t** const out_data,
     size_t* out_data_size) {
-  LOG4CXX_AUTO_TRACE(logger_);
+  LOGGER_AUTO_TRACE(logger_);
   DCHECK(out_data);
   DCHECK(out_data_size);
   *out_data = NULL;
@@ -367,7 +367,7 @@ bool CryptoManagerImpl::SSLContextImpl::CheckInitFinished() {
   // TODO(Ezamakhov): add test - hanshake fail -> restart StartHandshake
   sync_primitives::AutoLock locker(ssl_locker_);
   if (SSL_is_init_finished(connection_)) {
-    LOG4CXX_DEBUG(logger_, "SSL initilization is finished");
+    LOGGER_DEBUG(logger_, "SSL initilization is finished");
     is_handshake_pending_ = false;
     return true;
   }
@@ -481,19 +481,19 @@ void CryptoManagerImpl::SSLContextImpl::SetHandshakeError(const int error) {
 }
 
 void CryptoManagerImpl::SSLContextImpl::ResetConnection() {
-  LOG4CXX_AUTO_TRACE(logger_);
+  LOGGER_AUTO_TRACE(logger_);
   const int shutdown_result = SSL_shutdown(connection_);
   if (shutdown_result != 1) {
     const size_t pend = BIO_ctrl_pending(bioOut_);
-    LOG4CXX_DEBUG(logger_, "Available " << pend << " bytes for shutdown");
+    LOGGER_DEBUG(logger_, "Available " << pend << " bytes for shutdown");
     if (pend > 0) {
-      LOG4CXX_DEBUG(logger_, "Reading shutdown data");
+      LOGGER_DEBUG(logger_, "Reading shutdown data");
       EnsureBufferSizeEnough(pend);
       BIO_read(bioOut_, buffer_, pend);
     }
     SSL_shutdown(connection_);
   }
-  LOG4CXX_DEBUG(logger_, "SSL connection recreation");
+  LOGGER_DEBUG(logger_, "SSL connection recreation");
   SSL_CTX* ssl_context = connection_->ctx;
   SSL_free(connection_);
   connection_ = SSL_new(ssl_context);
@@ -545,7 +545,7 @@ std::string CryptoManagerImpl::SSLContextImpl::GetTextBy(X509_NAME* name,
   const int req_len = X509_NAME_get_text_by_NID(name, object, NULL, 0);
 
   if (-1 == req_len) {
-    LOG4CXX_WARN(logger_,
+    LOGGER_WARN(logger_,
                  "Unable to obtain object: " << object << " from certificate");
     return std::string();
   }

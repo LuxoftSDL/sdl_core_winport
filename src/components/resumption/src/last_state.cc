@@ -42,7 +42,7 @@ utils::json::JsonValue& resumption::LastState::dictionary() {
 }
 
 void resumption::LastState::SaveToFileSystem() {
-  LOG4CXX_AUTO_TRACE(logger_);
+  LOGGER_AUTO_TRACE(logger_);
   const std::string file = profile::Profile::instance()->app_info_storage();
   const std::string str = dictionary_.ToJson();
   const std::vector<uint8_t> char_vector_pdata(str.begin(), str.end());
@@ -50,7 +50,7 @@ void resumption::LastState::SaveToFileSystem() {
   DCHECK(file_system::CreateDirectoryRecursively(
       profile::Profile::instance()->app_storage_folder()));
 
-  LOG4CXX_INFO(logger_, "LastState::SaveToFileSystem " << file << str);
+  LOGGER_INFO(logger_, "LastState::SaveToFileSystem " << file << str);
 
   DCHECK(file_system::Write(file, char_vector_pdata));
 }
@@ -62,24 +62,24 @@ void resumption::LastState::LoadFromFileSystem() {
   bool result = file_system::ReadFile(file, buffer);
 
   if (result) {
-    LOG4CXX_WARN(logger_,
+    LOGGER_WARN(logger_,
                  "Failed to load last state. Cannot read file " << file);
     return;
   }
 
   if (buffer.empty()) {
-    LOG4CXX_DEBUG(logger_, "Buffer is empty.");
+    LOGGER_DEBUG(logger_, "Buffer is empty.");
     return;
   }
 
   JsonValue::ParseResult parse_result = JsonValue::Parse(buffer);
   if (!parse_result.second) {
-    LOG4CXX_WARN(logger_,
+    LOGGER_WARN(logger_,
                  "Failed to load last state. Cannot parse json:\n" << buffer);
     return;
   }
   dictionary_ = parse_result.first;
-  LOG4CXX_INFO(logger_, "Valid last state was found." << dictionary_.ToJson());
+  LOGGER_INFO(logger_, "Valid last state was found." << dictionary_.ToJson());
   return;
 }
 

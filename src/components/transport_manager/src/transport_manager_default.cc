@@ -51,9 +51,9 @@ namespace transport_manager {
 CREATE_LOGGERPTR_GLOBAL(logger_, "TransportManager")
 
 int TransportManagerDefault::Init() {
-  LOG4CXX_TRACE(logger_, "enter");
+  LOGGER_TRACE(logger_, "enter");
   if (E_SUCCESS != TransportManagerImpl::Init()) {
-    LOG4CXX_TRACE(logger_,
+    LOGGER_TRACE(logger_,
                   "exit with E_TM_IS_NOT_INITIALIZED. Condition: E_SUCCESS != "
                   "TransportManagerImpl::Init()");
     return E_TM_IS_NOT_INITIALIZED;
@@ -91,7 +91,7 @@ int TransportManagerDefault::Init() {
   AddTransportAdapter(ta);
 #endif  // USB_SUPPORT
 
-  LOG4CXX_TRACE(logger_, "exit with E_SUCCESS");
+  LOGGER_TRACE(logger_, "exit with E_SUCCESS");
   return E_SUCCESS;
 }
 

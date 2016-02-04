@@ -349,9 +349,9 @@ HMICapabilities::HMICapabilities(ApplicationManagerImpl* const app_mngr)
   InitCapabilities();
 
   if (!load_capabilities_from_file()) {
-    LOG4CXX_ERROR(logger_, "file hmi_capabilities.json was not loaded");
+    LOGGER_ERROR(logger_, "file hmi_capabilities.json was not loaded");
   } else {
-    LOG4CXX_INFO(logger_, "file hmi_capabilities.json was loaded");
+    LOGGER_INFO(logger_, "file hmi_capabilities.json was loaded");
   }
   if (!profile::Profile::instance()->launch_hmi()) {
     is_vr_ready_response_recieved_ = true;

@@ -59,13 +59,13 @@ AudioStreamSenderThread::AudioStreamSenderThread(const std::string fileName,
     , shouldBeStoped_(false)
     , shouldBeStoped_lock_()
     , shouldBeStoped_cv_() {
-  LOG4CXX_AUTO_TRACE(logger_);
+  LOGGER_AUTO_TRACE(logger_);
 }
 
 AudioStreamSenderThread::~AudioStreamSenderThread() {}
 
 void AudioStreamSenderThread::threadMain() {
-  LOG4CXX_AUTO_TRACE(logger_);
+  LOGGER_AUTO_TRACE(logger_);
 
   offset_ = 0;
 
@@ -77,30 +77,30 @@ void AudioStreamSenderThread::threadMain() {
 }
 
 void AudioStreamSenderThread::sendAudioChunkToMobile() {
-  LOG4CXX_AUTO_TRACE(logger_);
+  LOGGER_AUTO_TRACE(logger_);
 
   std::vector<uint8_t> binaryData;
   std::vector<uint8_t>::iterator from;
   std::vector<uint8_t>::iterator to;
 
   if (!file_system::ReadBinaryFile(fileName_, binaryData)) {
-    LOG4CXX_ERROR(logger_, "Unable to read file." << fileName_);
+    LOGGER_ERROR(logger_, "Unable to read file." << fileName_);
 
     return;
   }
 
   if (binaryData.empty()) {
-    LOG4CXX_ERROR(logger_, "Binary data is empty.");
+    LOGGER_ERROR(logger_, "Binary data is empty.");
     return;
   }
 
-  LOG4CXX_INFO(logger_, "offset = " << offset_);
+  LOGGER_INFO(logger_, "offset = " << offset_);
 
   from = binaryData.begin() + offset_;
   to = binaryData.end();
 
   if (from < binaryData.end() /*from != binaryData.end()*/) {
-    LOG4CXX_INFO(logger_, "from != binaryData.end()");
+    LOGGER_INFO(logger_, "from != binaryData.end()");
 
     offset_ = offset_ + to - from;
     std::vector<uint8_t> data(from, to);
@@ -128,7 +128,7 @@ void AudioStreamSenderThread::setShouldBeStopped(bool should_stop) {
 }
 
 void AudioStreamSenderThread::exitThreadMain() {
-  LOG4CXX_AUTO_TRACE(logger_);
+  LOGGER_AUTO_TRACE(logger_);
   setShouldBeStopped(true);
 }
 

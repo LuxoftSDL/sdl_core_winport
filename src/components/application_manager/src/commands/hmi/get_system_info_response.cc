@@ -44,7 +44,7 @@ GetSystemInfoResponse::GetSystemInfoResponse(const MessageSharedPtr& message)
 GetSystemInfoResponse::~GetSystemInfoResponse() {}
 
 void GetSystemInfoResponse::Run() {
-  LOG4CXX_AUTO_TRACE(logger_);
+  LOGGER_AUTO_TRACE(logger_);
   const hmi_apis::Common_Result::eType code =
       static_cast<hmi_apis::Common_Result::eType>(
           (*message_)[strings::params][hmi_response::code].asInt());
@@ -65,7 +65,7 @@ void GetSystemInfoResponse::Run() {
         ApplicationManagerImpl::instance()->hmi_capabilities();
     hmi_capabilities.set_ccpu_version(ccpu_version);
   } else {
-    LOG4CXX_WARN(logger_, "GetSystemError returns an error code " << code);
+    LOGGER_WARN(logger_, "GetSystemError returns an error code " << code);
 
     // We have to set preloaded flag as false in policy table on any response
     // of GetSystemInfo (SDLAQ-CRS-2365)

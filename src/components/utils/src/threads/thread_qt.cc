@@ -47,14 +47,14 @@ void sleep(uint32_t ms) {
 size_t Thread::kMinStackSize = 0;
 
 void Thread::cleanup(void* arg) {
-  LOG4CXX_AUTO_TRACE(logger_);
+  LOGGER_AUTO_TRACE(logger_);
   Thread* thread = static_cast<Thread*>(arg);
   thread->isThreadRunning_ = false;
   thread->state_cond_.Broadcast();
 }
 
 void* Thread::threadFunc(void* arg) {
-  LOG4CXX_DEBUG(logger_,
+  LOGGER_DEBUG(logger_,
                 "Thread #" << QThread::currentThread()
                            << " started successfully");
 
@@ -65,10 +65,10 @@ void* Thread::threadFunc(void* arg) {
   thread->state_cond_.Broadcast();
 
   while (!thread->finalized_) {
-    LOG4CXX_DEBUG(logger_,
+    LOGGER_DEBUG(logger_,
                   "Thread #" << QThread::currentThreadId() << " iteration");
     thread->run_cond_.Wait(thread->state_lock_);
-    LOG4CXX_DEBUG(logger_,
+    LOGGER_DEBUG(logger_,
                   "Thread #" << QThread::currentThreadId() << " execute. "
                              << "stopped_ = "
                              << thread->stopped_
@@ -82,13 +82,13 @@ void* Thread::threadFunc(void* arg) {
       thread->isThreadRunning_ = false;
     }
     thread->state_cond_.Broadcast();
-    LOG4CXX_DEBUG(logger_,
+    LOGGER_DEBUG(logger_,
                   "Thread #" << QThread::currentThreadId()
                              << " finished iteration");
   }
 
   thread->state_lock_.Release();
-  LOG4CXX_DEBUG(logger_,
+  LOGGER_DEBUG(logger_,
                 "Thread #" << QThread::currentThreadId()
                            << " exited successfully");
   return NULL;
@@ -124,20 +124,20 @@ void Thread::ThreadCancelledExit() {
 }
 
 bool Thread::start(const ThreadOptions& options) {
-  LOG4CXX_AUTO_TRACE(logger_);
+  LOGGER_AUTO_TRACE(logger_);
   sync_primitives::AutoLock auto_lock(state_lock_);
   // 1 - state_lock locked
   //     stopped = 0
   //     running = 0
 
   if (!delegate_) {
-    LOG4CXX_ERROR(logger_,
+    LOGGER_ERROR(logger_,
                   "Cannot start thread " << name_ << ": delegate is NULL");
     // 0 - state_lock unlocked
   }
 
   if (isThreadRunning_) {
-    LOG4CXX_TRACE(logger_,
+    LOGGER_TRACE(logger_,
                   "EXIT thread " << name_ << " #" << handle_
                                  << " is already running");
   }
@@ -149,28 +149,28 @@ bool Thread::start(const ThreadOptions& options) {
     future_ = QtConcurrent::run(threadFunc, this);
     handle_ = QThread::currentThreadId();
     if (NULL != handle_) {
-      LOG4CXX_DEBUG(logger_, "Created thread: " << name_);
+      LOGGER_DEBUG(logger_, "Created thread: " << name_);
       // state_lock 0
       // possible concurrencies: stop and threadFunc
       state_cond_.Wait(auto_lock);
       thread_created_ = true;
     } else {
-      LOG4CXX_ERROR(logger_, "Couldn't create thread " << name_);
+      LOGGER_ERROR(logger_, "Couldn't create thread " << name_);
     }
   }
   stopped_ = false;
   run_cond_.NotifyOne();
-  LOG4CXX_DEBUG(logger_, "Thread " << name_ << " #" << handle_ << " started");
+  LOGGER_DEBUG(logger_, "Thread " << name_ << " #" << handle_ << " started");
   return NULL != handle_;
 }
 
 void Thread::stop() {
-  LOG4CXX_AUTO_TRACE(logger_);
+  LOGGER_AUTO_TRACE(logger_);
   sync_primitives::AutoLock auto_lock(state_lock_);
 
   stopped_ = true;
 
-  LOG4CXX_DEBUG(logger_,
+  LOGGER_DEBUG(logger_,
                 "Stopping thread #" << handle_ << " \"" << name_ << " \"");
   if (future_.isCanceled()) {
     cleanup(static_cast<void*>(this));
@@ -180,12 +180,12 @@ void Thread::stop() {
     delegate_->exitThreadMain();
   }
 
-  LOG4CXX_DEBUG(logger_,
+  LOGGER_DEBUG(logger_,
                 "Stopped thread #" << handle_ << " \"" << name_ << " \"");
 }
 
 void Thread::join() {
-  LOG4CXX_AUTO_TRACE(logger_);
+  LOGGER_AUTO_TRACE(logger_);
   DCHECK(QThread::currentThread() != handle_);
 
   stop();

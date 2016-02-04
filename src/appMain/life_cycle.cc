@@ -91,12 +91,12 @@ LifeCycle::LifeCycle()
 }
 
 bool LifeCycle::StartComponents() {
-  LOG4CXX_AUTO_TRACE(logger_);
+  LOGGER_AUTO_TRACE(logger_);
 
 #ifdef OS_WINDOWS
   WSAData wsa_data;
   if (0 != WSAStartup(MAKEWORD(2, 2), &wsa_data)) {
-    LOG4CXX_ERROR(logger_, "WSAStartup() failed");
+    LOGGER_ERROR(logger_, "WSAStartup() failed");
     return false;
   }
 #endif
@@ -119,7 +119,7 @@ bool LifeCycle::StartComponents() {
   app_manager_ = application_manager::ApplicationManagerImpl::instance();
   DCHECK(app_manager_ != NULL);
   if (!app_manager_->Init()) {
-    LOG4CXX_ERROR(logger_, "Application manager init failed.");
+    LOGGER_ERROR(logger_, "Application manager init failed.");
     return false;
   }
 
@@ -183,7 +183,7 @@ bool LifeCycle::StartComponents() {
   } else if (protocol_name == "SSLv3") {
     protocol = security_manager::SSLv3;
   } else {
-    LOG4CXX_ERROR(logger_, "Unknown protocol: " << protocol_name);
+    LOGGER_ERROR(logger_, "Unknown protocol: " << protocol_name);
     return false;
   }
 
@@ -196,7 +196,7 @@ bool LifeCycle::StartComponents() {
           profile::Profile::instance()->verify_peer(),
           profile::Profile::instance()->ca_cert_path(),
           profile::Profile::instance()->update_before_hours())) {
-    LOG4CXX_ERROR(logger_, "CryptoManager initialization fail.");
+    LOGGER_ERROR(logger_, "CryptoManager initialization fail.");
     return false;
   }
 #endif  // ENABLE_SECURITY
@@ -251,7 +251,7 @@ bool LifeCycle::StartComponents() {
 bool LifeCycle::InitMessageSystem() {
   message_broker_ = NsMessageBroker::CMessageBroker::getInstance();
   if (!message_broker_) {
-    LOG4CXX_FATAL(logger_, " Wrong pMessageBroker pointer!");
+    LOGGER_FATAL(logger_, " Wrong pMessageBroker pointer!");
     return false;
   }
 
@@ -260,27 +260,27 @@ bool LifeCycle::InitMessageSystem() {
       profile::Profile::instance()->server_port(),
       message_broker_);
   if (!message_broker_server_) {
-    LOG4CXX_FATAL(logger_, " Wrong pJSONRPC20Server pointer!");
+    LOGGER_FATAL(logger_, " Wrong pJSONRPC20Server pointer!");
     return false;
   }
   message_broker_->startMessageBroker(message_broker_server_);
   if (!networking::init()) {
-    LOG4CXX_FATAL(logger_, " Networking initialization failed!");
+    LOGGER_FATAL(logger_, " Networking initialization failed!");
     return false;
   }
 
   if (!message_broker_server_->Bind()) {
-    LOG4CXX_FATAL(logger_, "Message broker server bind failed!");
+    LOGGER_FATAL(logger_, "Message broker server bind failed!");
     return false;
   } else {
-    LOG4CXX_INFO(logger_, "Message broker server bind successful!");
+    LOGGER_INFO(logger_, "Message broker server bind successful!");
   }
 
   if (!message_broker_server_->Listen()) {
-    LOG4CXX_FATAL(logger_, "Message broker server listen failed!");
+    LOGGER_FATAL(logger_, "Message broker server listen failed!");
     return false;
   } else {
-    LOG4CXX_INFO(logger_, " Message broker server listen successful!");
+    LOGGER_INFO(logger_, " Message broker server listen successful!");
   }
 
   mb_adapter_ = new hmi_message_handler::MessageBrokerAdapter(
@@ -291,11 +291,11 @@ bool LifeCycle::InitMessageSystem() {
   hmi_message_handler::HMIMessageHandlerImpl::instance()->AddHMIMessageAdapter(
       mb_adapter_);
   if (!mb_adapter_->Connect()) {
-    LOG4CXX_FATAL(logger_, "Cannot connect to remote peer!");
+    LOGGER_FATAL(logger_, "Cannot connect to remote peer!");
     return false;
   }
 
-  LOG4CXX_INFO(logger_, "Start CMessageBroker thread!");
+  LOGGER_INFO(logger_, "Start CMessageBroker thread!");
   mb_thread_ = new System::Thread(
       new System::ThreadArgImpl<NsMessageBroker::CMessageBroker>(
           *message_broker_,
@@ -306,7 +306,7 @@ bool LifeCycle::InitMessageSystem() {
   // thread doesn't have valid Id to associate name with
   NameMessageBrokerThread(*mb_thread_, "MessageBroker");
 
-  LOG4CXX_INFO(logger_, "Start MessageBroker TCP server thread!");
+  LOGGER_INFO(logger_, "Start MessageBroker TCP server thread!");
   mb_server_thread_ =
       new System::Thread(new System::ThreadArgImpl<NsMessageBroker::TcpServer>(
           *message_broker_server_,
@@ -315,7 +315,7 @@ bool LifeCycle::InitMessageSystem() {
   mb_server_thread_->Start(false);
   NameMessageBrokerThread(*mb_server_thread_, "MB TCPServer");
 
-  LOG4CXX_INFO(logger_, "StartAppMgr JSONRPC 2.0 controller receiver thread!");
+  LOGGER_INFO(logger_, "StartAppMgr JSONRPC 2.0 controller receiver thread!");
   mb_adapter_thread_ = new System::Thread(
       new System::ThreadArgImpl<hmi_message_handler::MessageBrokerAdapter>(
           *mb_adapter_,
@@ -341,13 +341,13 @@ bool LifeCycle::InitMessageSystem() {
   hmi_message_handler::HMIMessageHandlerImpl::instance()->AddHMIMessageAdapter(
       dbus_adapter_);
   if (!dbus_adapter_->Init()) {
-    LOG4CXX_FATAL(logger_, "Cannot init DBus service!");
+    LOGGER_FATAL(logger_, "Cannot init DBus service!");
     return false;
   }
 
   dbus_adapter_->SubscribeTo();
 
-  LOG4CXX_INFO(logger_, "Start DBusMessageAdapter thread!");
+  LOGGER_INFO(logger_, "Start DBusMessageAdapter thread!");
   dbus_adapter_thread_ = new System::Thread(
       new System::ThreadArgImpl<hmi_message_handler::DBusMessageAdapter>(
           *dbus_adapter_,
@@ -371,16 +371,16 @@ bool LifeCycle::InitMessageSystem() {
 #endif  // MQUEUE_HMIADAPTER
 
 void LifeCycle::Run() {
-  LOG4CXX_AUTO_TRACE(logger_);
+  LOGGER_AUTO_TRACE(logger_);
   ::utils::CreateSdlEvent();
   ::utils::SubscribeToTerminationSignals();
   ::utils::WaitForSdlExecute();
 }
 
 void LifeCycle::StopComponents() {
-  LOG4CXX_AUTO_TRACE(logger_);
+  LOGGER_AUTO_TRACE(logger_);
 
-  LOG4CXX_INFO(logger_, "Stopping Application Manager");
+  LOGGER_INFO(logger_, "Stopping Application Manager");
   if (app_manager_) {
     app_manager_->Stop();
   }
@@ -394,7 +394,7 @@ void LifeCycle::StopComponents() {
     protocol_handler_->RemoveProtocolObserver(app_manager_);
   }
 
-  LOG4CXX_INFO(logger_, "Stopping Protocol Handler");
+  LOGGER_INFO(logger_, "Stopping Protocol Handler");
   if (protocol_handler_) {
     protocol_handler_->RemoveProtocolObserver(media_manager_);
 #ifdef ENABLE_SECURITY
@@ -406,43 +406,43 @@ void LifeCycle::StopComponents() {
     protocol_handler_->Stop();
   }
 
-  LOG4CXX_INFO(logger_, "Destroying Media Manager");
+  LOGGER_INFO(logger_, "Destroying Media Manager");
   if (media_manager_) {
     media_manager_->SetProtocolHandler(NULL);
   }
   media_manager::MediaManagerImpl::destroy();
 
-  LOG4CXX_INFO(logger_, "Destroying Transport Manager.");
+  LOGGER_INFO(logger_, "Destroying Transport Manager.");
   if (transport_manager_) {
     transport_manager_->Visibility(false);
     transport_manager_->Stop();
   }
   transport_manager::TransportManagerDefault::destroy();
 
-  LOG4CXX_INFO(logger_, "Stopping Connection Handler.");
+  LOGGER_INFO(logger_, "Stopping Connection Handler.");
   connection_handler::ConnectionHandlerImpl::instance()->Stop();
 
-  LOG4CXX_INFO(logger_, "Destroying Protocol Handler");
+  LOGGER_INFO(logger_, "Destroying Protocol Handler");
   delete protocol_handler_;
 
-  LOG4CXX_INFO(logger_, "Destroying Connection Handler.");
+  LOGGER_INFO(logger_, "Destroying Connection Handler.");
   connection_handler::ConnectionHandlerImpl::destroy();
 
 #ifdef ENABLE_SECURITY
-  LOG4CXX_INFO(logger_, "Destroying Crypto Manager");
+  LOGGER_INFO(logger_, "Destroying Crypto Manager");
   delete crypto_manager_;
 
-  LOG4CXX_INFO(logger_, "Destroying Security Manager");
+  LOGGER_INFO(logger_, "Destroying Security Manager");
   delete security_manager_;
 #endif  // ENABLE_SECURITY
 
-  LOG4CXX_INFO(logger_, "Destroying Last State");
+  LOGGER_INFO(logger_, "Destroying Last State");
   resumption::LastState::destroy();
 
-  LOG4CXX_INFO(logger_, "Destroying Application Manager.");
+  LOGGER_INFO(logger_, "Destroying Application Manager.");
   application_manager::ApplicationManagerImpl::destroy();
 
-  LOG4CXX_INFO(logger_, "Destroying HMI Message Handler and MB adapter.");
+  LOGGER_INFO(logger_, "Destroying HMI Message Handler and MB adapter.");
 
 #ifdef DBUS_HMIADAPTER
   if (dbus_adapter_) {
@@ -478,7 +478,7 @@ void LifeCycle::StopComponents() {
 #endif  // MESSAGEBROKER_HMIADAPTER
 
 #ifdef MESSAGEBROKER_HMIADAPTER
-  LOG4CXX_INFO(logger_, "Destroying Message Broker");
+  LOGGER_INFO(logger_, "Destroying Message Broker");
   if (mb_server_thread_) {
     mb_server_thread_->Stop();
     mb_server_thread_->Join();

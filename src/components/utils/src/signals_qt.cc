@@ -38,10 +38,10 @@ CREATE_LOGGERPTR_GLOBAL(logger_, "Util")
 namespace {
 
 void HandleSignals(const char* log_name) {
-  LOG4CXX_INFO(logger_, log_name);
+  LOGGER_INFO(logger_, log_name);
   QCoreApplication* const app = QCoreApplication::instance();
   if (!app) {
-    LOG4CXX_FATAL(logger_, "No QCoreApplication instance already");
+    LOGGER_FATAL(logger_, "No QCoreApplication instance already");
   }
   app->quit();
 }
@@ -77,7 +77,7 @@ void SubscribeToTerminationSignals() {
   if ((signal(SIGINT, &SigHandler) == SIG_ERR) ||
       (signal(SIGTERM, &SigHandler) == SIG_ERR) ||
       (signal(SIGSEGV, &SigHandler) == SIG_ERR)) {
-    LOG4CXX_FATAL(logger_, "SDL is not subscribed to signal events");
+    LOGGER_FATAL(logger_, "SDL is not subscribed to signal events");
   }
 }
 }  //  namespace utils

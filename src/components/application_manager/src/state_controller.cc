@@ -82,13 +82,13 @@ void StateController::HmiLevelConflictResolver::operator()(
                                           AudioStreamingState::NOT_AUDIBLE);
       } else if (HMILevel::HMI_FULL == state_->hmi_level() &&
                  HMILevel::HMI_FULL == cur_state->hmi_level()) {
-        LOG4CXX_DEBUG(logger_,
+        LOGGER_DEBUG(logger_,
                       "HMI level will be changed for application with appID="
                           << to_resolve->app_id());
         state_ctrl_->SetupRegularHmiState(
             to_resolve, HMILevel::HMI_LIMITED, AudioStreamingState::AUDIBLE);
       } else {
-        LOG4CXX_DEBUG(
+        LOGGER_DEBUG(
             logger_,
             "HMI will not be changed level for application with appID="
                 << to_resolve->app_id());
@@ -101,8 +101,8 @@ HmiStatePtr StateController::ResolveHmiState(ApplicationSharedPtr app,
                                              HmiStatePtr state) const {
   using namespace mobile_apis;
   using namespace helpers;
-  LOG4CXX_AUTO_TRACE(logger_);
-  LOG4CXX_DEBUG(logger_,
+  LOGGER_AUTO_TRACE(logger_);
+  LOGGER_DEBUG(logger_,
                 "State to resolve: hmi_level " << state->hmi_level()
                                                << ", audio_state "
                                                << state->audio_streaming_state()
@@ -131,7 +131,7 @@ mobile_apis::HMILevel::eType StateController::GetAvailableHmiLevel(
     ApplicationSharedPtr app, mobile_apis::HMILevel::eType hmi_level) const {
   using namespace mobile_apis;
   using namespace helpers;
-  LOG4CXX_AUTO_TRACE(logger_);
+  LOGGER_AUTO_TRACE(logger_);
 
   mobile_apis::HMILevel::eType result = hmi_level;
   if (!Compare<HMILevel::eType, EQ, ONE>(
@@ -168,8 +168,8 @@ bool StateController::IsStateAvailable(ApplicationSharedPtr app,
                                        HmiStatePtr state) const {
   using namespace mobile_apis;
   using namespace helpers;
-  LOG4CXX_AUTO_TRACE(logger_);
-  LOG4CXX_DEBUG(logger_,
+  LOGGER_AUTO_TRACE(logger_);
+  LOGGER_DEBUG(logger_,
                 "Checking state: hmi_level " << state->hmi_level()
                                              << ", audio_state "
                                              << state->audio_streaming_state()
@@ -179,7 +179,7 @@ bool StateController::IsStateAvailable(ApplicationSharedPtr app,
   if (!app->is_resuming() ||
       !Compare<HMILevel::eType, EQ, ONE>(
           state->hmi_level(), HMILevel::HMI_FULL, HMILevel::HMI_LIMITED)) {
-    LOG4CXX_DEBUG(logger_,
+    LOGGER_DEBUG(logger_,
                   "Application is not in resuming mode."
                       << " Requested state is available");
     return true;
@@ -187,29 +187,29 @@ bool StateController::IsStateAvailable(ApplicationSharedPtr app,
 
   if (IsTempStateActive(HmiState::StateID::STATE_ID_VR_SESSION) ||
       IsTempStateActive(HmiState::StateID::STATE_ID_SAFETY_MODE)) {
-    LOG4CXX_DEBUG(logger_,
+    LOGGER_DEBUG(logger_,
                   "Requested state is not available. "
                       << "VR session or emergency event is active");
     return false;
   }
   if (IsTempStateActive(HmiState::StateID::STATE_ID_PHONE_CALL) &&
       app->is_media_application()) {
-    LOG4CXX_DEBUG(logger_,
+    LOGGER_DEBUG(logger_,
                   "Requested state for media application "
                       << "is not available. Phone call is active");
     return false;
   }
 
-  LOG4CXX_DEBUG(logger_, "Requested state is available");
+  LOGGER_DEBUG(logger_, "Requested state is available");
   return true;
 }
 
 void StateController::SetupRegularHmiState(ApplicationSharedPtr app,
                                            HmiStatePtr state) {
   using namespace mobile_apis;
-  LOG4CXX_AUTO_TRACE(logger_);
+  LOGGER_AUTO_TRACE(logger_);
   DCHECK_OR_RETURN_VOID(state);
-  LOG4CXX_DEBUG(logger_,
+  LOGGER_DEBUG(logger_,
                 "hmi_level " << state->hmi_level() << ", audio_state "
                              << state->audio_streaming_state()
                              << ", system_context "
@@ -224,7 +224,7 @@ void StateController::SetupRegularHmiState(ApplicationSharedPtr app,
   app->SetRegularState(state);
 
   if (HMILevel::HMI_LIMITED == state->hmi_level() && app->is_resuming()) {
-    LOG4CXX_DEBUG(logger_,
+    LOGGER_DEBUG(logger_,
                   "Resuming to LIMITED level. "
                       << "Send OnResumeAudioSource notification");
     MessageHelper::SendOnResumeAudioSourceToHMI(app->app_id());
@@ -241,7 +241,7 @@ void StateController::SetupRegularHmiState(
     const mobile_apis::AudioStreamingState::eType audio_state) {
   using namespace mobile_apis;
   using namespace helpers;
-  LOG4CXX_AUTO_TRACE(logger_);
+  LOGGER_AUTO_TRACE(logger_);
   DCHECK_OR_RETURN_VOID(app);
   HmiStatePtr prev_state = app->RegularHmiState();
   DCHECK_OR_RETURN_VOID(prev_state);
@@ -256,7 +256,7 @@ void StateController::SetupRegularHmiState(
 
 void StateController::ApplyRegularState(ApplicationSharedPtr app,
                                         HmiStatePtr state) {
-  LOG4CXX_AUTO_TRACE(logger_);
+  LOGGER_AUTO_TRACE(logger_);
   DCHECK_OR_RETURN_VOID(app);
   DCHECK_OR_RETURN_VOID(state);
   DCHECK_OR_RETURN_VOID(state->state_id() == HmiState::STATE_ID_REGULAR);
@@ -278,7 +278,7 @@ void StateController::on_event(const event_engine::Event& event) {
   using namespace event_engine;
   using namespace hmi_apis;
 
-  LOG4CXX_AUTO_TRACE(logger_);
+  LOGGER_AUTO_TRACE(logger_);
   const SmartObject& message = event.smart_object();
   const FunctionID::eType id = static_cast<FunctionID::eType>(event.id());
   switch (id) {
@@ -349,7 +349,7 @@ void StateController::OnStateChanged(ApplicationSharedPtr app,
     ApplicationManagerImpl::instance()->OnHMILevelChanged(
         app->app_id(), old_state->hmi_level(), new_state->hmi_level());
   } else {
-    LOG4CXX_WARN(logger_, "Status not changed");
+    LOGGER_WARN(logger_, "Status not changed");
   }
 }
 
@@ -361,7 +361,7 @@ bool StateController::IsTempStateActive(HmiState::StateID ID) const {
 }
 
 void StateController::ApplyStatesForApp(ApplicationSharedPtr app) {
-  LOG4CXX_AUTO_TRACE(logger_);
+  LOGGER_AUTO_TRACE(logger_);
   sync_primitives::AutoLock autolock(active_states_lock_);
   DCHECK_OR_RETURN_VOID(app);
   StateIDList::iterator it = active_states_.begin();
@@ -376,7 +376,7 @@ void StateController::ApplyStatesForApp(ApplicationSharedPtr app) {
 }
 
 void StateController::ApplyPostponedStateForApp(ApplicationSharedPtr app) {
-  LOG4CXX_AUTO_TRACE(logger_);
+  LOGGER_AUTO_TRACE(logger_);
   HmiStatePtr state = app->PostponedHmiState();
   if (state) {
     state->set_state_id(HmiState::STATE_ID_REGULAR);
@@ -385,19 +385,19 @@ void StateController::ApplyPostponedStateForApp(ApplicationSharedPtr app) {
 }
 
 void StateController::TempStateStarted(HmiState::StateID ID) {
-  LOG4CXX_AUTO_TRACE(logger_);
+  LOGGER_AUTO_TRACE(logger_);
   sync_primitives::AutoLock autolock(active_states_lock_);
   StateIDList::iterator it =
       std::find(active_states_.begin(), active_states_.end(), ID);
   if (it == active_states_.end()) {
     active_states_.push_back(ID);
   } else {
-    LOG4CXX_ERROR(logger_, "StateID " << ID << " is already active");
+    LOGGER_ERROR(logger_, "StateID " << ID << " is already active");
   }
 }
 
 void StateController::TempStateStopped(HmiState::StateID ID) {
-  LOG4CXX_AUTO_TRACE(logger_);
+  LOGGER_AUTO_TRACE(logger_);
   {
     sync_primitives::AutoLock autolock(active_states_lock_);
     active_states_.remove(ID);
@@ -408,7 +408,7 @@ void StateController::TempStateStopped(HmiState::StateID ID) {
 
 void StateController::DeactivateAppWithGeneralReason(ApplicationSharedPtr app) {
   using namespace mobile_apis;
-  LOG4CXX_AUTO_TRACE(logger_);
+  LOGGER_AUTO_TRACE(logger_);
 
   DCHECK_OR_RETURN_VOID(app);
   HmiStatePtr regular = app->RegularHmiState();
@@ -426,7 +426,7 @@ void StateController::DeactivateAppWithGeneralReason(ApplicationSharedPtr app) {
 
 void StateController::DeactivateAppWithAudioReason(ApplicationSharedPtr app) {
   using namespace mobile_apis;
-  LOG4CXX_AUTO_TRACE(logger_);
+  LOGGER_AUTO_TRACE(logger_);
 
   DCHECK_OR_RETURN_VOID(app);
   HmiStatePtr regular = app->RegularHmiState();
@@ -464,14 +464,14 @@ void StateController::OnActivateAppResponse(
 void StateController::OnAppActivated(
     const smart_objects::SmartObject& message) {
   using namespace mobile_apis;
-  LOG4CXX_AUTO_TRACE(logger_);
+  LOGGER_AUTO_TRACE(logger_);
 
   uint32_t app_id = message[strings::msg_params][strings::app_id].asUInt();
   ApplicationSharedPtr app =
       ApplicationManagerImpl::instance()->application(app_id);
 
   if (!app) {
-    LOG4CXX_ERROR(logger_, "Application with id " << app_id << " not found");
+    LOGGER_ERROR(logger_, "Application with id " << app_id << " not found");
     return;
   }
 
@@ -483,14 +483,14 @@ void StateController::OnAppDeactivated(
   using namespace hmi_apis;
   using namespace mobile_apis;
   using namespace helpers;
-  LOG4CXX_AUTO_TRACE(logger_);
+  LOGGER_AUTO_TRACE(logger_);
 
   uint32_t app_id = message[strings::msg_params][strings::app_id].asUInt();
   ApplicationSharedPtr app =
       ApplicationManagerImpl::instance()->application(app_id);
 
   if (!app) {
-    LOG4CXX_ERROR(logger_, "Application with id " << app_id << " not found");
+    LOGGER_ERROR(logger_, "Application with id " << app_id << " not found");
     return;
   }
 
@@ -522,7 +522,7 @@ void StateController::OnAppDeactivated(
 }
 
 void StateController::OnPhoneCallStarted() {
-  LOG4CXX_AUTO_TRACE(logger_);
+  LOGGER_AUTO_TRACE(logger_);
   ForEachApplication(std::bind1st(
       std::mem_fun(
           &StateController::HMIStateStarted<HmiState::STATE_ID_PHONE_CALL>),
@@ -531,7 +531,7 @@ void StateController::OnPhoneCallStarted() {
 }
 
 void StateController::OnPhoneCallEnded() {
-  LOG4CXX_AUTO_TRACE(logger_);
+  LOGGER_AUTO_TRACE(logger_);
   ForEachApplication(std::bind1st(
       std::mem_fun(
           &StateController::HMIStateStopped<HmiState::STATE_ID_PHONE_CALL>),
@@ -540,7 +540,7 @@ void StateController::OnPhoneCallEnded() {
 }
 
 void StateController::OnSafetyModeEnabled() {
-  LOG4CXX_AUTO_TRACE(logger_);
+  LOGGER_AUTO_TRACE(logger_);
   ForEachApplication(std::bind1st(
       std::mem_fun(
           &StateController::HMIStateStarted<HmiState::STATE_ID_SAFETY_MODE>),
@@ -549,7 +549,7 @@ void StateController::OnSafetyModeEnabled() {
 }
 
 void StateController::OnSafetyModeDisabled() {
-  LOG4CXX_AUTO_TRACE(logger_);
+  LOGGER_AUTO_TRACE(logger_);
 
   ForEachApplication(std::bind1st(
       std::mem_fun(
@@ -559,7 +559,7 @@ void StateController::OnSafetyModeDisabled() {
 }
 
 void StateController::OnVRStarted() {
-  LOG4CXX_AUTO_TRACE(logger_);
+  LOGGER_AUTO_TRACE(logger_);
   ForEachApplication(std::bind1st(
       std::mem_fun(
           &StateController::HMIStateStarted<HmiState::STATE_ID_VR_SESSION>),
@@ -568,7 +568,7 @@ void StateController::OnVRStarted() {
 }
 
 void StateController::OnVREnded() {
-  LOG4CXX_AUTO_TRACE(logger_);
+  LOGGER_AUTO_TRACE(logger_);
   ForEachApplication(std::bind1st(
       std::mem_fun(
           &StateController::HMIStateStopped<HmiState::STATE_ID_VR_SESSION>),
@@ -577,7 +577,7 @@ void StateController::OnVREnded() {
 }
 
 void StateController::OnTTSStarted() {
-  LOG4CXX_AUTO_TRACE(logger_);
+  LOGGER_AUTO_TRACE(logger_);
   ForEachApplication(std::bind1st(
       std::mem_fun(
           &StateController::HMIStateStarted<HmiState::STATE_ID_TTS_SESSION>),
@@ -586,7 +586,7 @@ void StateController::OnTTSStarted() {
 }
 
 void StateController::OnTTSStopped() {
-  LOG4CXX_AUTO_TRACE(logger_);
+  LOGGER_AUTO_TRACE(logger_);
   ForEachApplication(std::bind1st(
       std::mem_fun(
           &StateController::HMIStateStopped<HmiState::STATE_ID_TTS_SESSION>),
@@ -595,7 +595,7 @@ void StateController::OnTTSStopped() {
 }
 
 void StateController::OnNaviStreamingStarted() {
-  LOG4CXX_AUTO_TRACE(logger_);
+  LOGGER_AUTO_TRACE(logger_);
   ForEachApplication(std::bind1st(
       std::mem_fun(
           &StateController::HMIStateStarted<HmiState::STATE_ID_NAVI_STREAMING>),
@@ -604,7 +604,7 @@ void StateController::OnNaviStreamingStarted() {
 }
 
 void StateController::OnNaviStreamingStopped() {
-  LOG4CXX_AUTO_TRACE(logger_);
+  LOGGER_AUTO_TRACE(logger_);
   ForEachApplication(std::bind1st(
       std::mem_fun(
           &StateController::HMIStateStopped<HmiState::STATE_ID_NAVI_STREAMING>),
@@ -615,7 +615,7 @@ void StateController::OnNaviStreamingStopped() {
 HmiStatePtr StateController::CreateHmiState(uint32_t app_id,
                                             HmiState::StateID state_id) const {
   using namespace utils;
-  LOG4CXX_AUTO_TRACE(logger_);
+  LOGGER_AUTO_TRACE(logger_);
   HmiStatePtr new_state;
   switch (state_id) {
     case HmiState::STATE_ID_PHONE_CALL: {
@@ -647,7 +647,7 @@ HmiStatePtr StateController::CreateHmiState(uint32_t app_id,
       break;
     }
     default:
-      LOG4CXX_FATAL(logger_, "Invalid state_id " << state_id);
+      LOGGER_FATAL(logger_, "Invalid state_id " << state_id);
       NOTREACHED();
       break;
   }

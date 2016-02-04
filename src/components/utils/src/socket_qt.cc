@@ -98,9 +98,9 @@ bool utils::TcpSocketConnection::Impl::Send(const char* buffer,
                                             const std::size_t size,
                                             std::size_t& bytes_written) {
   bytes_written = 0;
-  LOG4CXX_AUTO_TRACE(logger_);
+  LOGGER_AUTO_TRACE(logger_);
   if (!IsValid()) {
-    LOG4CXX_WARN(logger_, "Cannot send. Socket is not valid.");
+    LOGGER_WARN(logger_, "Cannot send. Socket is not valid.");
     return false;
   }
 
@@ -110,7 +110,7 @@ bool utils::TcpSocketConnection::Impl::Send(const char* buffer,
     tcp_socket_->flush();
     tcp_socket_->waitForBytesWritten();
   } else {
-    LOG4CXX_WARN(
+    LOGGER_WARN(
         logger_,
         "Failed to send: " << tcp_socket_->errorString().toStdString());
     return false;
@@ -120,9 +120,9 @@ bool utils::TcpSocketConnection::Impl::Send(const char* buffer,
 }
 
 bool utils::TcpSocketConnection::Impl::Close() {
-  LOG4CXX_AUTO_TRACE(logger_);
+  LOGGER_AUTO_TRACE(logger_);
   if (!IsValid()) {
-    LOG4CXX_DEBUG(logger_, "Not valid. Exit Close");
+    LOGGER_DEBUG(logger_, "Not valid. Exit Close");
     return true;
   }
   tcp_socket_->close();
@@ -201,7 +201,7 @@ bool utils::TcpSocketConnection::Send(const char* buffer,
 }
 
 bool utils::TcpSocketConnection::Close() {
-  LOG4CXX_AUTO_TRACE(logger_);
+  LOGGER_AUTO_TRACE(logger_);
   return impl_->Close();
 }
 
@@ -257,7 +257,7 @@ class utils::TcpServerSocket::Impl {
 utils::TcpServerSocket::Impl::Impl() : server_socket_(NULL) {}
 
 utils::TcpServerSocket::Impl::~Impl() {
-  LOG4CXX_AUTO_TRACE(logger_);
+  LOGGER_AUTO_TRACE(logger_);
   Close();
   delete server_socket_;
 }
@@ -276,12 +276,12 @@ bool utils::TcpServerSocket::Impl::Close() {
 bool utils::TcpServerSocket::Impl::Listen(const HostAddress& address,
                                           const uint16_t port,
                                           const int backlog) {
-  LOG4CXX_AUTO_TRACE(logger_);
-  LOG4CXX_DEBUG(logger_,
+  LOGGER_AUTO_TRACE(logger_);
+  LOGGER_DEBUG(logger_,
                 "Start listening on " << address.ToString() << ":" << port);
 
   if (server_socket_) {
-    LOG4CXX_WARN(logger_, "Cannot listen. server_socket_ is null");
+    LOGGER_WARN(logger_, "Cannot listen. server_socket_ is null");
     return false;
   }
 
@@ -289,11 +289,11 @@ bool utils::TcpServerSocket::Impl::Listen(const HostAddress& address,
 
   server_socket_->setMaxPendingConnections(backlog);
 
-  LOG4CXX_DEBUG(logger_,
+  LOGGER_DEBUG(logger_,
                 "Start listening on " << address.ToString() << ":" << port);
 
   if (!server_socket_->listen(FromHostAddress(address), port)) {
-    LOG4CXX_WARN(
+    LOGGER_WARN(
         logger_,
         "Failed to listen on " << address.ToString() << ":" << port
                                << ". Error: "
@@ -301,15 +301,15 @@ bool utils::TcpServerSocket::Impl::Listen(const HostAddress& address,
     return false;
   }
 
-  LOG4CXX_DEBUG(logger_, "Listening on " << address.ToString() << ":" << port);
+  LOGGER_DEBUG(logger_, "Listening on " << address.ToString() << ":" << port);
   return true;
 }
 
 utils::TcpSocketConnection utils::TcpServerSocket::Impl::Accept() {
-  LOG4CXX_AUTO_TRACE(logger_);
+  LOGGER_AUTO_TRACE(logger_);
   bool waited = server_socket_->waitForNewConnection(-1);
   if (!waited) {
-    LOG4CXX_WARN(logger_,
+    LOGGER_WARN(logger_,
                  "Failed to wait for the new connection: "
                      << server_socket_->errorString().toStdString());
     return utils::TcpSocketConnection();
@@ -317,12 +317,12 @@ utils::TcpSocketConnection utils::TcpServerSocket::Impl::Accept() {
 
   QTcpSocket* client_connection = server_socket_->nextPendingConnection();
   if (!client_connection) {
-    LOG4CXX_WARN(logger_,
+    LOGGER_WARN(logger_,
                  "Failed to get new connection: "
                      << server_socket_->errorString().toStdString());
     return utils::TcpSocketConnection();
   }
-  LOG4CXX_DEBUG(logger_,
+  LOGGER_DEBUG(logger_,
                 "Accepted new client connection "
                     << client_connection->peerAddress().toString().toStdString()
                     << ":"

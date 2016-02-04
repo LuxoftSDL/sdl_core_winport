@@ -59,11 +59,11 @@ CREATE_LOGGERPTR_GLOBAL(logger_, "TransportManager")
 
 bool BluetoothDevice::GetRfcommChannel(const ApplicationHandle app_handle,
                                        uint8_t* channel_out) {
-  LOG4CXX_TRACE(
+  LOGGER_TRACE(
       logger_,
       "enter. app_handle: " << app_handle << ", channel_out: " << channel_out);
   if (app_handle < 0 || app_handle > std::numeric_limits<uint8_t>::max()) {
-    LOG4CXX_TRACE(logger_,
+    LOGGER_TRACE(logger_,
                   "exit with FALSE. Condition: app_handle < 0 || app_handle > "
                   "numeric_limits::max()");
     return false;
@@ -72,13 +72,13 @@ bool BluetoothDevice::GetRfcommChannel(const ApplicationHandle app_handle,
   RfcommChannelVector::const_iterator it =
       std::find(rfcomm_channels_.begin(), rfcomm_channels_.end(), channel);
   if (it == rfcomm_channels_.end()) {
-    LOG4CXX_TRACE(
+    LOGGER_TRACE(
         logger_,
         "exit with FALSE. Condition: channel not found in RfcommChannelVector");
     return false;
   }
   *channel_out = channel;
-  LOG4CXX_TRACE(logger_, "exit with TRUE");
+  LOGGER_TRACE(logger_, "exit with TRUE");
   return true;
 }
 
@@ -87,7 +87,7 @@ std::string BluetoothDevice::GetUniqueDeviceId(const BTH_ADDR& device_address) {
 #else
 std::string BluetoothDevice::GetUniqueDeviceId(const bdaddr_t& device_address) {
 #endif
-  LOG4CXX_TRACE(logger_, "enter. device_adress: " << &device_address);
+  LOGGER_TRACE(logger_, "enter. device_adress: " << &device_address);
   char device_address_string[32];
 #ifdef OS_WINDOWS
   DWORD addrSize = sizeof(struct sockaddr_storage);
@@ -98,14 +98,14 @@ std::string BluetoothDevice::GetUniqueDeviceId(const bdaddr_t& device_address) {
                                    device_address_string,
                                    &addrSize);
   if (ret_val != 0) {
-    LOG4CXX_ERROR(logger_,
+    LOGGER_ERROR(logger_,
                   "WSAAddressToString() failed with error code"
                       << WSAGetLastError());
   }
 #else
   ba2str(&device_address, device_address_string);
 #endif
-  LOG4CXX_TRACE(logger_, "exit with BT-" << device_address_string);
+  LOGGER_TRACE(logger_, "exit with BT-" << device_address_string);
   return std::string("BT-") + device_address_string;
 }
 
@@ -124,7 +124,7 @@ BluetoothDevice::BluetoothDevice(const bdaddr_t& device_address,
 }
 
 bool BluetoothDevice::IsSameAs(const Device* other) const {
-  LOG4CXX_TRACE(logger_, "enter. device: " << other);
+  LOGGER_TRACE(logger_, "enter. device: " << other);
   bool result = false;
 
   const BluetoothDevice* other_bluetooth_device =
@@ -142,9 +142,9 @@ bool BluetoothDevice::IsSameAs(const Device* other) const {
     }
   }
   if (result) {
-    LOG4CXX_TRACE(logger_, "exit with TRUE");
+    LOGGER_TRACE(logger_, "exit with TRUE");
   } else {
-    LOG4CXX_TRACE(logger_, "exit with FALSE");
+    LOGGER_TRACE(logger_, "exit with FALSE");
   }
   return result;
 }

@@ -69,7 +69,7 @@ DeviceType TcpTransportAdapter::GetDeviceType() const {
 }
 
 void TcpTransportAdapter::Store() const {
-  LOG4CXX_AUTO_TRACE(logger_);
+  LOGGER_AUTO_TRACE(logger_);
   using namespace utils::json;
 
   JsonValue tcp_adapter_dictionary;
@@ -114,7 +114,7 @@ void TcpTransportAdapter::Store() const {
 }
 
 bool TcpTransportAdapter::Restore() {
-  LOG4CXX_AUTO_TRACE(logger_);
+  LOGGER_AUTO_TRACE(logger_);
   using namespace utils::json;
   bool errors_occurred = false;
   const JsonValue& dictionary = resumption::LastState::instance()->dictionary();
@@ -147,7 +147,7 @@ bool TcpTransportAdapter::Restore() {
     }
   }
   bool result = !errors_occurred;
-  LOG4CXX_DEBUG(logger_, "result " << std::boolalpha << result);
+  LOGGER_DEBUG(logger_, "result " << std::boolalpha << result);
   return result;
 }
 

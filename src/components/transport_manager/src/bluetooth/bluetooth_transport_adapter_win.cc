@@ -67,7 +67,7 @@ DeviceType BluetoothTransportAdapter::GetDeviceType() const {
 
 void BluetoothTransportAdapter::Store() const {
   using namespace utils::json;
-  LOG4CXX_AUTO_TRACE(logger_);
+  LOGGER_AUTO_TRACE(logger_);
   JsonValue bluetooth_adapter_dictionary;
   JsonValue devices_dictionary;
   DeviceList device_ids = GetDeviceList();
@@ -92,7 +92,7 @@ void BluetoothTransportAdapter::Store() const {
                                      address,
                                      &addrSize);
     if (ret_val != 0) {
-      LOG4CXX_ERROR(logger_,
+      LOGGER_ERROR(logger_,
                     "WSAAddressToString() failed with error code"
                         << WSAGetLastError());
     }
@@ -125,12 +125,12 @@ void BluetoothTransportAdapter::Store() const {
   JsonValue& dictionary = resumption::LastState::instance()->dictionary;
   dictionary["TransportManager"]["BluetoothAdapter"] =
       bluetooth_adapter_dictionary;
-  LOG4CXX_TRACE(logger_, "exit");
+  LOGGER_TRACE(logger_, "exit");
 }
 
 bool BluetoothTransportAdapter::Restore() {
   using namespace utils::json;
-  LOG4CXX_AUTO_TRACE(logger_);
+  LOGGER_AUTO_TRACE(logger_);
   bool errors_occured = false;
 
   const JsonValue& bluetooth_adapter_dictionary =
@@ -155,7 +155,7 @@ bool BluetoothTransportAdapter::Restore() {
                                      (LPSOCKADDR)&address,
                                      &address_size);
     if (ret_val != 0) {
-      LOG4CXX_ERROR(logger_,
+      LOGGER_ERROR(logger_,
                     "WSAStringToAddress() failed with error code"
                         << WSAGetLastError());
     }
@@ -189,9 +189,9 @@ bool BluetoothTransportAdapter::Restore() {
   }
   bool result = !errors_occured;
   if (result) {
-    LOG4CXX_TRACE(logger_, "exit with TRUE");
+    LOGGER_TRACE(logger_, "exit with TRUE");
   } else {
-    LOG4CXX_TRACE(logger_, "exit with FALSE");
+    LOGGER_TRACE(logger_, "exit with FALSE");
   }
   return result;
 }

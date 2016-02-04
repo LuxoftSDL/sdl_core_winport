@@ -80,7 +80,7 @@
 #define DCHECK(condition)                                         \
   if (!(condition)) {                                             \
     CREATE_LOGGERPTR_LOCAL(logger_, "assert");                    \
-    LOG4CXX_FATAL(logger_,                                        \
+    LOGGER_FATAL(logger_,                                        \
                   "DCHECK failed with \"" << #condition << "\" [" \
                                           << __FUNCTION__         \
                                           << "]["                 \
@@ -98,7 +98,7 @@
 #define DCHECK_OR_RETURN(condition, return_value)                 \
   if (!(condition)) {                                             \
     CREATE_LOGGERPTR_LOCAL(logger_, "assert");                    \
-    LOG4CXX_FATAL(logger_,                                        \
+    LOGGER_FATAL(logger_,                                        \
                   "DCHECK failed with \"" << #condition << "\" [" \
                                           << __FUNCTION__         \
                                           << "]["                 \
@@ -116,7 +116,7 @@
 #define DCHECK_OR_RETURN_VOID(condition)                          \
   if (!(condition)) {                                             \
     CREATE_LOGGERPTR_LOCAL(logger_, "assert");                    \
-    LOG4CXX_FATAL(logger_,                                        \
+    LOGGER_FATAL(logger_,                                        \
                   "DCHECK failed with \"" << #condition << "\" [" \
                                           << __FUNCTION__         \
                                           << "]["                 \

@@ -68,7 +68,7 @@ size_t Thread::kMinStackSize =
     PTHREAD_STACK_MIN; /* Ubuntu : 16384 ; QNX : 256; */
 
 void Thread::cleanup(void* arg) {
-  LOG4CXX_AUTO_TRACE(logger_);
+  LOGGER_AUTO_TRACE(logger_);
   Thread* thread = static_cast<Thread*>(arg);
   sync_primitives::AutoLock auto_lock(thread->state_lock_);
   thread->isThreadRunning_ = false;
@@ -95,9 +95,9 @@ void* Thread::threadFunc(void* arg) {
   sigset_t set;
   sigfillset(&set);
   if (pthread_sigmask(SIG_SETMASK, &set, NULL) != 0) {
-    LOG4CXX_ERROR(logger_, "Set thread signal mask error");
+    LOGGER_ERROR(logger_, "Set thread signal mask error");
   }
-  LOG4CXX_DEBUG(logger_,
+  LOGGER_DEBUG(logger_,
                 "Thread #" << pthread_self() << " started successfully");
 
   threads::Thread* thread = static_cast<Thread*>(arg);
@@ -109,9 +109,9 @@ void* Thread::threadFunc(void* arg) {
   thread->state_cond_.Broadcast();
 
   while (!thread->finalized_) {
-    LOG4CXX_DEBUG(logger_, "Thread #" << pthread_self() << " iteration");
+    LOGGER_DEBUG(logger_, "Thread #" << pthread_self() << " iteration");
     thread->run_cond_.Wait(thread->state_lock_);
-    LOG4CXX_DEBUG(logger_,
+    LOGGER_DEBUG(logger_,
                   "Thread #" << pthread_self() << " execute. "
                              << "stopped_ = "
                              << thread->stopped_
@@ -130,14 +130,14 @@ void* Thread::threadFunc(void* arg) {
       thread->isThreadRunning_ = false;
     }
     thread->state_cond_.Broadcast();
-    LOG4CXX_DEBUG(logger_,
+    LOGGER_DEBUG(logger_,
                   "Thread #" << pthread_self() << " finished iteration");
   }
 
   thread->state_lock_.Release();
   pthread_cleanup_pop(1);
 
-  LOG4CXX_DEBUG(logger_,
+  LOGGER_DEBUG(logger_,
                 "Thread #" << pthread_self() << " exited successfully");
   return NULL;
 }
@@ -148,7 +148,7 @@ void Thread::SetNameForId(const PlatformThreadHandle& thread_id,
     name.erase(THREAD_NAME_SIZE);
   const int rc = pthread_setname_np(thread_id, name.c_str());
   if (rc != EOK) {
-    LOG4CXX_WARN(logger_,
+    LOGGER_WARN(logger_,
                  "Couldn't set pthread name \"" << name << "\", error code "
                                                 << rc
                                                 << " ("
@@ -176,7 +176,7 @@ PlatformThreadHandle Thread::CurrentId() {
 }
 
 bool Thread::start(const ThreadOptions& options) {
-  LOG4CXX_AUTO_TRACE(logger_);
+  LOGGER_AUTO_TRACE(logger_);
 
   sync_primitives::AutoLock auto_lock(state_lock_);
   // 1 - state_lock locked
@@ -184,14 +184,14 @@ bool Thread::start(const ThreadOptions& options) {
   //     running = 0
 
   if (!delegate_) {
-    LOG4CXX_ERROR(logger_,
+    LOGGER_ERROR(logger_,
                   "Cannot start thread " << name_ << ": delegate is NULL");
     // 0 - state_lock unlocked
     return false;
   }
 
   if (isThreadRunning_) {
-    LOG4CXX_TRACE(logger_,
+    LOGGER_TRACE(logger_,
                   "EXIT thread " << name_ << " #" << handle_
                                  << " is already running");
     return true;
@@ -202,7 +202,7 @@ bool Thread::start(const ThreadOptions& options) {
   pthread_attr_t attributes;
   int pthread_result = pthread_attr_init(&attributes);
   if (pthread_result != EOK) {
-    LOG4CXX_WARN(logger_,
+    LOGGER_WARN(logger_,
                  "Couldn't init pthread attributes. Error code = "
                      << pthread_result
                      << " (\""
@@ -214,7 +214,7 @@ bool Thread::start(const ThreadOptions& options) {
     pthread_result =
         pthread_attr_setdetachstate(&attributes, PTHREAD_CREATE_DETACHED);
     if (pthread_result != EOK) {
-      LOG4CXX_WARN(logger_,
+      LOGGER_WARN(logger_,
                    "Couldn't set detach state attribute. Error code = "
                        << pthread_result
                        << " (\""
@@ -228,7 +228,7 @@ bool Thread::start(const ThreadOptions& options) {
   if (stack_size >= Thread::kMinStackSize) {
     pthread_result = pthread_attr_setstacksize(&attributes, stack_size);
     if (pthread_result != EOK) {
-      LOG4CXX_WARN(logger_,
+      LOGGER_WARN(logger_,
                    "Couldn't set stacksize = " << stack_size
                                                << ". Error code = "
                                                << pthread_result
@@ -246,14 +246,14 @@ bool Thread::start(const ThreadOptions& options) {
     // state_lock 1
     pthread_result = pthread_create(&handle_, &attributes, threadFunc, this);
     if (pthread_result == EOK) {
-      LOG4CXX_DEBUG(logger_, "Created thread: " << name_);
+      LOGGER_DEBUG(logger_, "Created thread: " << name_);
       SetNameForId(handle_, name_);
       // state_lock 0
       // possible concurrencies: stop and threadFunc
       state_cond_.Wait(auto_lock);
       thread_created_ = true;
     } else {
-      LOG4CXX_ERROR(logger_,
+      LOGGER_ERROR(logger_,
                     "Couldn't create thread " << name_ << ". Error code = "
                                               << pthread_result
                                               << " (\""
@@ -263,7 +263,7 @@ bool Thread::start(const ThreadOptions& options) {
   }
   stopped_ = false;
   run_cond_.NotifyOne();
-  LOG4CXX_DEBUG(logger_,
+  LOGGER_DEBUG(logger_,
                 "Thread " << name_ << " #" << handle_
                           << " started. pthread_result = "
                           << pthread_result);
@@ -272,24 +272,24 @@ bool Thread::start(const ThreadOptions& options) {
 }
 
 void Thread::stop() {
-  LOG4CXX_AUTO_TRACE(logger_);
+  LOGGER_AUTO_TRACE(logger_);
   sync_primitives::AutoLock auto_lock(state_lock_);
 
   stopped_ = true;
 
-  LOG4CXX_DEBUG(logger_,
+  LOGGER_DEBUG(logger_,
                 "Stopping thread #" << handle_ << " \"" << name_ << " \"");
 
   if (delegate_ && isThreadRunning_) {
     delegate_->exitThreadMain();
   }
 
-  LOG4CXX_DEBUG(logger_,
+  LOGGER_DEBUG(logger_,
                 "Stopped thread #" << handle_ << " \"" << name_ << " \"");
 }
 
 void Thread::join() {
-  LOG4CXX_AUTO_TRACE(logger_);
+  LOGGER_AUTO_TRACE(logger_);
   DCHECK(!pthread_equal(pthread_self(), handle_));
 
   stop();

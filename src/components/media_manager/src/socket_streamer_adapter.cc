@@ -59,39 +59,39 @@ SocketStreamerAdapter::SocketStreamer::SocketStreamer(
 SocketStreamerAdapter::SocketStreamer::~SocketStreamer() {}
 
 bool SocketStreamerAdapter::SocketStreamer::Connect() {
-  LOG4CXX_AUTO_TRACE(logger);
+  LOGGER_AUTO_TRACE(logger);
 
   const int backlog = 5;
   if (!server_socket_.Listen(utils::HostAddress(ip_), port_, backlog)) {
-    LOG4CXX_ERROR(logger, "Unable to listen");
+    LOGGER_ERROR(logger, "Unable to listen");
     return false;
   }
 
   client_socket_ = server_socket_.Accept();
   if (!client_socket_.IsValid()) {
-    LOG4CXX_ERROR(logger, "Unable to accept");
+    LOGGER_ERROR(logger, "Unable to accept");
     return false;
   }
 
   is_first_frame_ = true;
-  LOG4CXX_INFO(logger, "Client connected");
+  LOGGER_INFO(logger, "Client connected");
   return true;
 }
 
 void SocketStreamerAdapter::SocketStreamer::Disconnect() {
-  LOG4CXX_AUTO_TRACE(logger);
+  LOGGER_AUTO_TRACE(logger);
   client_socket_.Close();
   server_socket_.Close();
 }
 
 bool SocketStreamerAdapter::SocketStreamer::Send(
     protocol_handler::RawMessagePtr msg) {
-  LOG4CXX_AUTO_TRACE(logger);
+  LOGGER_AUTO_TRACE(logger);
   std::size_t written = 0u;
   if (is_first_frame_) {
     bool sent = client_socket_.Send(header_.c_str(), header_.size(), written);
     if (!sent || written != header_.size()) {
-      LOG4CXX_ERROR(logger, "Unable to send data to socket");
+      LOGGER_ERROR(logger, "Unable to send data to socket");
       return false;
     }
     is_first_frame_ = false;
@@ -99,15 +99,15 @@ bool SocketStreamerAdapter::SocketStreamer::Send(
 
   bool sent = client_socket_.Send(msg->data(), msg->data_size(), written);
   if (!sent) {
-    LOG4CXX_ERROR(logger, "Unable to send data to socket");
+    LOGGER_ERROR(logger, "Unable to send data to socket");
     return false;
   }
 
   if (written != msg->data_size()) {
-    LOG4CXX_WARN(logger, "Couldn't send all the data to socket");
+    LOGGER_WARN(logger, "Couldn't send all the data to socket");
   }
 
-  LOG4CXX_INFO(logger, "Streamer::sent " << msg->data_size());
+  LOGGER_INFO(logger, "Streamer::sent " << msg->data_size());
   return true;
 }
 

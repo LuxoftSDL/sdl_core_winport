@@ -50,45 +50,45 @@ PipeStreamerAdapter::PipeStreamer::PipeStreamer(
 PipeStreamerAdapter::PipeStreamer::~PipeStreamer() {}
 
 bool PipeStreamerAdapter::PipeStreamer::Connect() {
-  LOG4CXX_AUTO_TRACE(logger);
+  LOGGER_AUTO_TRACE(logger);
 
   if (!file_system::CreateDirectoryRecursively(
           profile::Profile::instance()->app_storage_folder())) {
-    LOG4CXX_ERROR(logger, "Cannot create app folder");
+    LOGGER_ERROR(logger, "Cannot create app folder");
     return false;
   }
 
   if (!pipe_.Open()) {
-    LOG4CXX_ERROR(logger, "Cannot open pipe");
+    LOGGER_ERROR(logger, "Cannot open pipe");
     return false;
   }
 
-  LOG4CXX_INFO(logger, "Streamer connected to pipe");
+  LOGGER_INFO(logger, "Streamer connected to pipe");
   return true;
 }
 
 void PipeStreamerAdapter::PipeStreamer::Disconnect() {
-  LOG4CXX_AUTO_TRACE(logger);
+  LOGGER_AUTO_TRACE(logger);
 
   pipe_.Close();
-  LOG4CXX_INFO(logger, "Streamer disconnected from pipe");
+  LOGGER_INFO(logger, "Streamer disconnected from pipe");
 }
 
 bool PipeStreamerAdapter::PipeStreamer::Send(
     protocol_handler::RawMessagePtr msg) {
-  LOG4CXX_AUTO_TRACE(logger);
+  LOGGER_AUTO_TRACE(logger);
 
   size_t sent = 0;
   if (!pipe_.Write(msg->data(), msg->data_size(), sent)) {
-    LOG4CXX_ERROR(logger, "Cannot write to pipe");
+    LOGGER_ERROR(logger, "Cannot write to pipe");
     return false;
   }
 
   if (sent != msg->data_size()) {
-    LOG4CXX_WARN(logger, "Couldn't write all the data to pipe");
+    LOGGER_WARN(logger, "Couldn't write all the data to pipe");
   }
 
-  LOG4CXX_INFO(logger, "Streamer sent to pipe " << sent << " bytes");
+  LOGGER_INFO(logger, "Streamer sent to pipe " << sent << " bytes");
   return true;
 }
 

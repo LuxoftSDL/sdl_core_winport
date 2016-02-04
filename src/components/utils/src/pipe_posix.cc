@@ -78,19 +78,19 @@ utils::Pipe::Impl::~Impl() {
 
 bool utils::Pipe::Impl::Open() {
   if (IsOpen()) {
-    LOG4CXX_WARN(logger_ptr, "Named pipe: " << name_ << " is already opened");
+    LOGGER_WARN(logger_ptr, "Named pipe: " << name_ << " is already opened");
     return true;
   }
   handle_ = mkfifo(name_.c_str(), S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
   if (-1 == handle_) {
     handle_ = 0;
-    LOG4CXX_ERROR(logger_ptr, "Cannot create named pipe: " << name_);
+    LOGGER_ERROR(logger_ptr, "Cannot create named pipe: " << name_);
     return false;
   }
   if (-1 == open(name_, O_RDWR, 0)) {
     unlink(handle_);
     handle_ = 0;
-    LOG4CXX_ERROR(logger_ptr, "Cannot connect to named pipe: " << name_);
+    LOGGER_ERROR(logger_ptr, "Cannot connect to named pipe: " << name_);
     return false;
   }
   return true;
@@ -98,14 +98,14 @@ bool utils::Pipe::Impl::Open() {
 
 void utils::Pipe::Impl::Close() {
   if (!IsOpen()) {
-    LOG4CXX_WARN(logger_ptr, "Named pipe: " << name_ << " is not opened");
+    LOGGER_WARN(logger_ptr, "Named pipe: " << name_ << " is not opened");
     return;
   }
   if (-1 == close(handle_)) {
-    LOG4CXX_WARN(logger_ptr, "Cannot disconnect from named pipe: " << name_);
+    LOGGER_WARN(logger_ptr, "Cannot disconnect from named pipe: " << name_);
   }
   if (-1 == unlink(handle_)) {
-    LOG4CXX_WARN(logger_ptr, "Cannot delete named pipe: " << name_);
+    LOGGER_WARN(logger_ptr, "Cannot delete named pipe: " << name_);
   }
   handle_ = 0;
 }
@@ -119,17 +119,17 @@ bool utils::Pipe::Impl::Write(const uint8_t* buffer,
                               size_t& bytes_written) {
   bytes_written = 0;
   if (!IsOpen()) {
-    LOG4CXX_ERROR(logger_ptr, "Named pipe: " << name_ << " is not opened");
+    LOGGER_ERROR(logger_ptr, "Named pipe: " << name_ << " is not opened");
     return false;
   }
   if (bytes_to_write == 0) {
-    LOG4CXX_WARN(logger_ptr, "Trying to write 0 bytes");
+    LOGGER_WARN(logger_ptr, "Trying to write 0 bytes");
     return true;
   }
   const ssize_t written =
       write(handle_, static_cast<const void*>(buffer), bytes_to_write);
   if (-1 == written) {
-    LOG4CXX_ERROR(logger_ptr, "Cannot write to named pipe: " << name_);
+    LOGGER_ERROR(logger_ptr, "Cannot write to named pipe: " << name_);
     return false;
   }
   bytes_written = static_cast<size_t>(written);

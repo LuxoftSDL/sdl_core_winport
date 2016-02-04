@@ -72,10 +72,10 @@ MediaManagerImpl::~MediaManagerImpl() {
 
 void MediaManagerImpl::Init() {
   using namespace protocol_handler;
-  LOG4CXX_INFO(logger_, "MediaManagerImpl::Init()");
+  LOGGER_INFO(logger_, "MediaManagerImpl::Init()");
 
 #if defined(EXTENDED_MEDIA_MODE)
-  LOG4CXX_INFO(logger_, "Called Init with extended configuration");
+  LOGGER_INFO(logger_, "Called Init with extended configuration");
   from_mic_recorder_ = new FromMicRecorderAdapter();
 #endif
 
@@ -112,7 +112,7 @@ void MediaManagerImpl::Init() {
 void MediaManagerImpl::StartMicrophoneRecording(int32_t application_key,
                                                 const std::string& output_file,
                                                 int32_t duration) {
-  LOG4CXX_INFO(logger_,
+  LOGGER_INFO(logger_,
                "MediaManagerImpl::StartMicrophoneRecording to " << output_file);
   application_manager::ApplicationSharedPtr app =
       application_manager::ApplicationManagerImpl::instance()->application(
@@ -131,11 +131,11 @@ void MediaManagerImpl::StartMicrophoneRecording(int32_t application_key,
   }
 #else
   if (file_system::FileExists(file_path)) {
-    LOG4CXX_INFO(logger_, "File " << output_file << " exists, removing");
+    LOGGER_INFO(logger_, "File " << output_file << " exists, removing");
     if (file_system::DeleteFile(file_path)) {
-      LOG4CXX_INFO(logger_, "File " << output_file << " removed");
+      LOGGER_INFO(logger_, "File " << output_file << " removed");
     } else {
-      LOG4CXX_WARN(logger_, "Could not remove file " << output_file);
+      LOGGER_WARN(logger_, "Could not remove file " << output_file);
     }
   }
   const std::string record_file_source = file_system::ConcatPath(
@@ -144,21 +144,21 @@ void MediaManagerImpl::StartMicrophoneRecording(int32_t application_key,
   std::vector<uint8_t> buf;
   if (file_system::ReadBinaryFile(record_file_source, buf)) {
     if (file_system::Write(file_path, buf)) {
-      LOG4CXX_INFO(logger_,
+      LOGGER_INFO(logger_,
                    "File " << record_file_source << " copied to "
                            << output_file);
     } else {
-      LOG4CXX_WARN(logger_, "Could not write to file " << output_file);
+      LOGGER_WARN(logger_, "Could not write to file " << output_file);
     }
   } else {
-    LOG4CXX_WARN(logger_, "Could not read file " << record_file_source);
+    LOGGER_WARN(logger_, "Could not read file " << record_file_source);
   }
 #endif
   from_mic_listener_->OnActivityStarted(application_key);
 }
 
 void MediaManagerImpl::StopMicrophoneRecording(int32_t application_key) {
-  LOG4CXX_AUTO_TRACE(logger_);
+  LOGGER_AUTO_TRACE(logger_);
 #if defined(EXTENDED_MEDIA_MODE)
   if (from_mic_recorder_) {
     from_mic_recorder_->StopActivity(application_key);
@@ -176,7 +176,7 @@ void MediaManagerImpl::StopMicrophoneRecording(int32_t application_key) {
 
 void MediaManagerImpl::StartStreaming(
     int32_t application_key, protocol_handler::ServiceType service_type) {
-  LOG4CXX_AUTO_TRACE(logger_);
+  LOGGER_AUTO_TRACE(logger_);
 
   if (streamer_[service_type]) {
     streamer_[service_type]->StartActivity(application_key);
@@ -185,7 +185,7 @@ void MediaManagerImpl::StartStreaming(
 
 void MediaManagerImpl::StopStreaming(
     int32_t application_key, protocol_handler::ServiceType service_type) {
-  LOG4CXX_AUTO_TRACE(logger_);
+  LOGGER_AUTO_TRACE(logger_);
 
   if (streamer_[service_type]) {
     streamer_[service_type]->StopActivity(application_key);
@@ -202,14 +202,14 @@ void MediaManagerImpl::OnMessageReceived(
   using namespace protocol_handler;
   using namespace application_manager;
   using namespace helpers;
-  LOG4CXX_AUTO_TRACE(logger_);
+  LOGGER_AUTO_TRACE(logger_);
 
   const uint32_t streaming_app_id = message->connection_key();
   const ServiceType service_type = message->service_type();
 
   if (Compare<ServiceType, NEQ, ALL>(
           service_type, ServiceType::kMobileNav, ServiceType::kAudio)) {
-    LOG4CXX_DEBUG(logger_, "Unsupported service type in MediaManager");
+    LOGGER_DEBUG(logger_, "Unsupported service type in MediaManager");
     return;
   }
 
@@ -218,7 +218,7 @@ void MediaManagerImpl::OnMessageReceived(
 
   if (!app_mgr->CanAppStream(streaming_app_id, service_type)) {
     app_mgr->ForbidStreaming(streaming_app_id);
-    LOG4CXX_ERROR(logger_,
+    LOGGER_ERROR(logger_,
                   "The application trying to stream when it should not.");
     return;
   }
