@@ -77,6 +77,7 @@ class CryptoManagerImpl : public CryptoManager {
                  size_t* out_data_size) OVERRIDE;
     bool IsInitCompleted() const OVERRIDE;
     bool IsHandshakePending() const OVERRIDE;
+    virtual bool GetCertifcateDueDate(struct tm& due_date) const OVERRIDE;
     size_t get_max_block_size(size_t mtu) const OVERRIDE;
     std::string LastError() const OVERRIDE;
     void ResetConnection() OVERRIDE;
@@ -102,6 +103,9 @@ class CryptoManagerImpl : public CryptoManager {
     HandshakeResult openssl_error_convert_to_internal(const long error);
 
     std::string GetTextBy(X509_NAME* name, int object) const;
+
+    int pull_number_from_buf(char* buf, int* idx) const;
+    void asn1_time_to_tm(ASN1_TIME* time, struct tm& cert_time) const;
 
     SSL* connection_;
     BIO* bioIn_;
@@ -135,16 +139,12 @@ class CryptoManagerImpl : public CryptoManager {
   SSLContext* CreateSSLContext() OVERRIDE;
   void ReleaseSSLContext(SSLContext* context) OVERRIDE;
   std::string LastError() const OVERRIDE;
-  virtual bool IsCertificateUpdateRequired() const OVERRIDE;
+  virtual bool IsCertificateUpdateRequired(struct tm cert_time) const OVERRIDE;
 
  private:
   bool set_certificate(const std::string& cert_data);
 
-  int pull_number_from_buf(char* buf, int* idx);
-  void asn1_time_to_tm(ASN1_TIME* time);
-
   SSL_CTX* context_;
-  mutable struct tm expiration_time_;
   Mode mode_;
   static uint32_t instance_count_;
   static sync_primitives::Lock instance_lock_;
