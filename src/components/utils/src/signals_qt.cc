@@ -36,21 +36,20 @@
 CREATE_LOGGERPTR_GLOBAL(logger_, "Util")
 
 namespace {
-HANDLE signal_handle = NULL;
 
-void sigHandler(int sig) {
+void SigHandler(int sig) {
   switch (sig) {
     case SIGINT:
-      ::utils::handleSigs(signal_handle, "SIGINT signal has been caught");
+      ::utils::HandleSignals(NULL, "SIGINT signal has been caught");
       break;
     case SIGTERM:
-      ::utils::handleSigs(signal_handle, "SIGTERM signal has been caught");
+      ::utils::HandleSignals(NULL, "SIGTERM signal has been caught");
       break;
     case SIGSEGV:
-      ::utils::handleSigs(signal_handle, "SIGSEGV signal has been caught");
+      ::utils::HandleSignals(NULL, "SIGSEGV signal has been caught");
       break;
     default:
-      ::utils::handleSigs(signal_handle, "Unexpected signal has been caught");
+      ::utils::HandleSignals(NULL, "Unexpected signal has been caught");
       break;
   }
 }
@@ -58,15 +57,16 @@ void sigHandler(int sig) {
 
 namespace utils {
 
-void handleSigs(HANDLE& signal_handle, const char* log_event_name) {
-  LOG4CXX_INFO(logger_, log_event_name);
+void HandleSignals(void* signal_handle, const char* log_name) {
+  LOG4CXX_INFO(logger_, log_name);
   QCoreApplication* const app = QCoreApplication::instance();
-  if (app) {
-    app->quit();
+  if (!app) {
+    LOG4CXX_FATAL(logger_, "No QCoreApplication instance already");
   }
+  app->quit();
 }
 
-void WaitForSdlObject() {
+void WaitForSdlExecute() {
   QCoreApplication::instance()->processEvents();
   QCoreApplication::instance()->exec();
 }
@@ -74,10 +74,10 @@ void WaitForSdlObject() {
 void CreateSdlEvent() {}
 
 void SubscribeToTerminationSignals() {
-  if ((signal(SIGINT, &sigHandler) == SIG_ERR) ||
-      (signal(SIGTERM, &sigHandler) == SIG_ERR) ||
-      (signal(SIGSEGV, &sigHandler) == SIG_ERR)) {
-    LOG4CXX_FATAL(logger_, "Subscribe to system signals error");
+  if ((signal(SIGINT, &SigHandler) == SIG_ERR) ||
+      (signal(SIGTERM, &SigHandler) == SIG_ERR) ||
+      (signal(SIGSEGV, &SigHandler) == SIG_ERR)) {
+    LOG4CXX_FATAL(logger_, "SDL is not subscribed to signal events");
   }
 }
 }  //  namespace utils

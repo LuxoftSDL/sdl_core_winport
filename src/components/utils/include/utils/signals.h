@@ -35,25 +35,15 @@
 
 #if defined(__QNXNTO__)
 typedef void (*sighandler_t)(int);
-#elif defined(OS_WINDOWS)
-#include "utils/winhdr.h"
-#include <signal.h>
 #else
 #include <signal.h>
 #endif
 
 namespace utils {
-
-#if defined(OS_WINDOWS)
-void handleSigs(HANDLE& signal_handle, const char* log_sig_name);
+void HandleSignals(void* signal_handle, const char* log_name);
 void CreateSdlEvent();
-void WaitForSdlObject();
+void WaitForSdlExecute();
 void SubscribeToTerminationSignals();
-#else
-bool SubscribeToInterruptSignal(sighandler_t func);
-bool SubscribeToTerminateSignal(sighandler_t func);
-bool SubscribeToFaultSignal(sighandler_t func);
-#endif
 }  //  namespace utils
 
 #endif  //  SRC_COMPONENTS_UTILS_INCLUDE_UTILS_SIGNALS_H_

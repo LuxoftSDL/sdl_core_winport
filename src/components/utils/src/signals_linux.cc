@@ -37,7 +37,28 @@
 
 #include "utils/signals.h"
 
+void SigHandler(int sig) {
+  switch (sig) {
+    case SIGINT:
+      ::utils::handleSigs(NULL, "SIGINT signal has been caught");
+      break;
+    case SIGTERM:
+      ::utils::handleSigs(NULL, "SIGTERM signal has been caught");
+      break;
+    case SIGSEGV:
+      ::utils::handleSigs(NULL, "SIGSEGV signal has been caught");
+      break;
+    default:
+      ::utils::handleSigs(NULL, "Unexpected signal has been caught");
+      break;
+  }
+}
+}  //  namespace
+
 namespace utils {
+
+void handleSigs(void* signal_handle, const char* log_name) {}
+void WaitForSdlExecute() {}
 
 bool SubscribeToInterruptSignal(sighandler_t func) {
   struct sigaction act;
@@ -66,6 +87,13 @@ bool SubscribeToFaultSignal(sighandler_t func) {
   return sigaction(SIGSEGV, &act, NULL) == 0;
 }
 
+void SubscribeToTerminationSignals() {
+  if (!SubscribeToInterruptSignal(&SigHandler) ||
+      !SubscribeToTerminateSignal(&SigHandler) ||
+      !SubscribeToFaultSignal(&SigHandler)) {
+    LOG4CXX_FATAL(logger_, "Subscribe to system signals error");
+  }
+}
 }  //  namespace utils
 
 #endif  // OS_POSIX

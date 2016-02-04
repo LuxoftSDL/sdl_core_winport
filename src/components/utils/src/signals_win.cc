@@ -29,6 +29,7 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
+#include "utils/winhdr.h"
 #include "utils/signals.h"
 #include "utils/logger.h"
 
@@ -37,19 +38,23 @@ CREATE_LOGGERPTR_GLOBAL(logger_, "Util")
 namespace {
 HANDLE signal_handle = NULL;
 
-void sigHandler(int sig) {
+void SigHandler(int sig) {
   switch (sig) {
     case SIGINT:
-      ::utils::handleSigs(signal_handle, "SIGINT signal has been caught");
+      ::utils::HandleSignals(static_cast<void*>(signal_handle),
+                             "SIGINT signal has been caught");
       break;
     case SIGTERM:
-      ::utils::handleSigs(signal_handle, "SIGTERM signal has been caught");
+      ::utils::HandleSignals(static_cast<void*>(signal_handle),
+                             "SIGTERM signal has been caught");
       break;
     case SIGSEGV:
-      ::utils::handleSigs(signal_handle, "SIGSEGV signal has been caught");
+      ::utils::HandleSignals(static_cast<void*>(signal_handle),
+                             "SIGSEGV signal has been caught");
       break;
     default:
-      ::utils::handleSigs(signal_handle, "Unexpected signal has been caught");
+      ::utils::HandleSignals(static_cast<void*>(signal_handle),
+                             "Unexpected signal has been caught");
       break;
   }
 }
@@ -57,16 +62,16 @@ void sigHandler(int sig) {
 
 namespace utils {
 
-void handleSigs(HANDLE& signal_event, const char* log_event_name) {
-  LOG4CXX_INFO(logger_, log_event_name);
-  SetEvent(signal_event);
+void HandleSignals(void* signal_handle, const char* log_name) {
+  LOG4CXX_INFO(logger_, log_name);
+  SetEvent(static_cast<HANDLE>(signal_handle));
 }
 
-void WaitForSdlObject() {
+void WaitForSdlExecute() {
   if (signal_handle) {
     WaitForSingleObject(signal_handle, INFINITE);
   } else {
-    LOG4CXX_FATAL(logger_, "Create system event error");
+    LOG4CXX_FATAL(logger_, "SDL is not subscribed to signal events");
   }
 }
 
@@ -75,9 +80,9 @@ void CreateSdlEvent() {
 }
 
 void SubscribeToTerminationSignals() {
-  if ((signal(SIGINT, &sigHandler) == SIG_ERR) ||
-      (signal(SIGTERM, &sigHandler) == SIG_ERR) ||
-      (signal(SIGSEGV, &sigHandler) == SIG_ERR)) {
+  if ((signal(SIGINT, &SigHandler) == SIG_ERR) ||
+      (signal(SIGTERM, &SigHandler) == SIG_ERR) ||
+      (signal(SIGSEGV, &SigHandler) == SIG_ERR)) {
     LOG4CXX_FATAL(logger_, "Subscribe to system signals error");
   }
 }

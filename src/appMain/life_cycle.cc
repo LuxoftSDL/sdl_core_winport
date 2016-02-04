@@ -370,41 +370,11 @@ bool LifeCycle::InitMessageSystem() {
 
 #endif  // MQUEUE_HMIADAPTER
 
-namespace {
-#if defined(OS_POSIX)
-void sig_handler(int sig) {
-  switch (sig) {
-    case SIGINT:
-      LOG4CXX_DEBUG(logger_, "SIGINT signal has been caught");
-      break;
-    case SIGTERM:
-      LOG4CXX_DEBUG(logger_, "SIGTERM signal has been caught");
-      break;
-    case SIGSEGV:
-      LOG4CXX_DEBUG(logger_, "SIGSEGV signal has been caught");
-      break;
-    default:
-      LOG4CXX_DEBUG(logger_, "Unexpected signal has been caught");
-      break;
-  }
-}
-#endif
-
-}  //  namespace
-
 void LifeCycle::Run() {
   LOG4CXX_AUTO_TRACE(logger_);
-#if defined(OS_WINDOWS)
   ::utils::CreateSdlEvent();
   ::utils::SubscribeToTerminationSignals();
-  ::utils::WaitForSdlObject();
-#elif defined(OS_POSIX)
-  if (!::utils::SubscribeToInterruptSignal(&sig_handler) ||
-      !::utils::SubscribeToTerminateSignal(&sig_handler) ||
-      !::utils::SubscribeToFaultSignal(&sig_handler)) {
-    LOG4CXX_FATAL(logger_, "Subscribe to system signals error");
-  }
-#endif
+  ::utils::WaitForSdlExecute();
 }
 
 void LifeCycle::StopComponents() {
