@@ -35,6 +35,26 @@
 namespace utils {
 
 /**
+ * @brief Pimpls assigner
+ *
+ * Implements different approaches of Pimpls assignment
+ * depend on required logic (swap, copy)
+ *
+ * @tparam Impl Type of Impl wrapped with Pimpl
+ **/
+template <typename Impl>
+class SwapAssigner {
+ public:
+  void operator()(Impl& lhs, Impl& rhs) const;
+};
+
+template <typename Impl>
+class CopyAssigner {
+ public:
+  void operator()(Impl& lhs, Impl& rhs) const;
+};
+
+/**
  * @brief Pimpl
  *
  * Holds pointer to Impl object.
@@ -43,27 +63,23 @@ namespace utils {
  * Assignment and copying of Pimpl instance causes Impl pointers swapping.
  *
  * @tparam Impl Type of Impl to be wrapped
+ * @tparam Assigner Type of Assigner for Pimpl
  **/
-template <typename Impl>
+template <typename Impl, typename Assigner = SwapAssigner<Impl> >
 class Pimpl {
  public:
   Pimpl();
   Pimpl(Impl* impl);
-  Pimpl(Pimpl& rhs);
   ~Pimpl();
 
+  Pimpl(Pimpl& rhs);
   Pimpl& operator=(Pimpl& rhs);
+
   Impl* operator->() const;
   Impl& operator&() const;
 
  private:
   Impl* impl_;
-
-  /**
-   * @brief Swaps Impl pointers
-   * @param rhs Reference to Pimpl to be swapped with this
-   **/
-  void Swap(Pimpl& rhs);
 };
 
 }  // namespace utils

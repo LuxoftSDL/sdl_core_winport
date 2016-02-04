@@ -36,42 +36,50 @@
 #include <algorithm>
 
 template <typename Impl>
-utils::Pimpl<Impl>::Pimpl()
-    : impl_(new Impl()) {}
-
-template <typename Impl>
-utils::Pimpl<Impl>::Pimpl(Impl* impl)
-    : impl_(impl) {}
-
-template <typename Impl>
-utils::Pimpl<Impl>::Pimpl(utils::Pimpl<Impl>& rhs) {
-  Swap(rhs);
+void utils::SwapAssigner<Impl>::operator()(Impl& lhs, Impl& rhs) const {
+  std::swap(lhs, rhs);
 }
 
 template <typename Impl>
-utils::Pimpl<Impl>::~Pimpl() {
+void utils::CopyAssigner<Impl>::operator()(Impl& lhs, Impl& rhs) const {
+  lhs = rhs;
+}
+
+template <typename Impl, typename Assigner>
+utils::Pimpl<Impl, Assigner>::Pimpl()
+    : impl_(new Impl()) {}
+
+template <typename Impl, typename Assigner>
+utils::Pimpl<Impl, Assigner>::Pimpl(Impl* impl)
+    : impl_(impl) {}
+
+template <typename Impl, typename Assigner>
+utils::Pimpl<Impl, Assigner>::~Pimpl() {
   delete impl_;
 }
 
-template <typename Impl>
-utils::Pimpl<Impl>& utils::Pimpl<Impl>::operator=(utils::Pimpl<Impl>& rhs) {
-  Swap(rhs);
+template <typename Impl, typename Assigner>
+utils::Pimpl<Impl, Assigner>::Pimpl(utils::Pimpl<Impl, Assigner>& rhs) {
+  Assigner assigner;
+  assigner(*this->impl_, *rhs.impl_);
+}
+
+template <typename Impl, typename Assigner>
+utils::Pimpl<Impl, Assigner>& utils::Pimpl<Impl, Assigner>::operator=(
+    utils::Pimpl<Impl, Assigner>& rhs) {
+  Assigner assigner;
+  assigner(*this->impl_, *rhs.impl_);
   return *this;
 }
 
-template <typename Impl>
-Impl* utils::Pimpl<Impl>::operator->() const {
+template <typename Impl, typename Assigner>
+Impl* utils::Pimpl<Impl, Assigner>::operator->() const {
   return impl_;
 }
 
-template <typename Impl>
-Impl& utils::Pimpl<Impl>::operator&() const {
+template <typename Impl, typename Assigner>
+Impl& utils::Pimpl<Impl, Assigner>::operator&() const {
   return *impl_;
-}
-
-template <typename Impl>
-void utils::Pimpl<Impl>::Swap(utils::Pimpl<Impl>& rhs) {
-  std::swap(this->impl_, rhs.impl_);
 }
 
 #endif  // SRC_COMPONENTS_INCLUDE_UTILS_PIMPL_IMPL_H_
