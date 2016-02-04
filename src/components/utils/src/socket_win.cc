@@ -57,6 +57,16 @@ bool CloseSocket(SOCKET& socket) {
   return true;
 }
 
+HANDLE CreateNotifyEvent() {
+  LOGGER_AUTO_TRACE(logger_);
+  HANDLE result = CreateEvent(NULL,   // no security attribute
+                              true,   // is manual-reset event
+                              false,  // initial state = non-signaled
+                              NULL);  // unnamed event object
+  DCHECK(result);
+  return result;
+}
+
 }  // namespace
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -89,27 +99,62 @@ class utils::TcpSocketConnection::Impl {
 
   bool Connect(const HostAddress& address, const uint16_t port);
 
+  bool Notify();
+
+  void Wait();
+
+  void SetEventHandler(TcpConnectionEventHandler* event_handler);
+
  private:
+  void OnError(int error);
+
+  void OnRead();
+
+  void OnWrite();
+
+  void OnClose();
+
   SOCKET tcp_socket_;
+
+  HANDLE notify_event_;
 
   HostAddress address_;
 
   uint16_t port_;
+
+  TcpConnectionEventHandler* event_handler_;
 };
 
 utils::TcpSocketConnection::Impl::Impl()
-    : tcp_socket_(NULL), address_(), port_(0u) {}
+    : tcp_socket_(NULL)
+    , notify_event_(NULL)
+    , address_()
+    , port_(0u)
+    , event_handler_(NULL) {}
 
 utils::TcpSocketConnection::Impl::Impl(const SOCKET tcp_socket,
                                        const HostAddress& address,
                                        const uint16_t port)
-    : tcp_socket_(tcp_socket), address_(address), port_(port) {}
+    : tcp_socket_(tcp_socket)
+    , notify_event_(CreateNotifyEvent())
+    , address_(address)
+    , port_(port)
+    , event_handler_(NULL) {
+  // Set socket to non-block mode
+  unsigned long socket_mode = 1;
+  if (!ioctlsocket(tcp_socket_, FIONBIO, &socket_mode) == 0) {
+    LOGGER_ERROR(logger_,
+                 "Failed to set socket to non blocking mode. Error: "
+                      << WSAGetLastError());
+    CloseSocket(tcp_socket_);
+  }
+}
 
 utils::TcpSocketConnection::Impl::~Impl() {
   Close();
 }
 
-bool utils::TcpSocketConnection::Impl::Send(const char* buffer,
+bool utils::TcpSocketConnection::Impl::Send(const char* const buffer,
                                             std::size_t size,
                                             std::size_t& bytes_written) {
   LOGGER_AUTO_TRACE(logger_);
@@ -120,20 +165,39 @@ bool utils::TcpSocketConnection::Impl::Send(const char* buffer,
   }
   const int flags = 0;
   int written = send(tcp_socket_, buffer, size, flags);
-  if (SOCKET_ERROR == written) {
-    LOGGER_ERROR(logger_, "Failed to send data: " << WSAGetLastError());
+  int socket_error = WSAGetLastError();
+  if (SOCKET_ERROR == written && WSAEWOULDBLOCK != socket_error) {
+    LOGGER_ERROR(logger_, "Failed to send data: " << socket_error);
     return false;
   }
   bytes_written = static_cast<size_t>(written);
+  LOGGER_DEBUG(logger_,
+               "Sent " << written << " bytes to socket " << tcp_socket_);
   return true;
 }
 
 bool utils::TcpSocketConnection::Impl::Close() {
-  if (IsValid()) {
-    LOGGER_DEBUG(logger_,
-                  "Closing connection " << address_.ToString() << ":" << port_);
+  if (!IsValid()) {
+    LOGGER_DEBUG(logger_, "Connection is not valid. Nothing to close.");
+    return true;
   }
-  return CloseSocket(tcp_socket_);
+  LOGGER_DEBUG(logger_,
+               "Closing connection " << address_.ToString() << ":" << port_);
+
+  // Possibly we're waiting on Wait. We have to interrupt this.
+  Notify();
+
+  const BOOL event_closed = CloseHandle(notify_event_);
+  if (!event_closed) {
+    LOGGER_WARN(logger_, "Failed to close event handler");
+  }
+
+  const bool socket_closed = CloseSocket(tcp_socket_);
+  if (!socket_closed) {
+    LOGGER_WARN(logger_, "Failed to close socket handler");
+  }
+
+  return event_closed && socket_closed;
 }
 
 bool utils::TcpSocketConnection::Impl::IsValid() const {
@@ -162,6 +226,7 @@ bool utils::TcpSocketConnection::Impl::Connect(const HostAddress& address,
   if (IsValid()) {
     LOGGER_ERROR(logger_, "Already connected. Closing existing connection.");
     Close();
+    return false;
   }
   SOCKET client_socket = socket(AF_INET, SOCK_STREAM, 0);
   if (INVALID_SOCKET == client_socket) {
@@ -185,10 +250,154 @@ bool utils::TcpSocketConnection::Impl::Connect(const HostAddress& address,
     CloseSocket(client_socket);
     return false;
   }
+  notify_event_ = CreateNotifyEvent();
   tcp_socket_ = client_socket;
   address_ = address;
   port_ = port;
   return true;
+}
+
+void utils::TcpSocketConnection::Impl::OnError(int error) {
+  if (!event_handler_) {
+    return;
+  }
+  event_handler_->OnError(error);
+}
+
+void utils::TcpSocketConnection::Impl::OnRead() {
+  LOGGER_AUTO_TRACE(logger_);
+  if (!event_handler_) {
+    return;
+  }
+  const std::size_t buffer_size = 4096u;
+  char buffer[buffer_size];
+  int bytes_read = -1;
+
+  do {
+    bytes_read = recv(tcp_socket_, buffer, sizeof(buffer), 0);
+    if (bytes_read > 0) {
+      LOGGER_DEBUG(logger_,
+                    "Received " << bytes_read << " bytes from socket "
+                                << tcp_socket_);
+      uint8_t* casted_buffer = reinterpret_cast<uint8_t*>(buffer);
+      event_handler_->OnData(casted_buffer, bytes_read);
+    } else if (bytes_read < 0) {
+      int socket_error = WSAGetLastError();
+      if (bytes_read == SOCKET_ERROR && WSAEWOULDBLOCK != socket_error) {
+        LOGGER_ERROR(logger_,
+                      "recv() failed for connection " << tcp_socket_
+                                                      << ". Error: "
+                                                      << socket_error);
+        OnError(socket_error);
+        return;
+      }
+    } else {
+      LOGGER_WARN(logger_,
+                   "Socket " << tcp_socket_ << " closed by remote peer");
+      OnError(WSAGetLastError());
+      return;
+    }
+  } while (bytes_read > 0);
+}
+
+void utils::TcpSocketConnection::Impl::OnWrite() {
+  if (!event_handler_) {
+    return;
+  }
+  event_handler_->OnCanWrite();
+}
+
+void utils::TcpSocketConnection::Impl::OnClose() {
+  if (!event_handler_) {
+    return;
+  }
+  event_handler_->OnClose();
+}
+
+void utils::TcpSocketConnection::Impl::Wait() {
+  if (!IsValid()) {
+    LOGGER_ERROR(logger_, "Cannot wait. Not connected.");
+    Close();
+    return;
+  }
+
+  WSANETWORKEVENTS net_events;
+  HANDLE socketEvent = WSACreateEvent();
+  WSAEventSelect(tcp_socket_, socketEvent, FD_WRITE | FD_READ | FD_CLOSE);
+
+  const int events_to_wait_count = 2;
+  HANDLE events_to_wait[events_to_wait_count] = {socketEvent, notify_event_};
+
+  DWORD waited_index = WSAWaitForMultipleEvents(
+      events_to_wait_count, events_to_wait, false, WSA_INFINITE, false);
+
+  // We've waited for the events. We should reset
+  // notify_event_. So on the next enter to the Wait will
+  // be bkocked
+  ResetEvent(notify_event_);
+
+  const bool is_socket_event = (waited_index == WAIT_OBJECT_0);
+  const bool is_notify_event = (waited_index == WAIT_OBJECT_0 + 1);
+
+  if (is_socket_event || is_notify_event) {
+    LOGGER_DEBUG(logger_,
+                  "Waited event for the connection " << tcp_socket_
+                                                     << ". Socket event: "
+                                                     << is_socket_event
+                                                     << ". Notify event: "
+                                                     << is_notify_event);
+  } else {
+    LOGGER_ERROR(logger_,
+                  "Wait for socket or notification has failed with error: "
+                      << WSAGetLastError());
+    OnError(WSAGetLastError());
+    return;
+  }
+  bool is_can_write = false;
+  if (is_socket_event) {
+    if (WSAEnumNetworkEvents(tcp_socket_,
+                             events_to_wait[waited_index - WAIT_OBJECT_0],
+                             &net_events) == SOCKET_ERROR) {
+      LOGGER_ERROR(logger_,
+                    "Failed to enum socket events: " << WSAGetLastError());
+      OnError(WSAGetLastError());
+      return;
+    }
+    if (net_events.lNetworkEvents & FD_READ) {
+      LOGGER_DEBUG(logger_, "Network event: FD_READ");
+      OnRead();
+      return;
+    }
+    if (net_events.lNetworkEvents & FD_WRITE) {
+      LOGGER_DEBUG(logger_, "Network event: FD_WRITE");
+      is_can_write = true;
+    }
+    if (net_events.lNetworkEvents & FD_CLOSE) {
+      LOGGER_DEBUG(logger_,
+                    "Network event: FD_CLOSE. "
+                        << "Connection "
+                        << this
+                        << " terminated");
+      OnClose();
+      return;
+    }
+  }
+  // Means that we received notify, thus
+  // caller have something to send.
+  // Or we received FD_WRITE(can write)
+  // event from the socket
+  if (is_notify_event || is_can_write) {
+    OnWrite();
+  }
+}
+
+bool utils::TcpSocketConnection::Impl::Notify() {
+  return SetEvent(notify_event_);
+}
+
+void utils::TcpSocketConnection::Impl::SetEventHandler(
+    TcpConnectionEventHandler* event_handler) {
+  event_handler_ = event_handler;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -214,7 +423,7 @@ utils::TcpSocketConnection::TcpSocketConnection(Impl* impl) : impl_(impl) {
   DCHECK(impl);
 }
 
-bool utils::TcpSocketConnection::Send(const char* buffer,
+bool utils::TcpSocketConnection::Send(const char* const buffer,
                                       std::size_t size,
                                       std::size_t& bytes_written) {
   return impl_->Send(buffer, size, bytes_written);
@@ -247,6 +456,19 @@ uint16_t utils::TcpSocketConnection::GetPort() const {
 bool utils::TcpSocketConnection::Connect(const HostAddress& address,
                                          const uint16_t port) {
   return impl_->Connect(address, port);
+}
+
+void utils::TcpSocketConnection::Wait() {
+  impl_->Wait();
+}
+
+bool utils::TcpSocketConnection::Notify() {
+  return impl_->Notify();
+}
+
+void utils::TcpSocketConnection::SetEventHandler(
+    TcpConnectionEventHandler* event_handler) {
+  impl_->SetEventHandler(event_handler);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
