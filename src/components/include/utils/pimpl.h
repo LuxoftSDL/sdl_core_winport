@@ -38,7 +38,7 @@ namespace utils {
  * @brief Pimpls assigner
  *
  * Implements different approaches of Pimpls assignment
- * depend on required logic (swap, copy, non-copy)
+ * depend on required logic (swap, copy)
  *
  * @tparam Impl Type of Impl wrapped with Pimpl
  **/
@@ -50,12 +50,6 @@ class SwapAssigner {
 
 template <typename Impl>
 class CopyAssigner {
- public:
-  void operator()(Impl& lhs, Impl& rhs) const;
-};
-
-template <typename Impl>
-class NonCopyAssigner {
  public:
   void operator()(Impl& lhs, Impl& rhs) const;
 };

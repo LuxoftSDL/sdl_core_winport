@@ -45,11 +45,6 @@ void utils::CopyAssigner<Impl>::operator()(Impl& lhs, Impl& rhs) const {
   lhs = rhs;
 }
 
-template <typename Impl>
-void utils::NonCopyAssigner<Impl>::operator()(Impl& lhs, Impl& rhs) const {
-  DCHECK_OR_RETURN_VOID(false);
-}
-
 template <typename Impl, typename Assigner>
 utils::Pimpl<Impl, Assigner>::Pimpl()
     : impl_(new Impl()) {}
