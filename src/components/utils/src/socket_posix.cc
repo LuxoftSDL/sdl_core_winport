@@ -293,6 +293,7 @@ bool utils::TcpSocketConnection::Impl::Notify() {
 
 void utils::TcpSocketConnection::Impl::SetEventHandler(
     TcpConnectionEventHandler* event_handler) {
+  LOGGER_DEBUG(logger_, "Setting event handle to " << event_handler);
   event_handler_ = event_handler;
 }
 
@@ -563,11 +564,10 @@ bool utils::TcpServerSocket::Impl::Listen(const HostAddress& address,
                 "Start listening on " << address.ToString() << ":" << port);
 
   if (-1 == listen(server_socket, backlog)) {
-    LOGGER_ERROR(logger_, "Unable to listen: " << errno);
-    LOGGER_WARN(logger_,
-                 "Failed to listen on " << address.ToString() << ":" << port
-                                        << ". Error: "
-                                        << errno);
+    LOGGER_ERROR(logger_,
+                  "Failed to listen on " << address.ToString() << ":" << port
+                                         << ". Error: "
+                                         << errno);
     return false;
   }
 

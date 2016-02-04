@@ -397,6 +397,7 @@ bool utils::TcpSocketConnection::Impl::Notify() {
 
 void utils::TcpSocketConnection::Impl::SetEventHandler(
     TcpConnectionEventHandler* event_handler) {
+  LOGGER_DEBUG(logger_, "Setting event handle to " << event_handler);
   event_handler_ = event_handler;
 }
 

@@ -155,7 +155,7 @@ void ThreadedSocketConnection::Transmit() {
   LOGGER_DEBUG(logger_, "Waiting for connection events. " << this);
   socket_connection_.Wait();
 
-  LOGGER_ERROR(logger_, "Waited for connection events: " << this);
+  LOGGER_DEBUG(logger_, "Waited for connection events: " << this);
   // If there will be new data to send come from the outside, then
   // there will be the notification which will unblock Wait.
   Send();
@@ -163,7 +163,7 @@ void ThreadedSocketConnection::Transmit() {
 
 void ThreadedSocketConnection::Send() {
   LOGGER_AUTO_TRACE(logger_);
-  LOGGER_ERROR(logger_, "Trying to send data if awailable");
+  LOGGER_DEBUG(logger_, "Trying to send data if awailable");
   FrameQueue frames_to_send;
   {
     sync_primitives::AutoLock auto_lock(frames_to_send_mutex_);
@@ -197,7 +197,7 @@ void ThreadedSocketConnection::Send() {
 }
 
 void ThreadedSocketConnection::OnError(int error) {
-  LOGGER_DEBUG(logger_, "Connection error: " << error);
+  LOGGER_ERROR(logger_, "Connection error: " << error);
   Abort();
 }
 

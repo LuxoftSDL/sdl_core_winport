@@ -81,6 +81,8 @@ class utils::TcpSocketConnection::Impl {
 
   bool Connect(const HostAddress& address, const uint16_t port);
 
+  void SetEventHandler(TcpConnectionEventHandler* event_handler);
+
  private:
   QTcpSocket* tcp_socket_;
 };
@@ -171,6 +173,12 @@ bool utils::TcpSocketConnection::Impl::Connect(const HostAddress& address,
   return tcp_socket_->waitForConnected();
 }
 
+void utils::TcpSocketConnection::Impl::SetEventHandler(
+    TcpConnectionEventHandler* event_handler) {
+  LOGGER_DEBUG(logger_, "Setting event handle to " << event_handler);
+  event_handler_ = event_handler;
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 /// utils::TcpSocketConnection
 ////////////////////////////////////////////////////////////////////////////////
@@ -228,6 +236,11 @@ uint16_t utils::TcpSocketConnection::GetPort() const {
 bool utils::TcpSocketConnection::Connect(const HostAddress& address,
                                          const uint16_t port) {
   return impl_->Connect(address, port);
+}
+
+void utils::TcpSocketConnection::SetEventHandler(
+    TcpConnectionEventHandler* event_handler) {
+  impl_->SetEventHandler(event_handler);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
