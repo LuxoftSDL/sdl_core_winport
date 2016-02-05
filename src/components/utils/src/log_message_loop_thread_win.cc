@@ -39,38 +39,33 @@
 #include "utils/file_system.h"
 #include "utils/string_utils.h"
 
+namespace {
+
+std::string GetLogTypeStringByLevel(const logger::LogLevel level) {
+  using namespace logger;
+  switch (level) {
+    case LogLevel::LOGLEVEL_TRACE:
+      return "TRACE";
+    case LogLevel::LOGLEVEL_DEBUG:
+      return "DEBUG";
+    case LogLevel::LOGLEVEL_INFO:
+      return "INFO ";
+    case LogLevel::LOGLEVEL_WARN:
+      return "WARN ";
+    case LogLevel::LOGLEVEL_ERROR:
+      return "ERROR";
+    case LogLevel::LOGLEVEL_FATAL:
+      return "FATAL";
+    default:
+      NOTREACHED();
+  }
+}
+
+}  // namespace
+
 namespace logger {
 
 void LogMessageHandler::Handle(const LogMessage message) {
-  std::string type_str;
-  switch (message.level_) {
-    case LogLevel::LOGLEVEL_TRACE: {
-      type_str = "TRACE";
-      break;
-    }
-    case LogLevel::LOGLEVEL_DEBUG: {
-      type_str = "DEBUG";
-      break;
-    }
-    case LogLevel::LOGLEVEL_INFO: {
-      type_str = "INFO ";
-      break;
-    }
-    case LogLevel::LOGLEVEL_WARN: {
-      type_str = "WARN ";
-      break;
-    }
-    case LogLevel::LOGLEVEL_ERROR: {
-      type_str = "ERROR";
-      break;
-    }
-    case LogLevel::LOGLEVEL_FATAL: {
-      type_str = "FATAL";
-      break;
-    }
-    default: { NOTREACHED(); }
-  }
-
   char time_buf[15];
   _snprintf_s(time_buf,
               sizeof(time_buf),
@@ -81,7 +76,7 @@ void LogMessageHandler::Handle(const LogMessage message) {
               message.time_.wMilliseconds);
 
   std::stringstream entry;
-  entry << type_str << " [" << time_buf << "]"
+  entry << GetLogTypeStringByLevel(message.level_) << " [" << time_buf << "]"
         << " [" << message.thread_id_ << "]"
         << " [" << message.logger_ << "] "
         << file_system::RetrieveFileNameFromPath(message.location_.file_name_)

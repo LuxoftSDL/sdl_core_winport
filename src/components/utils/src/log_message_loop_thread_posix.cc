@@ -35,40 +35,35 @@
 #if defined(LOG4CXX_LOGGER)
 #include <log4cxx/logger.h>
 
+namespace {
+
+log4cxx::Level GetLog4cxxLogLevel(const logger::LogLevel level) {
+  using namespace logger;
+  switch (level) {
+    case LogLevel::LOGLEVEL_TRACE:
+      return level = log4cxx::Level::getTrace();
+    case LogLevel::LOGLEVEL_DEBUG:
+      return level = log4cxx::Level::getDebug();
+    case LogLevel::LOGLEVEL_INFO:
+      return level = log4cxx::Level::getInfo();
+    case LogLevel::LOGLEVEL_WARN:
+      return level = log4cxx::Level::getWarn();
+    case LogLevel::LOGLEVEL_ERROR:
+      return level = log4cxx::Level::getError();
+    case LogLevel::LOGLEVEL_FATAL:
+      return level = log4cxx::Level::getFatal();
+    default:
+      NOTREACHED();
+  }
+}
+
+}  // namespace
+
 namespace logger {
 
 void LogMessageHandler::Handle(const LogMessage message) {
-  log4cxx::Level level;
-  switch (message.level_) {
-    case LogLevel::LOGLEVEL_TRACE: {
-      level = log4cxx::Level::getTrace();
-      break;
-    }
-    case LogLevel::LOGLEVEL_DEBUG: {
-      level = log4cxx::Level::getDebug();
-      break;
-    }
-    case LogLevel::LOGLEVEL_INFO: {
-      level = log4cxx::Level::getInfo();
-      break;
-    }
-    case LogLevel::LOGLEVEL_WARN: {
-      level = log4cxx::Level::getWarn();
-      break;
-    }
-    case LogLevel::LOGLEVEL_ERROR: {
-      level = log4cxx::Level::getError();
-      break;
-    }
-    case LogLevel::LOGLEVEL_FATAL: {
-      level = log4cxx::Level::getFatal();
-      break;
-    }
-    default: { NOTREACHED(); }
-  }
-
   message.logger_->forcedLog(
-      level,
+      GetLog4cxxLogLevel(message.level_),
       message.entry_,
       message.time_,
       log4cxx::spi::LocationInfo(
