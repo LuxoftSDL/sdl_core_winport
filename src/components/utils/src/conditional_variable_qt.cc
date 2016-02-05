@@ -61,7 +61,7 @@ bool ConditionalVariable::Wait(Lock& lock) {
   const bool wait_status = cond_var_.wait(lock.mutex_);
   lock.AssertFreeAndMarkTaken();
   if (!wait_status) {
-    LOG4CXX_ERROR(logger_, "Failed to wait for conditional variable");
+    LOGGER_ERROR(logger_, "Failed to wait for conditional variable");
     return false;
   }
   return true;

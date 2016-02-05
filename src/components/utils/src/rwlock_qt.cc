@@ -102,7 +102,7 @@ void sync_primitives::RWLock::Impl::AcquireForReading() {
 
 bool sync_primitives::RWLock::Impl::TryAcquireForReading() {
   if (!rwlock_->tryLockForRead()) {
-    LOG4CXX_DEBUG(logger_, "Cannot acquire rwlock for reading");
+    LOGGER_DEBUG(logger_, "Cannot acquire rwlock for reading");
     return false;
   }
   return true;
@@ -114,7 +114,7 @@ void sync_primitives::RWLock::Impl::AcquireForWriting() {
 
 bool sync_primitives::RWLock::Impl::TryAcquireForWriting() {
   if (!rwlock_->tryLockForWrite()) {
-    LOG4CXX_DEBUG(logger_, "Cannot acquire rwlock for writing");
+    LOGGER_DEBUG(logger_, "Cannot acquire rwlock for writing");
     return false;
   }
   return true;

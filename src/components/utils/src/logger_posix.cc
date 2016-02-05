@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015, Ford Motor Company
+ * Copyright (c) 2016, Ford Motor Company
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -31,55 +31,169 @@
  */
 #include "utils/logger.h"
 #include "utils/log_message_loop_thread.h"
-#include "config_profile/profile.h"
+#include "utils/pimpl_impl.h"
 
-namespace {
-bool is_logs_enabled = false;
-logger::LogMessageLoopThread* message_loop_thread = NULL;
-}  // namespace
+#if defined(LOG4CXX_LOGGER)
+#include <log4cxx/logger.h>
 
-namespace logger {
+logger::Logger::Pimpl logger::Logger::impl_;
 
-bool init_logger(const std::string& ini_file_name) {
-  log4cxx::PropertyConfigurator::configure(ini_file_name);
-  if (!message_loop_thread) {
-    message_loop_thread = new LogMessageLoopThread();
+////////////////////////////////////////////////////////////////////////////////
+/// logger::Logger::Impl
+////////////////////////////////////////////////////////////////////////////////
+
+class logger::Logger::Impl {
+ public:
+  Impl();
+  ~Impl();
+
+  bool InitLogger(const bool logs_enabled, const std::string& ini_file_name);
+  bool InitLogger(const bool logs_enabled,
+                  const LogLevel log_level,
+                  const std::string& log_file_name);
+  void DeinitLogger();
+
+  bool logs_enabled() const;
+  void set_logs_enabled(const bool state);
+
+  LogLevel log_level() const;
+  void set_log_level(const LogLevel level);
+
+  bool PushLog(const LoggerType& logger,
+               const LogLevel level,
+               const std::string& entry,
+               const LogLocation& location);
+
+ private:
+  bool logs_enabled_;
+  LogLevel log_level_;
+  LogMessageLoopThread* message_loop_thread_;
+};
+
+logger::Logger::Impl::Impl()
+    : logs_enabled_(false)
+    , log_level_(LogLevel::LOGLEVEL_TRACE)
+    , message_loop_thread_(NULL) {}
+
+logger::Logger::Impl::~Impl() {
+  DeinitLogger();
+}
+
+bool logger::Logger::Impl::InitLogger(const bool logs_enabled,
+                                      const std::string& ini_file_name) {
+  if (message_loop_thread_) {
+    return false;
   }
-  set_logs_enabled(profile::Profile::instance()->logs_enabled());
+  set_logs_enabled(logs_enabled);
+  log4cxx::PropertyConfigurator::configure(ini_file_name);
+  message_loop_thread = new LogMessageLoopThread();
   return true;
 }
 
-void deinit_logger() {
+bool logger::Logger::Impl::InitLogger(const bool logs_enabled,
+                                      const LogLevel log_level,
+                                      const std::string& log_file_name) {
+  return false;
+}
+
+void logger::Logger::Impl::DeinitLogger() {
   CREATE_LOGGERPTR_LOCAL(logger_, "Logger");
-  LOG4CXX_DEBUG(logger_, "Logger deinitialization");
+  LOGGER_DEBUG(logger_, "Logger deinitialization");
 
   set_logs_enabled(false);
-  delete message_loop_thread;
+  set_log_level(LogLevel::LOGLEVEL_TRACE);
+  delete message_loop_thread_;
+  message_loop_thread_ = NULL;
 }
 
-bool logs_enabled() {
-  return is_logs_enabled;
+bool logger::Logger::Impl::logs_enabled() const {
+  return logs_enabled_;
 }
 
-void set_logs_enabled(bool state) {
-  is_logs_enabled = state;
+void logger::Logger::Impl::set_logs_enabled(const bool state) {
+  logs_enabled_ = state;
 }
 
-bool push_log(log4cxx::LoggerPtr logger,
-              log4cxx::LevelPtr level,
-              const std::string& entry,
-              log4cxx_time_t time,
-              const log4cxx::spi::LocationInfo& location,
-              const log4cxx::LogString& thread_name) {
+logger::LogLevel logger::Logger::Impl::log_level() const {
+  return log_level_;
+}
+
+void logger::Logger::Impl::set_log_level(const logger::LogLevel level) {
+  log_level_ = level;
+}
+
+bool logger::Logger::Impl::PushLog(const LoggerType& logger,
+                                   const LogLevel level,
+                                   const std::string& entry,
+                                   const LogLocation& location) {
   if (!logs_enabled()) {
     return false;
   }
-  if (!logger->isEnabledFor(level)) {
+  if (level < log_level()) {
     return false;
   }
-  LogMessage message = {logger, level, entry, time, location, thread_name};
-  message_loop_thread->PostMessage(message);
-  return true;
+  LogMessage message = {logger,
+                        level,
+                        entry,
+                        location,
+                        apr_time_now(),
+                        log4cxx::spi::LoggingEvent::getCurrentThreadName()};
+
+  if (message_loop_thread_) {
+    message_loop_thread_->PostMessage(message);
+    return true;
+  }
+  return false;
 }
 
-}  // namespace logger
+////////////////////////////////////////////////////////////////////////////////
+/// logger::Logger
+////////////////////////////////////////////////////////////////////////////////
+
+bool logger::Logger::InitLogger(const bool logs_enabled,
+                                const std::string& ini_file_name) {
+  return impl_->InitLogger(logs_enabled, ini_file_name);
+}
+
+bool logger::Logger::InitLogger(const bool logs_enabled,
+                                const LogLevel log_level,
+                                const std::string& log_file_name) {
+  return impl_->InitLogger(logs_enabled, log_level, log_file_name);
+}
+
+void logger::Logger::DeinitLogger() {
+  impl_->DeinitLogger();
+}
+
+bool logger::Logger::logs_enabled() {
+  return impl_->logs_enabled();
+}
+
+void logger::Logger::set_logs_enabled(const bool state) {
+  impl_->set_logs_enabled(state);
+}
+
+logger::LogLevel logger::Logger::log_level() {
+  return impl_->log_level();
+}
+
+void logger::Logger::set_log_level(const LogLevel level) {
+  impl_->set_log_level(level);
+}
+
+bool logger::Logger::PushLog(const LoggerType& logger,
+                             const LogLevel level,
+                             const std::string& entry,
+                             const LogLocation& location) {
+  return impl_->PushLog(logger, level, entry, location);
+}
+
+void logger::Logger::SetLogger(logger::Logger::Pimpl& impl) {
+  impl_ = impl;
+}
+
+logger::Logger::Pimpl& logger::Logger::GetLogger() {
+  return impl_;
+}
+
+#endif  // LOG4CXX_LOGGER

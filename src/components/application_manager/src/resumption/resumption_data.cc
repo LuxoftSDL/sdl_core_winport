@@ -42,18 +42,18 @@ CREATE_LOGGERPTR_GLOBAL(logger_, "ResumptionData")
 ResumptionData::ResumptionData() : resumption_lock_(true) {}
 
 bool ResumptionData::Init() {
-  LOG4CXX_AUTO_TRACE(logger_);
+  LOGGER_AUTO_TRACE(logger_);
   return true;
 }
 
 smart_objects::SmartObject ResumptionData::GetApplicationCommands(
     app_mngr::ApplicationConstSharedPtr application) const {
   using namespace app_mngr;
-  LOG4CXX_AUTO_TRACE(logger_);
+  LOGGER_AUTO_TRACE(logger_);
   smart_objects::SmartObject commands_array(smart_objects::SmartType_Array);
   DCHECK_OR_RETURN(application, commands_array);
   if (!application) {
-    LOG4CXX_ERROR(logger_, "NULL Pointer App");
+    LOGGER_ERROR(logger_, "NULL Pointer App");
     return commands_array;
   }
   const DataAccessor<CommandsMap> accessor = application->commands_map();
@@ -68,14 +68,14 @@ smart_objects::SmartObject ResumptionData::GetApplicationCommands(
 smart_objects::SmartObject ResumptionData::GetApplicationSubMenus(
     app_mngr::ApplicationConstSharedPtr application) const {
   using namespace app_mngr;
-  LOG4CXX_AUTO_TRACE(logger_);
+  LOGGER_AUTO_TRACE(logger_);
 
   DCHECK(application.get());
   smart_objects::SmartObject submenues_array =
       smart_objects::SmartObject(smart_objects::SmartType_Array);
 
   if (!application) {
-    LOG4CXX_ERROR(logger_, "NULL Pointer App");
+    LOGGER_ERROR(logger_, "NULL Pointer App");
     return submenues_array;
   }
   const DataAccessor<SubMenuMap> accessor = application->sub_menu_map();
@@ -90,13 +90,13 @@ smart_objects::SmartObject ResumptionData::GetApplicationSubMenus(
 smart_objects::SmartObject ResumptionData::GetApplicationInteractionChoiseSets(
     app_mngr::ApplicationConstSharedPtr application) const {
   using namespace app_mngr;
-  LOG4CXX_AUTO_TRACE(logger_);
+  LOGGER_AUTO_TRACE(logger_);
 
   DCHECK(application.get());
   smart_objects::SmartObject interaction_choice_set_array =
       smart_objects::SmartObject(smart_objects::SmartType_Array);
   if (!application) {
-    LOG4CXX_ERROR(logger_, "NULL Pointer App");
+    LOGGER_ERROR(logger_, "NULL Pointer App");
     return interaction_choice_set_array;
   }
   const DataAccessor<ChoiceSetMap> accessor = application->choice_set_map();
@@ -111,13 +111,13 @@ smart_objects::SmartObject ResumptionData::GetApplicationInteractionChoiseSets(
 smart_objects::SmartObject ResumptionData::GetApplicationGlobalProperties(
     app_mngr::ApplicationConstSharedPtr application) const {
   using namespace app_mngr;
-  LOG4CXX_AUTO_TRACE(logger_);
+  LOGGER_AUTO_TRACE(logger_);
 
   DCHECK(application.get());
   smart_objects::SmartObject global_properties =
       smart_objects::SmartObject(smart_objects::SmartType_Map);
   if (!application) {
-    LOG4CXX_ERROR(logger_, "NULL Pointer App");
+    LOGGER_ERROR(logger_, "NULL Pointer App");
     return global_properties;
   }
 
@@ -143,22 +143,22 @@ smart_objects::SmartObject ResumptionData::GetApplicationGlobalProperties(
 smart_objects::SmartObject ResumptionData::GetApplicationSubscriptions(
     app_mngr::ApplicationConstSharedPtr application) const {
   using namespace app_mngr;
-  LOG4CXX_AUTO_TRACE(logger_);
+  LOGGER_AUTO_TRACE(logger_);
   DCHECK(application.get());
   smart_objects::SmartObject subscriptions =
       smart_objects::SmartObject(smart_objects::SmartType_Map);
   if (!application) {
-    LOG4CXX_ERROR(logger_, "NULL Pointer App");
+    LOGGER_ERROR(logger_, "NULL Pointer App");
     return subscriptions;
   }
-  LOG4CXX_DEBUG(logger_, "app_id:" << application->app_id());
+  LOGGER_DEBUG(logger_, "app_id:" << application->app_id());
 
   DataAccessor<ButtonSubscriptions> button_accessor =
       application->SubscribedButtons();
 
   const ButtonSubscriptions& button_subscriptions = button_accessor.GetData();
 
-  LOG4CXX_DEBUG(logger_, "SubscribedButtons:" << button_subscriptions.size());
+  LOGGER_DEBUG(logger_, "SubscribedButtons:" << button_subscriptions.size());
   Append(button_subscriptions.begin(),
          button_subscriptions.end(),
          strings::application_buttons,
@@ -169,7 +169,7 @@ smart_objects::SmartObject ResumptionData::GetApplicationSubscriptions(
 
   const VehicleInfoSubscriptions& vi_subscription = vi_accessor.GetData();
 
-  LOG4CXX_DEBUG(logger_, "SubscribedIVI:" << vi_subscription.size());
+  LOGGER_DEBUG(logger_, "SubscribedIVI:" << vi_subscription.size());
   Append(vi_subscription.begin(),
          vi_subscription.end(),
          strings::application_vehicle_info,
@@ -180,14 +180,14 @@ smart_objects::SmartObject ResumptionData::GetApplicationSubscriptions(
 smart_objects::SmartObject ResumptionData::GetApplicationFiles(
     app_mngr::ApplicationConstSharedPtr application) const {
   using namespace app_mngr;
-  LOG4CXX_AUTO_TRACE(logger_);
+  LOGGER_AUTO_TRACE(logger_);
   DCHECK(application.get());
-  LOG4CXX_TRACE(logger_, "ENTER app_id:" << application->app_id());
+  LOGGER_TRACE(logger_, "ENTER app_id:" << application->app_id());
 
   smart_objects::SmartObject files =
       smart_objects::SmartObject(smart_objects::SmartType_Array);
   if (!application) {
-    LOG4CXX_ERROR(logger_, "NULL Pointer App");
+    LOGGER_ERROR(logger_, "NULL Pointer App");
     return files;
   }
 
@@ -212,7 +212,7 @@ smart_objects::SmartObject ResumptionData::GetApplicationFiles(
 
 smart_objects::SmartObject ResumptionData::PointerToSmartObj(
     const smart_objects::SmartObject* ptr) const {
-  LOG4CXX_AUTO_TRACE(logger_);
+  LOGGER_AUTO_TRACE(logger_);
   smart_objects::SmartObject temp;
   if (ptr != NULL) {
     temp = *ptr;

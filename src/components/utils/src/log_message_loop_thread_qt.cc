@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015, Ford Motor Company
+ * Copyright (c) 2016, Ford Motor Company
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -40,43 +40,43 @@
 namespace logger {
 
 void LogMessageHandler::Handle(const LogMessage message) {
-  QMessageLogger qlogger(message.file_name,
-                         message.line_number,
-                         message.function_name,
-                         message.logger.c_str());
+  QMessageLogger qlogger(message.location_.file_name_,
+                         message.location_.line_number_,
+                         message.location_.function_name_,
+                         message.logger_.c_str());
 
   void (QMessageLogger::*log_func)(const char*, ...) const = 0;
 
   std::string type_str;
-  switch (message.level) {
-    case LOGLEVEL_TRACE: {
+  switch (message.level_) {
+    case LogLevel::LOGLEVEL_TRACE: {
       // Qt doesn't have the trace method
       log_func = &QMessageLogger::debug;
       type_str = "TRACE";
       break;
     }
-    case LOGLEVEL_DEBUG: {
+    case LogLevel::LOGLEVEL_DEBUG: {
       log_func = &QMessageLogger::debug;
       type_str = "DEBUG";
       break;
     }
-    case LOGLEVEL_INFO: {
+    case LogLevel::LOGLEVEL_INFO: {
       log_func = &QMessageLogger::info;
       type_str = "INFO ";
       break;
     }
-    case LOGLEVEL_WARN: {
+    case LogLevel::LOGLEVEL_WARN: {
       log_func = &QMessageLogger::warning;
       type_str = "WARN ";
       break;
     }
-    case LOGLEVEL_ERROR: {
+    case LogLevel::LOGLEVEL_ERROR: {
       // Qt doesn't have the error method
       log_func = &QMessageLogger::critical;
       type_str = "ERROR";
       break;
     }
-    case LOGLEVEL_FATAL: {
+    case LogLevel::LOGLEVEL_FATAL: {
       log_func = &QMessageLogger::fatal;
       type_str = "FATAL";
       break;
@@ -94,13 +94,14 @@ void LogMessageHandler::Handle(const LogMessage message) {
   (qlogger.*log_func)(
       "%s [%s][%d][%s] %s:%d %s: %s",
       type_str.c_str(),
-      message.time.toString("yyyy:MM:dd hh:mm:ss.zzz").toStdString().c_str(),
-      message.thread_id,
-      message.logger.c_str(),
-      file_system::RetrieveFileNameFromPath(message.file_name).c_str(),
-      message.line_number,
-      message.function_name,
-      message.entry.c_str());
+      message.time_.toString("yyyy:MM:dd hh:mm:ss.zzz").toStdString().c_str(),
+      message.thread_id_,
+      message.logger_.c_str(),
+      file_system::RetrieveFileNameFromPath(message.location_.file_name_)
+          .c_str(),
+      message.location_.line_number_,
+      message.location_.function_name_,
+      message.entry_.c_str());
 }
 
 }  // namespace logger

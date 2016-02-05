@@ -57,14 +57,14 @@ TcpClientListener::TcpClientListener(TransportAdapterController* controller,
 }
 
 TransportAdapter::Error TcpClientListener::Init() {
-  LOG4CXX_AUTO_TRACE(logger_);
+  LOGGER_AUTO_TRACE(logger_);
   thread_stop_requested_ = false;
 
   const int kBacklog = 128;
   const utils::HostAddress address(utils::SpecialAddress::Any);
 
   if (!server_socket_.Listen(address, port_, kBacklog)) {
-    LOG4CXX_ERROR(logger_,
+    LOGGER_ERROR(logger_,
                   "Failed to listen on " << address.ToString() << ":" << port_);
     return TransportAdapter::FAIL;
   }
@@ -72,9 +72,9 @@ TransportAdapter::Error TcpClientListener::Init() {
 }
 
 void TcpClientListener::Terminate() {
-  LOG4CXX_AUTO_TRACE(logger_);
+  LOGGER_AUTO_TRACE(logger_);
   if (!server_socket_.Close()) {
-    LOG4CXX_ERROR(logger_, "Failed to close server socket");
+    LOGGER_ERROR(logger_, "Failed to close server socket");
   }
 }
 
@@ -83,7 +83,7 @@ bool TcpClientListener::IsInitialised() const {
 }
 
 TcpClientListener::~TcpClientListener() {
-  LOG4CXX_AUTO_TRACE(logger_);
+  LOGGER_AUTO_TRACE(logger_);
   StopListening();
   delete thread_->delegate();
   threads::DeleteThread(thread_);
@@ -91,24 +91,24 @@ TcpClientListener::~TcpClientListener() {
 }
 
 void TcpClientListener::Loop() {
-  LOG4CXX_AUTO_TRACE(logger_);
+  LOGGER_AUTO_TRACE(logger_);
   while (!thread_stop_requested_) {
     // Wait for the new connection
     utils::TcpSocketConnection client_connection = server_socket_.Accept();
 
     if (thread_stop_requested_) {
-      LOG4CXX_DEBUG(logger_, "thread_stop_requested_");
+      LOGGER_DEBUG(logger_, "thread_stop_requested_");
       client_connection.Close();
       break;
     }
 
     if (!client_connection.IsValid()) {
-      LOG4CXX_ERROR(logger_, "Failed to accept new client connection");
+      LOGGER_ERROR(logger_, "Failed to accept new client connection");
       continue;
     }
 
     const utils::HostAddress client_address = client_connection.GetAddress();
-    LOG4CXX_INFO(logger_,
+    LOGGER_INFO(logger_,
                  "Connected client " << client_address.ToString() << ":"
                                      << client_connection.GetPort());
 
@@ -136,14 +136,14 @@ void TcpClientListener::Loop() {
 }
 
 void TcpClientListener::StopLoop() {
-  LOG4CXX_AUTO_TRACE(logger_);
+  LOGGER_AUTO_TRACE(logger_);
   thread_stop_requested_ = true;
   // We need to connect to the listening socket to unblock accept() call
   // "0.0.0.0" is not valid address to connect to.
   utils::TcpSocketConnection byesocket;
   utils::HostAddress address(utils::SpecialAddress::LoopBack);
   if (!byesocket.Connect(address, port_)) {
-    LOG4CXX_ERROR(logger_,
+    LOGGER_ERROR(logger_,
                   "Bye socket has failed to connect to the server "
                       << address.ToString()
                       << ":"
@@ -152,19 +152,19 @@ void TcpClientListener::StopLoop() {
 }
 
 TransportAdapter::Error TcpClientListener::StartListening() {
-  LOG4CXX_AUTO_TRACE(logger_);
+  LOGGER_AUTO_TRACE(logger_);
   if (thread_->is_running()) {
-    LOG4CXX_WARN(
+    LOGGER_WARN(
         logger_,
         "TransportAdapter::BAD_STATE. Listener has already been started");
     return TransportAdapter::BAD_STATE;
   }
 
   if (!thread_->start()) {
-    LOG4CXX_ERROR(logger_, "Tcp client listener thread start failed");
+    LOGGER_ERROR(logger_, "Tcp client listener thread start failed");
     return TransportAdapter::FAIL;
   }
-  LOG4CXX_INFO(logger_, "Tcp client listener has started successfully");
+  LOGGER_INFO(logger_, "Tcp client listener has started successfully");
   return TransportAdapter::OK;
 }
 
@@ -181,15 +181,15 @@ TcpClientListener::ListeningThreadDelegate::ListeningThreadDelegate(
     : parent_(parent) {}
 
 TransportAdapter::Error TcpClientListener::StopListening() {
-  LOG4CXX_AUTO_TRACE(logger_);
+  LOGGER_AUTO_TRACE(logger_);
   if (!thread_->is_running()) {
-    LOG4CXX_DEBUG(logger_, "TcpClientListener is not running now");
+    LOGGER_DEBUG(logger_, "TcpClientListener is not running now");
     return TransportAdapter::BAD_STATE;
   }
 
   thread_->join();
 
-  LOG4CXX_INFO(logger_, "Tcp client listener has stopped successfully");
+  LOGGER_INFO(logger_, "Tcp client listener has stopped successfully");
   return TransportAdapter::OK;
 }
 

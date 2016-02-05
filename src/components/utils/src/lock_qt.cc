@@ -58,7 +58,7 @@ Lock::Lock(bool is_recursive)
 Lock::~Lock() {
 #ifndef NDEBUG
   if (0 < lock_taken_) {
-    LOG4CXX_ERROR(logger_, "Destroying non-released mutex " << &mutex_);
+    LOGGER_ERROR(logger_, "Destroying non-released mutex " << &mutex_);
   }
 #endif
   delete mutex_;

@@ -69,16 +69,16 @@ bool SubscribeToFaultSignal(sighandler_t func) {
 void SigHandler(int sig) {
   switch (sig) {
     case SIGINT:
-      LOG4CXX_INFO("SIGINT signal has been caught");
+      LOGGER_INFO("SIGINT signal has been caught");
       break;
     case SIGTERM:
-      LOG4CXX_INFO("SIGTERM signal has been caught");
+      LOGGER_INFO("SIGTERM signal has been caught");
       break;
     case SIGSEGV:
-      LOG4CXX_INFO("SIGSEGV signal has been caught");
+      LOGGER_INFO("SIGSEGV signal has been caught");
       break;
     default:
-      LOG4CXX_INFO("Unexpected signal has been caught");
+      LOGGER_INFO("Unexpected signal has been caught");
       break;
   }
 }
@@ -94,7 +94,7 @@ void SubscribeToTerminationSignals() {
   if (!SubscribeToInterruptSignal(&SigHandler) ||
       !SubscribeToTerminateSignal(&SigHandler) ||
       !SubscribeToFaultSignal(&SigHandler)) {
-    LOG4CXX_FATAL(logger_, "Subscribe to system signals error");
+    LOGGER_FATAL(logger_, "Subscribe to system signals error");
   }
 }
 }  //  namespace utils

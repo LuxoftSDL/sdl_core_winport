@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015, Ford Motor Company
+ * Copyright (c) 2016, Ford Motor Company
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -31,77 +31,184 @@
  */
 #include "utils/logger.h"
 #include "utils/log_message_loop_thread.h"
-#include "config_profile/profile.h"
+#include "utils/pimpl_impl.h"
 
-namespace {
-bool is_logs_enabled = false;
-logger::LogMessageLoopThread* message_loop_thread = NULL;
+#include <stdio.h>
 
-logger::LogLevel log_level = logger::LOGLEVEL_TRACE;
-FILE* output_file = NULL;
+logger::Logger::Pimpl logger::Logger::impl_;
+
+////////////////////////////////////////////////////////////////////////////////
+/// logger::Logger::Impl
+////////////////////////////////////////////////////////////////////////////////
+
+class logger::Logger::Impl {
+ public:
+  Impl();
+  ~Impl();
+
+  bool InitLogger(const bool logs_enabled, const std::string& ini_file_name);
+  bool InitLogger(const bool logs_enabled,
+                  const LogLevel log_level,
+                  const std::string& log_file_name);
+  void DeinitLogger();
+
+  bool logs_enabled() const;
+  void set_logs_enabled(const bool state);
+
+  LogLevel log_level() const;
+  void set_log_level(const LogLevel level);
+
+  bool PushLog(const LoggerType& logger,
+               const LogLevel level,
+               const std::string& entry,
+               const LogLocation& location);
+
+ private:
+  bool logs_enabled_;
+  LogLevel log_level_;
+  FILE* log_file_;
+  LogMessageLoopThread* message_loop_thread_;
+};
+
+logger::Logger::Impl::Impl()
+    : logs_enabled_(false)
+    , log_level_(LogLevel::LOGLEVEL_TRACE)
+    , log_file_(NULL)
+    , message_loop_thread_(NULL) {}
+
+logger::Logger::Impl::~Impl() {
+  DeinitLogger();
 }
 
-namespace logger {
-
-bool init_logger(const std::string& ini_file_name) {
-  output_file = fopen("SmartDeviceLink.log", "a");
-
-  if (!message_loop_thread) {
-    message_loop_thread = new LogMessageLoopThread();
+bool logger::Logger::Impl::InitLogger(const bool logs_enabled,
+                                      const std::string& ini_file_name) {
+  if (message_loop_thread_) {
+    return false;
   }
-  set_logs_enabled(profile::Profile::instance()->logs_enabled());
+  set_logs_enabled(logs_enabled);
+  // Ini file settings reading could be here
+  message_loop_thread_ = new LogMessageLoopThread();
   return true;
 }
 
-void deinit_logger() {
+bool logger::Logger::Impl::InitLogger(const bool logs_enabled,
+                                      const LogLevel log_level,
+                                      const std::string& log_file_name) {
+  if (message_loop_thread_) {
+    return false;
+  }
+  log_file_ = fopen(log_file_name.c_str(), "a");
+  if (!log_file_) {
+    return false;
+  }
+  set_logs_enabled(logs_enabled);
+  set_log_level(log_level);
+  message_loop_thread_ = new LogMessageLoopThread();
+  return true;
+}
+
+void logger::Logger::Impl::DeinitLogger() {
   CREATE_LOGGERPTR_LOCAL(logger_, "Logger");
-  LOG4CXX_DEBUG(logger_, "Logger deinitialization");
+  LOGGER_DEBUG(logger_, "Logger deinitialization");
 
   set_logs_enabled(false);
-  delete message_loop_thread;
-  message_loop_thread = NULL;
-
-  fclose(output_file);
+  set_log_level(LogLevel::LOGLEVEL_TRACE);
+  delete message_loop_thread_;
+  message_loop_thread_ = NULL;
+  if (log_file_) {
+    fclose(log_file_);
+  }
 }
 
-bool logs_enabled() {
-  return is_logs_enabled;
+bool logger::Logger::Impl::logs_enabled() const {
+  return logs_enabled_;
 }
 
-void set_logs_enabled(bool state) {
-  is_logs_enabled = state;
+void logger::Logger::Impl::set_logs_enabled(const bool state) {
+  logs_enabled_ = state;
 }
 
-bool push_log(const std::string& logger,
-              LogLevel level,
-              SYSTEMTIME time,
-              const std::string& entry,
-              unsigned long line_number,
-              const char* file_name,
-              const char* function_name) {
+logger::LogLevel logger::Logger::Impl::log_level() const {
+  return log_level_;
+}
+
+void logger::Logger::Impl::set_log_level(logger::LogLevel level) {
+  log_level_ = level;
+}
+
+bool logger::Logger::Impl::PushLog(const LoggerType& logger,
+                                   const LogLevel level,
+                                   const std::string& entry,
+                                   const LogLocation& location) {
   if (!logs_enabled()) {
     return false;
   }
-  if (level < log_level) {
+  if (level < log_level()) {
     return false;
   }
-  LogMessage message = {logger,
-                        level,
-                        time,
-                        entry,
-                        line_number,
-                        file_name,
-                        function_name,
-                        static_cast<uint32_t>(GetCurrentThreadId()),
-                        output_file};
-  message_loop_thread->PostMessage(message);
-  return true;
-}
-
-SYSTEMTIME time_now() {
   SYSTEMTIME time;
   GetLocalTime(&time);
-  return time;
+  LogMessage message = {logger,
+                        level,
+                        entry,
+                        location,
+                        time,
+                        static_cast<uint32_t>(GetCurrentThreadId()),
+                        log_file_};
+
+  if (message_loop_thread_) {
+    message_loop_thread_->PostMessage(message);
+    return true;
+  }
+  return false;
 }
 
-}  // namespace logger
+////////////////////////////////////////////////////////////////////////////////
+/// logger::Logger
+////////////////////////////////////////////////////////////////////////////////
+
+bool logger::Logger::InitLogger(const bool logs_enabled,
+                                const std::string& ini_file_name) {
+  return impl_->InitLogger(logs_enabled, ini_file_name);
+}
+
+bool logger::Logger::InitLogger(const bool logs_enabled,
+                                const LogLevel log_level,
+                                const std::string& log_file_name) {
+  return impl_->InitLogger(logs_enabled, log_level, log_file_name);
+}
+
+void logger::Logger::DeinitLogger() {
+  impl_->DeinitLogger();
+}
+
+bool logger::Logger::logs_enabled() {
+  return impl_->logs_enabled();
+}
+
+void logger::Logger::set_logs_enabled(const bool state) {
+  impl_->set_logs_enabled(state);
+}
+
+logger::LogLevel logger::Logger::log_level() {
+  return impl_->log_level();
+}
+
+void logger::Logger::set_log_level(const LogLevel level) {
+  impl_->set_log_level(level);
+}
+
+bool logger::Logger::PushLog(const LoggerType& logger,
+                             const LogLevel level,
+                             const std::string& entry,
+                             const LogLocation& location) {
+  return impl_->PushLog(logger, level, entry, location);
+}
+
+void logger::Logger::SetLogger(logger::Logger::Pimpl& impl) {
+  impl_ = impl;
+}
+
+logger::Logger::Pimpl& logger::Logger::GetLogger() {
+  return impl_;
+}

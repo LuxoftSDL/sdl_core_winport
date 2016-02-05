@@ -48,7 +48,7 @@ void ProtocolHandlerObserver::StartMessageProcess(
     return;
   }
   if (time_starts.find(message_id) != time_starts.end()) {
-    LOG4CXX_INFO(logger_,
+    LOGGER_INFO(logger_,
                  "Message ID already wait for stop processing" << message_id);
     return;
   }
@@ -61,7 +61,7 @@ void ProtocolHandlerObserver::EndMessageProcess(
   std::map<uint32_t, TimevalStruct>::const_iterator it =
       time_starts.find(message_id);
   if (it == time_starts.end()) {
-    LOG4CXX_WARN(logger_, "Cant find start time for message" << message_id);
+    LOGGER_WARN(logger_, "Cant find start time for message" << message_id);
     return;
   }
   m->begin = time_starts[message_id];

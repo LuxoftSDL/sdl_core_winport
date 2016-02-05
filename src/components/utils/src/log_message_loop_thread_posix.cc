@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015, Ford Motor Company
+ * Copyright (c) 2016, Ford Motor Company
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -29,21 +29,50 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-#ifdef LOG4CXX_LOGGER
-#include <log4cxx/logger.h>
-#endif
-
 #include "utils/macro.h"
 #include "utils/threads/message_loop_thread.h"
+
+#if defined(LOG4CXX_LOGGER)
+#include <log4cxx/logger.h>
+
+namespace {
+
+log4cxx::Level GetLog4cxxLogLevel(const logger::LogLevel level) {
+  using namespace logger;
+  switch (level) {
+    case LogLevel::LOGLEVEL_TRACE:
+      return level = log4cxx::Level::getTrace();
+    case LogLevel::LOGLEVEL_DEBUG:
+      return level = log4cxx::Level::getDebug();
+    case LogLevel::LOGLEVEL_INFO:
+      return level = log4cxx::Level::getInfo();
+    case LogLevel::LOGLEVEL_WARN:
+      return level = log4cxx::Level::getWarn();
+    case LogLevel::LOGLEVEL_ERROR:
+      return level = log4cxx::Level::getError();
+    case LogLevel::LOGLEVEL_FATAL:
+      return level = log4cxx::Level::getFatal();
+    default:
+      NOTREACHED();
+  }
+}
+
+}  // namespace
 
 namespace logger {
 
 void LogMessageHandler::Handle(const LogMessage message) {
-  message.logger->forcedLog(message.level,
-                            message.entry,
-                            message.time,
-                            message.location,
-                            message.thread_name);
+  message.logger_->forcedLog(
+      GetLog4cxxLogLevel(message.level_),
+      message.entry_,
+      message.time_,
+      log4cxx::spi::LocationInfo(
+          message.location_.file_name_,
+          message.location_.function_name_,
+          static_cast<int>(message.location_.line_number_)),
+      message.thread_name_);
 }
 
 }  // namespace logger
+
+#endif  // LOG4CXX_LOGGER

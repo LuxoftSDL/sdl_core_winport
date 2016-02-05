@@ -39,7 +39,7 @@ namespace {
 HANDLE signal_handle = NULL;
 
 void HandleSignals(HANDLE& signal_handle, const char* log_name) {
-  LOG4CXX_INFO(logger_, log_name);
+  LOGGER_INFO(logger_, log_name);
   SetEvent(signal_handle);
 }
 
@@ -67,7 +67,7 @@ void WaitForSdlExecute() {
   if (signal_handle) {
     WaitForSingleObject(signal_handle, INFINITE);
   } else {
-    LOG4CXX_FATAL(logger_, "SDL is not subscribed to signal events");
+    LOGGER_FATAL(logger_, "SDL is not subscribed to signal events");
   }
 }
 
@@ -79,7 +79,7 @@ void SubscribeToTerminationSignals() {
   if ((signal(SIGINT, &SigHandler) == SIG_ERR) ||
       (signal(SIGTERM, &SigHandler) == SIG_ERR) ||
       (signal(SIGSEGV, &SigHandler) == SIG_ERR)) {
-    LOG4CXX_FATAL(logger_, "Subscribe to system signals error");
+    LOGGER_FATAL(logger_, "Subscribe to system signals error");
   }
 }
 }  //  namespace utils

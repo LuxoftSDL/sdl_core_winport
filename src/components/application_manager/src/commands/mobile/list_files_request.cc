@@ -48,14 +48,14 @@ ListFilesRequest::ListFilesRequest(const MessageSharedPtr& message)
 ListFilesRequest::~ListFilesRequest() {}
 
 void ListFilesRequest::Run() {
-  LOG4CXX_AUTO_TRACE(logger_);
+  LOGGER_AUTO_TRACE(logger_);
 
   ApplicationSharedPtr application =
       ApplicationManagerImpl::instance()->application(connection_key());
 
   if (!application) {
     SendResponse(false, mobile_apis::Result::APPLICATION_NOT_REGISTERED);
-    LOG4CXX_ERROR(logger_, "Application is not registered");
+    LOGGER_ERROR(logger_, "Application is not registered");
     return;
   }
 
@@ -64,7 +64,7 @@ void ListFilesRequest::Run() {
        application->list_files_in_none_count())) {
     // If application is in the HMI_NONE level the quantity of allowed
     // DeleteFile request is limited by the configuration profile
-    LOG4CXX_ERROR(logger_,
+    LOGGER_ERROR(logger_,
                   "Too many requests from the app with HMILevel HMI_NONE ");
     SendResponse(false, mobile_apis::Result::REJECTED);
     return;

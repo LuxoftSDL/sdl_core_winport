@@ -55,7 +55,7 @@ PerformAudioPassThruRequest::PerformAudioPassThruRequest(
 PerformAudioPassThruRequest::~PerformAudioPassThruRequest() {}
 
 void PerformAudioPassThruRequest::onTimeOut() {
-  LOG4CXX_AUTO_TRACE(logger_);
+  LOGGER_AUTO_TRACE(logger_);
 
   if (ApplicationManagerImpl::instance()->end_audio_pass_thru()) {
     ApplicationManagerImpl::instance()->StopAudioPassThru(connection_key());
@@ -73,25 +73,25 @@ bool PerformAudioPassThruRequest::Init() {
 }
 
 void PerformAudioPassThruRequest::Run() {
-  LOG4CXX_AUTO_TRACE(logger_);
+  LOGGER_AUTO_TRACE(logger_);
 
   ApplicationSharedPtr app =
       ApplicationManagerImpl::instance()->application(connection_key());
 
   if (!app) {
-    LOG4CXX_ERROR(logger_, "APPLICATION_NOT_REGISTERED");
+    LOGGER_ERROR(logger_, "APPLICATION_NOT_REGISTERED");
     SendResponse(false, mobile_apis::Result::APPLICATION_NOT_REGISTERED);
     return;
   }
 
   if (mobile_api::HMILevel::HMI_NONE == app->hmi_level()) {
-    LOG4CXX_ERROR(logger_, "application isn't activated");
+    LOGGER_ERROR(logger_, "application isn't activated");
     SendResponse(false, mobile_apis::Result::REJECTED);
     return;
   }
 
   if (IsWhiteSpaceExist()) {
-    LOG4CXX_ERROR(logger_,
+    LOGGER_ERROR(logger_,
                   "Incoming perform audio pass thru has contains "
                   "\\t\\n \\\\t \\\\n"
                   " text contains only whitespace in initialPrompt");
@@ -112,7 +112,7 @@ void PerformAudioPassThruRequest::Run() {
 }
 
 void PerformAudioPassThruRequest::on_event(const event_engine::Event& event) {
-  LOG4CXX_AUTO_TRACE(logger_);
+  LOGGER_AUTO_TRACE(logger_);
   using namespace helpers;
 
   const smart_objects::SmartObject& message = event.smart_object();
@@ -125,7 +125,7 @@ void PerformAudioPassThruRequest::on_event(const event_engine::Event& event) {
 
       // in case perform audio is started by other request skip stopping
       if (mobile_apis::Result::REJECTED == mobile_code) {
-        LOG4CXX_ERROR(logger_, "Request was rejected");
+        LOGGER_ERROR(logger_, "Request was rejected");
         SendResponse(false, mobile_code, NULL, &(message[strings::msg_params]));
         return;
       }
@@ -161,7 +161,7 @@ void PerformAudioPassThruRequest::on_event(const event_engine::Event& event) {
       break;
     }
     case hmi_apis::FunctionID::TTS_Speak: {
-      LOG4CXX_INFO(logger_, "Received TTS_Speak event");
+      LOGGER_INFO(logger_, "Received TTS_Speak event");
       result_tts_speak_ =
           GetMobileResultCode(static_cast<hmi_apis::Common_Result::eType>(
               message[strings::params][hmi_response::code].asUInt()));
@@ -177,21 +177,21 @@ void PerformAudioPassThruRequest::on_event(const event_engine::Event& event) {
       break;
     }
     case hmi_apis::FunctionID::TTS_OnResetTimeout: {
-      LOG4CXX_INFO(logger_, "Received TTS_OnResetTimeout event");
+      LOGGER_INFO(logger_, "Received TTS_OnResetTimeout event");
 
       ApplicationManagerImpl::instance()->updateRequestTimeout(
           connection_key(), correlation_id(), default_timeout());
       break;
     }
     default: {
-      LOG4CXX_ERROR(logger_, "Received unknown event" << event.id());
+      LOGGER_ERROR(logger_, "Received unknown event" << event.id());
       return;
     }
   }
 }
 
 void PerformAudioPassThruRequest::SendSpeakRequest() {
-  LOG4CXX_AUTO_TRACE(logger_);
+  LOGGER_AUTO_TRACE(logger_);
 
   using namespace hmi_apis;
   using namespace smart_objects;
@@ -217,7 +217,7 @@ void PerformAudioPassThruRequest::SendSpeakRequest() {
 }
 
 void PerformAudioPassThruRequest::SendPerformAudioPassThruRequest() {
-  LOG4CXX_AUTO_TRACE(logger_);
+  LOGGER_AUTO_TRACE(logger_);
 
   smart_objects::SmartObject msg_params =
       smart_objects::SmartObject(smart_objects::SmartType_Map);
@@ -261,7 +261,7 @@ void PerformAudioPassThruRequest::SendPerformAudioPassThruRequest() {
 }
 
 void PerformAudioPassThruRequest::SendRecordStartNotification() {
-  LOG4CXX_AUTO_TRACE(logger_);
+  LOGGER_AUTO_TRACE(logger_);
 
   smart_objects::SmartObject msg_params =
       smart_objects::SmartObject(smart_objects::SmartType_Map);
@@ -271,7 +271,7 @@ void PerformAudioPassThruRequest::SendRecordStartNotification() {
 }
 
 void PerformAudioPassThruRequest::StartMicrophoneRecording() {
-  LOG4CXX_AUTO_TRACE(logger_);
+  LOGGER_AUTO_TRACE(logger_);
 
   ApplicationManagerImpl::instance()->begin_audio_pass_thru();
 
@@ -285,7 +285,7 @@ void PerformAudioPassThruRequest::StartMicrophoneRecording() {
 }
 
 bool PerformAudioPassThruRequest::IsWhiteSpaceExist() {
-  LOG4CXX_AUTO_TRACE(logger_);
+  LOGGER_AUTO_TRACE(logger_);
   const char* str = NULL;
 
   if ((*message_)[strings::msg_params].keyExists(strings::initial_prompt)) {
@@ -298,7 +298,7 @@ bool PerformAudioPassThruRequest::IsWhiteSpaceExist() {
     for (; it_ip != it_ip_end; ++it_ip) {
       str = (*it_ip)[strings::text].asCharArray();
       if (strlen(str) && !CheckSyntax(str)) {
-        LOG4CXX_ERROR(logger_, "Invalid initial_prompt syntax check failed");
+        LOGGER_ERROR(logger_, "Invalid initial_prompt syntax check failed");
         return true;
       }
     }
@@ -309,7 +309,7 @@ bool PerformAudioPassThruRequest::IsWhiteSpaceExist() {
     str = (*message_)[strings::msg_params][strings::audio_pass_display_text1]
               .asCharArray();
     if (!CheckSyntax(str)) {
-      LOG4CXX_ERROR(
+      LOGGER_ERROR(
           logger_,
           "Invalid audio_pass_display_text1 value syntax check failed");
       return true;
@@ -321,7 +321,7 @@ bool PerformAudioPassThruRequest::IsWhiteSpaceExist() {
     str = (*message_)[strings::msg_params][strings::audio_pass_display_text2]
               .asCharArray();
     if (!CheckSyntax(str)) {
-      LOG4CXX_ERROR(
+      LOGGER_ERROR(
           logger_,
           "Invalid audio_pass_display_text2 value syntax check failed");
       return true;
@@ -331,9 +331,9 @@ bool PerformAudioPassThruRequest::IsWhiteSpaceExist() {
 }
 
 void PerformAudioPassThruRequest::FinishTTSSpeak() {
-  LOG4CXX_AUTO_TRACE(logger_);
+  LOGGER_AUTO_TRACE(logger_);
   if (!is_active_tts_speak_) {
-    LOG4CXX_DEBUG(logger_, "TTS Speak is inactive.");
+    LOGGER_DEBUG(logger_, "TTS Speak is inactive.");
     return;
   }
   is_active_tts_speak_ = false;

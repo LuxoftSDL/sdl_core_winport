@@ -84,7 +84,7 @@ utils::Pipe::Impl::~Impl() {
 
 bool utils::Pipe::Impl::Open() {
   if (IsOpen()) {
-    LOG4CXX_WARN(logger_ptr,
+    LOGGER_WARN(logger_ptr,
                  "Named pipe: " << name_.toStdString() << " is already opened");
     return true;
   }
@@ -93,7 +93,7 @@ bool utils::Pipe::Impl::Open() {
   if (!server_socket_->listen(name_)) {
     delete server_socket_;
     server_socket_ = NULL;
-    LOG4CXX_ERROR(logger_ptr,
+    LOGGER_ERROR(logger_ptr,
                   "Cannot create named pipe: " << name_.toStdString());
     return false;
   }
@@ -103,7 +103,7 @@ bool utils::Pipe::Impl::Open() {
   if (!client_socket_) {
     delete server_socket_;
     server_socket_ = NULL;
-    LOG4CXX_ERROR(logger_ptr,
+    LOGGER_ERROR(logger_ptr,
                   "Cannot connect to named pipe: " << name_.toStdString());
     return false;
   }
@@ -112,7 +112,7 @@ bool utils::Pipe::Impl::Open() {
 
 void utils::Pipe::Impl::Close() {
   if (!IsOpen()) {
-    LOG4CXX_WARN(logger_ptr,
+    LOGGER_WARN(logger_ptr,
                  "Named pipe: " << name_.toStdString() << " is not opened");
     return;
   }
@@ -137,18 +137,18 @@ bool utils::Pipe::Impl::Write(const uint8_t* buffer,
                               size_t& bytes_written) {
   bytes_written = 0;
   if (!IsOpen()) {
-    LOG4CXX_ERROR(logger_ptr,
+    LOGGER_ERROR(logger_ptr,
                   "Named pipe: " << name_.toStdString() << " is not opened");
     return false;
   }
   if (bytes_to_write == 0) {
-    LOG4CXX_WARN(logger_ptr, "Trying to write 0 bytes");
+    LOGGER_WARN(logger_ptr, "Trying to write 0 bytes");
     return true;
   }
   qint64 written = client_socket_->write(reinterpret_cast<const char*>(buffer),
                                          static_cast<qint64>(bytes_to_write));
   if (-1 == written) {
-    LOG4CXX_ERROR(logger_ptr,
+    LOGGER_ERROR(logger_ptr,
                   "Cannot write to named pipe: " << name_.toStdString());
     return false;
   }

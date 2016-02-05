@@ -66,10 +66,10 @@ TimeManager::~TimeManager() {
 }
 
 void TimeManager::Init(protocol_handler::ProtocolHandlerImpl* ph) {
-  LOG4CXX_AUTO_TRACE(logger_);
+  LOGGER_AUTO_TRACE(logger_);
   DCHECK(ph);
   if (!ph) {
-    LOG4CXX_DEBUG(logger_, "ProtocolHandler poiner is NULL");
+    LOGGER_DEBUG(logger_, "ProtocolHandler poiner is NULL");
     return;
   }
 
@@ -82,7 +82,7 @@ void TimeManager::Init(protocol_handler::ProtocolHandlerImpl* ph) {
 }
 
 void TimeManager::Stop() {
-  LOG4CXX_AUTO_TRACE(logger_);
+  LOGGER_AUTO_TRACE(logger_);
   threads::DeleteThread(thread_);
   thread_ = NULL;
 }
@@ -105,18 +105,18 @@ TimeManager::Streamer::~Streamer() {
 }
 
 void TimeManager::Streamer::threadMain() {
-  LOG4CXX_AUTO_TRACE(logger_);
+  LOGGER_AUTO_TRACE(logger_);
 
   Start();
   while (!stop_flag_) {
-    LOG4CXX_INFO(logger_, "Server socket is listening ");
+    LOGGER_INFO(logger_, "Server socket is listening ");
     client_socket_fd_ = accept(server_socket_fd_, NULL, NULL);
     if (0 > client_socket_fd_) {
-      LOG4CXX_ERROR(logger_, "Cant open socket . Socket is busy ");
+      LOGGER_ERROR(logger_, "Cant open socket . Socket is busy ");
       Stop();
       break;
     }
-    LOG4CXX_INFO(logger_, "Client connected");
+    LOGGER_INFO(logger_, "Client connected");
 
     is_client_connected_ = true;
     while (is_client_connected_) {
@@ -129,7 +129,7 @@ void TimeManager::Streamer::threadMain() {
       }
 
       if (!IsReady()) {
-        LOG4CXX_INFO(logger_, "Client disconnected.");
+        LOGGER_INFO(logger_, "Client disconnected.");
         break;
       }
 
@@ -139,20 +139,20 @@ void TimeManager::Streamer::threadMain() {
 }
 
 void TimeManager::Streamer::exitThreadMain() {
-  LOG4CXX_AUTO_TRACE(logger_);
+  LOGGER_AUTO_TRACE(logger_);
   Stop();
   messages_.Shutdown();
 }
 
 void TimeManager::Streamer::Start() {
-  LOG4CXX_AUTO_TRACE(logger_);
+  LOGGER_AUTO_TRACE(logger_);
   server_socket_fd_ = socket(AF_INET, SOCK_STREAM, 0);
 
   if (0 >= server_socket_fd_) {
-    LOG4CXX_ERROR(logger_, "Server open error");
+    LOGGER_ERROR(logger_, "Server open error");
     return;
   } else {
-    LOG4CXX_DEBUG(logger_, "Server socket : " << server_socket_fd_);
+    LOGGER_DEBUG(logger_, "Server socket : " << server_socket_fd_);
   }
 
   int32_t optval = 1;
@@ -161,7 +161,7 @@ void TimeManager::Streamer::Start() {
                        SO_REUSEADDR,
                        &optval,
                        sizeof optval)) {
-    LOG4CXX_ERROR(logger_, "Unable to set sockopt");
+    LOGGER_ERROR(logger_, "Unable to set sockopt");
     return;
   }
 
@@ -173,45 +173,45 @@ void TimeManager::Streamer::Start() {
   if (-1 == bind(server_socket_fd_,
                  reinterpret_cast<struct sockaddr*>(&serv_addr_),
                  sizeof(serv_addr_))) {
-    LOG4CXX_ERROR(logger_,
+    LOGGER_ERROR(logger_,
                   "Unable to bind server " << server_->ip_.c_str() << ':'
                                            << server_->port_);
     return;
   }
   if (-1 == listen(server_socket_fd_, 1)) {
-    LOG4CXX_ERROR(logger_, "Streamer listen error " << strerror(errno));
+    LOGGER_ERROR(logger_, "Streamer listen error " << strerror(errno));
     return;
   }
 }
 
 void TimeManager::Streamer::ShutDownAndCloseSocket(int32_t socket_fd) {
-  LOG4CXX_AUTO_TRACE(logger_);
+  LOGGER_AUTO_TRACE(logger_);
   if (0 < socket_fd) {
-    LOG4CXX_INFO(logger_, "Shutdown socket");
+    LOGGER_INFO(logger_, "Shutdown socket");
     if (-1 == ::shutdown(socket_fd, SHUT_RDWR)) {
-      LOG4CXX_ERROR(logger_, "Unable to shutdown socket");
+      LOGGER_ERROR(logger_, "Unable to shutdown socket");
     }
     if (-1 == close(socket_fd)) {
-      LOG4CXX_ERROR(logger_, "Unable to close socket");
+      LOGGER_ERROR(logger_, "Unable to close socket");
     }
   } else {
-    LOG4CXX_WARN(logger_, "Socket in not connected: " << socket_fd);
+    LOGGER_WARN(logger_, "Socket in not connected: " << socket_fd);
   }
 }
 
 void TimeManager::Streamer::Stop() {
-  LOG4CXX_AUTO_TRACE(logger_);
+  LOGGER_AUTO_TRACE(logger_);
   if (stop_flag_) {
-    LOG4CXX_WARN(logger_, "Already Stopped");
+    LOGGER_WARN(logger_, "Already Stopped");
     return;
   }
   stop_flag_ = true;
   messages_.Reset();
-  LOG4CXX_WARN(logger_, "Stop server_socket_fd_");
+  LOGGER_WARN(logger_, "Stop server_socket_fd_");
   ShutDownAndCloseSocket(server_socket_fd_);
   server_socket_fd_ = -1;
 
-  LOG4CXX_WARN(logger_, "Stop client_socket_fd_");
+  LOGGER_WARN(logger_, "Stop client_socket_fd_");
   ShutDownAndCloseSocket(client_socket_fd_);
   client_socket_fd_ = -1;
   is_client_connected_ = false;
@@ -229,10 +229,10 @@ bool TimeManager::Streamer::IsReady() const {
   const int retval = select(client_socket_fd_ + 1, 0, &fds, 0, &tv);
 
   if (-1 == retval) {
-    LOG4CXX_ERROR(logger_, "An error occurred");
+    LOGGER_ERROR(logger_, "An error occurred");
     result = false;
   } else if (0 == retval) {
-    LOG4CXX_ERROR(logger_, "The timeout expired");
+    LOGGER_ERROR(logger_, "The timeout expired");
     result = false;
   }
 
@@ -240,14 +240,14 @@ bool TimeManager::Streamer::IsReady() const {
 }
 
 bool TimeManager::Streamer::Send(const std::string& msg) {
-  LOG4CXX_AUTO_TRACE(logger_);
+  LOGGER_AUTO_TRACE(logger_);
   if (!IsReady()) {
-    LOG4CXX_ERROR(logger_, " Socket is not ready");
+    LOGGER_ERROR(logger_, " Socket is not ready");
     return false;
   }
 
   if (-1 == ::send(client_socket_fd_, msg.c_str(), msg.size(), MSG_NOSIGNAL)) {
-    LOG4CXX_ERROR(logger_, " Unable to send");
+    LOGGER_ERROR(logger_, " Unable to send");
     return false;
   }
   return true;

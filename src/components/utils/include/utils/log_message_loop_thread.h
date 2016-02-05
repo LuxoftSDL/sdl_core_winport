@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015, Ford Motor Company
+ * Copyright (c) 2016, Ford Motor Company
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -34,7 +34,6 @@
 
 #include <string>
 #include <queue>
-#include <cstdint>
 
 #if defined(LOG4CXX_LOGGER)
 #include <log4cxx/logger.h>
@@ -43,7 +42,7 @@
 #elif defined(QT_PORT)
 #include <QDateTime>
 #else
-#error Unsupported case for logging includes
+#error "Logger is not implemented for this platform"
 #endif
 
 #include "utils/macro.h"
@@ -51,41 +50,23 @@
 
 namespace logger {
 
-#if defined(OS_POSIX)
-typedef struct {
-  log4cxx::LoggerPtr logger;
-  log4cxx::LevelPtr level;
-  log4cxx_time_t time;
-  std::string entry;
-  log4cxx::spi::LocationInfo location;
-  log4cxx::LogString thread_name;
-} LogMessage;
-#elif defined(WIN_NATIVE)
-typedef struct {
-  std::string logger;
-  LogLevel level;
-  SYSTEMTIME time;
-  std::string entry;
-  unsigned long line_number;
-  const char* file_name;
-  const char* function_name;
-  uint32_t thread_id;
-  FILE* output_file;
-} LogMessage;
-#elif defined(QT_PORT)
 struct LogMessage {
-  std::string logger;
-  LogLevel level;
-  QDateTime time;
-  std::string entry;
-  unsigned long line_number;
-  const char* file_name;
-  const char* function_name;
-  uint32_t thread_id;
-};
-#else
-#error Unsupported case for the LogMessage
+  logger::LoggerType logger_;
+  logger::LogLevel level_;
+  std::string entry_;
+  logger::LogLocation location_;
+#if defined(LOG4CXX_LOGGER)
+  log4cxx_time_t time_;
+  log4cxx::LogString thread_name_;
+#elif defined(WIN_NATIVE)
+  SYSTEMTIME time_;
+  uint32_t thread_id_;
+  FILE* output_file_;
+#elif defined(QT_PORT)
+  QDateTime time_;
+  uint32_t thread_id_;
 #endif
+};
 
 typedef std::queue<LogMessage> LogMessageQueue;
 typedef threads::MessageLoopThread<LogMessageQueue>

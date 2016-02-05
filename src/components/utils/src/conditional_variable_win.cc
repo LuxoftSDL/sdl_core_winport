@@ -65,7 +65,7 @@ bool ConditionalVariable::Wait(Lock& lock) {
       SleepConditionVariableCS(&cond_var_, &lock.mutex_, INFINITE);
   lock.AssertFreeAndMarkTaken();
   if (wait_status == 0) {
-    LOG4CXX_ERROR(logger_, "Failed to wait for conditional variable");
+    LOGGER_ERROR(logger_, "Failed to wait for conditional variable");
     return false;
   }
   return true;

@@ -446,7 +446,7 @@ class ApplicationManagerImpl
                 mobile_apis::AudioStreamingState::eType audio_state) {
     ApplicationSharedPtr app = application(app_id);
     if (!app) {
-      LOG4CXX_ERROR(logger_,
+      LOGGER_ERROR(logger_,
                     "Application with appID=" << app_id << " does not exist");
       return;
     }
@@ -463,7 +463,7 @@ class ApplicationManagerImpl
   void SetState(uint32_t app_id, HmiStatePtr new_state) {
     ApplicationSharedPtr app = application(app_id);
     if (!app) {
-      LOG4CXX_ERROR(logger_,
+      LOGGER_ERROR(logger_,
                     "Application with appID=" << app_id << " does not exist");
       return;
     }
@@ -479,7 +479,7 @@ class ApplicationManagerImpl
   void SetState(uint32_t app_id, mobile_apis::HMILevel::eType hmi_level) {
     ApplicationSharedPtr app = application(app_id);
     if (!app) {
-      LOG4CXX_ERROR(logger_,
+      LOGGER_ERROR(logger_,
                     "Application with appID=" << app_id << " does not exist");
       return;
     }
@@ -499,7 +499,7 @@ class ApplicationManagerImpl
                 mobile_apis::AudioStreamingState::eType audio_state) {
     ApplicationSharedPtr app = application(app_id);
     if (!app) {
-      LOG4CXX_ERROR(logger_,
+      LOGGER_ERROR(logger_,
                     "Application with appID=" << app_id << " does not exist");
       return;
     }
@@ -520,7 +520,7 @@ class ApplicationManagerImpl
                 mobile_apis::SystemContext::eType system_context) {
     ApplicationSharedPtr app = application(app_id);
     if (!app) {
-      LOG4CXX_ERROR(logger_,
+      LOGGER_ERROR(logger_,
                     "Application with appID=" << app_id << " does not exist");
       return;
     }
@@ -537,7 +537,7 @@ class ApplicationManagerImpl
                 mobile_apis::SystemContext::eType system_context) {
     ApplicationSharedPtr app = application(app_id);
     if (!app) {
-      LOG4CXX_ERROR(logger_,
+      LOGGER_ERROR(logger_,
                     "Application with appID=" << app_id << " does not exist");
       return;
     }
@@ -552,7 +552,7 @@ class ApplicationManagerImpl
   void SetState(uint32_t app_id, mobile_apis::HMILevel::eType hmi_level) {
     ApplicationSharedPtr app = application(app_id);
     if (!app) {
-      LOG4CXX_ERROR(logger_,
+      LOGGER_ERROR(logger_,
                     "Application with appID=" << app_id << " does not exist");
       return;
     }
@@ -567,7 +567,7 @@ class ApplicationManagerImpl
   void SetState(uint32_t app_id, HmiStatePtr state) {
     ApplicationSharedPtr app = application(app_id);
     if (!app) {
-      LOG4CXX_ERROR(logger_,
+      LOGGER_ERROR(logger_,
                     "Application with appID=" << app_id << " does not exist");
       return;
     }
@@ -1234,7 +1234,7 @@ class ApplicationManagerImpl
     typename ApplicationList::const_iterator it;
     for (it = app_list.begin(); it != app_list.end(); ++it) {
       if (!it->valid()) {
-        LOG4CXX_ERROR(logger_, "Application not found ");
+        LOGGER_ERROR(logger_, "Application not found ");
         continue;
       }
 
@@ -1243,12 +1243,12 @@ class ApplicationManagerImpl
       if (MessageHelper::CreateHMIApplicationStruct(*it, hmi_application)) {
         applications[app_count++] = hmi_application;
       } else {
-        LOG4CXX_DEBUG(logger_, "Can't CreateHMIApplicationStruct ");
+        LOGGER_DEBUG(logger_, "Can't CreateHMIApplicationStruct ");
       }
     }
 
     if (0 == app_count) {
-      LOG4CXX_WARN(logger_, "Empty applications list");
+      LOGGER_WARN(logger_, "Empty applications list");
     }
   }
 

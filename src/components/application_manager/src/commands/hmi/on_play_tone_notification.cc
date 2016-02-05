@@ -42,7 +42,7 @@ OnPlayToneNotification::OnPlayToneNotification(const MessageSharedPtr& message)
 OnPlayToneNotification::~OnPlayToneNotification() {}
 
 void OnPlayToneNotification::Run() {
-  LOG4CXX_AUTO_TRACE(logger_);
+  LOGGER_AUTO_TRACE(logger_);
 
   SendNotification();
 }

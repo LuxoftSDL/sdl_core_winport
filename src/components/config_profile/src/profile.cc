@@ -50,7 +50,7 @@
 namespace {
 #define LOG_UPDATED_VALUE(value, key, section)                      \
   {                                                                 \
-    LOG4CXX_INFO(logger_,                                           \
+    LOGGER_INFO(logger_,                                           \
                  "Setting value '" << value << "' for key '" << key \
                                    << "' in section '"              \
                                    << section                       \
@@ -59,7 +59,7 @@ namespace {
 
 #define LOG_UPDATED_BOOL_VALUE(value, key, section)                            \
   {                                                                            \
-    LOG4CXX_INFO(logger_,                                                      \
+    LOGGER_INFO(logger_,                                                      \
                  "Setting value '" << std::boolalpha << value << "' for key '" \
                                    << key                                      \
                                    << "' in section '"                         \
@@ -796,7 +796,7 @@ uint16_t Profile::open_attempt_timeout_ms_resumption_db() const {
 }
 
 void Profile::UpdateValues() {
-  LOG4CXX_AUTO_TRACE(logger_);
+  LOGGER_AUTO_TRACE(logger_);
 
   // SDL version
   ReadStringValue(

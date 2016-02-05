@@ -48,7 +48,7 @@ OnVehicleDataNotification::OnVehicleDataNotification(
 OnVehicleDataNotification::~OnVehicleDataNotification() {}
 
 void OnVehicleDataNotification::Run() {
-  LOG4CXX_AUTO_TRACE(logger_);
+  LOGGER_AUTO_TRACE(logger_);
 
   const VehicleData& vehicle_data = MessageHelper::vehicle_data();
   VehicleData::const_iterator it = vehicle_data.begin();
@@ -64,11 +64,11 @@ void OnVehicleDataNotification::Run() {
       for (; applications.end() != it; ++it) {
         utils::SharedPtr<Application> app = *it;
         if (!app) {
-          LOG4CXX_ERROR(logger_, "NULL pointer");
+          LOGGER_ERROR(logger_, "NULL pointer");
           continue;
         }
 
-        LOG4CXX_INFO(logger_,
+        LOGGER_INFO(logger_,
                      "Send OnVehicleData PRNDL notification to "
                          << app->name()
                          << " application id "

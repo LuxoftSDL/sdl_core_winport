@@ -69,7 +69,7 @@ StatisticsDelegate::StatisticsDelegate(const std::string& app_id,
     , timespan_seconds_(timespan_seconds) {}
 
 void StatisticsDelegate::threadMain() {
-  LOG4CXX_AUTO_TRACE(logger_);
+  LOGGER_AUTO_TRACE(logger_);
   switch (type_) {
     case INCREMENT_GLOBAL:
       PolicyHandler::instance()->Increment(global_counter_);
@@ -84,7 +84,7 @@ void StatisticsDelegate::threadMain() {
       PolicyHandler::instance()->Add(app_id_, stop_watch_, timespan_seconds_);
       break;
     default:
-      LOG4CXX_ERROR(logger_, "Unknown statistics operator");
+      LOGGER_ERROR(logger_, "Unknown statistics operator");
       break;
   }
 }

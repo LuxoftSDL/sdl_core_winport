@@ -64,13 +64,13 @@ SystemRequest::SystemRequest(const MessageSharedPtr& message)
 SystemRequest::~SystemRequest() {}
 
 void SystemRequest::Run() {
-  LOG4CXX_AUTO_TRACE(logger_);
+  LOGGER_AUTO_TRACE(logger_);
 
   ApplicationSharedPtr application =
       ApplicationManagerImpl::instance()->application(connection_key());
 
   if (!(application.valid())) {
-    LOG4CXX_ERROR(logger_, "NULL pointer");
+    LOGGER_ERROR(logger_, "NULL pointer");
     SendResponse(false, mobile_apis::Result::APPLICATION_NOT_REGISTERED);
     return;
   }
@@ -120,13 +120,13 @@ void SystemRequest::Run() {
       profile::Profile::instance()->system_files_path(), file_name);
 
   if ((*message_)[strings::params].keyExists(strings::binary_data)) {
-    LOG4CXX_DEBUG(
+    LOGGER_DEBUG(
         logger_,
         "Binary data is present. Trying to save it to: " << binary_data_folder);
     if (mobile_apis::Result::SUCCESS !=
         (ApplicationManagerImpl::instance()->SaveBinary(
             binary_data, binary_data_folder, file_name, 0))) {
-      LOG4CXX_DEBUG(logger_, "Binary data can't be saved.");
+      LOGGER_DEBUG(logger_, "Binary data can't be saved.");
       SendResponse(false, mobile_apis::Result::GENERIC_ERROR);
       return;
     }
@@ -134,7 +134,7 @@ void SystemRequest::Run() {
     std::string app_full_file_path = binary_data_folder;
     app_full_file_path += file_name;
 
-    LOG4CXX_DEBUG(logger_,
+    LOGGER_DEBUG(logger_,
                   "Binary data is not present. Trying to find file "
                       << file_name
                       << " within previously saved app file in "
@@ -143,7 +143,7 @@ void SystemRequest::Run() {
     const AppFile* file = application->GetFile(app_full_file_path);
     if (!file || !file->is_download_complete ||
         !file_system::MoveFile(app_full_file_path, file_dst_path)) {
-      LOG4CXX_DEBUG(logger_, "Binary data not found.");
+      LOGGER_DEBUG(logger_, "Binary data not found.");
 
       std::string origin_file_name;
       if ((*message_)[strings::msg_params].keyExists(strings::file_name)) {
@@ -152,16 +152,16 @@ void SystemRequest::Run() {
       }
       if (!(mobile_apis::RequestType::HTTP == request_type &&
             0 == origin_file_name.compare(kIVSU))) {
-        LOG4CXX_DEBUG(logger_, "Binary data required. Reject");
+        LOGGER_DEBUG(logger_, "Binary data required. Reject");
         SendResponse(false, mobile_apis::Result::REJECTED);
         return;
       }
-      LOG4CXX_DEBUG(logger_, "IVSU does not require binary data. Continue");
+      LOGGER_DEBUG(logger_, "IVSU does not require binary data. Continue");
     }
     processing_file_ = file_dst_path;
   }
 
-  LOG4CXX_DEBUG(logger_, "Binary data ok.");
+  LOGGER_DEBUG(logger_, "Binary data ok.");
 
   if (mobile_apis::RequestType::QUERY_APPS == request_type) {
     using namespace NsSmartDeviceLink::NsJSONHandler::Formatters;
@@ -172,7 +172,7 @@ void SystemRequest::Run() {
 
     JsonValue::ParseResult parse_result = JsonValue::Parse(json_string);
     if (!parse_result.second) {
-      LOG4CXX_DEBUG(logger_, "Unable to parse query_app json file.");
+      LOGGER_DEBUG(logger_, "Unable to parse query_app json file.");
       return;
     }
     JsonValue& root_json = parse_result.first;
@@ -209,7 +209,7 @@ void SystemRequest::Run() {
 }
 
 void SystemRequest::on_event(const event_engine::Event& event) {
-  LOG4CXX_AUTO_TRACE(logger_);
+  LOGGER_AUTO_TRACE(logger_);
   using namespace helpers;
 
   const smart_objects::SmartObject& message = event.smart_object();
@@ -229,7 +229,7 @@ void SystemRequest::on_event(const event_engine::Event& event) {
           ApplicationManagerImpl::instance()->application(connection_key());
 
       if (!(application.valid())) {
-        LOG4CXX_ERROR(logger_, "NULL pointer");
+        LOGGER_ERROR(logger_, "NULL pointer");
         return;
       }
 
@@ -241,7 +241,7 @@ void SystemRequest::on_event(const event_engine::Event& event) {
       break;
     }
     default: {
-      LOG4CXX_ERROR(logger_, "Received unknown event" << event.id());
+      LOGGER_ERROR(logger_, "Received unknown event" << event.id());
       return;
     }
   }
@@ -250,11 +250,11 @@ void SystemRequest::on_event(const event_engine::Event& event) {
 bool SystemRequest::ValidateQueryAppData(
     const smart_objects::SmartObject& data) const {
   if (!data.isValid()) {
-    LOG4CXX_ERROR(logger_, "QueryApps response is not valid.");
+    LOGGER_ERROR(logger_, "QueryApps response is not valid.");
     return false;
   }
   if (!data.keyExists(json::response)) {
-    LOG4CXX_ERROR(logger_,
+    LOGGER_ERROR(logger_,
                   "QueryApps response does not contain '" << json::response
                                                           << "' parameter.");
     return false;
@@ -268,36 +268,36 @@ bool SystemRequest::ValidateQueryAppData(
   for (std::size_t idx = 0; idx < arr_size; ++idx) {
     const smart_objects::SmartObject& app_data = (*obj_array)[idx];
     if (!app_data.isValid()) {
-      LOG4CXX_ERROR(logger_, "Wrong application data in json file.");
+      LOGGER_ERROR(logger_, "Wrong application data in json file.");
       continue;
     }
     std::string os_type;
     if (app_data.keyExists(json::ios)) {
       os_type = json::ios;
       if (!app_data[os_type].keyExists(json::urlScheme)) {
-        LOG4CXX_ERROR(logger_, "Can't find URL scheme in json file.");
+        LOGGER_ERROR(logger_, "Can't find URL scheme in json file.");
         continue;
       }
     } else if (app_data.keyExists(json::android)) {
       os_type = json::android;
       if (!app_data[os_type].keyExists(json::packageName)) {
-        LOG4CXX_ERROR(logger_, "Can't find package name in json file.");
+        LOGGER_ERROR(logger_, "Can't find package name in json file.");
         continue;
       }
     }
 
     if (os_type.empty()) {
-      LOG4CXX_ERROR(logger_, "Can't find mobile OS type in json file.");
+      LOGGER_ERROR(logger_, "Can't find mobile OS type in json file.");
       continue;
     }
 
     if (!app_data.keyExists(json::appId)) {
-      LOG4CXX_ERROR(logger_, "Can't find app ID in json file.");
+      LOGGER_ERROR(logger_, "Can't find app ID in json file.");
       continue;
     }
 
     if (!app_data.keyExists(json::name)) {
-      LOG4CXX_ERROR(logger_, "Can't find app name in json file.");
+      LOGGER_ERROR(logger_, "Can't find app name in json file.");
       continue;
     }
 

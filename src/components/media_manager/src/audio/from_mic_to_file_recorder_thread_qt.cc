@@ -88,13 +88,13 @@ media_manager::FromMicToFileRecorderThread::Impl::Impl(
                    SIGNAL(durationChanged(qint64)),
                    this,
                    SLOT(updateProgress(qint64)));
-  LOG4CXX_INFO(logger_, "Add input device:" << device_.toStdString());
+  LOGGER_INFO(logger_, "Add input device:" << device_.toStdString());
 
   device_ = audioRecorder_->audioInputs().first();
   audioRecorder_->setAudioInput(device_);
 
   codec_ = audioRecorder_->supportedAudioCodecs().first();
-  LOG4CXX_INFO(logger_, "Set audio codec:" << codec_.toStdString());
+  LOGGER_INFO(logger_, "Set audio codec:" << codec_.toStdString());
   settings_.setCodec(codec_);
   settings_.setSampleRate(audioRecorder_->supportedAudioSampleRates().first());
   settings_.setBitRate(128000);
@@ -153,7 +153,7 @@ void media_manager::FromMicToFileRecorderThread::Impl::stopRecord() {
 }
 
 void media_manager::FromMicToFileRecorderThread::Impl::displayErrorMessage() {
-  LOG4CXX_ERROR(
+  LOGGER_ERROR(
       logger_,
       "QAudioRecorder eroor: " << audioRecorder_->errorString().toStdString());
 }
@@ -167,7 +167,7 @@ media_manager::FromMicToFileRecorderThread::FromMicToFileRecorderThread(
     : threads::ThreadDelegate()
     , impl_(new Impl(output_file))
     , output_file_name_(output_file) {
-  LOG4CXX_AUTO_TRACE(logger_);
+  LOGGER_AUTO_TRACE(logger_);
   setRecordDuration(duration);
   sleep_thread_ = FromMicToFileRecorderThreadPtr(
       new timer::TimerThread<FromMicToFileRecorderThread>(
@@ -178,7 +178,7 @@ media_manager::FromMicToFileRecorderThread::FromMicToFileRecorderThread(
 }
 
 media_manager::FromMicToFileRecorderThread::~FromMicToFileRecorderThread() {
-  LOG4CXX_AUTO_TRACE(logger_);
+  LOGGER_AUTO_TRACE(logger_);
   delete impl_;
   impl_ = NULL;
   if (sleep_thread_) {
@@ -188,24 +188,24 @@ media_manager::FromMicToFileRecorderThread::~FromMicToFileRecorderThread() {
 
 void media_manager::FromMicToFileRecorderThread::setRecordDuration(
     int32_t duration) {
-  LOG4CXX_AUTO_TRACE(logger_);
+  LOGGER_AUTO_TRACE(logger_);
   impl_->setDuration(duration);
 }
 
 void media_manager::FromMicToFileRecorderThread::threadMain() {
-  LOG4CXX_AUTO_TRACE(logger_);
+  LOGGER_AUTO_TRACE(logger_);
 
   impl_->setShouldBeStoped(false);
 
   if (output_file_name_.empty()) {
-    LOG4CXX_ERROR(logger_, "Must supply destination");
+    LOGGER_ERROR(logger_, "Must supply destination");
   }
 
-  LOG4CXX_TRACE(logger_, "Reading from device: " << impl_->getDeviceName());
-  LOG4CXX_TRACE(logger_, "Saving pipeline output to: " << output_file_name_);
-  LOG4CXX_TRACE(logger_, "Duration set to: " << impl_->getDuration());
+  LOGGER_TRACE(logger_, "Reading from device: " << impl_->getDeviceName());
+  LOGGER_TRACE(logger_, "Saving pipeline output to: " << output_file_name_);
+  LOGGER_TRACE(logger_, "Duration set to: " << impl_->getDuration());
 
-  LOG4CXX_TRACE(logger_, "Audio capture started ...\n");
+  LOGGER_TRACE(logger_, "Audio capture started ...\n");
 
   if (impl_->getDuration() > 0) {
     sleep_thread_->start(impl_->getDuration());
@@ -215,20 +215,20 @@ void media_manager::FromMicToFileRecorderThread::threadMain() {
 
 void media_manager::FromMicToFileRecorderThread::
     onFromMicToFileRecorderThreadSuspned() {
-  LOG4CXX_AUTO_TRACE(logger_);
+  LOGGER_AUTO_TRACE(logger_);
   impl_->stopRecord();
-  LOG4CXX_TRACE(logger_, "Set should be stopped flag\n");
+  LOGGER_TRACE(logger_, "Set should be stopped flag\n");
   impl_->setShouldBeStoped(true);
 }
 
 void media_manager::FromMicToFileRecorderThread::exitThreadMain() {
-  LOG4CXX_AUTO_TRACE(logger_);
+  LOGGER_AUTO_TRACE(logger_);
   if (sleep_thread_) {
-    LOG4CXX_DEBUG(logger_, "Stop sleep thread\n");
+    LOGGER_DEBUG(logger_, "Stop sleep thread\n");
     sleep_thread_->stop();
   }
 
-  LOG4CXX_TRACE(logger_, "Set should be stopped flag\n");
+  LOGGER_TRACE(logger_, "Set should be stopped flag\n");
   impl_->setShouldBeStoped(true);
   impl_->stopRecord();
 }

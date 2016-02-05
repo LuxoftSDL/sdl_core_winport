@@ -277,7 +277,7 @@ TimerThread<T>::TimerThread(const char* name,
 
 template <class T>
 TimerThread<T>::~TimerThread() {
-  LOG4CXX_DEBUG(logger_, "TimerThread is to be destroyed " << name_);
+  LOGGER_DEBUG(logger_, "TimerThread is to be destroyed " << name_);
   thread_->join();
   delete delegate_;
   threads::DeleteThread(thread_);
@@ -287,9 +287,9 @@ TimerThread<T>::~TimerThread() {
 
 template <class T>
 void TimerThread<T>::start(uint32_t timeout_milliseconds) {
-  LOG4CXX_AUTO_TRACE(logger_);
+  LOGGER_AUTO_TRACE(logger_);
   if (isRunning()) {
-    LOG4CXX_INFO(logger_, "Restart timer in thread " << name_);
+    LOGGER_INFO(logger_, "Restart timer in thread " << name_);
     delegate_->shouldBeRestarted();
     updateTimeOut(timeout_milliseconds);
   } else {
@@ -309,9 +309,9 @@ void TimerThread<T>::start(uint32_t timeout_milliseconds,
 
 template <class T>
 void TimerThread<T>::stop() {
-  LOG4CXX_AUTO_TRACE(logger_);
+  LOGGER_AUTO_TRACE(logger_);
   DCHECK(thread_);
-  LOG4CXX_DEBUG(logger_, "Stopping timer  " << name_);
+  LOGGER_DEBUG(logger_, "Stopping timer  " << name_);
   thread_->join();
 }
 
@@ -323,7 +323,7 @@ bool TimerThread<T>::isRunning() {
 
 template <class T>
 void TimerThread<T>::suspend() {
-  LOG4CXX_DEBUG(logger_, "Suspend timer " << name_ << " after next loop");
+  LOGGER_DEBUG(logger_, "Suspend timer " << name_ << " after next loop");
   delegate_->shouldBeStoped();
 }
 
@@ -367,17 +367,17 @@ void TimerThread<T>::TimerDelegate::threadMain() {
     // Sleep
     int32_t wait_milliseconds_left = TimerDelegate::get_timeout();
     sync_primitives::AutoLock auto_lock(state_lock_);
-    LOG4CXX_DEBUG(logger_,
+    LOGGER_DEBUG(logger_,
                   "Milliseconds left to wait: " << wait_milliseconds_left);
     ConditionalVariable::WaitStatus wait_status =
         termination_condition_.WaitFor(auto_lock, wait_milliseconds_left);
     // Quit sleeping or continue sleeping in case of spurious wake up
     if (ConditionalVariable::kTimeout == wait_status ||
         wait_milliseconds_left <= 0) {
-      LOG4CXX_TRACE(logger_, "Timer timeout (ms): " << wait_milliseconds_left);
+      LOGGER_TRACE(logger_, "Timer timeout (ms): " << wait_milliseconds_left);
       timer_thread_->onTimeOut();
     } else {
-      LOG4CXX_DEBUG(
+      LOGGER_DEBUG(
           logger_,
           "Timeout reset force: " << TimerDelegate::timeout_milliseconds_);
     }
@@ -398,7 +398,7 @@ void TimerThread<T>::TimerLooperDelegate::threadMain() {
   while (!TimerDelegate::stop_flag_) {
     int32_t wait_milliseconds_left = TimerDelegate::get_timeout();
     sync_primitives::AutoLock auto_lock(TimerDelegate::state_lock_);
-    LOG4CXX_DEBUG(logger_,
+    LOGGER_DEBUG(logger_,
                   "Milliseconds left to wait: " << wait_milliseconds_left);
     ConditionalVariable::WaitStatus wait_status =
         TimerDelegate::termination_condition_.WaitFor(auto_lock,
@@ -406,10 +406,10 @@ void TimerThread<T>::TimerLooperDelegate::threadMain() {
     // Quit sleeping or continue sleeping in case of spurious wake up
     if (ConditionalVariable::kTimeout == wait_status ||
         wait_milliseconds_left <= 0) {
-      LOG4CXX_TRACE(logger_, "Timer timeout (ms): " << wait_milliseconds_left);
+      LOGGER_TRACE(logger_, "Timer timeout (ms): " << wait_milliseconds_left);
       TimerDelegate::timer_thread_->onTimeOut();
     } else {
-      LOG4CXX_DEBUG(
+      LOGGER_DEBUG(
           logger_,
           "Timeout reset force (ms): " << TimerDelegate::timeout_milliseconds_);
     }

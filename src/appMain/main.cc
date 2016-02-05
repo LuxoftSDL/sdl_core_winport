@@ -61,7 +61,7 @@ bool InitHmi() {
   /*std::string hmi_link = profile::Profile::instance()->link_to_web_hmi();
   struct _stat sb;
   if (_stat(hmi_link.c_str(), &sb) == -1) {
-    LOG4CXX_FATAL(logger_, "HMI index file " << hmi_link << " doesn't exist!");
+    LOGGER_FATAL(logger_, "HMI index file " << hmi_link << " doesn't exist!");
     return false;
   }*/
   return true;  // utils::System(kBrowser,
@@ -79,7 +79,7 @@ bool InitHmi() {
   std::string kStartHmi = "./start_hmi.sh";
   struct stat sb;
   if (stat(kStartHmi.c_str(), &sb) == -1) {
-    LOG4CXX_FATAL(logger_, "HMI start script doesn't exist!");
+    LOGGER_FATAL(logger_, "HMI start script doesn't exist!");
     return false;
   }
 
@@ -104,23 +104,23 @@ int32_t main(int32_t argc, char** argv) {
 
   PLATFORM_INIT(argc, argv);
   // Logger initialization
-  INIT_LOGGER();
+  INIT_LOGGER(profile::Profile::instance()->logs_enabled());
 
   threads::Thread::SetNameForId(threads::Thread::CurrentId(), "MainThread");
 
   /*if (!utils::appenders_loader.Loaded()) {
-    LOG4CXX_ERROR(logger_, "Appenders plugin not loaded, file logging
+    LOGGER_ERROR(logger_, "Appenders plugin not loaded, file logging
   disabled");
   }*/
 
-  LOG4CXX_INFO(logger_, "Application started!");
-  LOG4CXX_INFO(logger_,
+  LOGGER_INFO(logger_, "Application started!");
+  LOGGER_INFO(logger_,
                "SDL version: " << profile::Profile::instance()->sdl_version());
 
   // --------------------------------------------------------------------------
   // Components initialization
   if (!main_namespace::LifeCycle::instance()->StartComponents()) {
-    LOG4CXX_FATAL(logger_, "Failed to start components");
+    LOGGER_FATAL(logger_, "Failed to start components");
     main_namespace::LifeCycle::instance()->StopComponents();
     DEINIT_LOGGER();
     _exit(EXIT_FAILURE);
@@ -130,22 +130,22 @@ int32_t main(int32_t argc, char** argv) {
   // Third-Party components initialization.
 
   if (!main_namespace::LifeCycle::instance()->InitMessageSystem()) {
-    LOG4CXX_FATAL(logger_, "Failed to init message system");
+    LOGGER_FATAL(logger_, "Failed to init message system");
     main_namespace::LifeCycle::instance()->StopComponents();
     DEINIT_LOGGER();
     _exit(EXIT_FAILURE);
   }
-  LOG4CXX_INFO(logger_, "InitMessageBroker successful");
+  LOGGER_INFO(logger_, "InitMessageBroker successful");
 
   if (profile::Profile::instance()->launch_hmi()) {
     if (profile::Profile::instance()->server_address() == kLocalHostAddress) {
-      LOG4CXX_INFO(logger_, "Start HMI on localhost");
+      LOGGER_INFO(logger_, "Start HMI on localhost");
 
 #ifndef NO_HMI
       if (!InitHmi()) {
-        LOG4CXX_INFO(logger_, "InitHmi successful");
+        LOGGER_INFO(logger_, "InitHmi successful");
       } else {
-        LOG4CXX_WARN(logger_, "Failed to init HMI");
+        LOGGER_WARN(logger_, "Failed to init HMI");
       }
 #endif  // #ifndef NO_HMI
     }
@@ -153,11 +153,11 @@ int32_t main(int32_t argc, char** argv) {
   // --------------------------------------------------------------------------
 
   main_namespace::LifeCycle::instance()->Run();
-  LOG4CXX_INFO(logger_, "Stopping application due to signal caught");
+  LOGGER_INFO(logger_, "Stopping application due to signal caught");
 
   main_namespace::LifeCycle::instance()->StopComponents();
 
-  LOG4CXX_INFO(logger_, "Application successfully stopped");
+  LOGGER_INFO(logger_, "Application successfully stopped");
   DEINIT_LOGGER();
 
   return EXIT_SUCCESS;

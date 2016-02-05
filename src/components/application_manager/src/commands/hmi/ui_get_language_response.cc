@@ -43,7 +43,7 @@ UIGetLanguageResponse::UIGetLanguageResponse(const MessageSharedPtr& message)
 UIGetLanguageResponse::~UIGetLanguageResponse() {}
 
 void UIGetLanguageResponse::Run() {
-  LOG4CXX_AUTO_TRACE(logger_);
+  LOGGER_AUTO_TRACE(logger_);
 
   HMICapabilities& hmi_capabilities =
       ApplicationManagerImpl::instance()->hmi_capabilities();

@@ -90,25 +90,25 @@ void sync_primitives::RWLock::ReleaseForWriting() {
 
 sync_primitives::RWLock::Impl::Impl() {
   if (pthread_rwlock_init(&rwlock_, 0) != 0) {
-    LOG4CXX_ERROR(logger_, "Failed to initialize rwlock");
+    LOGGER_ERROR(logger_, "Failed to initialize rwlock");
   }
 }
 
 sync_primitives::RWLock::Impl::~Impl() {
   if (pthread_rwlock_destroy(&rwlock_) != 0) {
-    LOG4CXX_ERROR(logger_, "Failed to destroy rwlock");
+    LOGGER_ERROR(logger_, "Failed to destroy rwlock");
   }
 }
 
 void sync_primitives::RWLock::Impl::AcquireForReading() {
   if (pthread_rwlock_rdlock(&rwlock_) != 0) {
-    LOG4CXX_ERROR(logger_, "Failed to acquire rwlock for reading");
+    LOGGER_ERROR(logger_, "Failed to acquire rwlock for reading");
   }
 }
 
 bool sync_primitives::RWLock::Impl::TryAcquireForReading() {
   if (pthread_rwlock_tryrdlock(&rwlock_) != 0) {
-    LOG4CXX_DEBUG(logger_, "Cannot acquire rwlock for reading");
+    LOGGER_DEBUG(logger_, "Cannot acquire rwlock for reading");
     return false;
   }
   return true;
@@ -116,13 +116,13 @@ bool sync_primitives::RWLock::Impl::TryAcquireForReading() {
 
 void sync_primitives::RWLock::Impl::AcquireForWriting() {
   if (pthread_rwlock_wrlock(&rwlock_) != 0) {
-    LOG4CXX_ERROR(logger_, "Failed to acquire rwlock for writing");
+    LOGGER_ERROR(logger_, "Failed to acquire rwlock for writing");
   }
 }
 
 bool sync_primitives::RWLock::Impl::TryAcquireForWriting() {
   if (pthread_rwlock_trywrlock(&rwlock_) != 0) {
-    LOG4CXX_DEBUG(logger_, "Cannot acquire rwlock for writing");
+    LOGGER_DEBUG(logger_, "Cannot acquire rwlock for writing");
     return false;
   }
   return true;
@@ -130,12 +130,12 @@ bool sync_primitives::RWLock::Impl::TryAcquireForWriting() {
 
 void sync_primitives::RWLock::Impl::ReleaseForReading() {
   if (pthread_rwlock_unlock(&rwlock_) != 0) {
-    LOG4CXX_ERROR(logger_, "Failed to release rwlock for reading");
+    LOGGER_ERROR(logger_, "Failed to release rwlock for reading");
   }
 }
 
 void sync_primitives::RWLock::Impl::ReleaseForWriting() {
   if (pthread_rwlock_unlock(&rwlock_) != 0) {
-    LOG4CXX_ERROR(logger_, "Failed to release rwlock for writing");
+    LOGGER_ERROR(logger_, "Failed to release rwlock for writing");
   }
 }

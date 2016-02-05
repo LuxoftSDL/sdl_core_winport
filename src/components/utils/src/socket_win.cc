@@ -40,15 +40,15 @@ CREATE_LOGGERPTR_GLOBAL(logger_, "Utils")
 namespace {
 
 bool CloseSocket(SOCKET& socket) {
-  LOG4CXX_AUTO_TRACE(logger_);
-  LOG4CXX_DEBUG(logger_, "Closing socket " << socket);
+  LOGGER_AUTO_TRACE(logger_);
+  LOGGER_DEBUG(logger_, "Closing socket " << socket);
   if (NULL == socket) {
-    LOG4CXX_DEBUG(logger_,
+    LOGGER_DEBUG(logger_,
                   "Socket " << socket << " is not valid. Skip closing.");
     return true;
   }
   if (SOCKET_ERROR != closesocket(socket)) {
-    LOG4CXX_WARN(logger_,
+    LOGGER_WARN(logger_,
                  "Failed to close socket " << socket << ": "
                                            << WSAGetLastError());
     return false;
@@ -112,16 +112,16 @@ utils::TcpSocketConnection::Impl::~Impl() {
 bool utils::TcpSocketConnection::Impl::Send(const char* buffer,
                                             std::size_t size,
                                             std::size_t& bytes_written) {
-  LOG4CXX_AUTO_TRACE(logger_);
+  LOGGER_AUTO_TRACE(logger_);
   bytes_written = 0u;
   if (!IsValid()) {
-    LOG4CXX_ERROR(logger_, "Failed to send data socket is not valid");
+    LOGGER_ERROR(logger_, "Failed to send data socket is not valid");
     return false;
   }
   const int flags = 0;
   int written = send(tcp_socket_, buffer, size, flags);
   if (SOCKET_ERROR == written) {
-    LOG4CXX_ERROR(logger_, "Failed to send data: " << WSAGetLastError());
+    LOGGER_ERROR(logger_, "Failed to send data: " << WSAGetLastError());
     return false;
   }
   bytes_written = static_cast<size_t>(written);
@@ -130,7 +130,7 @@ bool utils::TcpSocketConnection::Impl::Send(const char* buffer,
 
 bool utils::TcpSocketConnection::Impl::Close() {
   if (IsValid()) {
-    LOG4CXX_DEBUG(logger_,
+    LOGGER_DEBUG(logger_,
                   "Closing connection " << address_.ToString() << ":" << port_);
   }
   return CloseSocket(tcp_socket_);
@@ -160,12 +160,12 @@ uint16_t utils::TcpSocketConnection::Impl::GetPort() const {
 bool utils::TcpSocketConnection::Impl::Connect(const HostAddress& address,
                                                const uint16_t port) {
   if (IsValid()) {
-    LOG4CXX_ERROR(logger_, "Already connected. Closing existing connection.");
+    LOGGER_ERROR(logger_, "Already connected. Closing existing connection.");
     Close();
   }
   SOCKET client_socket = socket(AF_INET, SOCK_STREAM, 0);
   if (INVALID_SOCKET == client_socket) {
-    LOG4CXX_ERROR(
+    LOGGER_ERROR(
         logger_,
         "Failed to create client socket. Error: " << WSAGetLastError());
     return false;
@@ -177,7 +177,7 @@ bool utils::TcpSocketConnection::Impl::Connect(const HostAddress& address,
   if (!connect(client_socket,
                reinterpret_cast<sockaddr*>(&server_address),
                sizeof(server_address)) == 0) {
-    LOG4CXX_ERROR(
+    LOGGER_ERROR(
         logger_,
         "Failed to connect to the server " << address.ToString() << ":" << port
                                            << ". Error: "
@@ -293,12 +293,12 @@ bool utils::TcpServerSocket::Impl::Close() {
 bool utils::TcpServerSocket::Impl::Listen(const HostAddress& address,
                                           const uint16_t port,
                                           const int backlog) {
-  LOG4CXX_AUTO_TRACE(logger_);
-  LOG4CXX_DEBUG(logger_,
+  LOGGER_AUTO_TRACE(logger_);
+  LOGGER_DEBUG(logger_,
                 "Start listening on " << address.ToString() << ":" << port);
 
   if (IsListening()) {
-    LOG4CXX_ERROR(logger_,
+    LOGGER_ERROR(logger_,
                   "Cannot listen " << address.ToString() << ":" << port
                                    << ". Already listeneing.");
     return false;
@@ -307,17 +307,17 @@ bool utils::TcpServerSocket::Impl::Listen(const HostAddress& address,
   SOCKET server_socket = socket(AF_INET, SOCK_STREAM, 0);
 
   if (INVALID_SOCKET == server_socket) {
-    LOG4CXX_ERROR(logger_,
+    LOGGER_ERROR(logger_,
                   "Failed to create server socket: " << WSAGetLastError());
     return false;
   }
-  LOG4CXX_DEBUG(logger_, "Created server socket " << socket);
+  LOGGER_DEBUG(logger_, "Created server socket " << socket);
 
   char optval = 1;
   if (SOCKET_ERROR ==
       setsockopt(
           server_socket, SOL_SOCKET, SO_REUSEADDR, &optval, sizeof(optval))) {
-    LOG4CXX_ERROR(
+    LOGGER_ERROR(
         logger_,
         "Failed to to set sockopt SO_REUSEADDR. Error: " << WSAGetLastError());
     return false;
@@ -331,7 +331,7 @@ bool utils::TcpServerSocket::Impl::Listen(const HostAddress& address,
   if (SOCKET_ERROR == bind(server_socket,
                            reinterpret_cast<struct sockaddr*>(&server_address),
                            sizeof(server_address))) {
-    LOG4CXX_ERROR(logger_,
+    LOGGER_ERROR(logger_,
                   "Failed to bind to " << address.ToString() << ":" << port
                                        << ". Error: "
                                        << WSAGetLastError());
@@ -339,14 +339,14 @@ bool utils::TcpServerSocket::Impl::Listen(const HostAddress& address,
   }
 
   if (SOCKET_ERROR == listen(server_socket, backlog)) {
-    LOG4CXX_WARN(logger_,
+    LOGGER_WARN(logger_,
                  "Failed to listen on " << address.ToString() << ":" << port
                                         << ". Error: "
                                         << WSAGetLastError());
     return false;
   }
 
-  LOG4CXX_DEBUG(logger_, "Listening on " << address.ToString() << ":" << port);
+  LOGGER_DEBUG(logger_, "Listening on " << address.ToString() << ":" << port);
 
   server_socket_ = server_socket;
   is_listening_ = true;
@@ -354,7 +354,7 @@ bool utils::TcpServerSocket::Impl::Listen(const HostAddress& address,
 }
 
 utils::TcpSocketConnection utils::TcpServerSocket::Impl::Accept() {
-  LOG4CXX_AUTO_TRACE(logger_);
+  LOGGER_AUTO_TRACE(logger_);
 
   struct sockaddr_in client_address = {0};
   int client_address_length = sizeof(client_address);
@@ -362,19 +362,19 @@ utils::TcpSocketConnection utils::TcpServerSocket::Impl::Accept() {
                                 reinterpret_cast<sockaddr*>(&client_address),
                                 &client_address_length);
   if (SOCKET_ERROR == client_socket) {
-    LOG4CXX_ERROR(logger_,
+    LOGGER_ERROR(logger_,
                   "Failed to accept client socket: " << WSAGetLastError());
     return utils::TcpSocketConnection();
   }
   if (AF_INET != client_address.sin_family) {
-    LOG4CXX_ERROR(logger_,
+    LOGGER_ERROR(logger_,
                   "Address of the connected client is invalid. Not AF_INET.");
     CloseSocket(client_socket);
     return utils::TcpSocketConnection();
   }
   const HostAddress accepted_client_address(client_address.sin_addr.s_addr,
                                             false);
-  LOG4CXX_DEBUG(
+  LOGGER_DEBUG(
       logger_,
       "Accepted new client connection " << client_socket << " "
                                         << accepted_client_address.ToString()
