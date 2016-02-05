@@ -152,15 +152,17 @@ utils::TcpSocketConnection::Impl::~Impl() {
 
 bool utils::TcpSocketConnection::Impl::CreateNotifictionPipes() {
   int fds[2];
-  const int pipe_ret = pipe(fds);
-  if (0 == pipe_ret) {
-    LOGGER_DEBUG(logger_, "pipe created");
-    read_fd_ = fds[0];
-    write_fd_ = fds[1];
-  } else {
-    LOGGER_ERROR(logger_, "pipe creation failed: " << errno);
+  const int is_success = pipe(fds);
+
+  if (!is_success) {
+    LOG4CXX_ERROR(logger_, "pipe creation failed: " << errno);
     return false;
   }
+
+  LOG4CXX_DEBUG(logger_, "pipe created");
+  read_fd_ = fds[0];
+  write_fd_ = fds[1];
+
   const int fcntl_ret =
       fcntl(read_fd_, F_SETFL, fcntl(read_fd_, F_GETFL) | O_NONBLOCK);
   if (0 != fcntl_ret) {
