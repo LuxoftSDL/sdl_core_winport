@@ -47,20 +47,20 @@ class logger::Logger::Impl {
   Impl();
   ~Impl();
 
-  bool InitLogger(bool logs_enabled, const std::string& ini_file_name);
-  bool InitLogger(bool logs_enabled,
-                  LogLevel log_level,
+  bool InitLogger(const bool logs_enabled, const std::string& ini_file_name);
+  bool InitLogger(const bool logs_enabled,
+                  const LogLevel log_level,
                   const std::string& log_file_name);
   void DeinitLogger();
 
   bool logs_enabled() const;
-  void set_logs_enabled(bool state);
+  void set_logs_enabled(const bool state);
 
   LogLevel log_level() const;
-  void set_log_level(LogLevel level);
+  void set_log_level(const LogLevel level);
 
   bool PushLog(const LoggerType& logger,
-               LogLevel level,
+               const LogLevel level,
                const std::string& entry,
                const LogLocation& location);
 
@@ -79,7 +79,7 @@ logger::Logger::Impl::~Impl() {
   DeinitLogger();
 }
 
-bool logger::Logger::Impl::InitLogger(bool logs_enabled,
+bool logger::Logger::Impl::InitLogger(const bool logs_enabled,
                                       const std::string& ini_file_name) {
   if (message_loop_thread_) {
     return false;
@@ -90,8 +90,8 @@ bool logger::Logger::Impl::InitLogger(bool logs_enabled,
   return true;
 }
 
-bool logger::Logger::Impl::InitLogger(bool logs_enabled,
-                                      LogLevel log_level,
+bool logger::Logger::Impl::InitLogger(const bool logs_enabled,
+                                      const LogLevel log_level,
                                       const std::string& log_file_name) {
   return false;
 }
@@ -110,7 +110,7 @@ bool logger::Logger::Impl::logs_enabled() const {
   return logs_enabled_;
 }
 
-void logger::Logger::Impl::set_logs_enabled(bool state) {
+void logger::Logger::Impl::set_logs_enabled(const bool state) {
   logs_enabled_ = state;
 }
 
@@ -118,12 +118,12 @@ logger::LogLevel logger::Logger::Impl::log_level() const {
   return log_level_;
 }
 
-void logger::Logger::Impl::set_log_level(logger::LogLevel level) {
+void logger::Logger::Impl::set_log_level(const logger::LogLevel level) {
   log_level_ = level;
 }
 
 bool logger::Logger::Impl::PushLog(const LoggerType& logger,
-                                   LogLevel level,
+                                   const LogLevel level,
                                    const std::string& entry,
                                    const LogLocation& location) {
   if (!logs_enabled()) {
@@ -150,13 +150,13 @@ bool logger::Logger::Impl::PushLog(const LoggerType& logger,
 /// logger::Logger
 ////////////////////////////////////////////////////////////////////////////////
 
-bool logger::Logger::InitLogger(bool logs_enabled,
+bool logger::Logger::InitLogger(const bool logs_enabled,
                                 const std::string& ini_file_name) {
   return impl_->InitLogger(logs_enabled, ini_file_name);
 }
 
-bool logger::Logger::InitLogger(bool logs_enabled,
-                                LogLevel log_level,
+bool logger::Logger::InitLogger(const bool logs_enabled,
+                                const LogLevel log_level,
                                 const std::string& log_file_name) {
   return impl_->InitLogger(logs_enabled, log_level, log_file_name);
 }
@@ -169,7 +169,7 @@ bool logger::Logger::logs_enabled() {
   return impl_->logs_enabled();
 }
 
-void logger::Logger::set_logs_enabled(bool state) {
+void logger::Logger::set_logs_enabled(const bool state) {
   impl_->set_logs_enabled(state);
 }
 
@@ -177,12 +177,12 @@ logger::LogLevel logger::Logger::log_level() {
   return impl_->log_level();
 }
 
-void logger::Logger::set_log_level(LogLevel level) {
+void logger::Logger::set_log_level(const LogLevel level) {
   impl_->set_log_level(level);
 }
 
 bool logger::Logger::PushLog(const LoggerType& logger,
-                             LogLevel level,
+                             const LogLevel level,
                              const std::string& entry,
                              const LogLocation& location) {
   return impl_->PushLog(logger, level, entry, location);

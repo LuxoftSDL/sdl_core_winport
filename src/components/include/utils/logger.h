@@ -80,20 +80,21 @@ class Logger {
   class Impl;
   typedef utils::Pimpl<Impl, utils::CopyAssigner<Impl> > Pimpl;
 
-  static bool InitLogger(bool logs_enabled, const std::string& ini_file_name);
-  static bool InitLogger(bool logs_enabled,
-                         LogLevel log_level,
+  static bool InitLogger(const bool logs_enabled,
+                         const std::string& ini_file_name);
+  static bool InitLogger(const bool logs_enabled,
+                         const LogLevel log_level,
                          const std::string& log_file_name);
   static void DeinitLogger();
 
   static bool logs_enabled();
-  static void set_logs_enabled(bool state);
+  static void set_logs_enabled(const bool state);
 
   static LogLevel log_level();
-  static void set_log_level(LogLevel level);
+  static void set_log_level(const LogLevel level);
 
   static bool PushLog(const LoggerType& logger,
-                      LogLevel level,
+                      const LogLevel level,
                       const std::string& entry,
                       const LogLocation& location);
 
