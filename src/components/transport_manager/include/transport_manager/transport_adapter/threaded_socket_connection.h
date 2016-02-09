@@ -35,16 +35,6 @@
 #ifndef SRC_COMPONENTS_TRANSPORT_MANAGER_INCLUDE_TRANSPORT_MANAGER_TRANSPORT_ADAPTER_THREADED_SOCKET_CONNECTION_H_
 #define SRC_COMPONENTS_TRANSPORT_MANAGER_INCLUDE_TRANSPORT_MANAGER_TRANSPORT_ADAPTER_THREADED_SOCKET_CONNECTION_H_
 
-#ifdef OS_POSIX
-#include <poll.h>
-#elif defined(OS_WINDOWS)
-#include "utils/winhdr.h"
-#if defined(_WIN64)
-typedef SSIZE_T ssize_t;
-#else
-typedef long ssize_t;
-#endif
-#endif
 #include <queue>
 
 #include "transport_manager/transport_adapter/connection.h"
@@ -65,7 +55,8 @@ class TransportAdapterController;
 /**
  * @brief Class responsible for communication over sockets.
  */
-class ThreadedSocketConnection : public Connection {
+class ThreadedSocketConnection : public Connection,
+                                 public utils::TcpConnectionEventHandler {
  public:
   /**
    * @brief Send data frame.
@@ -94,6 +85,18 @@ class ThreadedSocketConnection : public Connection {
    * @brief Set variable that hold socket No. Takes the ownership.
    */
   void SetSocket(utils::TcpSocketConnection& socket_connection);
+
+  // Implementation of the TcpConnectionEventHandler
+
+  void OnError(int error) OVERRIDE;
+
+  void OnData(const uint8_t* const buffer, std::size_t buffer_size) OVERRIDE;
+
+  void OnCanWrite() OVERRIDE;
+
+  void OnClose() OVERRIDE;
+
+  // End of implementation
 
  protected:
   /**
@@ -149,9 +152,9 @@ class ThreadedSocketConnection : public Connection {
   void threadMain();
   void Transmit();
   void Finalize();
-  TransportAdapter::Error Notify() const;
+  TransportAdapter::Error Notify();
   bool Receive();
-  bool Send();
+  void Send();
   void Abort();
 
   TransportAdapterController* controller_;
@@ -163,17 +166,7 @@ class ThreadedSocketConnection : public Connection {
   mutable sync_primitives::Lock frames_to_send_mutex_;
 
   utils::TcpSocketConnection socket_connection_;
-  // temporal holder for the hative handle.. Will be removed later.
-  int socket_;
 
-#if defined(OS_POSIX)
-  int read_fd_;
-  int write_fd_;
-#elif defined(OS_WINDOWS)
-  HANDLE frames_to_send_not_empty_event_;
-#else
-#error Unsupported platform
-#endif
   bool terminate_flag_;
   bool unexpected_disconnect_;
   const DeviceUID device_uid_;

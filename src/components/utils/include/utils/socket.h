@@ -37,10 +37,24 @@
 
 #include "utils/host_address.h"
 #include "utils/pimpl.h"
+#include "utils/macro.h"
 
 namespace utils {
 
 class TcpServerSocket;
+
+class TcpConnectionEventHandler {
+ public:
+  virtual ~TcpConnectionEventHandler() {}
+
+  virtual void OnError(int error) = 0;
+
+  virtual void OnData(const uint8_t* const buffer, std::size_t size) = 0;
+
+  virtual void OnCanWrite() = 0;
+
+  virtual void OnClose() = 0;
+};
 
 class TcpSocketConnection {
  public:
@@ -50,11 +64,11 @@ class TcpSocketConnection {
 
   TcpSocketConnection& operator=(TcpSocketConnection& rhs);
 
-  bool Send(const char* buffer,
+  bool Send(const char* const buffer,
             const std::size_t size,
             std::size_t& bytes_written);
 
-  bool Send(const uint8_t* buffer,
+  bool Send(const uint8_t* const buffer,
             const std::size_t size,
             std::size_t& bytes_written);
 
@@ -71,6 +85,12 @@ class TcpSocketConnection {
   uint16_t GetPort() const;
 
   bool Connect(const HostAddress& address, const uint16_t port);
+
+  bool Notify();
+
+  void Wait();
+
+  void SetEventHandler(TcpConnectionEventHandler* event_handler);
 
  private:
   class Impl;
@@ -114,7 +134,7 @@ class TcpServerSocket {
 /// Implementation
 ////////////////////////////////////////////////////////////////////////////////
 
-inline bool TcpSocketConnection::Send(const uint8_t* buffer,
+inline bool TcpSocketConnection::Send(const uint8_t* const buffer,
                                       const std::size_t size,
                                       std::size_t& bytes_written) {
   return Send(reinterpret_cast<const char*>(buffer), size, bytes_written);

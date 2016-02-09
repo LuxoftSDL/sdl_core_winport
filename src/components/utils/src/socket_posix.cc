@@ -33,6 +33,9 @@
 
 #include <sys/socket.h>
 #include <sys/types.h>
+#include <poll.h>
+#include <errno.h>
+#include <fcntl.h>
 #include <unistd.h>
 
 #include "utils/macro.h"
@@ -91,24 +94,82 @@ class utils::TcpSocketConnection::Impl {
 
   bool Connect(const HostAddress& address, const uint16_t port);
 
+  bool Notify();
+
+  void Wait();
+
+  void SetEventHandler(TcpConnectionEventHandler* event_handler);
+
  private:
+  void OnError(int error);
+
+  void OnRead();
+
+  void OnWrite();
+
+  void OnClose();
+
+  bool CreateNotifictionPipes();
+
   int tcp_socket_;
+
+  int read_fd_;
+
+  int write_fd_;
 
   HostAddress address_;
 
   uint16_t port_;
+
+  TcpConnectionEventHandler* event_handler_;
 };
 
 utils::TcpSocketConnection::Impl::Impl()
-    : tcp_socket_(0), address_(), port_(0u) {}
+    : tcp_socket_(0)
+    , read_fd_(-1)
+    , write_fd_(-1)
+    , address_()
+    , port_(0u)
+    , event_handler_(NULL) {}
 
 utils::TcpSocketConnection::Impl::Impl(const SOCKET tcp_socket,
                                        const HostAddress& address,
                                        const uint16_t port)
-    : tcp_socket_(tcp_socket), address_(address), port_(port) {}
+    : tcp_socket_(tcp_socket)
+    , read_fd_(-1)
+    , write_fd_(-1)
+    , address_(address)
+    , port_(port)
+    , event_handler_(NULL) {
+  if (!CreateNotifictionPipes()) {
+    Close();
+  }
+}
 
 utils::TcpSocketConnection::Impl::~Impl() {
   Close();
+}
+
+bool utils::TcpSocketConnection::Impl::CreateNotifictionPipes() {
+  int fds[2];
+  const int is_success = pipe(fds);
+
+  if (!is_success) {
+    LOG4CXX_ERROR(logger_, "pipe creation failed: " << errno);
+    return false;
+  }
+
+  LOG4CXX_DEBUG(logger_, "pipe created");
+  read_fd_ = fds[0];
+  write_fd_ = fds[1];
+
+  const int fcntl_ret =
+      fcntl(read_fd_, F_SETFL, fcntl(read_fd_, F_GETFL) | O_NONBLOCK);
+  if (0 != fcntl_ret) {
+    LOGGER_ERROR(logger_, "fcntl failed: " << errno);
+    return false;
+  }
+  return true;
 }
 
 bool utils::TcpSocketConnection::Impl::Send(const char* buffer,
@@ -122,15 +183,35 @@ bool utils::TcpSocketConnection::Impl::Send(const char* buffer,
   }
   const int flags = MSG_NOSIGNAL;
   int written = send(tcp_socket_, buffer, size, flags);
-  if (-1 == written) {
-    LOGGER_ERROR(logger_, "Failed to send data: " << errno);
+  int socket_error = errno;
+  if (-1 == written && EAGAIN != socket_error && EWOULDBLOCK != socket_error) {
+    LOGGER_ERROR(logger_, "Failed to send data: " << socket_error);
     return false;
   }
-  bytes_written = static_cast<size_t>(written);
+  bytes_written = static_cast<std::size_t>(written);
+  LOGGER_DEBUG(logger_,
+                "Sent " << written << " bytes to socket " << tcp_socket_);
   return true;
 }
 
 bool utils::TcpSocketConnection::Impl::Close() {
+  if (!IsValid()) {
+    LOGGER_DEBUG(logger_, "Connection is not valid. Nothing to close.");
+    return true;
+  }
+  LOGGER_DEBUG(logger_,
+                "Closing connection " << address_.ToString() << ":" << port_);
+
+  // Possibly we're waiting on Wait. We have to interrupt this.
+  Notify();
+
+  if (-1 != read_fd_) {
+    close(read_fd_);
+  }
+  if (-1 != write_fd_) {
+    close(write_fd_);
+  }
+
   return CloseSocket(tcp_socket_);
 }
 
@@ -160,6 +241,7 @@ bool utils::TcpSocketConnection::Impl::Connect(const HostAddress& address,
   if (IsValid()) {
     LOGGER_ERROR(logger_, "Already connected. Closing existing connection.");
     Close();
+    return false;
   }
   int client_socket = socket(AF_INET, SOCK_STREAM, 0);
   if (-1 == client_socket) {
@@ -181,10 +263,169 @@ bool utils::TcpSocketConnection::Impl::Connect(const HostAddress& address,
     CloseSocket(client_socket);
     return false;
   }
+  if (!CreateNotifictionPipes()) {
+    Close();
+    return false;
+  }
   tcp_socket_ = client_socket;
   address_ = address;
   port_ = port;
   return true;
+}
+
+bool utils::TcpSocketConnection::Impl::Notify() {
+  if (-1 == write_fd_) {
+    LOGGER_ERROR(logger_,
+                  "Failed to wake up connection thread for connection "
+                      << this
+                      << ". Error: "
+                      << errno);
+    return false;
+  }
+  uint8_t buffer = 0;
+  if (1 != write(write_fd_, &buffer, 1)) {
+    LOGGER_ERROR(logger_,
+                  "Failed to wake up connection thread for connection "
+                      << this
+                      << ". Error: "
+                      << errno);
+    return false;
+  }
+}
+
+void utils::TcpSocketConnection::Impl::SetEventHandler(
+    TcpConnectionEventHandler* event_handler) {
+  LOGGER_DEBUG(logger_, "Setting event handle to " << event_handler);
+  event_handler_ = event_handler;
+}
+
+void utils::TcpSocketConnection::Impl::OnError(int error) {
+  if (!event_handler_) {
+    return;
+  }
+  event_handler_->OnError(error);
+}
+
+void utils::TcpSocketConnection::Impl::OnRead() {
+  LOGGER_AUTO_TRACE(logger_);
+  if (!event_handler_) {
+    return;
+  }
+  const std::size_t buffer_size = 4096u;
+  char buffer[buffer_size];
+  int bytes_read = -1;
+
+  do {
+    bytes_read = recv(tcp_socket_, buffer, sizeof(buffer), MSG_DONTWAIT);
+    if (bytes_read > 0) {
+      LOGGER_DEBUG(logger_,
+                    "Received " << bytes_read << " bytes from socket "
+                                << tcp_socket_);
+      uint8_t* casted_buffer = reinterpret_cast<uint8_t*>(buffer);
+      event_handler_->OnData(casted_buffer, bytes_read);
+    } else if (bytes_read < 0) {
+      int socket_error = errno;
+      if (EAGAIN != socket_error && EWOULDBLOCK != socket_error) {
+        LOGGER_ERROR(logger_,
+                      "recv() failed for connection " << tcp_socket_
+                                                      << ". Error: "
+                                                      << socket_error);
+        OnError(socket_error);
+        return;
+      }
+    } else {
+      LOGGER_WARN(logger_,
+                   "Socket " << tcp_socket_ << " closed by remote peer");
+      OnError(WSAGetLastError());
+      return;
+    }
+  } while (bytes_read > 0);
+}
+
+void utils::TcpSocketConnection::Impl::OnWrite() {
+  if (!event_handler_) {
+    return;
+  }
+  event_handler_->OnCanWrite();
+}
+
+void utils::TcpSocketConnection::Impl::OnClose() {
+  if (!event_handler_) {
+    return;
+  }
+  event_handler_->OnClose();
+}
+
+void utils::TcpSocketConnection::Impl::Wait() {
+  if (!IsValid()) {
+    LOGGER_ERROR(logger_, "Cannot wait. Not connected.");
+    Close();
+    return;
+  }
+
+  const nfds_t kPollFdsSize = 2;
+  pollfd poll_fds[kPollFdsSize];
+  poll_fds[0].fd = socket_;
+  // TODO: Fix data race. frames_to_send_ should be protected
+  poll_fds[0].events =
+      POLLIN | POLLPRI | POLLOUT);
+  poll_fds[1].fd = read_fd_;
+  poll_fds[1].events = POLLIN | POLLPRI;
+  if (-1 == poll(poll_fds, kPollFdsSize, -1)) {
+    LOGGER_ERROR(
+        logger_,
+        "poll failed for the socket " << tcp_socket_ << ". Error: " << errno);
+    OnError(errno);
+    return;
+  }
+  LOGGER_DEBUG(
+      logger_,
+      "poll is ok for the socket " << tcp_socket_ << " revents0: " << std::hex
+                                   << poll_fds[0].revents
+                                   << " revents1:"
+                                   << std::hex
+                                   << poll_fds[1].revents);
+  // error check
+  if (0 != (poll_fds[1].revents & (POLLERR | POLLHUP | POLLNVAL))) {
+    LOGGER_ERROR(logger_,
+                  "Notification pipe for socket " << tcp_socket_
+                                                  << " terminated. Error: "
+                                                  << errno);
+    OnError(errno);
+    return;
+  }
+  if (poll_fds[0].revents & (POLLERR | POLLHUP | POLLNVAL)) {
+    LOGGER_DEBUG(logger_, "Socket " << tcp_socket_ << " has terminated");
+    OnClose();
+    return;
+  }
+
+  // clear notifications in the notification pipe
+  char buffer[256];
+  ssize_t bytes_read = -1;
+  do {
+    bytes_read = read(read_fd_, buffer, sizeof(buffer));
+  } while (bytes_read > 0);
+  if ((bytes_read < 0) && (EAGAIN != errno)) {
+    LOGGER_ERROR(logger_,
+                  "Failed to clear notification pipe. Poll failed for socket "
+                      << tcp_socket_
+                      << ". Error: "
+                      << errno);
+    OnError(errno);
+    return;
+  }
+
+  // send data if possible
+  if (poll_fds[0].revents | POLLOUT) {
+    OnWrite();
+    return;
+  }
+
+  // receive data
+  if (poll_fds[0].revents & (POLLIN | POLLPRI)) {
+    OnRead();
+  }
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -325,11 +566,10 @@ bool utils::TcpServerSocket::Impl::Listen(const HostAddress& address,
                 "Start listening on " << address.ToString() << ":" << port);
 
   if (-1 == listen(server_socket, backlog)) {
-    LOGGER_ERROR(logger_, "Unable to listen: " << errno);
-    LOGGER_WARN(logger_,
-                 "Failed to listen on " << address.ToString() << ":" << port
-                                        << ". Error: "
-                                        << errno);
+    LOGGER_ERROR(logger_,
+                  "Failed to listen on " << address.ToString() << ":" << port
+                                         << ". Error: "
+                                         << errno);
     return false;
   }
 
