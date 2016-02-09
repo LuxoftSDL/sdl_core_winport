@@ -107,8 +107,6 @@ class TcpClientListener : public ClientConnectionListener {
   TransportAdapterController* controller_;
   threads::Thread* thread_;
 
-  utils::TcpServerSocket server_socket_;
-
   bool thread_stop_requested_;
 
   void Loop();

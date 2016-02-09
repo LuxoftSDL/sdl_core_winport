@@ -50,7 +50,6 @@ TcpClientListener::TcpClientListener(TransportAdapterController* controller,
     , enable_keepalive_(enable_keepalive)
     , controller_(controller)
     , thread_(0)
-    , server_socket_()
     , thread_stop_requested_(false) {
   thread_ = threads::CreateThread("TcpClientListener",
                                   new ListeningThreadDelegate(this));
@@ -60,22 +59,11 @@ TransportAdapter::Error TcpClientListener::Init() {
   LOGGER_AUTO_TRACE(logger_);
   thread_stop_requested_ = false;
 
-  const int kBacklog = 128;
-  const utils::HostAddress address(utils::SpecialAddress::Any);
-
-  if (!server_socket_.Listen(address, port_, kBacklog)) {
-    LOGGER_ERROR(logger_,
-                  "Failed to listen on " << address.ToString() << ":" << port_);
-    return TransportAdapter::FAIL;
-  }
   return TransportAdapter::OK;
 }
 
 void TcpClientListener::Terminate() {
   LOGGER_AUTO_TRACE(logger_);
-  if (!server_socket_.Close()) {
-    LOGGER_ERROR(logger_, "Failed to close server socket");
-  }
 }
 
 bool TcpClientListener::IsInitialised() const {
@@ -92,9 +80,18 @@ TcpClientListener::~TcpClientListener() {
 
 void TcpClientListener::Loop() {
   LOGGER_AUTO_TRACE(logger_);
+  utils::TcpServerSocket server_socket;
+  // Moved from init for compatibility with the Qt
+  const int kBacklog = 128;
+  const utils::HostAddress address(utils::SpecialAddress::Any);
+  if (!server_socket.Listen(address, port_, kBacklog)) {
+    LOGGER_ERROR(logger_,
+                 "Failed to listen on " << address.ToString() << ":" << port_);
+    return;
+  }
   while (!thread_stop_requested_) {
     // Wait for the new connection
-    utils::TcpSocketConnection client_connection = server_socket_.Accept();
+    utils::TcpSocketConnection client_connection = server_socket.Accept();
 
     if (thread_stop_requested_) {
       LOGGER_DEBUG(logger_, "thread_stop_requested_");
@@ -109,8 +106,8 @@ void TcpClientListener::Loop() {
 
     const utils::HostAddress client_address = client_connection.GetAddress();
     LOGGER_INFO(logger_,
-                 "Connected client " << client_address.ToString() << ":"
-                                     << client_connection.GetPort());
+                "Connected client " << client_address.ToString() << ":"
+                                    << client_connection.GetPort());
 
     if (enable_keepalive_) {
       client_connection.EnableKeepalive();
@@ -133,6 +130,11 @@ void TcpClientListener::Loop() {
       delete connection;
     }
   }
+  if (server_socket.Close()) {
+    LOGGER_DEBUG(logger_, "Server socket successfully closed");
+  } else {
+    LOGGER_ERROR(logger_, "Failed to close server socket");
+  }
 }
 
 void TcpClientListener::StopLoop() {
@@ -144,10 +146,10 @@ void TcpClientListener::StopLoop() {
   utils::HostAddress address(utils::SpecialAddress::LoopBack);
   if (!byesocket.Connect(address, port_)) {
     LOGGER_ERROR(logger_,
-                  "Bye socket has failed to connect to the server "
-                      << address.ToString()
-                      << ":"
-                      << port_);
+                 "Bye socket has failed to connect to the server "
+                     << address.ToString()
+                     << ":"
+                     << port_);
   }
 }
 
