@@ -76,7 +76,6 @@ logger::Logger::Impl::Impl()
     , message_loop_thread_(NULL) {}
 
 logger::Logger::Impl::~Impl() {
-  DeinitLogger();
 }
 
 bool logger::Logger::Impl::InitLogger(const bool logs_enabled,
