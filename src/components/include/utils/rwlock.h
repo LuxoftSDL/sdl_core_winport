@@ -33,6 +33,7 @@
 #define SRC_COMPONENTS_INCLUDE_UTILS_RWLOCK_H_
 
 #include "utils/macro.h"
+#include "utils/pimpl.h"
 
 namespace sync_primitives {
 
@@ -126,7 +127,7 @@ class RWLock {
 
  private:
   class Impl;
-  Impl* impl_;
+  utils::Pimpl<Impl> impl_;
 
   DISALLOW_COPY_AND_ASSIGN(RWLock);
 };

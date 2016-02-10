@@ -33,6 +33,7 @@
 
 #include "utils/rwlock.h"
 #include "utils/logger.h"
+#include "utils/pimpl_impl.h"
 
 CREATE_LOGGERPTR_GLOBAL(logger_, "Utils")
 
@@ -52,17 +53,13 @@ class RWLock::Impl {
 
  private:
   pthread_rwlock_t rwlock_;
-
-  DISALLOW_COPY_AND_ASSIGN(Impl);
 };
 
 }  // namespace sync_primitives
 
-sync_primitives::RWLock::RWLock() : impl_(new RWLock::Impl) {}
+sync_primitives::RWLock::RWLock() {}
 
-sync_primitives::RWLock::~RWLock() {
-  delete impl_;
-}
+sync_primitives::RWLock::~RWLock() {}
 
 void sync_primitives::RWLock::AcquireForReading() {
   impl_->AcquireForReading();
