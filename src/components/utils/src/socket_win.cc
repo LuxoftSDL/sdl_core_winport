@@ -44,13 +44,13 @@ bool CloseSocket(SOCKET& socket) {
   LOGGER_DEBUG(logger_, "Closing socket " << socket);
   if (NULL == socket) {
     LOGGER_DEBUG(logger_,
-                  "Socket " << socket << " is not valid. Skip closing.");
+                 "Socket " << socket << " is not valid. Skip closing.");
     return true;
   }
   if (SOCKET_ERROR == closesocket(socket)) {
     LOGGER_WARN(logger_,
-                 "Failed to close socket " << socket << ": "
-                                           << WSAGetLastError());
+                "Failed to close socket " << socket << ": "
+                                          << WSAGetLastError());
     return false;
   }
   socket = NULL;
@@ -145,7 +145,7 @@ utils::TcpSocketConnection::Impl::Impl(const SOCKET tcp_socket,
   if (!ioctlsocket(tcp_socket_, FIONBIO, &socket_mode) == 0) {
     LOGGER_ERROR(logger_,
                  "Failed to set socket to non blocking mode. Error: "
-                      << WSAGetLastError());
+                     << WSAGetLastError());
     CloseSocket(tcp_socket_);
   }
 }
@@ -247,11 +247,11 @@ bool utils::TcpSocketConnection::Impl::Connect(const HostAddress& address,
   if (!connect(client_socket,
                reinterpret_cast<sockaddr*>(&server_address),
                sizeof(server_address)) == 0) {
-    LOGGER_ERROR(
-        logger_,
-        "Failed to connect to the server " << address.ToString() << ":" << port
-                                           << ". Error: "
-                                           << WSAGetLastError());
+    LOGGER_ERROR(logger_,
+                 "Failed to connect to the server " << address.ToString() << ":"
+                                                    << port
+                                                    << ". Error: "
+                                                    << WSAGetLastError());
     CloseSocket(client_socket);
     return false;
   }
@@ -282,23 +282,23 @@ void utils::TcpSocketConnection::Impl::OnRead() {
     bytes_read = recv(tcp_socket_, buffer, sizeof(buffer), 0);
     if (bytes_read > 0) {
       LOGGER_DEBUG(logger_,
-                    "Received " << bytes_read << " bytes from socket "
-                                << tcp_socket_);
+                   "Received " << bytes_read << " bytes from socket "
+                               << tcp_socket_);
       uint8_t* casted_buffer = reinterpret_cast<uint8_t*>(buffer);
       event_handler_->OnData(casted_buffer, bytes_read);
     } else if (bytes_read < 0) {
       int socket_error = WSAGetLastError();
       if (bytes_read == SOCKET_ERROR && WSAEWOULDBLOCK != socket_error) {
         LOGGER_ERROR(logger_,
-                      "recv() failed for connection " << tcp_socket_
-                                                      << ". Error: "
-                                                      << socket_error);
+                     "recv() failed for connection " << tcp_socket_
+                                                     << ". Error: "
+                                                     << socket_error);
         OnError(socket_error);
         return;
       }
     } else {
       LOGGER_WARN(logger_,
-                   "Socket " << tcp_socket_ << " closed by remote peer");
+                  "Socket " << tcp_socket_ << " closed by remote peer");
       OnError(WSAGetLastError());
       return;
     }
@@ -336,8 +336,8 @@ void utils::TcpSocketConnection::Impl::Wait() {
   DWORD waited_index = WSAWaitForMultipleEvents(
       events_to_wait_count, events_to_wait, false, WSA_INFINITE, false);
 
-  // We've waited for the events. We should reset
-  // notify_event_. So on the next enter to the Wait will
+  // We've waited for events. We should reset the
+  // notify_event_. So on the next enter to the Wait it will
   // be bkocked
   ResetEvent(notify_event_);
 
@@ -346,15 +346,15 @@ void utils::TcpSocketConnection::Impl::Wait() {
 
   if (is_socket_event || is_notify_event) {
     LOGGER_DEBUG(logger_,
-                  "Waited event for the connection " << tcp_socket_
-                                                     << ". Socket event: "
-                                                     << is_socket_event
-                                                     << ". Notify event: "
-                                                     << is_notify_event);
+                 "Waited event for the connection " << tcp_socket_
+                                                    << ". Socket event: "
+                                                    << is_socket_event
+                                                    << ". Notify event: "
+                                                    << is_notify_event);
   } else {
     LOGGER_ERROR(logger_,
-                  "Wait for socket or notification has failed with error: "
-                      << WSAGetLastError());
+                 "Wait for socket or notification has failed with error: "
+                     << WSAGetLastError());
     OnError(WSAGetLastError());
     return;
   }
@@ -364,7 +364,7 @@ void utils::TcpSocketConnection::Impl::Wait() {
                              events_to_wait[waited_index - WAIT_OBJECT_0],
                              &net_events) == SOCKET_ERROR) {
       LOGGER_ERROR(logger_,
-                    "Failed to enum socket events: " << WSAGetLastError());
+                   "Failed to enum socket events: " << WSAGetLastError());
       OnError(WSAGetLastError());
       return;
     }
@@ -379,10 +379,10 @@ void utils::TcpSocketConnection::Impl::Wait() {
     }
     if (net_events.lNetworkEvents & FD_CLOSE) {
       LOGGER_DEBUG(logger_,
-                    "Network event: FD_CLOSE. "
-                        << "Connection "
-                        << this
-                        << " terminated");
+                   "Network event: FD_CLOSE. "
+                       << "Connection "
+                       << this
+                       << " terminated");
       OnClose();
       return;
     }
@@ -523,12 +523,12 @@ bool utils::TcpServerSocket::Impl::Listen(const HostAddress& address,
                                           const int backlog) {
   LOGGER_AUTO_TRACE(logger_);
   LOGGER_DEBUG(logger_,
-                "Start listening on " << address.ToString() << ":" << port);
+               "Start listening on " << address.ToString() << ":" << port);
 
   if (IsListening()) {
     LOGGER_ERROR(logger_,
-                  "Cannot listen " << address.ToString() << ":" << port
-                                   << ". Already listeneing.");
+                 "Cannot listen " << address.ToString() << ":" << port
+                                  << ". Already listeneing.");
     return false;
   }
 
@@ -536,7 +536,7 @@ bool utils::TcpServerSocket::Impl::Listen(const HostAddress& address,
 
   if (INVALID_SOCKET == server_socket) {
     LOGGER_ERROR(logger_,
-                  "Failed to create server socket: " << WSAGetLastError());
+                 "Failed to create server socket: " << WSAGetLastError());
     return false;
   }
   LOGGER_DEBUG(logger_, "Created server socket " << socket);
@@ -560,17 +560,17 @@ bool utils::TcpServerSocket::Impl::Listen(const HostAddress& address,
                            reinterpret_cast<struct sockaddr*>(&server_address),
                            sizeof(server_address))) {
     LOGGER_ERROR(logger_,
-                  "Failed to bind to " << address.ToString() << ":" << port
-                                       << ". Error: "
-                                       << WSAGetLastError());
+                 "Failed to bind to " << address.ToString() << ":" << port
+                                      << ". Error: "
+                                      << WSAGetLastError());
     return false;
   }
 
   if (SOCKET_ERROR == listen(server_socket, backlog)) {
     LOGGER_WARN(logger_,
-                 "Failed to listen on " << address.ToString() << ":" << port
-                                        << ". Error: "
-                                        << WSAGetLastError());
+                "Failed to listen on " << address.ToString() << ":" << port
+                                       << ". Error: "
+                                       << WSAGetLastError());
     return false;
   }
 
@@ -591,12 +591,12 @@ utils::TcpSocketConnection utils::TcpServerSocket::Impl::Accept() {
                                 &client_address_length);
   if (SOCKET_ERROR == client_socket) {
     LOGGER_ERROR(logger_,
-                  "Failed to accept client socket: " << WSAGetLastError());
+                 "Failed to accept client socket: " << WSAGetLastError());
     return utils::TcpSocketConnection();
   }
   if (AF_INET != client_address.sin_family) {
     LOGGER_ERROR(logger_,
-                  "Address of the connected client is invalid. Not AF_INET.");
+                 "Address of the connected client is invalid. Not AF_INET.");
     CloseSocket(client_socket);
     return utils::TcpSocketConnection();
   }
