@@ -215,7 +215,7 @@ void utils::TcpSocketConnection::Impl::EnableKeepalive() {
 }
 
 int utils::TcpSocketConnection::Impl::GetNativeHandle() {
-  return tcp_socket_;
+  return static_cast<int>(tcp_socket_);
 }
 
 utils::HostAddress utils::TcpSocketConnection::Impl::GetAddress() const {
