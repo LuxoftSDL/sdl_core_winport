@@ -156,9 +156,6 @@ void ThreadedSocketConnection::Transmit() {
   socket_connection_.Wait();
 
   LOGGER_DEBUG(logger_, "Waited for connection events: " << this);
-  // If there will be new data to send come from the outside, then
-  // there will be the notification which will unblock Wait.
-  Send();
 }
 
 void ThreadedSocketConnection::Send() {
