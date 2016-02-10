@@ -47,7 +47,7 @@ bool CloseSocket(SOCKET& socket) {
                   "Socket " << socket << " is not valid. Skip closing.");
     return true;
   }
-  if (SOCKET_ERROR != closesocket(socket)) {
+  if (SOCKET_ERROR == closesocket(socket)) {
     LOGGER_WARN(logger_,
                  "Failed to close socket " << socket << ": "
                                            << WSAGetLastError());
