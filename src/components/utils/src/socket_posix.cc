@@ -39,6 +39,7 @@
 #include <unistd.h>
 
 #include "utils/macro.h"
+#include "utils/pimpl_impl.h"
 #include "utils/socket_utils.h"
 
 CREATE_LOGGERPTR_GLOBAL(logger_, "Utils")
