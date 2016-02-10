@@ -171,10 +171,11 @@ bool utils::TcpSocketConnection::Impl::Send(const char* const buffer,
       LOGGER_ERROR(logger_, "Failed to send data: " << socket_error);
       return false;
     } else {
-      LOGGER_DEBUG(logger_,
-                   "Send operation would block the socket. Have to wait.");
+      return true;
     }
   }
+  // Lets double chek written because we have signed to unsigned conversion
+  DCHECK(written >= 0);
   bytes_written = static_cast<size_t>(written);
   LOGGER_DEBUG(logger_,
                "Sent " << written << " bytes to socket " << tcp_socket_);
@@ -387,6 +388,7 @@ void utils::TcpSocketConnection::Impl::Wait() {
       return;
     }
   }
+
   // Means that we received notify, thus
   // caller have something to send.
   // Or we received FD_WRITE(can write)

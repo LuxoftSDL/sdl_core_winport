@@ -49,7 +49,7 @@ bool CloseSocket(int& socket) {
   LOGGER_AUTO_TRACE(logger_);
   if (0 == socket) {
     LOGGER_DEBUG(logger_,
-                  "Socket " << socket << " is not valid. Skip closing.");
+                 "Socket " << socket << " is not valid. Skip closing.");
     return true;
   }
   if (-1 != close(socket)) {
@@ -184,13 +184,19 @@ bool utils::TcpSocketConnection::Impl::Send(const char* buffer,
   const int flags = MSG_NOSIGNAL;
   int written = send(tcp_socket_, buffer, size, flags);
   int socket_error = errno;
-  if (-1 == written && EAGAIN != socket_error && EWOULDBLOCK != socket_error) {
-    LOGGER_ERROR(logger_, "Failed to send data: " << socket_error);
-    return false;
+  if (-1 == written && ) {
+    if (EAGAIN != socket_error && EWOULDBLOCK != socket_error) {
+      LOGGER_ERROR(logger_, "Failed to send data: " << socket_error);
+      return false;
+    } else {
+      return true;
+    }
   }
+  // Lets double chek written because we have signed to unsigned conversion
+  DCHECK(written >= 0);
   bytes_written = static_cast<std::size_t>(written);
   LOGGER_DEBUG(logger_,
-                "Sent " << written << " bytes to socket " << tcp_socket_);
+               "Sent " << written << " bytes to socket " << tcp_socket_);
   return true;
 }
 
@@ -200,7 +206,7 @@ bool utils::TcpSocketConnection::Impl::Close() {
     return true;
   }
   LOGGER_DEBUG(logger_,
-                "Closing connection " << address_.ToString() << ":" << port_);
+               "Closing connection " << address_.ToString() << ":" << port_);
 
   // Possibly we're waiting on Wait. We have to interrupt this.
   Notify();
@@ -255,11 +261,11 @@ bool utils::TcpSocketConnection::Impl::Connect(const HostAddress& address,
   if (!connect(client_socket,
                reinterpret_cast<sockaddr*>(&server_address),
                sizeof(server_address)) == 0) {
-    LOGGER_ERROR(
-        logger_,
-        "Failed to connect to the server " << address.ToString() << ":" << port
-                                           << ". Error: "
-                                           << errno);
+    LOGGER_ERROR(logger_,
+                 "Failed to connect to the server " << address.ToString() << ":"
+                                                    << port
+                                                    << ". Error: "
+                                                    << errno);
     CloseSocket(client_socket);
     return false;
   }
@@ -276,19 +282,19 @@ bool utils::TcpSocketConnection::Impl::Connect(const HostAddress& address,
 bool utils::TcpSocketConnection::Impl::Notify() {
   if (-1 == write_fd_) {
     LOGGER_ERROR(logger_,
-                  "Failed to wake up connection thread for connection "
-                      << this
-                      << ". Error: "
-                      << errno);
+                 "Failed to wake up connection thread for connection "
+                     << this
+                     << ". Error: "
+                     << errno);
     return false;
   }
   uint8_t buffer = 0;
   if (1 != write(write_fd_, &buffer, 1)) {
     LOGGER_ERROR(logger_,
-                  "Failed to wake up connection thread for connection "
-                      << this
-                      << ". Error: "
-                      << errno);
+                 "Failed to wake up connection thread for connection "
+                     << this
+                     << ". Error: "
+                     << errno);
     return false;
   }
 }
@@ -319,23 +325,23 @@ void utils::TcpSocketConnection::Impl::OnRead() {
     bytes_read = recv(tcp_socket_, buffer, sizeof(buffer), MSG_DONTWAIT);
     if (bytes_read > 0) {
       LOGGER_DEBUG(logger_,
-                    "Received " << bytes_read << " bytes from socket "
-                                << tcp_socket_);
+                   "Received " << bytes_read << " bytes from socket "
+                               << tcp_socket_);
       uint8_t* casted_buffer = reinterpret_cast<uint8_t*>(buffer);
       event_handler_->OnData(casted_buffer, bytes_read);
     } else if (bytes_read < 0) {
       int socket_error = errno;
       if (EAGAIN != socket_error && EWOULDBLOCK != socket_error) {
         LOGGER_ERROR(logger_,
-                      "recv() failed for connection " << tcp_socket_
-                                                      << ". Error: "
-                                                      << socket_error);
+                     "recv() failed for connection " << tcp_socket_
+                                                     << ". Error: "
+                                                     << socket_error);
         OnError(socket_error);
         return;
       }
     } else {
       LOGGER_WARN(logger_,
-                   "Socket " << tcp_socket_ << " closed by remote peer");
+                  "Socket " << tcp_socket_ << " closed by remote peer");
       OnError(WSAGetLastError());
       return;
     }
@@ -388,9 +394,9 @@ void utils::TcpSocketConnection::Impl::Wait() {
   // error check
   if (0 != (poll_fds[1].revents & (POLLERR | POLLHUP | POLLNVAL))) {
     LOGGER_ERROR(logger_,
-                  "Notification pipe for socket " << tcp_socket_
-                                                  << " terminated. Error: "
-                                                  << errno);
+                 "Notification pipe for socket " << tcp_socket_
+                                                 << " terminated. Error: "
+                                                 << errno);
     OnError(errno);
     return;
   }
@@ -408,10 +414,10 @@ void utils::TcpSocketConnection::Impl::Wait() {
   } while (bytes_read > 0);
   if ((bytes_read < 0) && (EAGAIN != errno)) {
     LOGGER_ERROR(logger_,
-                  "Failed to clear notification pipe. Poll failed for socket "
-                      << tcp_socket_
-                      << ". Error: "
-                      << errno);
+                 "Failed to clear notification pipe. Poll failed for socket "
+                     << tcp_socket_
+                     << ". Error: "
+                     << errno);
     OnError(errno);
     return;
   }
@@ -563,13 +569,13 @@ bool utils::TcpServerSocket::Impl::Listen(const HostAddress& address,
   }
 
   LOGGER_DEBUG(logger_,
-                "Start listening on " << address.ToString() << ":" << port);
+               "Start listening on " << address.ToString() << ":" << port);
 
   if (-1 == listen(server_socket, backlog)) {
     LOGGER_ERROR(logger_,
-                  "Failed to listen on " << address.ToString() << ":" << port
-                                         << ". Error: "
-                                         << errno);
+                 "Failed to listen on " << address.ToString() << ":" << port
+                                        << ". Error: "
+                                        << errno);
     return false;
   }
 
@@ -592,16 +598,16 @@ utils::TcpSocketConnection utils::TcpServerSocket::Impl::Accept() {
   }
   if (AF_INET != client_address.sin_family) {
     LOGGER_DEBUG(logger_,
-                  "Address of the connected client is invalid. Not AF_INET.");
+                 "Address of the connected client is invalid. Not AF_INET.");
     CloseSocket(client_socket);
     return utils::TcpSocketConnection();
   }
   const HostAddress accepted_client_address(inet_ntoa(client_address.sin_addr));
   LOGGER_DEBUG(logger_,
-                "Accepted new client connection "
-                    << accepted_client_address.ToString()
-                    << ":"
-                    << client_address.sin_port);
+               "Accepted new client connection "
+                   << accepted_client_address.ToString()
+                   << ":"
+                   << client_address.sin_port);
   return TcpSocketConnection(new TcpSocketConnection::Impl(
       client_socket, accepted_client_address, client_address.sin_port));
 }
