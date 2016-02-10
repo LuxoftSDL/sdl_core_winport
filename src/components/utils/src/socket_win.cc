@@ -166,9 +166,14 @@ bool utils::TcpSocketConnection::Impl::Send(const char* const buffer,
   const int flags = 0;
   int written = send(tcp_socket_, buffer, size, flags);
   int socket_error = WSAGetLastError();
-  if (SOCKET_ERROR == written && WSAEWOULDBLOCK != socket_error) {
-    LOGGER_ERROR(logger_, "Failed to send data: " << socket_error);
-    return false;
+  if (SOCKET_ERROR == written) {
+    if (WSAEWOULDBLOCK != socket_error) {
+      LOGGER_ERROR(logger_, "Failed to send data: " << socket_error);
+      return false;
+    } else {
+      LOGGER_DEBUG(logger_,
+                   "Send operation would block the socket. Have to wait.");
+    }
   }
   bytes_written = static_cast<size_t>(written);
   LOGGER_DEBUG(logger_,
