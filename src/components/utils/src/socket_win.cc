@@ -157,7 +157,6 @@ utils::TcpSocketConnection::Impl::~Impl() {
 bool utils::TcpSocketConnection::Impl::Send(const char* const buffer,
                                             std::size_t size,
                                             std::size_t& bytes_written) {
-  LOGGER_AUTO_TRACE(logger_);
   bytes_written = 0u;
   if (!IsValid()) {
     LOGGER_ERROR(logger_, "Failed to send data socket is not valid");
