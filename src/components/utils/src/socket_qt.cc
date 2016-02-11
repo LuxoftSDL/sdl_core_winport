@@ -48,18 +48,20 @@ inline QHostAddress FromHostAddress(const utils::HostAddress& address) {
 inline utils::HostAddress ToHostAddress(const QHostAddress& address) {
   return utils::HostAddress(address.toIPv4Address(), true);
 }
-
 }  // namespace
 
 ////////////////////////////////////////////////////////////////////////////////
 /// utils::TcpSocketConnection::Impl
 ////////////////////////////////////////////////////////////////////////////////
 
-class utils::TcpSocketConnection::Impl {
+class utils::TcpSocketConnection::Impl : public QObject {
+  Q_OBJECT
  public:
   Impl();
 
-  explicit Impl(QTcpSocket* tcp_socket);
+  Impl(qintptr socketDescriptor,
+       const HostAddress& address,
+       const uint16_t port);
 
   ~Impl();
 
@@ -83,27 +85,94 @@ class utils::TcpSocketConnection::Impl {
 
   void SetEventHandler(TcpConnectionEventHandler* event_handler);
 
+  void Copy(TcpSocketConnection& rhs);
+
+  bool Notify();
+
+  void Wait();
+
+  Q_SIGNAL void DataReceived(QByteArray buffer, int bytes_read);
+
+  Q_SIGNAL void OnNotify();
+
  private:
-  QTcpSocket* tcp_socket_;
+  void OnError(int error);
+
+  void OnRead();
+
+  void OnWrite();
+
+  void OnClose();
+
+  void InitSocketSignals();
+
+  Q_SLOT void OnReadyClose();
+
+  Q_SLOT void OnDataReceived(QByteArray buffer, int bytes_read);
+
+  Q_SLOT void OnError(QTcpSocket::SocketError error);
+
+  HostAddress address_;
+
+  int socket_descriptor_;
+
+  QAtomicInt is_initiated_;
+
+  QScopedPointer<QTcpSocket> tcp_socket_;
+
+  QScopedPointer<QEventLoop> loop_;
+
+  uint16_t port_;
+
+  utils::TcpConnectionEventHandler* event_handler_;
+
+  // Classes inherited of QObject must non copyable. See
+  // http://doc.qt.io/qt-5/qobject.html#no-copy-constructor-or-assignment-operator
+  Q_DISABLE_COPY(Impl)
 };
 
-utils::TcpSocketConnection::Impl::Impl() : tcp_socket_(NULL) {}
+utils::TcpSocketConnection::Impl::Impl()
+    : QObject(NULL)
+    , address_()
+    , socket_descriptor_(NULL)
+    , is_initiated_(0)
+    , tcp_socket_(NULL)
+    , event_handler_(NULL)
+    , port_(0u) {}
 
-utils::TcpSocketConnection::Impl::Impl(QTcpSocket* tcp_socket)
-    : tcp_socket_(tcp_socket) {}
+utils::TcpSocketConnection::Impl::Impl(qintptr socket_descriptor,
+                                       const HostAddress& address,
+                                       const uint16_t port)
+    : QObject(NULL)
+    , address_(address)
+    , socket_descriptor_(socket_descriptor)
+    , is_initiated_(0)
+    , tcp_socket_(NULL)
+    , event_handler_(NULL)
+    , port_(port) {}
 
 utils::TcpSocketConnection::Impl::~Impl() {
   Close();
 }
 
+void utils::TcpSocketConnection::Impl::Copy(TcpSocketConnection& rhs) {
+  socket_descriptor_ = rhs.GetNativeHandle();
+  address_ = rhs.GetAddress();
+  port_ = rhs.GetPort();
+}
+
 bool utils::TcpSocketConnection::Impl::Send(const char* buffer,
                                             const std::size_t size,
                                             std::size_t& bytes_written) {
-  bytes_written = 0;
   LOGGER_AUTO_TRACE(logger_);
+  bytes_written = 0;
   if (!IsValid()) {
     LOGGER_WARN(logger_, "Cannot send. Socket is not valid.");
     return false;
+  }
+  if (!tcp_socket_) {
+    tcp_socket_.reset(new QTcpSocket());
+    tcp_socket_->setSocketDescriptor(socket_descriptor_);
   }
 
   QByteArray data(buffer, size);
@@ -111,30 +180,31 @@ bool utils::TcpSocketConnection::Impl::Send(const char* buffer,
   if (written != -1) {
     tcp_socket_->flush();
     tcp_socket_->waitForBytesWritten();
+    DCHECK(written >= 0)
+    bytes_written = static_cast<std::size_t>(written);
   } else {
-    LOGGER_WARN(
-        logger_,
-        "Failed to send: " << tcp_socket_->errorString().toStdString());
+    LOGGER_WARN(logger_,
+                "Failed to send: " << tcp_socket_->errorString().toStdString());
     return false;
   }
-  bytes_written = static_cast<std::size_t>(written);
   return true;
 }
 
 bool utils::TcpSocketConnection::Impl::Close() {
-  LOGGER_AUTO_TRACE(logger_);
   if (!IsValid()) {
     LOGGER_DEBUG(logger_, "Not valid. Exit Close");
     return true;
   }
-  tcp_socket_->close();
-  delete tcp_socket_;
-  tcp_socket_ = NULL;
+  if (tcp_socket_) {
+    socket_descriptor_ = NULL;
+    tcp_socket_->close();
+    tcp_socket_.reset();
+  }
   return true;
 }
 
 bool utils::TcpSocketConnection::Impl::IsValid() const {
-  return tcp_socket_ != NULL;
+  return socket_descriptor_ != NULL;
 }
 
 void utils::TcpSocketConnection::Impl::EnableKeepalive() {
@@ -143,24 +213,18 @@ void utils::TcpSocketConnection::Impl::EnableKeepalive() {
 }
 
 int utils::TcpSocketConnection::Impl::GetNativeHandle() {
-  if (!IsValid()) {
-    return -1;
-  }
-  return tcp_socket_->socketDescriptor();
+  return socket_descriptor_;
 }
 
 utils::HostAddress utils::TcpSocketConnection::Impl::GetAddress() const {
   if (!IsValid()) {
     return HostAddress(SpecialAddress::Any);
   }
-  return ToHostAddress(tcp_socket_->peerAddress());
+  return address_;
 }
 
 uint16_t utils::TcpSocketConnection::Impl::GetPort() const {
-  if (!IsValid()) {
-    return 0u;
-  }
-  return tcp_socket_->peerPort();
+  return port_;
 }
 
 bool utils::TcpSocketConnection::Impl::Connect(const HostAddress& address,
@@ -168,9 +232,111 @@ bool utils::TcpSocketConnection::Impl::Connect(const HostAddress& address,
   if (IsValid()) {
     Close();
   }
-  tcp_socket_ = new QTcpSocket();
+
+  tcp_socket_.reset(new QTcpSocket());
   tcp_socket_->connectToHost(FromHostAddress(address), port);
   return tcp_socket_->waitForConnected();
+}
+
+void utils::TcpSocketConnection::Impl::OnError(int error) {
+  if (!event_handler_) {
+    return;
+  }
+  event_handler_->OnError(error);
+}
+
+void utils::TcpSocketConnection::Impl::OnWrite() {
+  if (!event_handler_) {
+    return;
+  }
+  event_handler_->OnCanWrite();
+}
+
+void utils::TcpSocketConnection::Impl::OnClose() {
+  if (!event_handler_) {
+    return;
+  }
+  event_handler_->OnClose();
+}
+
+void utils::TcpSocketConnection::Impl::OnRead() {
+  if (!event_handler_) {
+    return;
+  }
+  int bytes_read = -1;
+  QByteArray buffer;
+  while (tcp_socket_->bytesAvailable() > 0) {
+    buffer = tcp_socket_->readAll();
+    bytes_read = buffer.size();
+    if (bytes_read > 0) {
+      LOGGER_DEBUG(logger_,
+                   "Received " << bytes_read << " bytes from socket "
+                               << socket_descriptor_);
+      emit DataReceived(buffer, bytes_read);
+    }
+  }
+}
+
+void utils::TcpSocketConnection::Impl::InitSocketSignals() {
+  connect(&(*tcp_socket_),
+          SIGNAL(disconnected()),
+          this,
+          SLOT(OnReadyClose()),
+          Qt::DirectConnection);
+  connect(&(*tcp_socket_),
+          SIGNAL(error(QAbstractSocket::SocketError)),
+          this,
+          SLOT(OnError(QTcpSocket::SocketError)),
+          Qt::DirectConnection);
+  connect(this,
+          SIGNAL(DataReceived(QByteArray, int)),
+          this,
+          SLOT(OnDataReceived(QByteArray, int)),
+          Qt::DirectConnection);
+  connect(&(*tcp_socket_),
+          SIGNAL(readyRead()),
+          &(*loop_),
+          SLOT(quit()),
+          Qt::DirectConnection);
+  connect(
+      this, SIGNAL(OnNotify()), &(*loop_), SLOT(quit()), Qt::DirectConnection);
+}
+
+void utils::TcpSocketConnection::Impl::Wait() {
+  if (!IsValid()) {
+    LOGGER_ERROR(logger_, "Cannot wait. Not connected.");
+    return;
+  }
+  if (!is_initiated_) {
+    is_initiated_ = 1;
+    tcp_socket_.reset(new QTcpSocket());
+    tcp_socket_->setSocketDescriptor(socket_descriptor_);
+    loop_.reset(new QEventLoop);
+    InitSocketSignals();
+  }
+
+  loop_->exec();
+  OnRead();
+  OnWrite();
+}
+
+void utils::TcpSocketConnection::Impl::OnError(QTcpSocket::SocketError error) {
+  OnError(error);
+}
+
+void utils::TcpSocketConnection::Impl::OnReadyClose() {
+  OnClose();
+}
+
+void utils::TcpSocketConnection::Impl::OnDataReceived(QByteArray buffer,
+                                                      int bytes_read) {
+  uint8_t* casted_buffer = reinterpret_cast<uint8_t*>(buffer.data());
+  event_handler_->OnData(casted_buffer, bytes_read);
+}
+
+bool utils::TcpSocketConnection::Impl::Notify() {
+  emit OnNotify();
+  return true;
 }
 
 void utils::TcpSocketConnection::Impl::SetEventHandler(
@@ -194,7 +360,7 @@ utils::TcpSocketConnection::~TcpSocketConnection() {}
 // This must be implemented since default assign operator takes const arg
 utils::TcpSocketConnection& utils::TcpSocketConnection::operator=(
     TcpSocketConnection& rhs) {
-  impl_ = rhs.impl_;
+  impl_->Copy(rhs);
   return *this;
 }
 
@@ -209,7 +375,6 @@ bool utils::TcpSocketConnection::Send(const char* buffer,
 }
 
 bool utils::TcpSocketConnection::Close() {
-  LOGGER_AUTO_TRACE(logger_);
   return impl_->Close();
 }
 
@@ -236,11 +401,6 @@ uint16_t utils::TcpSocketConnection::GetPort() const {
 bool utils::TcpSocketConnection::Connect(const HostAddress& address,
                                          const uint16_t port) {
   return impl_->Connect(address, port);
-}
-
-void utils::TcpSocketConnection::SetEventHandler(
-    TcpConnectionEventHandler* event_handler) {
-  impl_->SetEventHandler(event_handler);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -272,7 +432,6 @@ utils::TcpServerSocket::Impl::Impl() : server_socket_(NULL) {}
 utils::TcpServerSocket::Impl::~Impl() {
   LOGGER_AUTO_TRACE(logger_);
   Close();
-  delete server_socket_;
 }
 
 bool utils::TcpServerSocket::Impl::IsListening() const {
@@ -280,9 +439,11 @@ bool utils::TcpServerSocket::Impl::IsListening() const {
 }
 
 bool utils::TcpServerSocket::Impl::Close() {
-  server_socket_->close();
-  delete server_socket_;
-  server_socket_ = NULL;
+  if (server_socket_) {
+    server_socket_->close();
+    delete server_socket_;
+    server_socket_ = NULL;
+  }
   return true;
 }
 
@@ -291,7 +452,7 @@ bool utils::TcpServerSocket::Impl::Listen(const HostAddress& address,
                                           const int backlog) {
   LOGGER_AUTO_TRACE(logger_);
   LOGGER_DEBUG(logger_,
-                "Start listening on " << address.ToString() << ":" << port);
+               "Start listening on " << address.ToString() << ":" << port);
 
   if (server_socket_) {
     LOGGER_WARN(logger_, "Cannot listen. server_socket_ is null");
@@ -303,7 +464,7 @@ bool utils::TcpServerSocket::Impl::Listen(const HostAddress& address,
   server_socket_->setMaxPendingConnections(backlog);
 
   LOGGER_DEBUG(logger_,
-                "Start listening on " << address.ToString() << ":" << port);
+               "Start listening on " << address.ToString() << ":" << port);
 
   if (!server_socket_->listen(FromHostAddress(address), port)) {
     LOGGER_WARN(
@@ -323,24 +484,28 @@ utils::TcpSocketConnection utils::TcpServerSocket::Impl::Accept() {
   bool waited = server_socket_->waitForNewConnection(-1);
   if (!waited) {
     LOGGER_WARN(logger_,
-                 "Failed to wait for the new connection: "
-                     << server_socket_->errorString().toStdString());
+                "Failed to wait for the new connection: "
+                    << server_socket_->errorString().toStdString());
     return utils::TcpSocketConnection();
   }
 
   QTcpSocket* client_connection = server_socket_->nextPendingConnection();
   if (!client_connection) {
     LOGGER_WARN(logger_,
-                 "Failed to get new connection: "
-                     << server_socket_->errorString().toStdString());
+                "Failed to get new connection: "
+                    << server_socket_->errorString().toStdString());
     return utils::TcpSocketConnection();
   }
   LOGGER_DEBUG(logger_,
-                "Accepted new client connection "
-                    << client_connection->peerAddress().toString().toStdString()
-                    << ":"
-                    << client_connection->peerPort());
-  return TcpSocketConnection(new TcpSocketConnection::Impl(client_connection));
+               "Accepted new client connection "
+                   << client_connection->peerAddress().toString().toStdString()
+                   << ":"
+                   << client_connection->peerPort());
+  const HostAddress host_address =
+      ToHostAddress(client_connection->peerAddress());
+  const uint16_t port = static_cast<uint16_t>(client_connection->peerPort());
+  return TcpSocketConnection(new TcpSocketConnection::Impl(
+      client_connection->socketDescriptor(), host_address, port));
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -358,6 +523,7 @@ utils::TcpServerSocket::~TcpServerSocket() {}
 // This must be implemented since default assign operator takes const arg
 utils::TcpServerSocket& utils::TcpServerSocket::operator=(
     TcpServerSocket& rhs) {
+  LOGGER_AUTO_TRACE(logger_);
   impl_ = rhs.impl_;
   return *this;
 }
@@ -379,3 +545,18 @@ bool utils::TcpServerSocket::Listen(const HostAddress& address,
 utils::TcpSocketConnection utils::TcpServerSocket::Accept() {
   return impl_->Accept();
 }
+
+void utils::TcpSocketConnection::Wait() {
+  impl_->Wait();
+}
+
+bool utils::TcpSocketConnection::Notify() {
+  return impl_->Notify();
+}
+
+void utils::TcpSocketConnection::SetEventHandler(
+    TcpConnectionEventHandler* event_handler) {
+  impl_->SetEventHandler(event_handler);
+}
+
+#include "socket_qt.moc"
