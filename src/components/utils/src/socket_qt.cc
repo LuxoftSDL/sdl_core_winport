@@ -110,7 +110,7 @@ class utils::TcpSocketConnection::Impl : public QObject {
 
   Q_SLOT void OnDataReceived(QByteArray buffer, int bytes_read);
 
-  Q_SLOT void OnError(QAbstractSocket::SocketError error);
+  Q_SLOT void OnError();
 
   HostAddress address_;
 
@@ -287,7 +287,7 @@ void utils::TcpSocketConnection::Impl::InitSocketSignals() {
   connect(&(*tcp_socket_),
           SIGNAL(error(QAbstractSocket::SocketError)),
           this,
-          SLOT(OnError(QAbstractSocket::SocketError)),
+          SLOT(OnError()),
           Qt::DirectConnection);
   connect(this,
           SIGNAL(DataReceived(QByteArray, int)),
@@ -322,9 +322,15 @@ void utils::TcpSocketConnection::Impl::Wait() {
   OnWrite();
 }
 
-void utils::TcpSocketConnection::Impl::OnError(
-    QAbstractSocket::SocketError error) {
-  OnError(error);
+void utils::TcpSocketConnection::Impl::OnError() {
+  LOGGER_DEBUG(logger_,
+               "Socket error code:#["
+                   << tcp_socket_->error()
+                   << "]. "
+                   << tcp_socket_->errorString().toStdString().c_str());
+  if (tcp_socket_->error() != QAbstractSocket::RemoteHostClosedError) {
+    OnError(tcp_socket_->error());
+  }
 }
 
 void utils::TcpSocketConnection::Impl::OnReadyClose() {
