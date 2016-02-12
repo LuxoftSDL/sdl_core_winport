@@ -154,7 +154,8 @@ std::string SQLQuery::query() const {
   return query_.lastQuery().toStdString();
 }
 
-bool SQLQuery::IsNull(int pos) const {
+bool SQLQuery::IsNull(int pos) {
+  PreparePullValue(query_);
   return query_.value(pos).isNull();
 }
 
