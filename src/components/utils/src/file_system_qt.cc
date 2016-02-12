@@ -96,7 +96,7 @@ file_system::FileSizeType file_system::DirectorySize(
         dir.entryInfoList(QDir::Files | QDir::Dirs | QDir::Hidden |
                           QDir::NoSymLinks | QDir::NoDotAndDotDot);
     if (list.isEmpty()) {
-      return size;
+      return 0u;
     }
     foreach (QFileInfo fileInfo, list) {
       if (fileInfo.isDir()) {
