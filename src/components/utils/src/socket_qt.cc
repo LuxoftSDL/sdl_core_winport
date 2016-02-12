@@ -110,7 +110,7 @@ class utils::TcpSocketConnection::Impl : public QObject {
 
   Q_SLOT void OnDataReceived(QByteArray buffer, int bytes_read);
 
-  Q_SLOT void OnError(QTcpSocket::SocketError error);
+  Q_SLOT void OnError(QAbstractSocket::SocketError error);
 
   HostAddress address_;
 
@@ -191,6 +191,7 @@ bool utils::TcpSocketConnection::Impl::Send(const char* buffer,
 }
 
 bool utils::TcpSocketConnection::Impl::Close() {
+  LOGGER_AUTO_TRACE(logger_);
   if (!IsValid()) {
     LOGGER_DEBUG(logger_, "Not valid. Exit Close");
     return true;
@@ -286,7 +287,7 @@ void utils::TcpSocketConnection::Impl::InitSocketSignals() {
   connect(&(*tcp_socket_),
           SIGNAL(error(QAbstractSocket::SocketError)),
           this,
-          SLOT(OnError(QTcpSocket::SocketError)),
+          SLOT(OnError(QAbstractSocket::SocketError)),
           Qt::DirectConnection);
   connect(this,
           SIGNAL(DataReceived(QByteArray, int)),
@@ -303,6 +304,7 @@ void utils::TcpSocketConnection::Impl::InitSocketSignals() {
 }
 
 void utils::TcpSocketConnection::Impl::Wait() {
+  LOGGER_AUTO_TRACE(logger_);
   if (!IsValid()) {
     LOGGER_ERROR(logger_, "Cannot wait. Not connected.");
     return;
@@ -320,7 +322,8 @@ void utils::TcpSocketConnection::Impl::Wait() {
   OnWrite();
 }
 
-void utils::TcpSocketConnection::Impl::OnError(QTcpSocket::SocketError error) {
+void utils::TcpSocketConnection::Impl::OnError(
+    QAbstractSocket::SocketError error) {
   OnError(error);
 }
 
@@ -335,6 +338,7 @@ void utils::TcpSocketConnection::Impl::OnDataReceived(QByteArray buffer,
 }
 
 bool utils::TcpSocketConnection::Impl::Notify() {
+  LOGGER_AUTO_TRACE(logger_);
   emit OnNotify();
   return true;
 }
