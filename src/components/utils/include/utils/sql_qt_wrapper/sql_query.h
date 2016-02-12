@@ -181,7 +181,7 @@ class SQLQuery {
    * @param pos position of value
    * @return true if value is null
    */
-  bool IsNull(int pos) const;
+  bool IsNull(int pos);
 
   /**
    * Gets last id of insert row
