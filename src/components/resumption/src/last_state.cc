@@ -61,9 +61,9 @@ void resumption::LastState::LoadFromFileSystem() {
   std::string buffer;
   bool result = file_system::ReadFile(file, buffer);
 
-  if (result) {
+  if (!result) {
     LOGGER_WARN(logger_,
-                 "Failed to load last state. Cannot read file " << file);
+                "Failed to load last state. Cannot read file " << file);
     return;
   }
 
@@ -75,7 +75,7 @@ void resumption::LastState::LoadFromFileSystem() {
   JsonValue::ParseResult parse_result = JsonValue::Parse(buffer);
   if (!parse_result.second) {
     LOGGER_WARN(logger_,
-                 "Failed to load last state. Cannot parse json:\n" << buffer);
+                "Failed to load last state. Cannot parse json:\n" << buffer);
     return;
   }
   dictionary_ = parse_result.first;
