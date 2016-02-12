@@ -345,6 +345,9 @@ std::string file_system::ConcatCurrentWorkingPath(
 
 std::string file_system::RetrieveFileNameFromPath(
     const std::string& utf8_path) {
+  if (utf8_path.empty()) {
+    return "";
+  }
   QFile fname(utf8_path.c_str());
   QFileInfo file_info(fname.fileName());
   return file_info.fileName().toStdString();
