@@ -1,7 +1,6 @@
 #include "sql_qt_wrapper/sql_database.h"
 
 #include <QSqlError>
-#include <QSqlQuery>
 
 namespace utils {
 namespace dbms {
