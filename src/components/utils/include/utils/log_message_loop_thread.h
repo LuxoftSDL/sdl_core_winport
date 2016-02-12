@@ -52,7 +52,7 @@ namespace logger {
 
 struct LogMessage {
   logger::LoggerType logger_;
-  logger::LogLevel level_;
+  logger::LogLevel::Type level_;
   std::string entry_;
   logger::LogLocation location_;
 #if defined(LOG4CXX_LOGGER)

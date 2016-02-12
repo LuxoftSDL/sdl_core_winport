@@ -41,20 +41,20 @@
 
 namespace {
 
-std::string GetLogTypeStringByLevel(const logger::LogLevel level) {
+std::string GetLogTypeStringByLevel(const logger::LogLevel::Type level) {
   using namespace logger;
   switch (level) {
-    case LogLevel::LOGLEVEL_TRACE:
+    case LogLevel::LL_TRACE:
       return "TRACE";
-    case LogLevel::LOGLEVEL_DEBUG:
+    case LogLevel::LL_DEBUG:
       return "DEBUG";
-    case LogLevel::LOGLEVEL_INFO:
+    case LogLevel::LL_INFO:
       return "INFO ";
-    case LogLevel::LOGLEVEL_WARN:
+    case LogLevel::LL_WARN:
       return "WARN ";
-    case LogLevel::LOGLEVEL_ERROR:
+    case LogLevel::LL_ERROR:
       return "ERROR";
-    case LogLevel::LOGLEVEL_FATAL:
+    case LogLevel::LL_FATAL:
       return "FATAL";
     default:
       NOTREACHED();
