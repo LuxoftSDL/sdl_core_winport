@@ -46,14 +46,9 @@
 
 namespace logger {
 
-enum LogLevel {
-  LOGLEVEL_TRACE,
-  LOGLEVEL_DEBUG,
-  LOGLEVEL_INFO,
-  LOGLEVEL_WARN,
-  LOGLEVEL_ERROR,
-  LOGLEVEL_FATAL
-};
+namespace LogLevel {
+enum Type { LL_TRACE, LL_DEBUG, LL_INFO, LL_WARN, LL_ERROR, LL_FATAL };
+}  // namespace LogLevel
 
 struct LogLocation {
   LogLocation() {}
@@ -83,18 +78,18 @@ class Logger {
   static bool InitLogger(const bool logs_enabled,
                          const std::string& ini_file_name);
   static bool InitLogger(const bool logs_enabled,
-                         const LogLevel log_level,
+                         const LogLevel::Type log_level,
                          const std::string& log_file_name);
   static void DeinitLogger();
 
   static bool logs_enabled();
   static void set_logs_enabled(const bool state);
 
-  static LogLevel log_level();
-  static void set_log_level(const LogLevel level);
+  static LogLevel::Type log_level();
+  static void set_log_level(const LogLevel::Type level);
 
   static bool PushLog(const LoggerType& logger,
-                      const LogLevel level,
+                      const LogLevel::Type level,
                       const std::string& entry,
                       const LogLocation& location);
 
@@ -119,7 +114,7 @@ class Logger {
 #else
 #define INIT_LOGGER(logs_enabled) \
   logger::Logger::InitLogger(     \
-      logs_enabled, logger::LogLevel::LOGLEVEL_TRACE, "SmartDeviceLink.log");
+      logs_enabled, logger::LogLevel::LL_TRACE, "SmartDeviceLink.log");
 #endif
 
 #undef DEINIT_LOGGER
@@ -168,31 +163,27 @@ class Logger {
 
 #undef LOGGER_TRACE
 #define LOGGER_TRACE(logger_var, message) \
-  LOG_WITH_LEVEL(                         \
-      logger_var, logger::LogLevel::LOGLEVEL_TRACE, message, __LINE__)
+  LOG_WITH_LEVEL(logger_var, logger::LogLevel::LL_TRACE, message, __LINE__)
 
 #undef LOGGER_DEBUG
 #define LOGGER_DEBUG(logger_var, message) \
-  LOG_WITH_LEVEL(                         \
-      logger_var, logger::LogLevel::LOGLEVEL_DEBUG, message, __LINE__)
+  LOG_WITH_LEVEL(logger_var, logger::LogLevel::LL_DEBUG, message, __LINE__)
 
 #undef LOGGER_INFO
 #define LOGGER_INFO(logger_var, message) \
-  LOG_WITH_LEVEL(logger_var, logger::LogLevel::LOGLEVEL_INFO, message, __LINE__)
+  LOG_WITH_LEVEL(logger_var, logger::LogLevel::LL_INFO, message, __LINE__)
 
 #undef LOGGER_WARN
 #define LOGGER_WARN(logger_var, message) \
-  LOG_WITH_LEVEL(logger_var, logger::LogLevel::LOGLEVEL_WARN, message, __LINE__)
+  LOG_WITH_LEVEL(logger_var, logger::LogLevel::LL_WARN, message, __LINE__)
 
 #undef LOGGER_ERROR
 #define LOGGER_ERROR(logger_var, message) \
-  LOG_WITH_LEVEL(                         \
-      logger_var, logger::LogLevel::LOGLEVEL_ERROR, message, __LINE__)
+  LOG_WITH_LEVEL(logger_var, logger::LogLevel::LL_ERROR, message, __LINE__)
 
 #undef LOGGER_FATAL
 #define LOGGER_FATAL(logger_var, message) \
-  LOG_WITH_LEVEL(                         \
-      logger_var, logger::LogLevel::LOGLEVEL_FATAL, message, __LINE__)
+  LOG_WITH_LEVEL(logger_var, logger::LogLevel::LL_FATAL, message, __LINE__)
 
 #undef LOGGER_WARN_WITH_ERRNO
 #define LOGGER_WARN_WITH_ERRNO(logger_var, message)                          \
@@ -212,12 +203,12 @@ class AutoTrace {
  public:
   AutoTrace(const LoggerType& logger, const LogLocation& location)
       : logger_(logger), location_(location) {
-    LOG_WITH_LEVEL_EXT(logger_, LOGLEVEL_TRACE, "Enter", location_);
-  };
+    LOG_WITH_LEVEL_EXT(logger_, LogLevel::LL_TRACE, "Enter", location_);
+  }
 
   ~AutoTrace() {
-    LOG_WITH_LEVEL_EXT(logger_, LOGLEVEL_TRACE, "Exit", location_);
-  };
+    LOG_WITH_LEVEL_EXT(logger_, LogLevel::LL_TRACE, "Exit", location_);
+  }
 
  private:
   const LoggerType logger_;
