@@ -95,6 +95,9 @@ file_system::FileSizeType file_system::DirectorySize(
     QFileInfoList list =
         dir.entryInfoList(QDir::Files | QDir::Dirs | QDir::Hidden |
                           QDir::NoSymLinks | QDir::NoDotAndDotDot);
+    if (list.isEmpty()) {
+      return 0u;
+    }
     foreach (QFileInfo fileInfo, list) {
       if (fileInfo.isDir()) {
         size += DirectorySize(fileInfo.absoluteFilePath().toStdString());
@@ -249,6 +252,9 @@ bool file_system::WriteBinaryFile(const std::string& utf8_path,
 
 bool file_system::ReadBinaryFile(const std::string& utf8_path,
                                  std::vector<uint8_t>& result) {
+  if (utf8_path.empty()) {
+    return false;
+  }
   QFile file(QString::fromUtf8(utf8_path.c_str()));
   if (!file.open(QIODevice::ReadOnly)) {
     return false;
@@ -260,8 +266,11 @@ bool file_system::ReadBinaryFile(const std::string& utf8_path,
 }
 
 bool file_system::ReadFile(const std::string& utf8_path, std::string& result) {
+  if (utf8_path.empty()) {
+    return false;
+  }
   QFile file(QString::fromUtf8(utf8_path.c_str()));
-  if (!file.open(QIODevice::Text)) {
+  if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
     return false;
   }
   QByteArray read = file.readAll();
@@ -336,6 +345,9 @@ std::string file_system::ConcatCurrentWorkingPath(
 
 std::string file_system::RetrieveFileNameFromPath(
     const std::string& utf8_path) {
+  if (utf8_path.empty()) {
+    return "";
+  }
   QFile fname(utf8_path.c_str());
   QFileInfo file_info(fname.fileName());
   return file_info.fileName().toStdString();
