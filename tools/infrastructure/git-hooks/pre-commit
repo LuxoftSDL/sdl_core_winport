@@ -1,5 +1,26 @@
 #!/bin/bash
 
+# Hide all unstaged changes to prevent any influence of the further checks
+function POP_STASHED() {
+    # pop stashed changes if working directory isn't clean
+    if [ -n "$IS_DIRTY" ]; then
+        git reset --hard HEAD > /dev/null
+        skipped=$(git ls-files -t | grep ^S | cut -d' ' -f2-)
+        git stash pop --index > /dev/null
+        echo "$skipped" | while read file; do git update-index --skip-worktree "$file"; done
+    fi
+}
+
+# determine working tree status
+IS_DIRTY=`[[ $(git diff --shortstat 2> /dev/null | tail -n1) != "" ]] && echo '*'`
+
+# stash not staged for commit changes
+if [ -n "$IS_DIRTY" ]; then
+    git stash save --keep-index
+    trap POP_STASHED EXIT
+fi
+# End of stashing
+
 if git rev-parse --verify HEAD >/dev/null 2>&1
 then
     against=HEAD
