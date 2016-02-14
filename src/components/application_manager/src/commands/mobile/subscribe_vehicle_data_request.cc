@@ -135,10 +135,10 @@ void SubscribeVehicleDataRequest::Run() {
         VehicleDataType key_type = it->second;
         if (app->IsSubscribedToIVI(key_type)) {
           LOGGER_DEBUG(logger_,
-                        "App with connection key "
-                            << connection_key()
-                            << " is subscribed already for VehicleDataType: "
-                            << key_type);
+                       "App with connection key "
+                           << connection_key()
+                           << " is subscribed already for VehicleDataType: "
+                           << key_type);
           ++subscribed_items;
           vi_already_subscribed_by_this_app_.insert(key_type);
           response_params[key_name][strings::data_type] = key_type;
@@ -149,20 +149,20 @@ void SubscribeVehicleDataRequest::Run() {
 
         if (IsSomeoneSubscribedFor(key_type)) {
           LOGGER_DEBUG(logger_,
-                        "There are apps subscribed already for "
-                        "VehicleDataType: "
-                            << key_type);
+                       "There are apps subscribed already for "
+                       "VehicleDataType: "
+                           << key_type);
           if (!app->SubscribeToIVI(static_cast<uint32_t>(key_type))) {
             LOGGER_ERROR(
                 logger_,
                 "Unable to subscribe for VehicleDataType: " << key_type);
             continue;
           }
-          LOGGER_DEBUG(logger_,
-                        "App with connection key "
-                            << connection_key()
-                            << " have been subscribed for VehicleDataType: "
-                            << key_type);
+          LOGGER_DEBUG(
+              logger_,
+              "App with connection key "
+                  << connection_key()
+                  << " have been subscribed for VehicleDataType: " << key_type);
           ++subscribed_items;
           vi_already_subscribed_by_another_apps_.insert(key_type);
           response_params[key_name][strings::data_type] = key_type;
@@ -174,11 +174,11 @@ void SubscribeVehicleDataRequest::Run() {
         msg_params[key_name] = is_key_enabled;
 
         if (app->SubscribeToIVI(static_cast<uint32_t>(key_type))) {
-          LOGGER_DEBUG(logger_,
-                        "App with connection key "
-                            << connection_key()
-                            << " have been subscribed for VehicleDataType: "
-                            << key_type);
+          LOGGER_DEBUG(
+              logger_,
+              "App with connection key "
+                  << connection_key()
+                  << " have been subscribed for VehicleDataType: " << key_type);
           ++subscribed_items;
         }
       }
@@ -235,8 +235,8 @@ void SubscribeVehicleDataRequest::Run() {
       hmi_requests_.push_back(hmi_request);
     }
   }
-  LOGGER_DEBUG(
-      logger_, hmi_requests_.size() << " requests are going to be sent to HMI");
+  LOGGER_DEBUG(logger_,
+               hmi_requests_.size() << " requests are going to be sent to HMI");
 
   // Send subrequests
   for (HmiRequests::const_iterator it = hmi_requests_.begin();
@@ -301,9 +301,9 @@ void SubscribeVehicleDataRequest::on_event(const event_engine::Event& event) {
         status = mobile_api::Result::eType::GENERIC_ERROR;
       }
       LOGGER_TRACE(logger_,
-                    "Status from HMI: " << it->status
-                                        << ", so response status become "
-                                        << status);
+                   "Status from HMI: " << it->status
+                                       << ", so response status become "
+                                       << status);
     } else {
       any_arg_success = true;
     }
@@ -400,12 +400,11 @@ void SubscribeVehicleDataRequest::UnsubscribeFailedSubscriptions(
       if (msg_params[it->first][strings::result_code].asInt() !=
           hmi_apis::Common_VehicleDataResultCode::VDRC_SUCCESS) {
         LOGGER_DEBUG(logger_,
-                      "Subscription for VehicleDataType "
-                          << it->first
-                          << " is unsuccessfull. "
-                             "Unsubscribing app with connection key "
-                          << connection_key()
-                          << " from it.");
+                     "Subscription for VehicleDataType "
+                         << it->first
+                         << " is unsuccessfull. "
+                            "Unsubscribing app with connection key "
+                         << connection_key() << " from it.");
         app->UnsubscribeFromIVI(it->second);
       }
     }

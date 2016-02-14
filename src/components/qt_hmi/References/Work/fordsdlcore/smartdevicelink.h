@@ -70,7 +70,7 @@ class SmartDeviceLink : public QObject {
 
   void disconnected();
 
- signals:
+signals:
   void show1Changed(QString);
   void show2Changed(QString);
   void newAppAvailable(int, QString);

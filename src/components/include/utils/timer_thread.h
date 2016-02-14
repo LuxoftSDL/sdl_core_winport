@@ -368,7 +368,7 @@ void TimerThread<T>::TimerDelegate::threadMain() {
     int32_t wait_milliseconds_left = TimerDelegate::get_timeout();
     sync_primitives::AutoLock auto_lock(state_lock_);
     LOGGER_DEBUG(logger_,
-                  "Milliseconds left to wait: " << wait_milliseconds_left);
+                 "Milliseconds left to wait: " << wait_milliseconds_left);
     ConditionalVariable::WaitStatus wait_status =
         termination_condition_.WaitFor(auto_lock, wait_milliseconds_left);
     // Quit sleeping or continue sleeping in case of spurious wake up
@@ -399,7 +399,7 @@ void TimerThread<T>::TimerLooperDelegate::threadMain() {
     int32_t wait_milliseconds_left = TimerDelegate::get_timeout();
     sync_primitives::AutoLock auto_lock(TimerDelegate::state_lock_);
     LOGGER_DEBUG(logger_,
-                  "Milliseconds left to wait: " << wait_milliseconds_left);
+                 "Milliseconds left to wait: " << wait_milliseconds_left);
     ConditionalVariable::WaitStatus wait_status =
         TimerDelegate::termination_condition_.WaitFor(auto_lock,
                                                       wait_milliseconds_left);

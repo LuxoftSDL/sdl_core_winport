@@ -76,8 +76,8 @@ bool TcpServerOiginatedSocketConnection::Establish(ConnectError** error) {
   const int port = tcp_device->GetApplicationPort(application_handle());
   if (-1 == port) {
     LOGGER_ERROR(logger_,
-                  "Application port for " << application_handle()
-                                          << " not found");
+                 "Application port for " << application_handle()
+                                         << " not found");
     *error = new ConnectError();
     return false;
   }
@@ -87,9 +87,9 @@ bool TcpServerOiginatedSocketConnection::Establish(ConnectError** error) {
   utils::TcpSocketConnection connection;
   if (!connection.Connect(tcp_device->Address(), port)) {
     LOGGER_ERROR(logger_,
-                  "Failed to connect to the server " << address << ":" << port
-                                                     << " for application "
-                                                     << application_handle());
+                 "Failed to connect to the server " << address << ":" << port
+                                                    << " for application "
+                                                    << application_handle());
     *error = new ConnectError();
     return false;
   }

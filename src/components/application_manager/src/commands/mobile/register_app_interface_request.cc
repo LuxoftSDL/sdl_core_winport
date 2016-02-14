@@ -146,8 +146,7 @@ bool RegisterAppInterfaceRequest::Init() {
 }
 
 void RegisterAppInterfaceRequest::Run() {
-  LOGGER_INFO(logger_,
-               "RegisterAppInterfaceRequest::Run " << connection_key());
+  LOGGER_INFO(logger_, "RegisterAppInterfaceRequest::Run " << connection_key());
 
   // Fix problem with SDL and HMI HTML. This problem is not actual for HMI PASA.
   // Flag conditional compilation specific to customer is used in order to
@@ -213,7 +212,7 @@ void RegisterAppInterfaceRequest::Run() {
 
   if (IsWhiteSpaceExist()) {
     LOGGER_INFO(logger_,
-                 "Incoming register app interface has contains \t\n \\t \\n");
+                "Incoming register app interface has contains \t\n \\t \\n");
     SendResponse(false, mobile_apis::Result::INVALID_DATA);
     return;
   }
@@ -226,8 +225,8 @@ void RegisterAppInterfaceRequest::Run() {
 
   if (!application) {
     LOGGER_ERROR(logger_,
-                  "Application " << msg_params[strings::app_name].asString()
-                                 << "  hasn't been registered!");
+                 "Application " << msg_params[strings::app_name].asString()
+                                << "  hasn't been registered!");
   } else {
     // For resuming application need to restore hmi_app_id from resumeCtrl
     const std::string policy_app_id = msg_params[strings::app_id].asString();
@@ -321,7 +320,7 @@ void RegisterAppInterfaceRequest::SendRegisterAppInterfaceResponseToMobile() {
 
   if (!application) {
     LOGGER_ERROR(logger_,
-                  "There is no application for such connection key" << key);
+                 "There is no application for such connection key" << key);
     return;
   }
 
@@ -342,17 +341,15 @@ void RegisterAppInterfaceRequest::SendRegisterAppInterfaceResponseToMobile() {
       msg_params[strings::hmi_display_language_desired].asInt() !=
           hmi_capabilities.active_ui_language()) {
     LOGGER_WARN(logger_,
-                 "Wrong language on registering application "
-                     << application->name());
+                "Wrong language on registering application "
+                    << application->name());
 
     LOGGER_ERROR(
         logger_,
         "vr " << msg_params[strings::language_desired].asInt() << " - "
-              << hmi_capabilities.active_vr_language()
-              << "ui "
+              << hmi_capabilities.active_vr_language() << "ui "
               << msg_params[strings::hmi_display_language_desired].asInt()
-              << " - "
-              << hmi_capabilities.active_ui_language());
+              << " - " << hmi_capabilities.active_ui_language());
 
     result_code = mobile_apis::Result::WRONG_LANGUAGE;
   }
@@ -623,8 +620,7 @@ mobile_apis::Result::eType RegisterAppInterfaceRequest::CheckWithPolicyData() {
     policy::StringArray::const_iterator it =
         std::find_if(app_nicknames.begin(), app_nicknames.end(), compare);
     if (app_nicknames.end() == it) {
-      LOGGER_WARN(logger_,
-                   "Application name was not found in nicknames list.");
+      LOGGER_WARN(logger_, "Application name was not found in nicknames list.");
       // App should be unregistered, if its name is not present in nicknames
       // list
       usage_statistics::AppCounter count_of_rejections_nickname_mismatch(
@@ -711,8 +707,8 @@ void RegisterAppInterfaceRequest::FillDeviceInfo(
 
 bool RegisterAppInterfaceRequest::IsApplicationWithSameAppIdRegistered() {
   LOGGER_INFO(logger_,
-               "RegisterAppInterfaceRequest::"
-               "IsApplicationWithSameAppIdRegistered");
+              "RegisterAppInterfaceRequest::"
+              "IsApplicationWithSameAppIdRegistered");
 
   const std::string mobile_app_id =
       (*message_)[strings::msg_params][strings::app_id].asString();
@@ -765,7 +761,7 @@ bool RegisterAppInterfaceRequest::IsWhiteSpaceExist() {
               .asCharArray();
     if (strlen(str) && !CheckSyntax(str)) {
       LOGGER_ERROR(logger_,
-                    "Invalid ngn_media_screen_app_name syntax check failed");
+                   "Invalid ngn_media_screen_app_name syntax check failed");
       return true;
     }
   }
@@ -798,11 +794,10 @@ bool RegisterAppInterfaceRequest::IsWhiteSpaceExist() {
     if ((*message_)[strings::msg_params][strings::device_info].keyExists(
             strings::hardware)) {
       str = (*message_)[strings::msg_params][strings::device_info]
-                       [strings::hardware]
-                           .asCharArray();
+                       [strings::hardware].asCharArray();
       if (strlen(str) && !CheckSyntax(str)) {
         LOGGER_ERROR(logger_,
-                      "Invalid device_info hardware syntax check failed");
+                     "Invalid device_info hardware syntax check failed");
         return true;
       }
     }
@@ -810,11 +805,10 @@ bool RegisterAppInterfaceRequest::IsWhiteSpaceExist() {
     if ((*message_)[strings::msg_params][strings::device_info].keyExists(
             strings::firmware_rev)) {
       str = (*message_)[strings::msg_params][strings::device_info]
-                       [strings::firmware_rev]
-                           .asCharArray();
+                       [strings::firmware_rev].asCharArray();
       if (strlen(str) && !CheckSyntax(str)) {
         LOGGER_ERROR(logger_,
-                      "Invalid device_info firmware_rev syntax check failed");
+                     "Invalid device_info firmware_rev syntax check failed");
         return true;
       }
     }
@@ -832,11 +826,10 @@ bool RegisterAppInterfaceRequest::IsWhiteSpaceExist() {
     if ((*message_)[strings::msg_params][strings::device_info].keyExists(
             strings::os_version)) {
       str = (*message_)[strings::msg_params][strings::device_info]
-                       [strings::os_version]
-                           .asCharArray();
+                       [strings::os_version].asCharArray();
       if (strlen(str) && !CheckSyntax(str)) {
         LOGGER_ERROR(logger_,
-                      "Invalid device_info os_version syntax check failed");
+                     "Invalid device_info os_version syntax check failed");
         return true;
       }
     }
@@ -844,11 +837,10 @@ bool RegisterAppInterfaceRequest::IsWhiteSpaceExist() {
     if ((*message_)[strings::msg_params][strings::device_info].keyExists(
             strings::carrier)) {
       str = (*message_)[strings::msg_params][strings::device_info]
-                       [strings::carrier]
-                           .asCharArray();
+                       [strings::carrier].asCharArray();
       if (strlen(str) && !CheckSyntax(str)) {
         LOGGER_ERROR(logger_,
-                      "Invalid device_info carrier syntax check failed");
+                     "Invalid device_info carrier syntax check failed");
         return true;
       }
     }
@@ -872,8 +864,8 @@ void RegisterAppInterfaceRequest::CheckResponseVehicleTypeParam(
   if (!vehicle_type.keyExists(param) || vehicle_type[param].empty()) {
     if (!backup_value.empty()) {
       LOGGER_DEBUG(logger_,
-                    param << " is missing."
-                             "Will be replaced with policy table value.");
+                   param << " is missing."
+                            "Will be replaced with policy table value.");
       vehicle_type[param] = backup_value;
     } else {
       vehicle_type.erase(param);

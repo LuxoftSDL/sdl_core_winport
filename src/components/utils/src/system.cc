@@ -89,7 +89,7 @@ bool System::Execute() {
 
 bool System::Execute(bool wait) {
   size_t size = argv_.size();
-  char** argv = new char*[size + 1];
+  char** argv = new char* [size + 1];
   std::transform(argv_.begin(), argv_.end(), argv, GetCString());
   argv[size] = NULL;
 
@@ -99,8 +99,8 @@ bool System::Execute(bool wait) {
 
   if (ret == -1) {
     LOGGER_ERROR(logger_,
-                  "Can't execute command: " << command_ << " Errno is: "
-                                            << std::strerror(errno));
+                 "Can't execute command: " << command_ << " Errno is: "
+                                           << std::strerror(errno));
     return false;
   }
 
@@ -143,7 +143,7 @@ bool System::Execute(bool wait) {
       dup2(fd_dev0, STDERR_FILENO);
 
       size_t size = argv_.size();
-      char** argv = new char*[size + 1];
+      char** argv = new char* [size + 1];
       std::transform(argv_.begin(), argv_.end(), argv, GetCString());
       argv[size] = NULL;
 

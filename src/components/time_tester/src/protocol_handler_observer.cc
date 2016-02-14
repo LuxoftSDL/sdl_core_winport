@@ -49,7 +49,7 @@ void ProtocolHandlerObserver::StartMessageProcess(
   }
   if (time_starts.find(message_id) != time_starts.end()) {
     LOGGER_INFO(logger_,
-                 "Message ID already wait for stop processing" << message_id);
+                "Message ID already wait for stop processing" << message_id);
     return;
   }
   time_starts[message_id] = start_time;

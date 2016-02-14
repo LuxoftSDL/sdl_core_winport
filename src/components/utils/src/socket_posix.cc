@@ -264,8 +264,7 @@ bool utils::TcpSocketConnection::Impl::Connect(const HostAddress& address,
     LOGGER_ERROR(logger_,
                  "Failed to connect to the server " << address.ToString() << ":"
                                                     << port
-                                                    << ". Error: "
-                                                    << errno);
+                                                    << ". Error: " << errno);
     CloseSocket(client_socket);
     return false;
   }
@@ -283,18 +282,14 @@ bool utils::TcpSocketConnection::Impl::Notify() {
   if (-1 == write_fd_) {
     LOGGER_ERROR(logger_,
                  "Failed to wake up connection thread for connection "
-                     << this
-                     << ". Error: "
-                     << errno);
+                     << this << ". Error: " << errno);
     return false;
   }
   uint8_t buffer = 0;
   if (1 != write(write_fd_, &buffer, 1)) {
     LOGGER_ERROR(logger_,
                  "Failed to wake up connection thread for connection "
-                     << this
-                     << ". Error: "
-                     << errno);
+                     << this << ". Error: " << errno);
     return false;
   }
 }
@@ -333,9 +328,8 @@ void utils::TcpSocketConnection::Impl::OnRead() {
       int socket_error = errno;
       if (EAGAIN != socket_error && EWOULDBLOCK != socket_error) {
         LOGGER_ERROR(logger_,
-                     "recv() failed for connection " << tcp_socket_
-                                                     << ". Error: "
-                                                     << socket_error);
+                     "recv() failed for connection "
+                         << tcp_socket_ << ". Error: " << socket_error);
         OnError(socket_error);
         return;
       }
@@ -378,25 +372,22 @@ void utils::TcpSocketConnection::Impl::Wait() {
   poll_fds[1].fd = read_fd_;
   poll_fds[1].events = POLLIN | POLLPRI;
   if (-1 == poll(poll_fds, kPollFdsSize, -1)) {
-    LOGGER_ERROR(
-        logger_,
-        "poll failed for the socket " << tcp_socket_ << ". Error: " << errno);
+    LOGGER_ERROR(logger_,
+                 "poll failed for the socket " << tcp_socket_
+                                               << ". Error: " << errno);
     OnError(errno);
     return;
   }
-  LOGGER_DEBUG(
-      logger_,
-      "poll is ok for the socket " << tcp_socket_ << " revents0: " << std::hex
-                                   << poll_fds[0].revents
-                                   << " revents1:"
-                                   << std::hex
-                                   << poll_fds[1].revents);
+  LOGGER_DEBUG(logger_,
+               "poll is ok for the socket "
+                   << tcp_socket_ << " revents0: " << std::hex
+                   << poll_fds[0].revents << " revents1:" << std::hex
+                   << poll_fds[1].revents);
   // error check
   if (0 != (poll_fds[1].revents & (POLLERR | POLLHUP | POLLNVAL))) {
     LOGGER_ERROR(logger_,
-                 "Notification pipe for socket " << tcp_socket_
-                                                 << " terminated. Error: "
-                                                 << errno);
+                 "Notification pipe for socket "
+                     << tcp_socket_ << " terminated. Error: " << errno);
     OnError(errno);
     return;
   }
@@ -415,9 +406,7 @@ void utils::TcpSocketConnection::Impl::Wait() {
   if ((bytes_read < 0) && (EAGAIN != errno)) {
     LOGGER_ERROR(logger_,
                  "Failed to clear notification pipe. Poll failed for socket "
-                     << tcp_socket_
-                     << ". Error: "
-                     << errno);
+                     << tcp_socket_ << ". Error: " << errno);
     OnError(errno);
     return;
   }
@@ -574,8 +563,7 @@ bool utils::TcpServerSocket::Impl::Listen(const HostAddress& address,
   if (-1 == listen(server_socket, backlog)) {
     LOGGER_ERROR(logger_,
                  "Failed to listen on " << address.ToString() << ":" << port
-                                        << ". Error: "
-                                        << errno);
+                                        << ". Error: " << errno);
     return false;
   }
 
@@ -605,8 +593,7 @@ utils::TcpSocketConnection utils::TcpServerSocket::Impl::Accept() {
   const HostAddress accepted_client_address(inet_ntoa(client_address.sin_addr));
   LOGGER_DEBUG(logger_,
                "Accepted new client connection "
-                   << accepted_client_address.ToString()
-                   << ":"
+                   << accepted_client_address.ToString() << ":"
                    << client_address.sin_port);
   return TcpSocketConnection(new TcpSocketConnection::Impl(
       client_socket, accepted_client_address, client_address.sin_port));

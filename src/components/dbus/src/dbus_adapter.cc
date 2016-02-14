@@ -97,8 +97,8 @@ bool DBusAdapter::Init() {
   }
   if (DBUS_REQUEST_NAME_REPLY_PRIMARY_OWNER != ret) {
     LOGGER_ERROR(logger_,
-                  "DBus: Service '" << sdl_service_name_
-                                    << "' is already running");
+                 "DBus: Service '" << sdl_service_name_
+                                   << "' is already running");
     return false;
   }
 
@@ -432,11 +432,10 @@ bool DBusAdapter::ProcessError(DBusMessage* msg,
     obj[sos::S_PARAMS]["data"]["method"] = method.first + "." + method.second;
 
     LOGGER_WARN(logger_,
-                 "DBus: Call of method " << method.first << "." << method.second
-                                         << " returned error "
-                                         << name.asInt()
-                                         << ": "
-                                         << description[rule.name].asString());
+                "DBus: Call of method " << method.first << "." << method.second
+                                        << " returned error " << name.asInt()
+                                        << ": "
+                                        << description[rule.name].asString());
   } else {
     LOGGER_ERROR(logger_, "DBus: Type message isn't error");
   }
@@ -498,7 +497,7 @@ bool DBusAdapter::SetOneArgument(DBusMessageIter* iter,
       return SetValue(iter, rules, param);
     } else {
       LOGGER_WARN(logger_,
-                   "DBus: Argument '" << rules->name << "' is obligatory!");
+                  "DBus: Argument '" << rules->name << "' is obligatory!");
       return false;
     }
   } else {
@@ -754,8 +753,7 @@ bool DBusAdapter::GetValue(
         dbus_message_iter_get_basic(iter, &integerValue);
         smart_objects::SmartObject value(integerValue);
         param = value;
-        LOGGER_DEBUG(logger_,
-                      "DBus: " << rules->name << " = " << integerValue);
+        LOGGER_DEBUG(logger_, "DBus: " << rules->name << " = " << integerValue);
       } else {
         LOGGER_ERROR(logger_, "DBus: Not expected type of argument");
         return false;
@@ -780,8 +778,8 @@ bool DBusAdapter::GetValue(
         smart_objects::SmartObject value(static_cast<bool>(booleanValue));
         param = value;
         LOGGER_DEBUG(logger_,
-                      "DBus: " << rules->name << " = " << std::boolalpha
-                               << booleanValue);
+                     "DBus: " << rules->name << " = " << std::boolalpha
+                              << booleanValue);
       } else {
         LOGGER_ERROR(logger_, "DBus: Not expected type of argument");
         return false;
@@ -795,7 +793,7 @@ bool DBusAdapter::GetValue(
         smart_objects::SmartObject value(strValue);
         param = value;
         LOGGER_DEBUG(logger_,
-                      "DBus: " << rules->name << " = \"" << strValue << "\"");
+                     "DBus: " << rules->name << " = \"" << strValue << "\"");
       } else {
         LOGGER_ERROR(logger_, "DBus: Not expected type of argument");
         return false;

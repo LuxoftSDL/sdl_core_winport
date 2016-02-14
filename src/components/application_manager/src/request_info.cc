@@ -119,10 +119,10 @@ FakeRequestInfo::FakeRequestInfo(uint32_t app_id, uint32_t correaltion_id) {
 
 bool RequestInfoSet::Add(RequestInfoPtr request_info) {
   DCHECK_OR_RETURN(request_info, false);
-  LOGGER_DEBUG(logger_,
-                "Add request app_id = " << request_info->app_id()
-                                        << "; corr_id = "
-                                        << request_info->requestId());
+  LOGGER_DEBUG(
+      logger_,
+      "Add request app_id = " << request_info->app_id()
+                              << "; corr_id = " << request_info->requestId());
   sync_primitives::AutoLock lock(this_lock_);
   CheckSetSizes();
   const std::pair<HashSortedRequestInfoSet::iterator, bool>& insert_resilt =
@@ -138,10 +138,9 @@ bool RequestInfoSet::Add(RequestInfoPtr request_info) {
     return true;
   } else {
     LOGGER_ERROR(logger_,
-                  "Request with app_id = " << request_info->app_id()
-                                           << "; corr_id "
-                                           << request_info->requestId()
-                                           << " Already exist ");
+                 "Request with app_id = "
+                     << request_info->app_id() << "; corr_id "
+                     << request_info->requestId() << " Already exist ");
   }
   CheckSetSizes();
   return false;
@@ -286,9 +285,9 @@ bool RequestInfoSet::CheckTimeScaleMaxRequest(
                                          scale);
     if (count >= max_request_per_time_scale) {
       LOGGER_WARN(logger_,
-                   "Processing requests count " << count
-                                                << " exceed application limit "
-                                                << max_request_per_time_scale);
+                  "Processing requests count " << count
+                                               << " exceed application limit "
+                                               << max_request_per_time_scale);
       return false;
     }
     LOGGER_DEBUG(logger_, "Requests count " << count);
@@ -316,11 +315,10 @@ bool RequestInfoSet::CheckHMILevelTimeScaleMaxRequest(
                                          scale);
     if (count >= max_request_per_time_scale) {
       LOGGER_WARN(logger_,
-                   "Processing requests count " << count
-                                                << " exceed application limit "
-                                                << max_request_per_time_scale
-                                                << " in hmi level "
-                                                << hmi_level);
+                  "Processing requests count "
+                      << count << " exceed application limit "
+                      << max_request_per_time_scale << " in hmi level "
+                      << hmi_level);
       return false;
     }
     LOGGER_DEBUG(logger_, "Requests count " << count);

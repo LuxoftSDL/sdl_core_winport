@@ -651,8 +651,8 @@ bool ApplicationImpl::is_resuming() const {
 bool ApplicationImpl::AddFile(AppFile& file) {
   if (app_files_.count(file.file_name) == 0) {
     LOGGER_INFO(logger_,
-                 "AddFile file " << file.file_name << " File type is "
-                                 << file.file_type);
+                "AddFile file " << file.file_name << " File type is "
+                                << file.file_type);
     app_files_[file.file_name] = file;
     return true;
   }
@@ -662,8 +662,8 @@ bool ApplicationImpl::AddFile(AppFile& file) {
 bool ApplicationImpl::UpdateFile(AppFile& file) {
   if (app_files_.count(file.file_name) != 0) {
     LOGGER_INFO(logger_,
-                 "UpdateFile file " << file.file_name << " File type is "
-                                    << file.file_type);
+                "UpdateFile file " << file.file_name << " File type is "
+                                   << file.file_type);
     app_files_[file.file_name] = file;
     return true;
   }
@@ -674,8 +674,8 @@ bool ApplicationImpl::DeleteFile(const std::string& file_name) {
   AppFilesMap::iterator it = app_files_.find(file_name);
   if (it != app_files_.end()) {
     LOGGER_INFO(logger_,
-                 "DeleteFile file " << it->second.file_name << " File type is "
-                                    << it->second.file_type);
+                "DeleteFile file " << it->second.file_name << " File type is "
+                                   << it->second.file_type);
     app_files_.erase(it);
     return true;
   }
@@ -746,7 +746,7 @@ bool ApplicationImpl::IsCommandLimitsExceeded(
           cmd_number_to_time_limits_.find(cmd_id);
       if (cmd_number_to_time_limits_.end() == it) {
         LOGGER_WARN(logger_,
-                     "Limits for command id " << cmd_id << "had not been set.");
+                    "Limits for command id " << cmd_id << "had not been set.");
         return true;
       }
 
@@ -767,19 +767,13 @@ bool ApplicationImpl::IsCommandLimitsExceeded(
       }
 
       LOGGER_INFO(logger_,
-                   "Time Info: "
-                       << "\n Current: "
-                       << current.tv_sec
-                       << "\n Limit: ("
-                       << limit.first.tv_sec
-                       << ","
-                       << limit.second
-                       << ")"
-                          "\n frequency_restrictions: ("
-                       << frequency_restrictions.first
-                       << ","
-                       << frequency_restrictions.second
-                       << ")");
+                  "Time Info: "
+                      << "\n Current: " << current.tv_sec << "\n Limit: ("
+                      << limit.first.tv_sec << "," << limit.second
+                      << ")"
+                         "\n frequency_restrictions: ("
+                      << frequency_restrictions.first << ","
+                      << frequency_restrictions.second << ")");
       if (current.tv_sec < limit.first.tv_sec + frequency_restrictions.second) {
         if (limit.second < frequency_restrictions.first) {
           ++limit.second;
@@ -933,9 +927,8 @@ void ApplicationImpl::LoadPersistentFiles() {
       }
 
       LOGGER_INFO(logger_,
-                   "Loaded persistent file " << file.file_name
-                                             << " File type is "
-                                             << file.file_type);
+                  "Loaded persistent file "
+                      << file.file_name << " File type is " << file.file_type);
       AddFile(file);
     }
   }

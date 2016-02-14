@@ -91,7 +91,7 @@ class IncomingDataHandlerTest : public ::testing::Test {
   FrameList actual_frames;
   RESULT_CODE result_code;
   size_t malformed_occurs;
-  uint8_t *some_data, *some_data2;
+  uint8_t* some_data, *some_data2;
   size_t some_data_size, some_data2_size;
   uint32_t protov1_message_id;
   uint32_t some_message_id;

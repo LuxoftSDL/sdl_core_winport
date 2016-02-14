@@ -534,14 +534,14 @@ TEST_F(SecurityManagerTest, StartHandshake_SSLInitIsNotComplete) {
   // Emulate SSLContext::StartHandshake with different parameters
   // Only on both correct - data and size shall be send message to mobile app
   EXPECT_CALL(mock_ssl_context_exists, StartHandshake(_, _))
-      .WillOnce(
-          DoAll(SetArgPointee<0>(handshake_data_out_pointer),
-                SetArgPointee<1>(0),
-                Return(security_manager::SSLContext::Handshake_Result_Success)))
-      .WillOnce(
-          DoAll(SetArgPointee<0>((uint8_t*)NULL),
-                SetArgPointee<1>(handshake_data_out_size),
-                Return(security_manager::SSLContext::Handshake_Result_Success)))
+      .WillOnce(DoAll(
+          SetArgPointee<0>(handshake_data_out_pointer),
+          SetArgPointee<1>(0),
+          Return(security_manager::SSLContext::Handshake_Result_Success)))
+      .WillOnce(DoAll(
+          SetArgPointee<0>((uint8_t*)NULL),
+          SetArgPointee<1>(handshake_data_out_size),
+          Return(security_manager::SSLContext::Handshake_Result_Success)))
       .WillOnce(DoAll(
           SetArgPointee<0>(handshake_data_out_pointer),
           SetArgPointee<1>(handshake_data_out_size),
@@ -650,8 +650,7 @@ TEST_F(SecurityManagerTest, ProccessHandshakeData_InvalidData) {
       mock_protocol_handler,
       SendMessageToMobileApp(
           InternalErrorWithErrId(SecurityManager::ERROR_SSL_INVALID_DATA),
-          is_final))
-      .Times(handshake_emulates);
+          is_final)).Times(handshake_emulates);
   // Expect notifying listeners (unsuccess)
   EXPECT_CALL(mock_sm_listener, OnHandshakeDone(key, false))
       .WillOnce(Return(true));
@@ -711,8 +710,7 @@ TEST_F(SecurityManagerTest, ProccessHandshakeData_Answer) {
               SendMessageToMobileApp(
                   // FIXME : !!!
                   _,
-                  is_final))
-      .Times(handshake_emulates);
+                  is_final)).Times(handshake_emulates);
   // Expect notifying listeners (unsuccess)
   EXPECT_CALL(mock_sm_listener, OnHandshakeDone(key, false))
       .WillOnce(Return(true));
@@ -728,10 +726,10 @@ TEST_F(SecurityManagerTest, ProccessHandshakeData_Answer) {
   // Emulate DoHandshakeStep correct logics
   EXPECT_CALL(mock_ssl_context_exists,
               DoHandshakeStep(_, handshake_data_size, _, _))
-      .WillOnce(
-          DoAll(SetArgPointee<2>(handshake_data_out_pointer),
-                SetArgPointee<3>(handshake_data_out_size),
-                Return(security_manager::SSLContext::Handshake_Result_Success)))
+      .WillOnce(DoAll(
+          SetArgPointee<2>(handshake_data_out_pointer),
+          SetArgPointee<3>(handshake_data_out_size),
+          Return(security_manager::SSLContext::Handshake_Result_Success)))
       .WillOnce(
           DoAll(SetArgPointee<2>(handshake_data_out_pointer),
                 SetArgPointee<3>(handshake_data_out_size),
@@ -766,30 +764,30 @@ TEST_F(SecurityManagerTest, ProccessHandshakeData_HandShakeFinished) {
               DoHandshakeStep(_, handshake_data_size, _, _))
       .
       // two states with correct out data
-      WillOnce(
-          DoAll(SetArgPointee<2>(handshake_data_out_pointer),
-                SetArgPointee<3>(handshake_data_out_size),
-                Return(security_manager::SSLContext::Handshake_Result_Success)))
+      WillOnce(DoAll(
+          SetArgPointee<2>(handshake_data_out_pointer),
+          SetArgPointee<3>(handshake_data_out_size),
+          Return(security_manager::SSLContext::Handshake_Result_Success)))
       .WillOnce(
-          DoAll(SetArgPointee<2>(handshake_data_out_pointer),
-                SetArgPointee<3>(handshake_data_out_size),
-                Return(security_manager::SSLContext::Handshake_Result_Fail)))
+           DoAll(SetArgPointee<2>(handshake_data_out_pointer),
+                 SetArgPointee<3>(handshake_data_out_size),
+                 Return(security_manager::SSLContext::Handshake_Result_Fail)))
       .
       // two states with with null pointer data
-      WillOnce(
-          DoAll(SetArgPointee<2>((uint8_t*)NULL),
-                SetArgPointee<3>(handshake_data_out_size),
-                Return(security_manager::SSLContext::Handshake_Result_Success)))
+      WillOnce(DoAll(
+          SetArgPointee<2>((uint8_t*)NULL),
+          SetArgPointee<3>(handshake_data_out_size),
+          Return(security_manager::SSLContext::Handshake_Result_Success)))
       .WillOnce(
-          DoAll(SetArgPointee<2>((uint8_t*)NULL),
-                SetArgPointee<3>(handshake_data_out_size),
-                Return(security_manager::SSLContext::Handshake_Result_Fail)))
+           DoAll(SetArgPointee<2>((uint8_t*)NULL),
+                 SetArgPointee<3>(handshake_data_out_size),
+                 Return(security_manager::SSLContext::Handshake_Result_Fail)))
       .
       // two states with with null data size
-      WillOnce(
-          DoAll(SetArgPointee<2>(handshake_data_out_pointer),
-                SetArgPointee<3>(0),
-                Return(security_manager::SSLContext::Handshake_Result_Success)))
+      WillOnce(DoAll(
+          SetArgPointee<2>(handshake_data_out_pointer),
+          SetArgPointee<3>(0),
+          Return(security_manager::SSLContext::Handshake_Result_Success)))
       .WillOnce(DoAll(
           SetArgPointee<2>(handshake_data_out_pointer),
           SetArgPointee<3>(0),

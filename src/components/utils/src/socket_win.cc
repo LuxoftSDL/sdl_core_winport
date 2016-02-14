@@ -248,10 +248,9 @@ bool utils::TcpSocketConnection::Impl::Connect(const HostAddress& address,
                reinterpret_cast<sockaddr*>(&server_address),
                sizeof(server_address)) == 0) {
     LOGGER_ERROR(logger_,
-                 "Failed to connect to the server " << address.ToString() << ":"
-                                                    << port
-                                                    << ". Error: "
-                                                    << WSAGetLastError());
+                 "Failed to connect to the server "
+                     << address.ToString() << ":" << port
+                     << ". Error: " << WSAGetLastError());
     CloseSocket(client_socket);
     return false;
   }
@@ -290,9 +289,8 @@ void utils::TcpSocketConnection::Impl::OnRead() {
       int socket_error = WSAGetLastError();
       if (bytes_read == SOCKET_ERROR && WSAEWOULDBLOCK != socket_error) {
         LOGGER_ERROR(logger_,
-                     "recv() failed for connection " << tcp_socket_
-                                                     << ". Error: "
-                                                     << socket_error);
+                     "recv() failed for connection "
+                         << tcp_socket_ << ". Error: " << socket_error);
         OnError(socket_error);
         return;
       }
@@ -346,11 +344,9 @@ void utils::TcpSocketConnection::Impl::Wait() {
 
   if (is_socket_event || is_notify_event) {
     LOGGER_DEBUG(logger_,
-                 "Waited event for the connection " << tcp_socket_
-                                                    << ". Socket event: "
-                                                    << is_socket_event
-                                                    << ". Notify event: "
-                                                    << is_notify_event);
+                 "Waited event for the connection "
+                     << tcp_socket_ << ". Socket event: " << is_socket_event
+                     << ". Notify event: " << is_notify_event);
   } else {
     LOGGER_ERROR(logger_,
                  "Wait for socket or notification has failed with error: "
@@ -380,9 +376,7 @@ void utils::TcpSocketConnection::Impl::Wait() {
     if (net_events.lNetworkEvents & FD_CLOSE) {
       LOGGER_DEBUG(logger_,
                    "Network event: FD_CLOSE. "
-                       << "Connection "
-                       << this
-                       << " terminated");
+                       << "Connection " << this << " terminated");
       OnClose();
       return;
     }
@@ -562,16 +556,14 @@ bool utils::TcpServerSocket::Impl::Listen(const HostAddress& address,
                            sizeof(server_address))) {
     LOGGER_ERROR(logger_,
                  "Failed to bind to " << address.ToString() << ":" << port
-                                      << ". Error: "
-                                      << WSAGetLastError());
+                                      << ". Error: " << WSAGetLastError());
     return false;
   }
 
   if (SOCKET_ERROR == listen(server_socket, backlog)) {
     LOGGER_WARN(logger_,
                 "Failed to listen on " << address.ToString() << ":" << port
-                                       << ". Error: "
-                                       << WSAGetLastError());
+                                       << ". Error: " << WSAGetLastError());
     return false;
   }
 
@@ -603,12 +595,10 @@ utils::TcpSocketConnection utils::TcpServerSocket::Impl::Accept() {
   }
   const HostAddress accepted_client_address(client_address.sin_addr.s_addr,
                                             false);
-  LOGGER_DEBUG(
-      logger_,
-      "Accepted new client connection " << client_socket << " "
-                                        << accepted_client_address.ToString()
-                                        << ":"
-                                        << client_address.sin_port);
+  LOGGER_DEBUG(logger_,
+               "Accepted new client connection "
+                   << client_socket << " " << accepted_client_address.ToString()
+                   << ":" << client_address.sin_port);
   return TcpSocketConnection(new TcpSocketConnection::Impl(
       client_socket, accepted_client_address, client_address.sin_port));
 }

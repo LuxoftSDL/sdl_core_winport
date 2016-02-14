@@ -54,8 +54,8 @@ void OnHMIStatusNotificationFromMobile::Run() {
       ApplicationManagerImpl::instance()->application(connection_key());
 
   if (!app.valid()) {
-    LOGGER_ERROR(
-        logger_, "OnHMIStatusNotificationFromMobile application doesn't exist");
+    LOGGER_ERROR(logger_,
+                 "OnHMIStatusNotificationFromMobile application doesn't exist");
     return;
   }
 
@@ -73,11 +73,9 @@ void OnHMIStatusNotificationFromMobile::Run() {
       application_manager::ApplicationManagerImpl::instance()
           ->IsAppsQueriedFrom(handle);
 
-  LOGGER_DEBUG(
-      logger_,
-      "Mobile HMI state notication came for connection key:" << connection_key()
-                                                             << " and handle: "
-                                                             << handle);
+  LOGGER_DEBUG(logger_,
+               "Mobile HMI state notication came for connection key:"
+                   << connection_key() << " and handle: " << handle);
 
   if (!is_apps_requested_before &&
       ProtocolVersion::kV4 == app->protocol_version() && app->is_foreground()) {
@@ -90,9 +88,9 @@ void OnHMIStatusNotificationFromMobile::Run() {
 
   if (is_apps_requested_before) {
     LOGGER_DEBUG(logger_,
-                  "Remote apps list had been requested already "
-                  " for handle: "
-                      << handle);
+                 "Remote apps list had been requested already "
+                 " for handle: "
+                     << handle);
 
     if (ProtocolVersion::kV4 == app->protocol_version()) {
       ApplicationManagerImpl::ApplicationListAccessor accessor;

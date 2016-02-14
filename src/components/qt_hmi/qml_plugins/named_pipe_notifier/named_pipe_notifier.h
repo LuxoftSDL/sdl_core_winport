@@ -58,7 +58,7 @@ class NamedPipeNotifier : public QThread {
  protected:
   virtual void run();
 
- signals:
+signals:
   void nameChanged();
   void readyRead();
   void openFailed();

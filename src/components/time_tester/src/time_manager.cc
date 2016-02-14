@@ -174,8 +174,8 @@ void TimeManager::Streamer::Start() {
                  reinterpret_cast<struct sockaddr*>(&serv_addr_),
                  sizeof(serv_addr_))) {
     LOGGER_ERROR(logger_,
-                  "Unable to bind server " << server_->ip_.c_str() << ':'
-                                           << server_->port_);
+                 "Unable to bind server " << server_->ip_.c_str() << ':'
+                                          << server_->port_);
     return;
   }
   if (-1 == listen(server_socket_fd_, 1)) {

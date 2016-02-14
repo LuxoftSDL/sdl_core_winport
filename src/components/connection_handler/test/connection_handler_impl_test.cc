@@ -402,8 +402,7 @@ TEST_F(ConnectionHandlerTest, OnMalformedMessageCallback) {
       &mock_connection_handler_observer);
 
   EXPECT_CALL(mock_connection_handler_observer,
-              OnServiceEndedCallback(connection_key_, _, kMalformed))
-      .Times(2);
+              OnServiceEndedCallback(connection_key_, _, kMalformed)).Times(2);
   connection_handler_->OnMalformedMessageCallback(uid_);
 }
 
@@ -420,8 +419,7 @@ TEST_F(ConnectionHandlerTest, OnApplicationFloodCallBack) {
 
   EXPECT_CALL(mock_protocol_handler, SendEndSession(uid_, start_session_id_));
   EXPECT_CALL(mock_connection_handler_observer,
-              OnServiceEndedCallback(connection_key_, _, kCommon))
-      .Times(2);
+              OnServiceEndedCallback(connection_key_, _, kCommon)).Times(2);
   connection_handler_->OnApplicationFloodCallBack(uid_);
 }
 
@@ -481,8 +479,7 @@ TEST_F(ConnectionHandlerTest, CloseSessionWithCommonReason) {
 
   EXPECT_CALL(mock_protocol_handler, SendEndSession(uid_, start_session_id_));
   EXPECT_CALL(mock_connection_handler_observer,
-              OnServiceEndedCallback(connection_key_, _, kCommon))
-      .Times(2);
+              OnServiceEndedCallback(connection_key_, _, kCommon)).Times(2);
 
   connection_handler_->CloseSession(connection_key_, kCommon);
 }
@@ -501,8 +498,7 @@ TEST_F(ConnectionHandlerTest, CloseSessionWithFloodReason) {
 
   EXPECT_CALL(mock_protocol_handler, SendEndSession(uid_, start_session_id_));
   EXPECT_CALL(mock_connection_handler_observer,
-              OnServiceEndedCallback(connection_key_, _, kFlood))
-      .Times(2);
+              OnServiceEndedCallback(connection_key_, _, kFlood)).Times(2);
 
   connection_handler_->CloseSession(connection_key_, kFlood);
 }
@@ -522,8 +518,7 @@ TEST_F(ConnectionHandlerTest, CloseSessionWithMalformedMessage) {
   EXPECT_CALL(mock_protocol_handler, SendEndSession(uid_, start_session_id_))
       .Times(0);
   EXPECT_CALL(mock_connection_handler_observer,
-              OnServiceEndedCallback(connection_key_, _, kMalformed))
-      .Times(2);
+              OnServiceEndedCallback(connection_key_, _, kMalformed)).Times(2);
 
   connection_handler_->CloseSession(connection_key_, kMalformed);
 }
@@ -543,8 +538,7 @@ TEST_F(ConnectionHandlerTest, CloseConnectionSessionsWithMalformedMessage) {
   EXPECT_CALL(mock_protocol_handler, SendEndSession(uid_, start_session_id_))
       .Times(0);
   EXPECT_CALL(mock_connection_handler_observer,
-              OnServiceEndedCallback(connection_key_, _, kMalformed))
-      .Times(2);
+              OnServiceEndedCallback(connection_key_, _, kMalformed)).Times(2);
 
   connection_handler_->CloseConnectionSessions(uid_, kMalformed);
 }
@@ -563,8 +557,7 @@ TEST_F(ConnectionHandlerTest, CloseConnectionSessionsWithCommonReason) {
 
   EXPECT_CALL(mock_protocol_handler, SendEndSession(uid_, start_session_id_));
   EXPECT_CALL(mock_connection_handler_observer,
-              OnServiceEndedCallback(connection_key_, _, kCommon))
-      .Times(2);
+              OnServiceEndedCallback(connection_key_, _, kCommon)).Times(2);
 
   connection_handler_->CloseConnectionSessions(uid_, kCommon);
 }

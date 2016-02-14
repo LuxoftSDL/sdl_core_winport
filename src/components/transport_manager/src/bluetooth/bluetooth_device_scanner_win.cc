@@ -118,8 +118,8 @@ int FindPairedDevs(std::vector<BTH_ADDR*>* result) {
                                          &address_size);
         if (ret_val != 0) {
           LOGGER_ERROR(logger_,
-                        "WSAStringToAddress() failed with error code"
-                            << WSAGetLastError());
+                       "WSAStringToAddress() failed with error code"
+                           << WSAGetLastError());
         }
 
         result->push_back(&address);
@@ -212,8 +212,8 @@ BluetoothDeviceScanner::BluetoothDeviceScanner(
   if (WSASetService(&smart_device_link_service_uuid_, RNRSERVICE_REGISTER, 0) ==
       SOCKET_ERROR) {
     LOGGER_ERROR(logger_,
-                  "WSASetService() failed with error code "
-                      << WSAGetLastError());
+                 "WSASetService() failed with error code "
+                     << WSAGetLastError());
   }
 
   thread_ = threads::CreateThread("BT Device Scaner",
@@ -279,8 +279,8 @@ void BluetoothDeviceScanner::DoInquiry() {
   }
 
   LOGGER_INFO(logger_,
-               "Check rfcomm channel on " << paired_devices_.size()
-                                          << " paired devices.");
+              "Check rfcomm channel on " << paired_devices_.size()
+                                         << " paired devices.");
 
   paired_devices_with_sdl_.clear();
   CheckSDLServiceOnDevices(
@@ -318,10 +318,9 @@ void BluetoothDeviceScanner::CheckSDLServiceOnDevices(
     int device_handle,
     DeviceVector* discovered_devices) {
   LOGGER_TRACE(logger_,
-                "enter. bd_addresses: " << &bd_addresses << ", device_handle: "
-                                        << device_handle
-                                        << ", discovered_devices: "
-                                        << discovered_devices);
+               "enter. bd_addresses: "
+                   << &bd_addresses << ", device_handle: " << device_handle
+                   << ", discovered_devices: " << discovered_devices);
   std::vector<RfcommChannelVector> sdl_rfcomm_channels =
       DiscoverSmartDeviceLinkRFCOMMChannels(bd_addresses);
 
@@ -398,8 +397,8 @@ BluetoothDeviceScanner::DiscoverSmartDeviceLinkRFCOMMChannels(
 bool BluetoothDeviceScanner::DiscoverSmartDeviceLinkRFCOMMChannels(
     const BTH_ADDR& device_address, RfcommChannelVector* channels) {
   LOGGER_TRACE(logger_,
-                "enter. device_address: " << &device_address << ", channels: "
-                                          << channels);
+               "enter. device_address: " << &device_address
+                                         << ", channels: " << channels);
   int iResult = 0;
   int iRet;
   BLOB blob;
@@ -468,9 +467,9 @@ bool BluetoothDeviceScanner::DiscoverSmartDeviceLinkRFCOMMChannels(
     }
     if (WSALookupServiceEnd(hLookup1) != 0) {
       LOGGER_ERROR(logger_,
-                    "BtServiceSearch(): WSALookupServiceEnd(hLookup1) failed "
-                    "with error code ",
-                    WSAGetLastError());
+                   "BtServiceSearch(): WSALookupServiceEnd(hLookup1) failed "
+                   "with error code ",
+                   WSAGetLastError());
     }
   } else {
     LOGGER_ERROR(
@@ -492,15 +491,15 @@ bool BluetoothDeviceScanner::DiscoverSmartDeviceLinkRFCOMMChannels(
       rfcomm_channels_string << static_cast<uint32_t>(*it);
     }
 
-    LOGGER_INFO(logger_,
-                 "SmartDeviceLink service was discovered on device "
-                     << BluetoothDevice::GetUniqueDeviceId(device_address)
-                     << " at channel(s): "
-                     << rfcomm_channels_string.str().c_str());
+    LOGGER_INFO(
+        logger_,
+        "SmartDeviceLink service was discovered on device "
+            << BluetoothDevice::GetUniqueDeviceId(device_address)
+            << " at channel(s): " << rfcomm_channels_string.str().c_str());
   } else {
     LOGGER_INFO(logger_,
-                 "SmartDeviceLink service was not discovered on device "
-                     << BluetoothDevice::GetUniqueDeviceId(device_address));
+                "SmartDeviceLink service was not discovered on device "
+                    << BluetoothDevice::GetUniqueDeviceId(device_address));
   }
   LOGGER_TRACE(logger_, "exit with TRUE");
   return true;
@@ -574,7 +573,7 @@ void BluetoothDeviceScanner::Terminate() {
       device_scan_requested_cv_.NotifyOne();
     }
     LOGGER_INFO(logger_,
-                 "Waiting for bluetooth device scanner thread termination");
+                "Waiting for bluetooth device scanner thread termination");
     thread_->stop();
     LOGGER_INFO(logger_, "Bluetooth device scanner thread stopped");
   }

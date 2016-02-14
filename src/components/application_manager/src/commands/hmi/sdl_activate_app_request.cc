@@ -72,9 +72,9 @@ void SDLActivateAppRequest::Run() {
     DevicesApps devices_apps = FindAllAppOnParticularDevice(app->device());
     if (!devices_apps.first && devices_apps.second.empty()) {
       LOGGER_ERROR(logger_,
-                    "Can't find regular foreground app with the same "
-                    "connection id:"
-                        << app->device());
+                   "Can't find regular foreground app with the same "
+                   "connection id:"
+                       << app->device());
       SendResponse(correlation_id(), SDL_ActivateApp, NO_APPS_REGISTERED);
       return;
     }
@@ -120,8 +120,8 @@ void SDLActivateAppRequest::on_event(const event_engine::Event& event) {
       application_manager::ApplicationManagerImpl::instance()
           ->application_by_hmi_app(hmi_application_id);
   if (!app) {
-    LOGGER_ERROR(
-        logger_, "Application not found by HMI app id: " << hmi_application_id);
+    LOGGER_ERROR(logger_,
+                 "Application not found by HMI app id: " << hmi_application_id);
     return;
   }
   policy::PolicyHandler::instance()->OnActivateApp(app->app_id(),

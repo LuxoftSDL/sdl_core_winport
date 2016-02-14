@@ -147,9 +147,7 @@ void TcpClientListener::StopLoop() {
   if (!byesocket.Connect(address, port_)) {
     LOGGER_ERROR(logger_,
                  "Bye socket has failed to connect to the server "
-                     << address.ToString()
-                     << ":"
-                     << port_);
+                     << address.ToString() << ":" << port_);
   }
 }
 

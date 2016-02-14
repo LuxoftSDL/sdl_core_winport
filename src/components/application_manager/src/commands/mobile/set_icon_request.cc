@@ -116,12 +116,11 @@ void SetIconRequest::on_event(const event_engine::Event& event) {
 
         const std::string path =
             (*message_)[strings::msg_params][strings::sync_file_name]
-                       [strings::value]
-                           .asString();
+                       [strings::value].asString();
         app->set_app_icon_path(path);
 
         LOGGER_INFO(logger_,
-                     "Icon path was set to '" << app->app_icon_path() << "'");
+                    "Icon path was set to '" << app->app_icon_path() << "'");
       }
 
       SendResponse(result, result_code, NULL, &(message[strings::msg_params]));

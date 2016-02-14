@@ -48,8 +48,7 @@ bool MessageResultCodeIsGENERIC_ERROR(
   }
   const smart_objects::SmartObject& so = *(message.get());
   int32_t result_code = so[application_manager::strings::msg_params]
-                          [application_manager::strings::result_code]
-                              .asInt();
+                          [application_manager::strings::result_code].asInt();
   if (mobile_apis::Result::GENERIC_ERROR ==
       static_cast<mobile_apis::Result::eType>(result_code)) {
     return true;

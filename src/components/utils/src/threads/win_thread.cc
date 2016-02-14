@@ -79,7 +79,7 @@ void* Thread::threadFunc(void* arg) {
   //     running = 1
   //     finalized = 1
   LOGGER_DEBUG(logger_,
-                "Thread #" << GetCurrentThreadId() << " started successfully");
+               "Thread #" << GetCurrentThreadId() << " started successfully");
 
   threads::Thread* thread = static_cast<Thread*>(arg);
   DCHECK(thread);
@@ -91,11 +91,9 @@ void* Thread::threadFunc(void* arg) {
     LOGGER_DEBUG(logger_, "Thread #" << GetCurrentThreadId() << " iteration");
     thread->run_cond_.Wait(thread->state_lock_);
     LOGGER_DEBUG(logger_,
-                  "Thread #" << GetCurrentThreadId() << " execute. "
-                             << "stopped_ = "
-                             << thread->stopped_
-                             << "; finalized_ = "
-                             << thread->finalized_);
+                 "Thread #" << GetCurrentThreadId() << " execute. "
+                            << "stopped_ = " << thread->stopped_
+                            << "; finalized_ = " << thread->finalized_);
     if (!thread->stopped_ && !thread->finalized_) {
       thread->isThreadRunning_ = true;
 
@@ -107,13 +105,13 @@ void* Thread::threadFunc(void* arg) {
     }
     thread->state_cond_.Broadcast();
     LOGGER_DEBUG(logger_,
-                  "Thread #" << GetCurrentThreadId() << " finished iteration");
+                 "Thread #" << GetCurrentThreadId() << " finished iteration");
   }
 
   thread->state_lock_.Release();
 
   LOGGER_DEBUG(logger_,
-                "Thread #" << GetCurrentThreadId() << " exited successfully");
+               "Thread #" << GetCurrentThreadId() << " exited successfully");
   return NULL;
 }
 
@@ -148,15 +146,15 @@ bool Thread::start(const ThreadOptions& options) {
 
   if (!delegate_) {
     LOGGER_ERROR(logger_,
-                  "Cannot start thread " << name_ << ": delegate is NULL");
+                 "Cannot start thread " << name_ << ": delegate is NULL");
     // 0 - state_lock unlocked
     return false;
   }
 
   if (isThreadRunning_) {
     LOGGER_TRACE(logger_,
-                  "EXIT thread " << name_ << " #" << handle_
-                                 << " is already running");
+                 "EXIT thread " << name_ << " #" << handle_
+                                << " is already running");
     return true;
   }
 
@@ -198,14 +196,14 @@ void Thread::stop() {
 
   stopped_ = true;
   LOGGER_DEBUG(logger_,
-                "Stopping thread #" << handle_ << " \"" << name_ << " \"");
+               "Stopping thread #" << handle_ << " \"" << name_ << " \"");
 
   if (delegate_ && isThreadRunning_) {
     delegate_->exitThreadMain();
   }
 
   LOGGER_DEBUG(logger_,
-                "Stopped thread #" << handle_ << " \"" << name_ << " \"");
+               "Stopped thread #" << handle_ << " \"" << name_ << " \"");
 }
 
 void Thread::join() {

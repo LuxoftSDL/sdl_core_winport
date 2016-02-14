@@ -114,7 +114,7 @@ media_manager::FromMicToFileRecorderThread::Impl::Impl(
     const std::string outputFileName,
     int32_t duration) {
   argc_ = 5;
-  argv_ = new gchar*[argc_];
+  argv_ = new gchar* [argc_];
 
   std::stringstream stringStream;
   stringStream << duration / 1000;
@@ -160,7 +160,7 @@ void media_manager::FromMicToFileRecorderThread::Impl::stopGstLoop() {
 
 void media_manager::FromMicToFileRecorderThread::Impl::startGstLoop() {
   LOGGER_AUTO_TRACE(logger_);
-  GstElement *alsasrc, *wavenc, *filesink;
+  GstElement* alsasrc, *wavenc, *filesink;
   GstBus* bus;
 
   const gchar* device = "hw:0,0";

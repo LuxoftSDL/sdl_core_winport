@@ -60,7 +60,7 @@ class MaskedContainer : public Item {
   explicit MaskedContainer(Item* parent = 0);
   ~MaskedContainer();
 
- signals:
+signals:
   void pressed(AttributedMouseEvent* attr);
   void released(AttributedMouseEvent* attr);
 

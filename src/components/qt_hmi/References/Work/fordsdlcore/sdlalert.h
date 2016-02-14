@@ -8,7 +8,7 @@ class SdlAlert : public QQuickItem {
  public:
   explicit SdlAlert(QObject* parent = 0);
 
- signals:
+signals:
 
  public slots:
 };

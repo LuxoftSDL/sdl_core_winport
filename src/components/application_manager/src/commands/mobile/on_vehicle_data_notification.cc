@@ -69,10 +69,8 @@ void OnVehicleDataNotification::Run() {
         }
 
         LOGGER_INFO(logger_,
-                     "Send OnVehicleData PRNDL notification to "
-                         << app->name()
-                         << " application id "
-                         << app->app_id());
+                    "Send OnVehicleData PRNDL notification to "
+                        << app->name() << " application id " << app->app_id());
 
         (*message_)[strings::params][strings::connection_key] = app->app_id();
 

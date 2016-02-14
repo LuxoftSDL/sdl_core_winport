@@ -85,7 +85,7 @@ utils::Pipe::Impl::~Impl() {
 bool utils::Pipe::Impl::Open() {
   if (IsOpen()) {
     LOGGER_WARN(logger_ptr,
-                 "Named pipe: " << name_.toStdString() << " is already opened");
+                "Named pipe: " << name_.toStdString() << " is already opened");
     return true;
   }
   server_socket_ = new QLocalServer();
@@ -94,7 +94,7 @@ bool utils::Pipe::Impl::Open() {
     delete server_socket_;
     server_socket_ = NULL;
     LOGGER_ERROR(logger_ptr,
-                  "Cannot create named pipe: " << name_.toStdString());
+                 "Cannot create named pipe: " << name_.toStdString());
     return false;
   }
   if (server_socket_->waitForNewConnection(-1)) {
@@ -104,7 +104,7 @@ bool utils::Pipe::Impl::Open() {
     delete server_socket_;
     server_socket_ = NULL;
     LOGGER_ERROR(logger_ptr,
-                  "Cannot connect to named pipe: " << name_.toStdString());
+                 "Cannot connect to named pipe: " << name_.toStdString());
     return false;
   }
   return true;
@@ -113,7 +113,7 @@ bool utils::Pipe::Impl::Open() {
 void utils::Pipe::Impl::Close() {
   if (!IsOpen()) {
     LOGGER_WARN(logger_ptr,
-                 "Named pipe: " << name_.toStdString() << " is not opened");
+                "Named pipe: " << name_.toStdString() << " is not opened");
     return;
   }
   if (client_socket_) {
@@ -138,7 +138,7 @@ bool utils::Pipe::Impl::Write(const uint8_t* buffer,
   bytes_written = 0;
   if (!IsOpen()) {
     LOGGER_ERROR(logger_ptr,
-                  "Named pipe: " << name_.toStdString() << " is not opened");
+                 "Named pipe: " << name_.toStdString() << " is not opened");
     return false;
   }
   if (bytes_to_write == 0) {
@@ -149,7 +149,7 @@ bool utils::Pipe::Impl::Write(const uint8_t* buffer,
                                          static_cast<qint64>(bytes_to_write));
   if (-1 == written) {
     LOGGER_ERROR(logger_ptr,
-                  "Cannot write to named pipe: " << name_.toStdString());
+                 "Cannot write to named pipe: " << name_.toStdString());
     return false;
   }
   client_socket_->waitForBytesWritten();
@@ -163,9 +163,8 @@ bool utils::Pipe::Impl::Write(const uint8_t* buffer,
 ////////////////////////////////////////////////////////////////////////////////
 
 utils::Pipe::Pipe(const std::string& name) {
-  impl_->name_ =
-      (kPlatformPipePrefix + file_system::RetrieveFileNameFromPath(name))
-          .c_str();
+  impl_->name_ = (kPlatformPipePrefix +
+                  file_system::RetrieveFileNameFromPath(name)).c_str();
 }
 
 bool utils::Pipe::Open() {

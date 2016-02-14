@@ -91,8 +91,7 @@ struct RawFordMessageFromMobile : public ProtocolFramePtr {
   // PrioritizedQueue requires this method to decide which priority to assign
   size_t PriorityOrder() const {
     return MessagePriority::FromServiceType(
-               ServiceTypeFromByte(get()->service_type()))
-        .OrderingValue();
+               ServiceTypeFromByte(get()->service_type())).OrderingValue();
   }
 };
 
@@ -104,8 +103,7 @@ struct RawFordMessageToMobile : public ProtocolFramePtr {
   // PrioritizedQueue requires this method to decide which priority to assign
   size_t PriorityOrder() const {
     return MessagePriority::FromServiceType(
-               ServiceTypeFromByte(get()->service_type()))
-        .OrderingValue();
+               ServiceTypeFromByte(get()->service_type())).OrderingValue();
   }
   // Signals whether connection to mobile must be closed after processing this
   // message

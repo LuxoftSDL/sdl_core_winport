@@ -59,7 +59,7 @@ void OnKeyBoardInputNotification::Run() {
     // if there is app with active perform interaction use it for notification
     if ((*it)->is_perform_interaction_active()) {
       LOGGER_INFO(logger_,
-                   "There is application with active PerformInteraction");
+                  "There is application with active PerformInteraction");
       app_to_notify = *it;
       break;
     }

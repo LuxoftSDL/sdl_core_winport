@@ -85,8 +85,7 @@ void SetDisplayLayoutRequest::on_event(const event_engine::Event& event) {
         if (msg_params.keyExists(hmi_response::display_capabilities)) {
           if (0 ==
               msg_params[hmi_response::display_capabilities]
-                        [hmi_response::templates_available]
-                            .length()) {
+                        [hmi_response::templates_available].length()) {
             msg_params[hmi_response::display_capabilities]
                       [hmi_response::templates_available] =
                           hmi_capabilities.display_capabilities()->getElement(
