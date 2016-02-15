@@ -59,8 +59,8 @@ void ResumptionDataJson::SaveApplication(
 
   const std::string& policy_app_id = application->mobile_app_id();
   LOGGER_DEBUG(logger_,
-                "app_id : " << application->app_id() << " policy_app_id : "
-                            << policy_app_id);
+               "app_id : " << application->app_id()
+                           << " policy_app_id : " << policy_app_id);
   const std::string hash = application->curHash();
   const uint32_t grammar_id = application->get_grammar_id();
   const uint32_t time_stamp = (uint32_t)time(NULL);
@@ -154,9 +154,7 @@ bool ResumptionDataJson::CheckSavedApplication(const std::string& policy_app_id,
     LOGGER_INFO(
         logger_,
         "Resumption data for app_id "
-            << policy_app_id
-            << " device id "
-            << device_id
+            << policy_app_id << " device id " << device_id
             << " is corrupted. Remove application from resumption list");
     RemoveApplicationFromSaved(policy_app_id, device_id);
     return false;
@@ -412,11 +410,9 @@ void ResumptionDataJson::UpdateHmiLevel(const std::string& policy_app_id,
 
   int idx = GetObjectIndex(policy_app_id, device_id);
   if (-1 == idx) {
-    LOGGER_WARN(
-        logger_,
-        "Application isn't saved with mobile_app_id = " << policy_app_id
-                                                        << " device_id = "
-                                                        << device_id);
+    LOGGER_WARN(logger_,
+                "Application isn't saved with mobile_app_id = "
+                    << policy_app_id << " device_id = " << device_id);
     return;
   }
   GetSavedApplications()[idx][strings::hmi_level] = hmi_level;

@@ -54,8 +54,8 @@ int TransportManagerDefault::Init() {
   LOGGER_TRACE(logger_, "enter");
   if (E_SUCCESS != TransportManagerImpl::Init()) {
     LOGGER_TRACE(logger_,
-                  "exit with E_TM_IS_NOT_INITIALIZED. Condition: E_SUCCESS != "
-                  "TransportManagerImpl::Init()");
+                 "exit with E_TM_IS_NOT_INITIALIZED. Condition: E_SUCCESS != "
+                 "TransportManagerImpl::Init()");
     return E_TM_IS_NOT_INITIALIZED;
   }
   transport_adapter::TransportAdapterImpl* ta;

@@ -113,7 +113,7 @@ void MediaManagerImpl::StartMicrophoneRecording(int32_t application_key,
                                                 const std::string& output_file,
                                                 int32_t duration) {
   LOGGER_INFO(logger_,
-               "MediaManagerImpl::StartMicrophoneRecording to " << output_file);
+              "MediaManagerImpl::StartMicrophoneRecording to " << output_file);
   application_manager::ApplicationSharedPtr app =
       application_manager::ApplicationManagerImpl::instance()->application(
           application_key);
@@ -145,8 +145,8 @@ void MediaManagerImpl::StartMicrophoneRecording(int32_t application_key,
   if (file_system::ReadBinaryFile(record_file_source, buf)) {
     if (file_system::Write(file_path, buf)) {
       LOGGER_INFO(logger_,
-                   "File " << record_file_source << " copied to "
-                           << output_file);
+                  "File " << record_file_source << " copied to "
+                          << output_file);
     } else {
       LOGGER_WARN(logger_, "Could not write to file " << output_file);
     }
@@ -219,7 +219,7 @@ void MediaManagerImpl::OnMessageReceived(
   if (!app_mgr->CanAppStream(streaming_app_id, service_type)) {
     app_mgr->ForbidStreaming(streaming_app_id);
     LOGGER_ERROR(logger_,
-                  "The application trying to stream when it should not.");
+                 "The application trying to stream when it should not.");
     return;
   }
 

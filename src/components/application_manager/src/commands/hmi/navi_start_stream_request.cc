@@ -47,9 +47,8 @@ NaviStartStreamRequest::NaviStartStreamRequest(const MessageSharedPtr& message)
   default_timeout_ = stream_retry.second;
   retry_number_ = stream_retry.first;
   LOGGER_DEBUG(logger_,
-                "default_timeout_ = " << default_timeout_
-                                      << "; retry_number_ = "
-                                      << retry_number_);
+               "default_timeout_ = " << default_timeout_
+                                     << "; retry_number_ = " << retry_number_);
 }
 
 NaviStartStreamRequest::~NaviStartStreamRequest() {}
@@ -69,8 +68,8 @@ void NaviStartStreamRequest::Run() {
     SendRequest();
   } else {
     LOGGER_ERROR(logger_,
-                  "Applcation with hmi_app_id " << application_id()
-                                                << "does not exist");
+                 "Applcation with hmi_app_id " << application_id()
+                                               << "does not exist");
   }
 }
 
@@ -83,7 +82,7 @@ void NaviStartStreamRequest::on_event(const event_engine::Event& event) {
           application_id());
   if (!app) {
     LOGGER_ERROR(logger_,
-                  "NaviStartStreamRequest aborted. Application not found");
+                 "NaviStartStreamRequest aborted. Application not found");
     return;
   }
 
@@ -131,13 +130,13 @@ void NaviStartStreamRequest::RetryStartSession() {
           application_id());
   if (!app) {
     LOGGER_ERROR(logger_,
-                  "NaviStartStreamRequest aborted. Application not found");
+                 "NaviStartStreamRequest aborted. Application not found");
     return;
   }
   if (app->video_streaming_approved()) {
     LOGGER_DEBUG(logger_,
-                  "NaviStartStream retry sequence stopped. "
-                      << "SUCCESS received");
+                 "NaviStartStream retry sequence stopped. "
+                     << "SUCCESS received");
     app->set_video_stream_retry_number(0);
     return;
   }
@@ -151,8 +150,8 @@ void NaviStartStreamRequest::RetryStartSession() {
     app->set_video_stream_retry_number(++curr_retry_number);
   } else {
     LOGGER_DEBUG(logger_,
-                  "NaviStartStream retry sequence stopped. "
-                      << "Attempts expired");
+                 "NaviStartStream retry sequence stopped. "
+                     << "Attempts expired");
     app->set_video_stream_retry_number(0);
     ApplicationManagerImpl::instance()->EndNaviServices(app->app_id());
   }

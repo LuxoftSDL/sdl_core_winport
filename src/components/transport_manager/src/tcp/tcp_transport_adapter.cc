@@ -59,8 +59,7 @@ CREATE_LOGGERPTR_GLOBAL(logger_, "TransportAdapterImpl")
 TcpTransportAdapter::TcpTransportAdapter(const uint16_t port)
     : TransportAdapterImpl(NULL,
                            new TcpConnectionFactory(this),
-                           new TcpClientListener(this, port, true)) {
-}
+                           new TcpClientListener(this, port, true)) {}
 
 TcpTransportAdapter::~TcpTransportAdapter() {}
 

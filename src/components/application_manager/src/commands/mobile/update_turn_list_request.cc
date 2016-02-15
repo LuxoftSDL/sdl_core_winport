@@ -62,7 +62,7 @@ void UpdateTurnListRequest::Run() {
 
   if (IsWhiteSpaceExist()) {
     LOGGER_ERROR(logger_,
-                  "Incoming update turn list has contains \t\n \\t \\n");
+                 "Incoming update turn list has contains \t\n \\t \\n");
     SendResponse(false, mobile_apis::Result::INVALID_DATA);
     return;
   }
@@ -86,8 +86,7 @@ void UpdateTurnListRequest::Run() {
           (mobile_apis::Result::SUCCESS !=
            MessageHelper::VerifyImage(turn_list_array[i][strings::turn_icon],
                                       app))) {
-        LOGGER_ERROR(logger_,
-                      "MessageHelper::VerifyImage return INVALID_DATA");
+        LOGGER_ERROR(logger_, "MessageHelper::VerifyImage return INVALID_DATA");
         SendResponse(false, mobile_apis::Result::INVALID_DATA);
         return;
       }
@@ -210,8 +209,8 @@ bool UpdateTurnListRequest::IsWhiteSpaceExist() {
       if ((*it_tl).keyExists(strings::turn_icon)) {
         str = (*it_tl)[strings::turn_icon][strings::value].asCharArray();
         if (!CheckSyntax(str)) {
-          LOGGER_ERROR(
-              logger_, "Invalid turn_list turn_icon value syntax check failed");
+          LOGGER_ERROR(logger_,
+                       "Invalid turn_list turn_icon value syntax check failed");
           return true;
         }
       }

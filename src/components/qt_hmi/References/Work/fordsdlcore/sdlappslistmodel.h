@@ -36,7 +36,7 @@ class SdlAppsListModel : public QAbstractListModel {
     endResetModel();
   }
 
- signals:
+signals:
 
  public slots:
 

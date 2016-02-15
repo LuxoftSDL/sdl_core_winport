@@ -64,8 +64,7 @@ void TransportAdapterListenerImpl::OnSearchDeviceDone(
 
 void TransportAdapterListenerImpl::OnSearchDeviceFailed(
     const TransportAdapter* adapter, const SearchDeviceError& error) {
-  LOGGER_TRACE(logger_,
-                "enter. adapter: " << adapter << ", error: " << &error);
+  LOGGER_TRACE(logger_, "enter. adapter: " << adapter << ", error: " << &error);
   SearchDeviceError* err = new SearchDeviceError(error);
   const TransportAdapterEvent event(
       TransportAdapterListenerImpl::EventTypeEnum::ON_SEARCH_FAIL,
@@ -120,9 +119,8 @@ void TransportAdapterListenerImpl::OnConnectDone(
     const DeviceUID& device,
     const ApplicationHandle& application_id) {
   LOGGER_TRACE(logger_,
-                "enter adapter*: " << adapter << ", device: " << &device
-                                   << ", application_id: "
-                                   << &application_id);
+               "enter adapter*: " << adapter << ", device: " << &device
+                                  << ", application_id: " << &application_id);
   const TransportAdapterEvent event(
       TransportAdapterListenerImpl::EventTypeEnum::ON_CONNECT_DONE,
       transport_adapter_,
@@ -143,11 +141,9 @@ void TransportAdapterListenerImpl::OnConnectFailed(
     const ApplicationHandle& app_id,
     const ConnectError& error) {
   LOGGER_TRACE(logger_,
-                "enter. adapter: " << adapter << ", device: " << &device
-                                   << ", application_id: "
-                                   << &app_id
-                                   << ", error: "
-                                   << &error);
+               "enter. adapter: " << adapter << ", device: " << &device
+                                  << ", application_id: " << &app_id
+                                  << ", error: " << &error);
   ConnectError* err = new ConnectError(error);
   const TransportAdapterEvent event(
       TransportAdapterListenerImpl::EventTypeEnum::ON_CONNECT_FAIL,
@@ -168,9 +164,8 @@ void TransportAdapterListenerImpl::OnDisconnectDone(
     const DeviceUID& device,
     const ApplicationHandle& app_id) {
   LOGGER_TRACE(logger_,
-                "enter. adapter: " << adapter << ", device: " << &device
-                                   << ", application_id: "
-                                   << &app_id);
+               "enter. adapter: " << adapter << ", device: " << &device
+                                  << ", application_id: " << &app_id);
   const TransportAdapterEvent event(
       TransportAdapterListenerImpl::EventTypeEnum::ON_DISCONNECT_DONE,
       transport_adapter_,
@@ -191,11 +186,9 @@ void TransportAdapterListenerImpl::OnDisconnectFailed(
     const ApplicationHandle& app_id,
     const DisconnectError& error) {
   LOGGER_TRACE(logger_,
-                "enter. adapter: " << adapter << ", device: " << &device
-                                   << ", application_id: "
-                                   << &app_id
-                                   << ", error: "
-                                   << &error);
+               "enter. adapter: " << adapter << ", device: " << &device
+                                  << ", application_id: " << &app_id
+                                  << ", error: " << &error);
   DisconnectError* err = new DisconnectError(error);
   const TransportAdapterEvent event(
       TransportAdapterListenerImpl::EventTypeEnum::ON_DISCONNECT_FAIL,
@@ -225,11 +218,9 @@ void TransportAdapterListenerImpl::OnDataReceiveDone(
     const ApplicationHandle& app_id,
     const ::protocol_handler::RawMessagePtr data_container) {
   LOGGER_TRACE(logger_,
-                "enter. adapter: " << adapter << ", device: " << &device
-                                   << ", application_id: "
-                                   << &app_id
-                                   << ", data_container: "
-                                   << data_container);
+               "enter. adapter: " << adapter << ", device: " << &device
+                                  << ", application_id: " << &app_id
+                                  << ", data_container: " << data_container);
   const TransportAdapterEvent event(
       TransportAdapterListenerImpl::EventTypeEnum::ON_RECEIVED_DONE,
       transport_adapter_,
@@ -250,11 +241,9 @@ void TransportAdapterListenerImpl::OnDataReceiveFailed(
     const ApplicationHandle& app_id,
     const DataReceiveError& error) {
   LOGGER_TRACE(logger_,
-                "enter. adapter: " << adapter << ", device: " << &device
-                                   << ", application_id: "
-                                   << &app_id
-                                   << ", error: "
-                                   << &error);
+               "enter. adapter: " << adapter << ", device: " << &device
+                                  << ", application_id: " << &app_id
+                                  << ", error: " << &error);
   DataReceiveError* err = new DataReceiveError(error);
   const TransportAdapterEvent event(
       TransportAdapterListenerImpl::EventTypeEnum::ON_RECEIVED_FAIL,
@@ -276,11 +265,9 @@ void TransportAdapterListenerImpl::OnDataSendDone(
     const ApplicationHandle& app_id,
     const ::protocol_handler::RawMessagePtr data_container) {
   LOGGER_TRACE(logger_,
-                "enter. adapter: " << adapter << ", device: " << &device
-                                   << ", application_id: "
-                                   << &app_id
-                                   << ", data_container: "
-                                   << data_container);
+               "enter. adapter: " << adapter << ", device: " << &device
+                                  << ", application_id: " << &app_id
+                                  << ", data_container: " << data_container);
   const TransportAdapterEvent event(
       TransportAdapterListenerImpl::EventTypeEnum::ON_SEND_DONE,
       transport_adapter_,
@@ -302,13 +289,10 @@ void TransportAdapterListenerImpl::OnDataSendFailed(
     const ::protocol_handler::RawMessagePtr data_container,
     const DataSendError& error) {
   LOGGER_TRACE(logger_,
-                "enter. adapter: " << adapter << ", device: " << &device
-                                   << ", application_id: "
-                                   << &app_id
-                                   << ", data_container: "
-                                   << data_container
-                                   << ", error: "
-                                   << &error);
+               "enter. adapter: " << adapter << ", device: " << &device
+                                  << ", application_id: " << &app_id
+                                  << ", data_container: " << data_container
+                                  << ", error: " << &error);
   DataSendError* err = new DataSendError(error);
   const TransportAdapterEvent event(
       TransportAdapterListenerImpl::EventTypeEnum::ON_SEND_FAIL,
@@ -335,11 +319,9 @@ void TransportAdapterListenerImpl::OnUnexpectedDisconnect(
     const ApplicationHandle& application,
     const CommunicationError& error) {
   LOGGER_TRACE(logger_,
-                "enter. adapter: " << adapter << ", device: " << &device
-                                   << ", application: "
-                                   << &application
-                                   << ", error: "
-                                   << &error);
+               "enter. adapter: " << adapter << ", device: " << &device
+                                  << ", application: " << &application
+                                  << ", error: " << &error);
   CommunicationError* err = new CommunicationError(error);
   const TransportAdapterEvent event(
       TransportAdapterListenerImpl::EventTypeEnum::ON_UNEXPECTED_DISCONNECT,
@@ -360,9 +342,8 @@ void TransportAdapterListenerImpl::OnCommunicationError(
     const DeviceUID& device,
     const ApplicationHandle& app_id) {
   LOGGER_TRACE(logger_,
-                "enter. adapter: " << adapter << ", device: " << &device
-                                   << ", application_id: "
-                                   << &app_id);
+               "enter. adapter: " << adapter << ", device: " << &device
+                                  << ", application_id: " << &app_id);
   const TransportAdapterEvent event(
       TransportAdapterListenerImpl::EventTypeEnum::ON_COMMUNICATION_ERROR,
       transport_adapter_,

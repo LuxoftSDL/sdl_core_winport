@@ -93,8 +93,8 @@ void BluetoothTransportAdapter::Store() const {
                                      &addrSize);
     if (ret_val != 0) {
       LOGGER_ERROR(logger_,
-                    "WSAAddressToString() failed with error code"
-                        << WSAGetLastError());
+                   "WSAAddressToString() failed with error code"
+                       << WSAGetLastError());
     }
 
     device_dictionary["address"] = std::string(address);
@@ -156,8 +156,8 @@ bool BluetoothTransportAdapter::Restore() {
                                      &address_size);
     if (ret_val != 0) {
       LOGGER_ERROR(logger_,
-                    "WSAStringToAddress() failed with error code"
-                        << WSAGetLastError());
+                   "WSAStringToAddress() failed with error code"
+                       << WSAGetLastError());
     }
 
     RfcommChannelVector rfcomm_channels;

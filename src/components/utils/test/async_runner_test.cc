@@ -79,7 +79,7 @@ class AsyncRunnerTest : public ::testing::Test {
   void CreateThreadsArray() {
     srand(std::time(NULL));
     kDelegatesNum_ = (rand() % 20 + 1);
-    delegates_ = new TestThreadDelegate*[kDelegatesNum_];
+    delegates_ = new TestThreadDelegate* [kDelegatesNum_];
   }
 
   void DeleteThreadsArray() {

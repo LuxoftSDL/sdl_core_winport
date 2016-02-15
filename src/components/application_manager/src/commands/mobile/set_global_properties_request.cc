@@ -68,8 +68,8 @@ void SetGlobalPropertiesRequest::Run() {
 
   if (!app) {
     LOGGER_ERROR(logger_,
-                  "No application associated with connection key "
-                      << connection_key());
+                 "No application associated with connection key "
+                     << connection_key());
     SendResponse(false, mobile_apis::Result::APPLICATION_NOT_REGISTERED);
     return;
   }
@@ -87,8 +87,8 @@ void SetGlobalPropertiesRequest::Run() {
     verification_result = MessageHelper::VerifyImage(
         (*message_)[strings::msg_params][strings::menu_icon], app);
     if (mobile_apis::Result::SUCCESS != verification_result) {
-      LOGGER_ERROR(
-          logger_, "MessageHelper::VerifyImage return " << verification_result);
+      LOGGER_ERROR(logger_,
+                   "MessageHelper::VerifyImage return " << verification_result);
       SendResponse(false, verification_result);
       return;
     }
@@ -445,7 +445,7 @@ bool SetGlobalPropertiesRequest::IsWhiteSpaceExist() {
         str = (*it_vh)[strings::image][strings::value].asCharArray();
         if (!CheckSyntax(str)) {
           LOGGER_ERROR(logger_,
-                        "Invalid vr_help image value syntax check failed");
+                       "Invalid vr_help image value syntax check failed");
           return true;
         }
       }
@@ -481,8 +481,7 @@ bool SetGlobalPropertiesRequest::IsWhiteSpaceExist() {
             strings::limited_character_list)) {
       const smart_objects::SmartArray* lcl_array =
           msg_params[strings::keyboard_properties]
-                    [strings::limited_character_list]
-                        .asArray();
+                    [strings::limited_character_list].asArray();
 
       smart_objects::SmartArray::const_iterator it_lcl = lcl_array->begin();
       smart_objects::SmartArray::const_iterator it_lcl_end = lcl_array->end();
@@ -491,8 +490,8 @@ bool SetGlobalPropertiesRequest::IsWhiteSpaceExist() {
         str = (*it_lcl).asCharArray();
         if (!CheckSyntax(str)) {
           LOGGER_ERROR(logger_,
-                        "Invalid keyboard_properties "
-                        "limited_character_list syntax check failed");
+                       "Invalid keyboard_properties "
+                       "limited_character_list syntax check failed");
           return true;
         }
       }
@@ -506,8 +505,8 @@ bool SetGlobalPropertiesRequest::IsWhiteSpaceExist() {
 
       if (!CheckSyntax(str)) {
         LOGGER_ERROR(logger_,
-                      "Invalid keyboard_properties "
-                      "auto_complete_text syntax check failed");
+                     "Invalid keyboard_properties "
+                     "auto_complete_text syntax check failed");
         return true;
       }
     }

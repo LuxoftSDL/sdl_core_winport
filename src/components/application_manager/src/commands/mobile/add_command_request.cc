@@ -77,8 +77,8 @@ void AddCommandRequest::Run() {
         (*message_)[strings::msg_params][strings::cmd_icon], app);
 
     if (mobile_apis::Result::SUCCESS != verification_result) {
-      LOGGER_ERROR(
-          logger_, "MessageHelper::VerifyImage return " << verification_result);
+      LOGGER_ERROR(logger_,
+                   "MessageHelper::VerifyImage return " << verification_result);
       SendResponse(false, verification_result);
       return;
     }
@@ -108,8 +108,7 @@ void AddCommandRequest::Run() {
             hmi_request::parent_id)) &&
         (0 !=
          (*message_)[strings::msg_params][strings::menu_params]
-                    [hmi_request::parent_id]
-                        .asUInt())) {
+                    [hmi_request::parent_id].asUInt())) {
       if (!CheckCommandParentId(app)) {
         SendResponse(
             false, mobile_apis::Result::INVALID_ID, "Parent ID doesn't exist");
@@ -203,8 +202,7 @@ bool AddCommandRequest::CheckCommandName(ApplicationConstSharedPtr app) {
   if ((*message_)[strings::msg_params][strings::menu_params].keyExists(
           hmi_request::parent_id)) {
     parent_id = (*message_)[strings::msg_params][strings::menu_params]
-                           [hmi_request::parent_id]
-                               .asUInt();
+                           [hmi_request::parent_id].asUInt();
   }
 
   for (; commands.end() != i; ++i) {
@@ -219,12 +217,11 @@ bool AddCommandRequest::CheckCommandName(ApplicationConstSharedPtr app) {
     }
     if (((*i->second)[strings::menu_params][strings::menu_name].asString() ==
          (*message_)[strings::msg_params][strings::menu_params]
-                    [strings::menu_name]
-                        .asString()) &&
+                    [strings::menu_name].asString()) &&
         (saved_parent_id == parent_id)) {
       LOGGER_INFO(logger_,
-                   "AddCommandRequest::CheckCommandName received"
-                   " command name already exist in same level menu");
+                  "AddCommandRequest::CheckCommandName received"
+                  " command name already exist in same level menu");
       return false;
     }
   }
@@ -257,8 +254,8 @@ bool AddCommandRequest::CheckCommandVRSynonym(ApplicationConstSharedPtr app) {
 
         if (0 == strcasecmp(vr_cmd_i.c_str(), vr_cmd_j.c_str())) {
           LOGGER_INFO(logger_,
-                       "AddCommandRequest::CheckCommandVRSynonym"
-                       " received command vr synonym already exist");
+                      "AddCommandRequest::CheckCommandVRSynonym"
+                      " received command vr synonym already exist");
           return false;
         }
       }
@@ -274,14 +271,13 @@ bool AddCommandRequest::CheckCommandParentId(ApplicationConstSharedPtr app) {
 
   const int32_t parent_id =
       (*message_)[strings::msg_params][strings::menu_params]
-                 [hmi_request::parent_id]
-                     .asInt();
+                 [hmi_request::parent_id].asInt();
   smart_objects::SmartObject* parent = app->FindSubMenu(parent_id);
 
   if (!parent) {
     LOGGER_INFO(logger_,
-                 "AddCommandRequest::CheckCommandParentId received"
-                 " submenu doesn't exist");
+                "AddCommandRequest::CheckCommandParentId received"
+                " submenu doesn't exist");
     return false;
   }
   return true;
@@ -441,8 +437,7 @@ bool AddCommandRequest::IsWhiteSpaceExist() {
 
   if ((*message_)[strings::msg_params].keyExists(strings::menu_params)) {
     str = (*message_)[strings::msg_params][strings::menu_params]
-                     [strings::menu_name]
-                         .asCharArray();
+                     [strings::menu_name].asCharArray();
     if (!CheckSyntax(str)) {
       LOGGER_ERROR(logger_, "Invalid menu name syntax check failed.");
       return true;

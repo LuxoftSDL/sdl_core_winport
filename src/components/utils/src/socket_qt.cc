@@ -325,8 +325,7 @@ void utils::TcpSocketConnection::Impl::Wait() {
 void utils::TcpSocketConnection::Impl::OnError() {
   LOGGER_DEBUG(logger_,
                "Socket error code:#["
-                   << tcp_socket_->error()
-                   << "]. "
+                   << tcp_socket_->error() << "]. "
                    << tcp_socket_->errorString().toStdString().c_str());
   if (tcp_socket_->error() != QAbstractSocket::RemoteHostClosedError) {
     OnError(tcp_socket_->error());
@@ -477,11 +476,10 @@ bool utils::TcpServerSocket::Impl::Listen(const HostAddress& address,
                "Start listening on " << address.ToString() << ":" << port);
 
   if (!server_socket_->listen(FromHostAddress(address), port)) {
-    LOGGER_WARN(
-        logger_,
-        "Failed to listen on " << address.ToString() << ":" << port
-                               << ". Error: "
-                               << server_socket_->errorString().toStdString());
+    LOGGER_WARN(logger_,
+                "Failed to listen on "
+                    << address.ToString() << ":" << port << ". Error: "
+                    << server_socket_->errorString().toStdString());
     return false;
   }
 
@@ -509,8 +507,7 @@ utils::TcpSocketConnection utils::TcpServerSocket::Impl::Accept() {
   LOGGER_DEBUG(logger_,
                "Accepted new client connection "
                    << client_connection->peerAddress().toString().toStdString()
-                   << ":"
-                   << client_connection->peerPort());
+                   << ":" << client_connection->peerPort());
   const HostAddress host_address =
       ToHostAddress(client_connection->peerAddress());
   const uint16_t port = static_cast<uint16_t>(client_connection->peerPort());

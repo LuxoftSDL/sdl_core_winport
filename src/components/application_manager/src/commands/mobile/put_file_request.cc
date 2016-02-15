@@ -72,7 +72,7 @@ void PutFileRequest::Run() {
     // If application is in the HMI_NONE level the quantity of allowed
     // PutFile request is limited by the configuration profile
     LOGGER_ERROR(logger_,
-                  "Too many requests from the app with HMILevel HMI_NONE ");
+                 "Too many requests from the app with HMILevel HMI_NONE ");
     SendResponse(false,
                  mobile_apis::Result::REJECTED,
                  "Too many requests from the app with HMILevel HMI_NONE",
@@ -200,8 +200,8 @@ void PutFileRequest::Run() {
           LOGGER_INFO(logger_, "New file downloading");
           if (!application->AddFile(file)) {
             LOGGER_INFO(logger_,
-                         "Couldn't add file to application (File already Exist"
-                             << " in application and was rewritten on FS)");
+                        "Couldn't add file to application (File already Exist"
+                            << " in application and was rewritten on FS)");
             /* It can be first part of new big file, so we need to update
                information about it's downloading status and persistence */
             if (!application->UpdateFile(file)) {

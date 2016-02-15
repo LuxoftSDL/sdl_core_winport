@@ -53,19 +53,19 @@ ConditionalVariable::ConditionalVariable() {
   int32_t initialized = pthread_condattr_init(&attrs);
   if (initialized != 0)
     LOGGER_ERROR(logger_,
-                  "Failed to initialize "
-                  "conditional variable attributes");
+                 "Failed to initialize "
+                 "conditional variable attributes");
   pthread_condattr_setclock(&attrs, CLOCK_MONOTONIC);
   initialized = pthread_cond_init(&cond_var_, &attrs);
   if (initialized != 0)
     LOGGER_ERROR(logger_,
-                  "Failed to initialize "
-                  "conditional variable");
+                 "Failed to initialize "
+                 "conditional variable");
   int32_t rv = pthread_condattr_destroy(&attrs);
   if (rv != 0)
     LOGGER_ERROR(logger_,
-                  "Failed to destroy "
-                  "conditional variable attributes");
+                 "Failed to destroy "
+                 "conditional variable attributes");
 }
 
 ConditionalVariable::~ConditionalVariable() {

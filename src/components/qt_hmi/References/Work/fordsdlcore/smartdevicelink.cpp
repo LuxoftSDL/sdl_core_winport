@@ -139,7 +139,7 @@ void SmartDeviceLink::basic_receive(QString message) {
   QString method = root.value("method").toString();
 
   if (id == 600) {
-    char *reg, *unreg, *update;
+    char* reg, *unreg, *update;
 
     asprintf(&reg,
              "{\"jsonrpc\":\"2.0\",\"id\":%i,\"method\":\"MB.subscribeTo\","

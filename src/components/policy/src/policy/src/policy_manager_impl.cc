@@ -121,10 +121,9 @@ void PolicyManagerImpl::CheckTriggers() {
   const bool exceed_days = ExceededDays();
 
   LOGGER_DEBUG(logger_,
-                "\nDays exceeded: " << std::boolalpha << exceed_ignition_cycles
-                                    << "\nStatusUpdateRequired: "
-                                    << std::boolalpha
-                                    << exceed_days);
+               "\nDays exceeded: " << std::boolalpha << exceed_ignition_cycles
+                                   << "\nStatusUpdateRequired: "
+                                   << std::boolalpha << exceed_days);
 
   if (exceed_ignition_cycles || exceed_days) {
     update_status_manager_.ScheduleUpdate();
@@ -275,16 +274,16 @@ void PolicyManagerImpl::StartPTExchange() {
   if (update_status_manager_.IsAppsSearchInProgress()) {
     update_status_manager_.ScheduleUpdate();
     LOGGER_INFO(logger_,
-                 "Starting exchange skipped, since applications "
-                 "search is in progress.");
+                "Starting exchange skipped, since applications "
+                "search is in progress.");
     return;
   }
 
   if (update_status_manager_.IsUpdatePending()) {
     update_status_manager_.ScheduleUpdate();
     LOGGER_INFO(logger_,
-                 "Starting exchange skipped, since another exchange "
-                 "is in progress.");
+                "Starting exchange skipped, since another exchange "
+                "is in progress.");
     return;
   }
 
@@ -325,10 +324,8 @@ void PolicyManagerImpl::CheckPermissions(const PTString& app_id,
                                          const RPCParams& rpc_params,
                                          CheckPermissionResult& result) {
   LOGGER_INFO(logger_,
-               "CheckPermissions for " << app_id << " and rpc " << rpc
-                                       << " for "
-                                       << hmi_level
-                                       << " level.");
+              "CheckPermissions for " << app_id << " and rpc " << rpc << " for "
+                                      << hmi_level << " level.");
 
   cache_->CheckPermissions(app_id, hmi_level, rpc, result);
 }
@@ -345,9 +342,8 @@ void PolicyManagerImpl::SendNotificationOnPermissionsUpdated(
   const std::string device_id = GetCurrentDeviceId(application_id);
   if (device_id.empty()) {
     LOGGER_WARN(logger_,
-                 "Couldn't find device info for application id "
-                 "'" << application_id
-                     << "'");
+                "Couldn't find device info for application id "
+                "'" << application_id << "'");
     return;
   }
 
@@ -373,7 +369,7 @@ void PolicyManagerImpl::SendNotificationOnPermissionsUpdated(
                           notification_data);
 
   LOGGER_INFO(logger_,
-               "Send notification for application_id:" << application_id);
+              "Send notification for application_id:" << application_id);
 
   std::string default_hmi;
   default_hmi = "NONE";
@@ -549,7 +545,7 @@ void PolicyManagerImpl::GetUserConsentForApp(
   FunctionalIdType group_types;
   if (!cache_->GetPermissionsForApp(device_id, policy_app_id, group_types)) {
     LOGGER_WARN(logger_,
-                 "Can't get user permissions for app " << policy_app_id);
+                "Can't get user permissions for app " << policy_app_id);
     return;
   }
 
@@ -608,7 +604,7 @@ void PolicyManagerImpl::GetPermissionsForApp(
   FunctionalIdType group_types;
   if (!cache_->GetPermissionsForApp(device_id, app_id_to_check, group_types)) {
     LOGGER_WARN(logger_,
-                 "Can't get user permissions for app " << policy_app_id);
+                "Can't get user permissions for app " << policy_app_id);
     return;
   }
 
@@ -762,7 +758,7 @@ void PolicyManagerImpl::OnExceededTimeout() {
 void PolicyManagerImpl::OnUpdateStarted() {
   int update_timeout = TimeoutExchange();
   LOGGER_DEBUG(logger_,
-                "Update timeout will be set to (sec): " << update_timeout);
+               "Update timeout will be set to (sec): " << update_timeout);
   update_status_manager_.OnUpdateSentOut(update_timeout);
   cache_->SaveUpdateRequired(true);
 }
@@ -770,7 +766,7 @@ void PolicyManagerImpl::OnUpdateStarted() {
 void PolicyManagerImpl::PTUpdatedAt(int kilometers, int days_after_epoch) {
   LOGGER_AUTO_TRACE(logger_);
   LOGGER_INFO(logger_,
-               "Kilometers: " << kilometers << " Days: " << days_after_epoch);
+              "Kilometers: " << kilometers << " Days: " << days_after_epoch);
   cache_->SetCountersPassedForSuccessfulUpdate(kilometers, days_after_epoch);
   cache_->ResetIgnitionCycles();
 }
@@ -912,14 +908,14 @@ bool PolicyManagerImpl::CheckAppStorageFolder() const {
   LOGGER_DEBUG(logger_, "AppStorageFolder " << app_storage_folder_);
   if (!file_system::DirectoryExists(app_storage_folder_)) {
     LOGGER_WARN(logger_,
-                 "Storage directory doesn't exist " << app_storage_folder_);
+                "Storage directory doesn't exist " << app_storage_folder_);
     return false;
   }
   if (!(file_system::IsWritingAllowed(app_storage_folder_) &&
         file_system::IsReadingAllowed(app_storage_folder_))) {
     LOGGER_WARN(logger_,
-                 "Storage directory doesn't have read/write permissions "
-                     << app_storage_folder_);
+                "Storage directory doesn't have read/write permissions "
+                    << app_storage_folder_);
     return false;
   }
   return true;

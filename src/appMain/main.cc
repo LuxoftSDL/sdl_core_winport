@@ -115,7 +115,7 @@ int32_t main(int32_t argc, char** argv) {
 
   LOGGER_INFO(logger_, "Application started!");
   LOGGER_INFO(logger_,
-               "SDL version: " << profile::Profile::instance()->sdl_version());
+              "SDL version: " << profile::Profile::instance()->sdl_version());
 
   // --------------------------------------------------------------------------
   // Components initialization

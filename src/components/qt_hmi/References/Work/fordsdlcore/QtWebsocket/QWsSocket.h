@@ -97,7 +97,7 @@ class QWsSocket : public QAbstractSocket {
   void abort(QString reason = QString());
   void ping();
 
- signals:
+signals:
   void frameReceived(QString frame);
   void frameReceived(QByteArray frame);
   void pong(quint64 elapsedTime);

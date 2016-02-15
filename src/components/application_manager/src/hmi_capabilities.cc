@@ -748,8 +748,7 @@ bool HMICapabilities::load_capabilities_from_file() {
                        hmi_apis::Common_TextFieldName::eType>::const_iterator
                   it_text_field_name = text_fields_enum_name.find(
                       display_capabilities_so[hmi_response::text_fields][i]
-                                             [strings::name]
-                                                 .asString());
+                                             [strings::name].asString());
               display_capabilities_so[hmi_response::text_fields][i].erase(
                   strings::name);
               if (text_fields_enum_name.end() != it_text_field_name) {
@@ -866,15 +865,13 @@ bool HMICapabilities::load_capabilities_from_file() {
             smart_objects::SmartObject(smart_objects::SmartType_Map);
         if (audio_capabilities.HasMember("samplingRate")) {
           audio_capabilities_so[i]["samplingRate"] =
-              sampling_rate_enum
-                  .find(audio_capabilities["samplingRate"].AsString())
-                  ->second;
+              sampling_rate_enum.find(audio_capabilities["samplingRate"]
+                                          .AsString())->second;
         }
         if (audio_capabilities.HasMember("bitsPerSample")) {
           audio_capabilities_so[i]["bitsPerSample"] =
-              bit_per_sample_enum
-                  .find(audio_capabilities["bitsPerSample"].AsString())
-                  ->second;
+              bit_per_sample_enum.find(audio_capabilities["bitsPerSample"]
+                                           .AsString())->second;
         }
         if (audio_capabilities.HasMember("audioType")) {
           audio_capabilities_so[i]["audioType"] =

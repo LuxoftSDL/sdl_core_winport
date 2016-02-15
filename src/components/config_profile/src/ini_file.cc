@@ -158,7 +158,7 @@ char ini_write_value(const char* fname,
                      const char* item,
                      const char* value,
                      uint8_t flag) {
-  FILE *rd_fp, *wr_fp = 0;
+  FILE* rd_fp, * wr_fp = 0;
   uint16_t i, cr_count;
   int32_t wr_result;
   bool chapter_found = false;

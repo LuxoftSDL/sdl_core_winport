@@ -63,11 +63,9 @@ int debug_callback(int preverify_ok, X509_STORE_CTX* ctx) {
     const int error = X509_STORE_CTX_get_error(ctx);
     UNUSED(error);
     LOGGER_WARN(logger_,
-                 "Certificate verification failed with error "
-                     << error
-                     << " \""
-                     << X509_verify_cert_error_string(error)
-                     << '"');
+                "Certificate verification failed with error "
+                    << error << " \"" << X509_verify_cert_error_string(error)
+                    << '"');
   }
   return preverify_ok;
 }
@@ -124,10 +122,10 @@ bool CryptoManagerImpl::Init(Mode mode,
   certificate_data_ = cert_data;
   hours_before_update_ = hours_before_update;
   LOGGER_DEBUG(logger_, (mode_ == SERVER ? "Server" : "Client") << " mode");
-  LOGGER_DEBUG(
-      logger_, "Peer verification " << (verify_peer_ ? "enabled" : "disabled"));
   LOGGER_DEBUG(logger_,
-                "CA certificate file is \"" << ca_certificate_file << '"');
+               "Peer verification " << (verify_peer_ ? "enabled" : "disabled"));
+  LOGGER_DEBUG(logger_,
+               "CA certificate file is \"" << ca_certificate_file << '"');
 
   const bool is_server = (mode == SERVER);
 #if OPENSSL_VERSION_NUMBER < CONST_SSL_METHOD_MINIMAL_VERSION
@@ -198,13 +196,9 @@ bool CryptoManagerImpl::Init(Mode mode,
     const unsigned long error = ERR_get_error();
     UNUSED(error);
     LOGGER_WARN(logger_,
-                 "Wrong certificate file '" << ca_certificate_file
-                                            << "', err 0x"
-                                            << std::hex
-                                            << error
-                                            << " \""
-                                            << ERR_reason_error_string(error)
-                                            << '"');
+                "Wrong certificate file '"
+                    << ca_certificate_file << "', err 0x" << std::hex << error
+                    << " \"" << ERR_reason_error_string(error) << '"');
   }
 
   guard.Dismiss();
@@ -213,7 +207,7 @@ bool CryptoManagerImpl::Init(Mode mode,
       verify_peer_ ? SSL_VERIFY_PEER | SSL_VERIFY_FAIL_IF_NO_PEER_CERT
                    : SSL_VERIFY_NONE;
   LOGGER_DEBUG(logger_,
-                "Setting up peer verification in mode: " << verify_mode);
+               "Setting up peer verification in mode: " << verify_mode);
   SSL_CTX_set_verify(context_, verify_mode, &debug_callback);
   return true;
 }

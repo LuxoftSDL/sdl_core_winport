@@ -59,13 +59,13 @@ CREATE_LOGGERPTR_GLOBAL(logger_, "TransportManager")
 
 bool BluetoothDevice::GetRfcommChannel(const ApplicationHandle app_handle,
                                        uint8_t* channel_out) {
-  LOGGER_TRACE(
-      logger_,
-      "enter. app_handle: " << app_handle << ", channel_out: " << channel_out);
+  LOGGER_TRACE(logger_,
+               "enter. app_handle: " << app_handle
+                                     << ", channel_out: " << channel_out);
   if (app_handle < 0 || app_handle > std::numeric_limits<uint8_t>::max()) {
     LOGGER_TRACE(logger_,
-                  "exit with FALSE. Condition: app_handle < 0 || app_handle > "
-                  "numeric_limits::max()");
+                 "exit with FALSE. Condition: app_handle < 0 || app_handle > "
+                 "numeric_limits::max()");
     return false;
   }
   const uint8_t channel = static_cast<uint8_t>(app_handle);
@@ -99,8 +99,8 @@ std::string BluetoothDevice::GetUniqueDeviceId(const bdaddr_t& device_address) {
                                    &addrSize);
   if (ret_val != 0) {
     LOGGER_ERROR(logger_,
-                  "WSAAddressToString() failed with error code"
-                      << WSAGetLastError());
+                 "WSAAddressToString() failed with error code"
+                     << WSAGetLastError());
   }
 #else
   ba2str(&device_address, device_address_string);

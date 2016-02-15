@@ -135,10 +135,9 @@ void SystemRequest::Run() {
     app_full_file_path += file_name;
 
     LOGGER_DEBUG(logger_,
-                  "Binary data is not present. Trying to find file "
-                      << file_name
-                      << " within previously saved app file in "
-                      << binary_data_folder);
+                 "Binary data is not present. Trying to find file "
+                     << file_name << " within previously saved app file in "
+                     << binary_data_folder);
 
     const AppFile* file = application->GetFile(app_full_file_path);
     if (!file || !file->is_download_complete ||
@@ -255,8 +254,8 @@ bool SystemRequest::ValidateQueryAppData(
   }
   if (!data.keyExists(json::response)) {
     LOGGER_ERROR(logger_,
-                  "QueryApps response does not contain '" << json::response
-                                                          << "' parameter.");
+                 "QueryApps response does not contain '" << json::response
+                                                         << "' parameter.");
     return false;
   }
   smart_objects::SmartArray* obj_array = data[json::response].asArray();

@@ -273,11 +273,11 @@ bool CSmartFactory<FunctionIdEnum, MessageTypeEnum, StructIdEnum>::attachSchema(
     return false;
 
   MessageTypeEnum msgtype(
-      (MessageTypeEnum)object[strings::S_PARAMS][strings::S_MESSAGE_TYPE]
-          .asInt());
+      (MessageTypeEnum)
+          object[strings::S_PARAMS][strings::S_MESSAGE_TYPE].asInt());
   FunctionIdEnum fid(
-      (FunctionIdEnum)object[strings::S_PARAMS][strings::S_FUNCTION_ID]
-          .asInt());
+      (FunctionIdEnum)
+          object[strings::S_PARAMS][strings::S_FUNCTION_ID].asInt());
 
   SmartSchemaKey<FunctionIdEnum, MessageTypeEnum> key(fid, msgtype);
 

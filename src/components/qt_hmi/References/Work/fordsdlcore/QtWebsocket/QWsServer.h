@@ -39,7 +39,7 @@ class QWsServer : public QObject {
   int socketDescriptor();
   bool waitForNewConnection(int msec = 0, bool* timedOut = 0);
 
- signals:
+signals:
   void newConnection();
 
  protected:
