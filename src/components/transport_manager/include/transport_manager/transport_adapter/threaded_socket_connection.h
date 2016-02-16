@@ -42,6 +42,7 @@
 #include "utils/threads/thread_delegate.h"
 #include "utils/lock.h"
 #include "utils/socket.h"
+#include "utils/atomic_object.h"
 
 using ::transport_manager::transport_adapter::Connection;
 
@@ -167,8 +168,9 @@ class ThreadedSocketConnection : public Connection,
 
   utils::TcpSocketConnection socket_connection_;
 
-  bool terminate_flag_;
-  bool unexpected_disconnect_;
+  sync_primitives::atomic_bool terminate_flag_;
+  sync_primitives::atomic_bool unexpected_disconnect_;
+
   const DeviceUID device_uid_;
   const ApplicationHandle app_handle_;
   threads::Thread* thread_;

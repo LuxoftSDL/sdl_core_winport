@@ -91,9 +91,9 @@ class utils::TcpSocketConnection::Impl : public QObject {
 
   void Wait();
 
-  Q_SIGNAL void DataReceived(QByteArray buffer, int bytes_read);
+  Q_SIGNAL void DataReceivedSignal(QByteArray buffer, int bytes_read);
 
-  Q_SIGNAL void OnNotify();
+  Q_SIGNAL void NotifySignal();
 
  private:
   void OnError(int error);
@@ -106,11 +106,11 @@ class utils::TcpSocketConnection::Impl : public QObject {
 
   void InitSocketSignals();
 
-  Q_SLOT void OnReadyClose();
+  Q_SLOT void OnCloseSlot();
 
-  Q_SLOT void OnDataReceived(QByteArray buffer, int bytes_read);
+  Q_SLOT void OnDataReceivedSlot(QByteArray buffer, int bytes_read);
 
-  Q_SLOT void OnError();
+  Q_SLOT void OnErrorSlot();
 
   HostAddress address_;
 
@@ -273,34 +273,37 @@ void utils::TcpSocketConnection::Impl::OnRead() {
       LOGGER_DEBUG(logger_,
                    "Received " << bytes_read << " bytes from socket "
                                << socket_descriptor_);
-      emit DataReceived(buffer, bytes_read);
+      emit DataReceivedSignal(buffer, bytes_read);
     }
   }
 }
 
 void utils::TcpSocketConnection::Impl::InitSocketSignals() {
-  connect(&(*tcp_socket_),
+  connect(tcp_socket_.data(),
           SIGNAL(disconnected()),
           this,
-          SLOT(OnReadyClose()),
+          SLOT(OnCloseSlot()),
           Qt::DirectConnection);
-  connect(&(*tcp_socket_),
+  connect(tcp_socket_.data(),
           SIGNAL(error(QAbstractSocket::SocketError)),
           this,
-          SLOT(OnError()),
+          SLOT(OnErrorSlot()),
           Qt::DirectConnection);
   connect(this,
-          SIGNAL(DataReceived(QByteArray, int)),
+          SIGNAL(DataReceivedSignal(QByteArray, int)),
           this,
-          SLOT(OnDataReceived(QByteArray, int)),
+          SLOT(OnDataReceivedSlot(QByteArray, int)),
           Qt::DirectConnection);
-  connect(&(*tcp_socket_),
+  connect(tcp_socket_.data(),
           SIGNAL(readyRead()),
-          &(*loop_),
+          loop_.data(),
           SLOT(quit()),
           Qt::DirectConnection);
-  connect(
-      this, SIGNAL(OnNotify()), &(*loop_), SLOT(quit()), Qt::DirectConnection);
+  connect(this,
+          SIGNAL(NotifySignal()),
+          loop_.data(),
+          SLOT(quit()),
+          Qt::DirectConnection);
 }
 
 void utils::TcpSocketConnection::Impl::Wait() {
@@ -322,7 +325,7 @@ void utils::TcpSocketConnection::Impl::Wait() {
   OnWrite();
 }
 
-void utils::TcpSocketConnection::Impl::OnError() {
+void utils::TcpSocketConnection::Impl::OnErrorSlot() {
   LOGGER_DEBUG(logger_,
                "Socket error code:#["
                    << tcp_socket_->error() << "]. "
@@ -330,21 +333,23 @@ void utils::TcpSocketConnection::Impl::OnError() {
   if (tcp_socket_->error() != QAbstractSocket::RemoteHostClosedError) {
     OnError(tcp_socket_->error());
   }
+  loop_->exit();
 }
 
-void utils::TcpSocketConnection::Impl::OnReadyClose() {
+void utils::TcpSocketConnection::Impl::OnCloseSlot() {
   OnClose();
+  loop_->exit();
 }
 
-void utils::TcpSocketConnection::Impl::OnDataReceived(QByteArray buffer,
-                                                      int bytes_read) {
+void utils::TcpSocketConnection::Impl::OnDataReceivedSlot(QByteArray buffer,
+                                                          int bytes_read) {
   uint8_t* casted_buffer = reinterpret_cast<uint8_t*>(buffer.data());
   event_handler_->OnData(casted_buffer, bytes_read);
 }
 
 bool utils::TcpSocketConnection::Impl::Notify() {
   LOGGER_AUTO_TRACE(logger_);
-  emit OnNotify();
+  emit NotifySignal();
   return true;
 }
 
