@@ -41,7 +41,7 @@ set (AM_SOURCE_DIR ${COMPONENTS_DIR}/application_manager)
 set (AM_TEST_DIR ${AM_SOURCE_DIR}/test)
 set (AM_MOCK_DIR ${AM_TEST_DIR}/mock)
 include_directories (
-    include/7
+    include/
     ${COMPONENTS_DIR}/utils/include/
     ${COMPONENTS_DIR}/formatters/include/
     ${COMPONENTS_DIR}/protocol_handler/include/
@@ -416,18 +416,10 @@ else ()
                                                          AMMobileCommandsLibrary
                                                          AMEventEngine
                                                          AMPolicyLibrary)
-  if(DEFINED QT_PORT)
-      target_link_libraries("ApplicationManager" ${LIBRARIES} AMHMICommandsLibrary
-                                                         AMMobileCommandsLibrary
-                                                         AMEventEngine
-                                                         AMPolicyLibrary 
-                                                         Core)
-  endif(DEFINED QT_PORT)
-                                                         
   if(ENABLE_LOG)
-    qt5_use_package("ApplicationManager" log4cxx -L${LOG4CXX_LIBS_DIRECTORY})
+    target_link_libraries("ApplicationManager" log4cxx -L${LOG4CXX_LIBS_DIRECTORY})
   endif()
-  
+
 endif()
 
 if(BUILD_TESTS)
