@@ -279,12 +279,12 @@ void utils::TcpSocketConnection::Impl::OnRead() {
 }
 
 void utils::TcpSocketConnection::Impl::InitSocketSignals() {
-  connect(&(*tcp_socket_),
+  connect(tcp_socket_.data(),
           SIGNAL(disconnected()),
           this,
           SLOT(OnCloseSlot()),
           Qt::DirectConnection);
-  connect(&(*tcp_socket_),
+  connect(tcp_socket_.data(),
           SIGNAL(error(QAbstractSocket::SocketError)),
           this,
           SLOT(OnErrorSlot()),
@@ -294,14 +294,14 @@ void utils::TcpSocketConnection::Impl::InitSocketSignals() {
           this,
           SLOT(OnDataReceivedSlot(QByteArray, int)),
           Qt::DirectConnection);
-  connect(&(*tcp_socket_),
+  connect(tcp_socket_.data(),
           SIGNAL(readyRead()),
-          &(*loop_),
+          loop_.data(),
           SLOT(quit()),
           Qt::DirectConnection);
   connect(this,
           SIGNAL(NotifySignal()),
-          &(*loop_),
+          loop_.data(),
           SLOT(quit()),
           Qt::DirectConnection);
 }
