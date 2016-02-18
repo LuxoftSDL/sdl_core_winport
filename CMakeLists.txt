@@ -32,6 +32,7 @@ cmake_minimum_required(VERSION 2.8.11)
 
 set (PROJECT smartDeviceLinkCore)
 
+project (${PROJECT})
 #Jenkins integration section
 #dont modify this section if you dont know details about integration with Jenkins!!!
 
@@ -42,7 +43,13 @@ option(HMI2 "Use Qt HMI" OFF)
 option(EXTENDED_MEDIA_MODE "Turn on and off extended Media Manager features relates to PulseAudio A2DP and GStreamer" OFF)
 option(BUILD_SHARED_LIBS "Build all libraries as shared (if ON) or static (if OFF)" OFF)
 option(BUILD_BT_SUPPORT "Bluetooth support" OFF)
-option(BUILD_USB_SUPPORT "libusb support" ON)
+if (${CMAKE_SYSTEM_NAME} MATCHES "Windows")
+  option(BUILD_USB_SUPPORT "libusb support" ON)
+else()
+# After porting on windows libusb not builds under Ubuntu from current repository
+# Necessary fixes for compatibility with Posix
+  option(BUILD_USB_SUPPORT "libusb support" OFF)
+endif()
 option(BUILD_BACKTRACE_SUPPORT "backtrace support" OFF)
 option(BUILD_TESTS "Possibility to build and run tests" OFF)
 option(TIME_TESTER "Enable profiling time test util" OFF)
@@ -65,8 +72,6 @@ set(SECURITY_OPTION 	"$ENV{SECURITY_MODE}")
 set(COMPONENTS_DIR ${CMAKE_SOURCE_DIR}/src/components)
 set(SNAPSHOT_TAG 	"$ENV{SNAPSHOT_TAG}")
 set(BUILDDIR "$ENV{BUILDDIR}")
-
-project (${PROJECT})
 
 if (${CMAKE_SYSTEM_NAME} MATCHES "Windows")
   if(QT_PORT)
