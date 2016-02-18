@@ -33,6 +33,15 @@
 #ifndef SRC_COMPONENTS_APPLICATION_MANAGER_INCLUDE_APPLICATION_MANAGER_APPLICATION_MANAGER_H_
 #define SRC_COMPONENTS_APPLICATION_MANAGER_INCLUDE_APPLICATION_MANAGER_APPLICATION_MANAGER_H_
 
+#include <string>
+#include <vector>
+#include <set>
+
+#include "application_manager/application.h"
+#include "application_manager/hmi_capabilities.h"
+#include "utils/data_accessor.h"
+#include "utils/shared_ptr.h"
+
 // Other compomnents class declaration
 namespace hmi_message_handler {
 class HMIMessageHandler;
@@ -47,6 +56,20 @@ class ConnectionHandler;
 namespace application_manager {
 
 class Application;
+
+struct ApplicationsAppIdSorter {
+  bool operator()(const ApplicationSharedPtr lhs,
+                  const ApplicationSharedPtr rhs) const {
+    return lhs->app_id() < rhs->app_id();
+  }
+};
+typedef std::set<ApplicationSharedPtr, ApplicationsAppIdSorter> ApplicationSet;
+
+// typedef for Applications list iterator
+typedef ApplicationSet::iterator ApplicationSetIt;
+
+// typedef for Applications list const iterator
+typedef ApplicationSet::const_iterator ApplicationSetConstIt;
 
 class ApplicationManager {
  public:
@@ -70,6 +93,9 @@ class ApplicationManager {
       protocol_handler::ProtocolHandler* handler) = 0;
   virtual void set_connection_handler(
       connection_handler::ConnectionHandler* handler) = 0;
+
+  virtual DataAccessor<ApplicationSet> applications() const = 0;
+  virtual ApplicationSharedPtr application(uint32_t app_id) const = 0;
 };
 
 }  // namespace application_manager

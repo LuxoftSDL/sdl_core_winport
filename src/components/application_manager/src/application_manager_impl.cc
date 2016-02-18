@@ -108,6 +108,7 @@ ApplicationManagerImpl::ApplicationManagerImpl()
           profile::Profile::instance()->stop_streaming_timeout())
     , navi_end_stream_timeout_(
           profile::Profile::instance()->stop_streaming_timeout())
+    , state_ctrl_(this)
     ,
 #ifdef TIME_TESTER
     metric_observer_(NULL)
@@ -178,6 +179,11 @@ ApplicationManagerImpl::~ApplicationManagerImpl() {
 
   navi_app_to_stop_.clear();
   navi_app_to_end_stream_.clear();
+}
+
+DataAccessor<ApplicationSet> ApplicationManagerImpl::applications() const {
+  ApplicationListAccessor accessor;
+  return accessor;
 }
 
 bool ApplicationManagerImpl::Stop() {
@@ -2343,7 +2349,7 @@ void ApplicationManagerImpl::UnregisterAllApplications() {
   bool is_unexpected_disconnect = Compare<eType, NEQ, ALL>(
       unregister_reason_, IGNITION_OFF, MASTER_RESET, FACTORY_DEFAULTS);
   ApplicationListAccessor accessor;
-  ApplictionSetConstIt it = accessor.begin();
+  ApplicationSetConstIt it = accessor.begin();
   while (it != accessor.end()) {
     ApplicationSharedPtr app_to_remove = *it;
 
@@ -2435,7 +2441,7 @@ void ApplicationManagerImpl::UnregisterApplication(
   connection_handler::DeviceHandle handle = 0;
   {
     ApplicationListAccessor accessor;
-    ApplictionSetConstIt it = accessor.begin();
+    ApplicationSetConstIt it = accessor.begin();
     for (; it != accessor.end(); ++it) {
       if ((*it)->app_id() == app_id) {
         app_to_remove = *it;
@@ -2976,7 +2982,7 @@ mobile_apis::Result::eType ApplicationManagerImpl::SaveBinary(
   uint64_t file_size = file_system::FileSize(full_file_path);
   std::ofstream* file_stream;
   if (offset != 0) {
-    if (file_size != offset) {
+    if (file_size != static_cast<uint64_t>(offset)) {
       LOGGER_INFO(logger_,
                   "ApplicationManagerImpl::SaveBinaryWithOffset offset"
                       << " does'n match existing file size");
@@ -3175,7 +3181,7 @@ void ApplicationManagerImpl::OnUpdateHMIAppType(
       smart_objects::SmartType_Array);
   bool flag_diffirence_app_hmi_type = false;
   ApplicationListAccessor accessor;
-  for (ApplictionSetIt it = accessor.begin(); it != accessor.end(); ++it) {
+  for (ApplicationSetIt it = accessor.begin(); it != accessor.end(); ++it) {
     it_app_hmi_types_from_policy = app_hmi_types.find(((*it)->mobile_app_id()));
 
     if (it_app_hmi_types_from_policy != app_hmi_types.end() &&
