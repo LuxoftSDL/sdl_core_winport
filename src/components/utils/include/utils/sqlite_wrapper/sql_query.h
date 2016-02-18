@@ -211,12 +211,12 @@ class SQLQuery {
    */
   std::string query_;
 
-#if defined WIN_NATIVE
+#ifndef QT_PORT
   /**
    * The SQL statement in SQLite
    */
   sqlite3_stmt* statement_;
-#endif  // WIN_NATIVE
+#endif  // QT_PORT
 
   /**
    * Lock for guarding statement

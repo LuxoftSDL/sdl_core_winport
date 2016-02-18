@@ -34,8 +34,12 @@
 #include <csignal>
 #include <cstdlib>
 #include <stdint.h>
+#include <unistd.h>
 
 #include "utils/signals.h"
+#include "utils/logger.h"
+
+CREATE_LOGGERPTR_GLOBAL(logger_, "Utils")
 
 namespace {
 
@@ -69,16 +73,16 @@ bool SubscribeToFaultSignal(sighandler_t func) {
 void SigHandler(int sig) {
   switch (sig) {
     case SIGINT:
-      LOGGER_INFO("SIGINT signal has been caught");
+      LOGGER_INFO(logger_, "SIGINT signal has been caught");
       break;
     case SIGTERM:
-      LOGGER_INFO("SIGTERM signal has been caught");
+      LOGGER_INFO(logger_, "SIGTERM signal has been caught");
       break;
     case SIGSEGV:
-      LOGGER_INFO("SIGSEGV signal has been caught");
+      LOGGER_INFO(logger_, "SIGSEGV signal has been caught");
       break;
     default:
-      LOGGER_INFO("Unexpected signal has been caught");
+      LOGGER_INFO(logger_, "Unexpected signal has been caught");
       break;
   }
 }
@@ -88,6 +92,9 @@ namespace utils {
 
 void WaitForSdlExecute() {
   pause();
+}
+
+void CreateSdlEvent() {
 }
 
 void SubscribeToTerminationSignals() {

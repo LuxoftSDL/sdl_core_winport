@@ -44,6 +44,10 @@
 #include "utils/atomic.h"
 #include "utils/threads/thread_delegate.h"
 #include "utils/logger.h"
+#include <chrono>
+#include <string.h>
+#include <pthread.h>
+#include <thread>
 
 #ifndef __QNXNTO__
 const int EOK = 0;
@@ -56,7 +60,7 @@ namespace threads {
 CREATE_LOGGERPTR_GLOBAL(logger_, "Utils")
 
 void sleep(uint32_t ms) {
-#ifdef SDL_CPP11
+#if defined(SDL_CPP11)
   std::chrono::microseconds sleep_interval_mcsec(ms * 1000);
   std::this_thread::sleep_for(std::chrono::microseconds(sleep_interval_mcsec));
 #else
