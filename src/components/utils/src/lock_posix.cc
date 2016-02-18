@@ -37,6 +37,8 @@
 #include <cstring>
 #include "utils/logger.h"
 
+#include <log4cxx/propertyconfigurator.h>
+
 namespace sync_primitives {
 
 CREATE_LOGGERPTR_GLOBAL(logger_, "Utils")

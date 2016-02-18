@@ -120,7 +120,7 @@ class SQLDatabase {
   bool Backup();
 
  protected:
-#if defined WIN_NATIVE
+#if defined(WIN_NATIVE) | defined(OS_POSIX)
   /**
     * Gets connection to the SQLite database
     * @return pointer to connection
@@ -129,7 +129,7 @@ class SQLDatabase {
 #endif  // WIN_NATIVE
 
  private:
-#if defined WIN_NATIVE
+#if defined WIN_NATIVE | defined(OS_POSIX)
   /**
    * The connection to the SQLite database
    */

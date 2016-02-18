@@ -150,6 +150,9 @@ if(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
       target_link_libraries("Utils" ${LIBRARIES})    
     endif()
 else()
+    include_directories (
+      ${JSONCPP_INCLUDE_DIRECTORY}
+    )
     set (SOURCES
       ${UTILS_SRC_DIR}/bitstream.cc
       ${UTILS_SRC_DIR}/conditional_variable_posix.cc

@@ -396,13 +396,13 @@ class JsonValue::const_iterator {
 };
 
 inline JsonValue::const_iterator::const_iterator()
-    : storage_(NULL), index_(0), kind_(JsonValueRef::None) {}
+    : kind_(JsonValueRef::None), storage_(NULL), index_(0) {}
 
 inline JsonValue::const_iterator::const_iterator(
     const JsonValue::Storage* storage,
     ArrayIndex index,
     JsonValueRef::Kind kind)
-    : storage_(storage), index_(index), kind_(kind) {}
+    : kind_(kind), storage_(storage), index_(index) {}
 
 inline const JsonValue::const_iterator::reference JsonValue::const_iterator::
 operator*() const {
@@ -782,12 +782,12 @@ inline JsonValue::const_iterator JsonValueRef::end() const {
 ////////////////////////////////////////////////////////////////////////////////
 
 inline JsonValue::iterator::iterator()
-    : storage_(NULL), index_(0), kind_(JsonValueRef::None) {}
+    : kind_(JsonValueRef::None), storage_(NULL), index_(0) {}
 
 inline JsonValue::iterator::iterator(JsonValue::Storage* storage,
                                      JsonValue::ArrayIndex index,
                                      JsonValueRef::Kind kind)
-    : storage_(storage), index_(index), kind_(kind) {}
+    : kind_(kind), storage_(storage), index_(index) {}
 
 inline JsonValue::iterator::reference JsonValue::iterator::operator*() const {
   return JsonValueRef(*storage_, index_, kind_);

@@ -211,7 +211,7 @@ class SQLQuery {
    */
   std::string query_;
 
-#if defined WIN_NATIVE
+#if defined WIN_NATIVE | defined(OS_POSIX)
   /**
    * The SQL statement in SQLite
    */

@@ -35,6 +35,7 @@
 #include <unistd.h>
 #include <sys/types.h>
 #include <sys/stat.h>
+#include <fcntl.h>
 
 #include "utils/pipe.h"
 #include "utils/pimpl_impl.h"
@@ -87,8 +88,8 @@ bool utils::Pipe::Impl::Open() {
     LOGGER_ERROR(logger_ptr, "Cannot create named pipe: " << name_);
     return false;
   }
-  if (-1 == open(name_, O_RDWR, 0)) {
-    unlink(handle_);
+  if (-1 == open(name_.c_str(), O_RDWR, 0)) {
+    unlink(reinterpret_cast<char*>(handle_));
     handle_ = 0;
     LOGGER_ERROR(logger_ptr, "Cannot connect to named pipe: " << name_);
     return false;
@@ -104,7 +105,7 @@ void utils::Pipe::Impl::Close() {
   if (-1 == close(handle_)) {
     LOGGER_WARN(logger_ptr, "Cannot disconnect from named pipe: " << name_);
   }
-  if (-1 == unlink(handle_)) {
+  if (-1 == unlink(reinterpret_cast<char*>(handle_))) {
     LOGGER_WARN(logger_ptr, "Cannot delete named pipe: " << name_);
   }
   handle_ = 0;
