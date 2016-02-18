@@ -57,7 +57,7 @@ namespace {
 typedef std::map<MessageType, std::string> MessageTypeMap;
 MessageTypeMap messageTypes;
 
-void InitMessageTypes() {
+/*void InitMessageTypes() {
   messageTypes.insert(std::make_pair(kRequest, "Request"));
   messageTypes.insert(std::make_pair(kResponse, "Response"));
   messageTypes.insert(std::make_pair(kNotification, "Notification"));
@@ -67,7 +67,7 @@ MessageTypeMap& GetMessageTypes(const std::string& priority) {
     InitMessageTypes();
   }
   return messageTypes;
-}
+}*/
 }
 
 CREATE_LOGGERPTR_GLOBAL(logger_, "MobileMessageHandler")

@@ -32,6 +32,15 @@
 
 #include "application_manager/message_helper.h"
 
+#if defined(QT_PORT)
+#define _PFX_64 "ll"
+#define PRId64 _PFX_64 "d"
+#else
+#define __STDC_FORMAT_MACROS
+#include <inttypes.h>
+#undef __STDC_FORMAT_MACROS
+#endif
+
 #include <algorithm>
 #include <map>
 #include <set>
@@ -2685,7 +2694,7 @@ bool MessageHelper::PrintSmartObject(const smart_objects::SmartObject& object) {
       break;
     }
     case NsSmartDeviceLink::NsSmartObjects::SmartType_Integer:
-      printf("%I64", object.asInt64());
+      printf("%" PRId64 "\n", object.asInt64());
       break;
     case NsSmartDeviceLink::NsSmartObjects::SmartType_String:
       printf("%s", object.asString().c_str());
