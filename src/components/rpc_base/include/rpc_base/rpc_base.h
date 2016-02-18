@@ -429,7 +429,7 @@ class Stringifyable : public T {
       const U& non_stringifyable,
       typename utils::type_traits::enable_if<
           !utils::type_traits::is_base_of<Stringifyable, U>::value>::type* = 0)
-      : T(non_nullable), predefined_string_("") {}
+      : T(non_stringifyable), predefined_string_("") {}
 
   /**
    * Creates Stringifyable from non stringifyable object.
