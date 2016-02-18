@@ -36,17 +36,18 @@
 
 #include "application_manager/hmi_state.h"
 #include "application_manager/application.h"
+#include "application_manager/application_manager.h"
 #include "event_engine/event_observer.h"
 #include "application_manager/message_helper.h"
 #include "interfaces/MOBILE_API.h"
-#include "application_manager/state_context.h"
 #include "utils/lock.h"
+#include "utils/helpers.h"
 
 namespace application_manager {
-class ApplicationManagerImpl;
+
 class StateController : public event_engine::EventObserver {
  public:
-  StateController();
+  StateController(ApplicationManager* app_mngr);
 
   /**
    * @brief SetRegularState setup regular hmi state, that will appear if no
@@ -271,18 +272,15 @@ class StateController : public event_engine::EventObserver {
    */
   template <typename UnaryFunction>
   void ForEachApplication(UnaryFunction func) {
-    using namespace utils;
-    typename ApplicationManagerImpl::ApplicationListAccessor accessor;
-    typedef typename ApplicationManagerImpl::ApplictionSetConstIt Iter;
-    for (Iter it = accessor.begin(); it != accessor.end(); ++it) {
-      if (it->valid()) {
-        ApplicationConstSharedPtr const_app = *it;
-        func(ApplicationManagerImpl::instance()->application(
-            const_app->app_id()));
+    DataAccessor<ApplicationSet> accessor = app_mngr_->applications();
+    ApplicationSet::iterator it = accessor.GetData().begin();
+    for (; it != accessor.GetData().end(); ++it) {
+      ApplicationConstSharedPtr const_app = *it;
+      if (const_app) {
+        func(app_mngr_->application(const_app->app_id()));
       }
     }
   }
-
   /**
    * @brief The HmiLevelConflictResolver struct
    * Resolves conflicts and moves OTHER applications to appropriate
@@ -548,6 +546,7 @@ class StateController : public event_engine::EventObserver {
   mutable sync_primitives::Lock active_states_lock_;
   std::map<uint32_t, HmiStatePtr> waiting_for_activate;
   StateContext state_context_;
+  ApplicationManager* app_mngr_;
 };
 }
 
