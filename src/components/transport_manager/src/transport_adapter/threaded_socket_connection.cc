@@ -160,7 +160,7 @@ void ThreadedSocketConnection::Transmit() {
 
 void ThreadedSocketConnection::Send() {
   LOGGER_AUTO_TRACE(logger_);
-  LOGGER_DEBUG(logger_, "Trying to send data if awailable");
+  LOGGER_DEBUG(logger_, "Trying to send data if available");
   FrameQueue frames_to_send;
   {
     sync_primitives::AutoLock auto_lock(frames_to_send_mutex_);
