@@ -303,7 +303,7 @@ void utils::TcpSocketConnection::Impl::InitSocketSignals() {
           SIGNAL(NotifySignal()),
           loop_.data(),
           SLOT(quit()),
-          Qt::DirectConnection);
+          Qt::QueuedConnection);
 }
 
 void utils::TcpSocketConnection::Impl::Wait() {
