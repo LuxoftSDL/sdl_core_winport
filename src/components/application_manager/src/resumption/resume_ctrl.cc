@@ -280,17 +280,25 @@ bool ResumeCtrl::StartResumption(ApplicationSharedPtr application,
   DCHECK_OR_RETURN(application, false);
   LOGGER_DEBUG(
       logger_,
-      " Resume app_id = " << application->app_id()
-                          << " hmi_app_id = " << application->hmi_app_id()
-                          << " policy_id = " << application->mobile_app_id()
-                          << " received hash = " << hash);
+      "Resume app_id = " << application->app_id()
+                         << " hmi_app_id = " << application->hmi_app_id()
+                         << " policy_id = " << application->mobile_app_id()
+                         << " received hash = '" << hash << "'");
   smart_objects::SmartObject saved_app;
   bool result = resumption_storage_->GetSavedApplication(
       application->mobile_app_id(),
       MessageHelper::GetDeviceMacAddressForHandle(application->device()),
       saved_app);
   if (result) {
+    LOGGER_DEBUG(logger_,
+                 "Found application data in the resumption storage:\n"
+                     << saved_app.asString());
+  } else {
+    LOGGER_DEBUG(logger_, "Application not found in the resumption storage");
+  }
+  if (result) {
     const std::string saved_hash = saved_app[strings::hash_id].asString();
+    LOGGER_DEBUG(logger_, "Saved hash: " << saved_hash);
     result = saved_hash == hash ? RestoreApplicationData(application) : false;
     application->UpdateHash();
     AddToResumptionTimerQueue(application->app_id());
@@ -357,8 +365,8 @@ bool ResumeCtrl::CheckPersistenceFilesForResumption(
   LOGGER_AUTO_TRACE(logger_);
   DCHECK_OR_RETURN(application, false);
   LOGGER_DEBUG(logger_,
-               " Resume app_id = " << application->app_id() << " policy_id = "
-                                   << application->mobile_app_id());
+               "Resume app_id = " << application->app_id() << " policy_id = "
+                                  << application->mobile_app_id());
   smart_objects::SmartObject saved_app;
   bool result = resumption_storage_->GetSavedApplication(
       application->mobile_app_id(),

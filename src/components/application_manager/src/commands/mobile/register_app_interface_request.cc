@@ -165,7 +165,6 @@ void RegisterAppInterfaceRequest::Run() {
     ApplicationManagerImpl::instance()->updateRequestTimeout(
         connection_key(), correlation_id(), default_timeout());
   }
-
   const std::string mobile_app_id =
       (*message_)[strings::msg_params][strings::app_id].asString();
 
@@ -308,6 +307,7 @@ void RegisterAppInterfaceRequest::Run() {
 }
 
 void RegisterAppInterfaceRequest::SendRegisterAppInterfaceResponseToMobile() {
+  LOGGER_AUTO_TRACE(logger_);
   smart_objects::SmartObject response_params(smart_objects::SmartType_Map);
 
   mobile_apis::Result::eType result_code = mobile_apis::Result::SUCCESS;
@@ -493,6 +493,7 @@ void RegisterAppInterfaceRequest::SendRegisterAppInterfaceResponseToMobile() {
   bool need_restore_vr = resumption;
   if (resumption) {
     hash_id = (*message_)[strings::msg_params][strings::hash_id].asString();
+    LOGGER_DEBUG(logger_, "Checking resumption for the hashID: " << hash_id);
     if (!resumer.CheckApplicationHash(application, hash_id)) {
       LOGGER_WARN(logger_, "Hash does not match");
       result_code = mobile_apis::Result::RESUME_FAILED;
@@ -506,6 +507,8 @@ void RegisterAppInterfaceRequest::SendRegisterAppInterfaceResponseToMobile() {
     } else {
       add_info = " Resume Succeed";
     }
+  } else {
+    LOGGER_DEBUG(logger_, "Not a resumption. hashID is missing.");
   }
   if ((mobile_apis::Result::SUCCESS == result_code) &&
       (mobile_apis::Result::INVALID_ENUM != result_checking_app_hmi_type_)) {
@@ -784,10 +787,13 @@ bool RegisterAppInterfaceRequest::IsWhiteSpaceExist() {
 
   if ((*message_)[strings::msg_params].keyExists(strings::hash_id)) {
     str = (*message_)[strings::msg_params][strings::hash_id].asCharArray();
+    LOGGER_DEBUG(logger_, "Checking hashID: " << str);
     if (!CheckSyntax(str)) {
       LOGGER_ERROR(logger_, "Invalid hash_id syntax check failed");
       return true;
     }
+  } else {
+    LOGGER_DEBUG(logger_, "hashID is missing");
   }
 
   if ((*message_)[strings::msg_params].keyExists(strings::device_info)) {

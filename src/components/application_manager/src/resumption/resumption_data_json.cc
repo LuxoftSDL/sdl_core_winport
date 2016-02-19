@@ -278,9 +278,13 @@ bool ResumptionDataJson::GetSavedApplication(
   sync_primitives::AutoLock autolock(resumption_lock_);
   const int idx = GetObjectIndex(policy_app_id, device_id);
   if (-1 == idx) {
+    LOGGER_DEBUG(logger_,
+                 "Object index not found for the policy_app_id="
+                     << policy_app_id << ", device_id=" << device_id);
     return false;
   }
   const JsonValueRef json_saved_app = GetSavedApplications()[idx];
+  LOGGER_DEBUG(logger_, "Found resumption data:\n" << json_saved_app.ToJson());
   Formatters::CFormatterJsonBase::jsonValueToObj(json_saved_app, saved_app);
   return true;
 }
