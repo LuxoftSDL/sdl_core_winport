@@ -176,7 +176,7 @@ void file_system::Close(std::ofstream* file_stream) {
 }
 
 std::string file_system::CurrentWorkingDirectory() {
-  return QDir::currentPath().toStdString();
+  return QDir::toNativeSeparators(QDir::currentPath()).toStdString();
 }
 
 bool file_system::DeleteFile(const std::string& utf8_path) {
