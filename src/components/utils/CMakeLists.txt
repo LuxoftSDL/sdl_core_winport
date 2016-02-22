@@ -242,9 +242,9 @@ else()
     target_link_libraries("Utils" ${LIBRARIES})
 
 
-    if(BUILD_TESTS)
-      add_subdirectory(test)
-    endif()
+    #if(BUILD_TESTS)
+    #  add_subdirectory(test)
+    #endif()
 endif()
 
     install(TARGETS "Utils"

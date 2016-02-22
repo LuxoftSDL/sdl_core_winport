@@ -54,6 +54,6 @@ set (HEADERS
 add_library(rpc_base ${HEADERS} ${SOURCES})
 target_link_libraries(rpc_base jsoncpp)
 
-if(BUILD_TESTS)
-  add_subdirectory(test)
-endif()
+#if(BUILD_TESTS)
+#  add_subdirectory(test)
+#endif()
