@@ -677,11 +677,11 @@ ADD_DEPENDENCIES(${PROJECT} Policy)
 ADD_DEPENDENCIES(${PROJECT} copy_library_Policy)
 
 # Building tests
-if(BUILD_TESTS)
+#if(BUILD_TESTS)
     # Directory test is deprecated. Use src/components/<name>/test
-    include(Dart)
+#    include(Dart)
     #add_subdirectory(./test)
-endif()
+#endif()
                                                                                                                                                                                        
 # Building documentation                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    
 

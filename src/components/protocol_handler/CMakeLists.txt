@@ -66,6 +66,6 @@ endif()
 
 target_link_libraries(ProtocolHandler ${LIBRARIES})
 
-if(BUILD_TESTS)
-  add_subdirectory(test)
-endif()
+#if(BUILD_TESTS)
+#  add_subdirectory(test)
+#endif()

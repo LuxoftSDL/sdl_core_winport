@@ -189,6 +189,6 @@ add_library("MediaManager"
 
 target_link_libraries("MediaManager" ${LIBRARIES})
 
-if(BUILD_TESTS)
-    add_subdirectory(test)
-endif()
+#if(BUILD_TESTS)
+#    add_subdirectory(test)
+#endif()
