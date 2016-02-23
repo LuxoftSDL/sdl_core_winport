@@ -2474,9 +2474,11 @@ mobile_apis::Result::eType MessageHelper::VerifyImage(
     return mobile_apis::Result::SUCCESS;
   }
 
-  std::string file_path =
-      utils::RemoveCharsFromString(image[strings::value].asString(), " ");
-  if (0 == file_path.size()) {
+  std::string file_path = image[strings::value].asString();
+
+  LOGGER_DEBUG(logger_, "Checking image path: '" << file_path << "'");
+
+  if (0 == utils::Trim(file_path).size()) {
     return mobile_apis::Result::INVALID_DATA;
   }
 
