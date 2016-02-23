@@ -30,7 +30,6 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 #include "utils/file_system.h"
-#include "utils/logger.h"
 #include "utils/string_utils.h"
 #include "utils/date_time.h"
 

@@ -264,7 +264,7 @@ std::string file_system::CurrentWorkingDirectory() {
 
 bool file_system::DeleteFile(const std::string& utf8_path) {
   if (FileExists(utf8_path) && IsWritingAllowed(utf8_path)) {
-    return !_wremove(ConvertUTF8ToWString(utf8_path).c_str());
+    return 0 == _wremove(ConvertUTF8ToWString(utf8_path).c_str());
   }
   return false;
 }
@@ -303,13 +303,13 @@ bool file_system::RemoveDirectory(const std::string& utf8_path,
     if (is_recursively) {
       RemoveDirectoryContent(utf8_path);
     }
-    return !_wrmdir(ConvertUTF8ToWString(utf8_path).c_str());
+    return 0 == _wrmdir(ConvertUTF8ToWString(utf8_path).c_str());
   }
   return false;
 }
 
 bool file_system::IsAccessible(const std::string& utf8_path, int32_t how) {
-  return !_waccess(ConvertUTF8ToWString(utf8_path).c_str(), how);
+  return 0 == _waccess(ConvertUTF8ToWString(utf8_path).c_str(), how);
 }
 
 bool file_system::IsWritingAllowed(const std::string& utf8_path) {
