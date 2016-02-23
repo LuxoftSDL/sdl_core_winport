@@ -172,13 +172,9 @@ void CommandRequestImpl::SendResponse(
   ApplicationManagerImpl::instance()->ManageMobileCommand(result);
 }
 
-bool CommandRequestImpl::CheckSyntax(std::string str, bool allow_empty_line) {
+bool CommandRequestImpl::CheckSyntax(const std::string& str,
+                                     bool allow_empty_line) {
   if (std::string::npos != str.find_first_of("\t\n")) {
-    LOGGER_ERROR(logger_, "CheckSyntax failed! :" << str);
-    return false;
-  }
-  if (std::string::npos != str.find("\\n") ||
-      std::string::npos != str.find("\\t")) {
     LOGGER_ERROR(logger_, "CheckSyntax failed! :" << str);
     return false;
   }
