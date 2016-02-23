@@ -221,7 +221,7 @@ ApplicationSharedPtr ApplicationManagerImpl::application_by_policy_id(
   ApplicationListAccessor accessor;
   ApplicationSharedPtr app = accessor.Find(finder);
   LOGGER_DEBUG(logger_,
-               " policy_app_id << " << policy_app_id << "Found = " << app);
+               " policy_app_id << " << policy_app_id << ". Found = " << app);
   return app;
 }
 
@@ -1703,7 +1703,7 @@ bool ApplicationManagerImpl::ConvertMessageToSO(
         return false;
       }
       LOGGER_INFO(logger_,
-                  "Convertion result for sdl object is true"
+                  "Conversion result for sdl object is true"
                       << " function_id "
                       << output[jhs::S_PARAMS][jhs::S_FUNCTION_ID].asInt());
       output[strings::params][strings::connection_key] =
@@ -1876,7 +1876,7 @@ bool ApplicationManagerImpl::ConvertSOtoMessage(
       return false;
   }
 
-  LOGGER_INFO(logger_, "Convertion result: " << output_string);
+  LOGGER_INFO(logger_, "Conversion result: " << output_string);
 
   output.set_connection_key(message.getElement(jhs::S_PARAMS)
                                 .getElement(strings::connection_key)

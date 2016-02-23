@@ -44,8 +44,8 @@ std::string ReplaceString(std::string str,
                           const std::string& from,
                           const std::string& to);
 
-std::string RemoveCharsFromString(const std::string& str,
-                                  const std::string& to_remove);
+std::string Trim(const std::string& value,
+                 const std::string& whitespace = " \t");
 
 }  // namespace utils
 

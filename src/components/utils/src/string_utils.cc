@@ -52,11 +52,15 @@ std::string utils::ReplaceString(std::string str,
   return str;
 }
 
-std::string utils::RemoveCharsFromString(const std::string& str,
-                                         const std::string& to_remove) {
-  std::string res = str;
-  for (size_t i = 0; i < to_remove.size(); ++i) {
-    res.erase(std::remove(res.begin(), res.end(), to_remove[i]), res.end());
+std::string utils::Trim(const std::string& value,
+                        const std::string& whitespace) {
+  const std::size_t begin = value.find_first_not_of(whitespace);
+  if (begin == std::string::npos) {
+    return "";
   }
-  return res;
+
+  const std::size_t end = value.find_last_not_of(whitespace);
+  const std::size_t range = end - begin + 1;
+
+  return value.substr(begin, range);
 }
