@@ -289,11 +289,7 @@ bool ResumeCtrl::StartResumption(ApplicationSharedPtr application,
       application->mobile_app_id(),
       MessageHelper::GetDeviceMacAddressForHandle(application->device()),
       saved_app);
-  if (result) {
-    LOGGER_DEBUG(logger_,
-                 "Found application data in the resumption storage:\n"
-                     << saved_app.asString());
-  } else {
+  if (!result) {
     LOGGER_DEBUG(logger_, "Application not found in the resumption storage");
   }
   if (result) {

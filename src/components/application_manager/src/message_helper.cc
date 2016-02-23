@@ -2474,11 +2474,11 @@ mobile_apis::Result::eType MessageHelper::VerifyImage(
     return mobile_apis::Result::SUCCESS;
   }
 
-  std::string file_path = image[strings::value].asString();
+  std::string file_path = utils::Trim(image[strings::value].asString());
 
   LOGGER_DEBUG(logger_, "Checking image path: '" << file_path << "'");
 
-  if (0 == utils::Trim(file_path).size()) {
+  if (file_path.empty()) {
     return mobile_apis::Result::INVALID_DATA;
   }
 

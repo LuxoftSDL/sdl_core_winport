@@ -493,7 +493,8 @@ void RegisterAppInterfaceRequest::SendRegisterAppInterfaceResponseToMobile() {
   bool need_restore_vr = resumption;
   if (resumption) {
     hash_id = (*message_)[strings::msg_params][strings::hash_id].asString();
-    LOGGER_DEBUG(logger_, "Checking resumption for the hashID: " << hash_id);
+    LOGGER_DEBUG(logger_,
+                 "Trying to resume application by hashID: " << hash_id);
     if (!resumer.CheckApplicationHash(application, hash_id)) {
       LOGGER_WARN(logger_, "Hash does not match");
       result_code = mobile_apis::Result::RESUME_FAILED;
@@ -507,9 +508,8 @@ void RegisterAppInterfaceRequest::SendRegisterAppInterfaceResponseToMobile() {
     } else {
       add_info = " Resume Succeed";
     }
-  } else {
-    LOGGER_DEBUG(logger_, "Not a resumption. hashID is missing.");
   }
+
   if ((mobile_apis::Result::SUCCESS == result_code) &&
       (mobile_apis::Result::INVALID_ENUM != result_checking_app_hmi_type_)) {
     add_info += response_info_;
@@ -792,8 +792,6 @@ bool RegisterAppInterfaceRequest::IsWhiteSpaceExist() {
       LOGGER_ERROR(logger_, "Invalid hash_id syntax check failed");
       return true;
     }
-  } else {
-    LOGGER_DEBUG(logger_, "hashID is missing");
   }
 
   if ((*message_)[strings::msg_params].keyExists(strings::device_info)) {
