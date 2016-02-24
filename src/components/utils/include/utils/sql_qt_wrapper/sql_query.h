@@ -33,9 +33,10 @@
 #ifndef SRC_COMPONENTS_POLICY_SQLITE_WRAPPER_INCLUDE_SQL_QT_WRAPPER_SQL_QUERY_H_
 #define SRC_COMPONENTS_POLICY_SQLITE_WRAPPER_INCLUDE_SQL_QT_WRAPPER_SQL_QUERY_H_
 
-#include <stdint.h>
+#include <cstdint>
 #include <string>
 
+#include <QStringList>
 #include <QSqlQuery>
 
 #include "utils/lock.h"
@@ -202,7 +203,15 @@ class SQLQuery {
   SQLError LastError() const;
 
  private:
+  /**
+   * @brief Splits query by statements
+   * @param query Query to be processed
+   * @return List of query statements
+   */
+  QStringList SplitQuery(const std::string& query) const;
+
   QSqlQuery query_;
+  QStringList queries_cache_;
 };
 
 }  // namespace dbms
