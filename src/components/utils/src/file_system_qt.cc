@@ -205,9 +205,10 @@ bool file_system::RemoveDirectory(const std::string& utf8_path,
   return false;
 }
 
-bool file_system::IsAccessible(const std::string& utf8_path, int32_t how) {
+bool file_system::IsAccessible(const std::string& utf8_path,
+                               int32_t access_rights) {
   QFileInfo qFileInfo(QString::fromUtf8(utf8_path.c_str()));
-  switch (how) {
+  switch (access_rights) {
     case (W_OK):
       return qFileInfo.isWritable();
     case (R_OK):

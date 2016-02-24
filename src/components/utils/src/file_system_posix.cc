@@ -256,8 +256,9 @@ bool file_system::RemoveDirectory(const std::string& utf8_path,
   return false;
 }
 
-bool file_system::IsAccessible(const std::string& utf8_path, int32_t how) {
-  return 0 == access(utf8_path.c_str(), how);
+bool file_system::IsAccessible(const std::string& utf8_path,
+                               int32_t access_rights) {
+  return 0 == access(utf8_path.c_str(), access_rights);
 }
 
 bool file_system::IsWritingAllowed(const std::string& utf8_path) {

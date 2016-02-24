@@ -156,13 +156,13 @@ bool DeleteFile(const std::string& utf8_path);
 bool RemoveDirectory(const std::string& utf8_path, bool is_recursively);
 
 /**
-  * @brief Check access rights
+  * @brief Checks access rights for file or directory
   *
-  * @param utf8_path path to file.
-  * @param how Read/write attribute.
-  * @return returns true if file has the given mode.
+  * @param utf8_path Path to file or directory
+  * @param access_rights Access rights to be checked
+  * @return True if file or directory has requested rights, false otherwise
   */
-bool IsAccessible(const std::string& utf8_path, int32_t how);
+bool IsAccessible(const std::string& utf8_path, int32_t access_rights);
 
 /**
   * @brief Check access rights for writing
