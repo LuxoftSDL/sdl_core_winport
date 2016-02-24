@@ -151,7 +151,9 @@
 #endif
 
 #if defined(QT_PORT)
+extern Q_CORE_EXPORT int qt_ntfs_permission_lookup;
 #define PLATFORM_INIT(argc, argv)                    \
+  qt_ntfs_permission_lookup++;                       \
   QCoreApplication application(argc, argv);          \
   QThreadPool* pool = QThreadPool::globalInstance(); \
   pool->setMaxThreadCount(100)
