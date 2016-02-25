@@ -264,7 +264,7 @@ std::string file_system::CurrentWorkingDirectory() {
 
 bool file_system::DeleteFile(const std::string& utf8_path) {
   if (FileExists(utf8_path) && IsWritingAllowed(utf8_path)) {
-    return !_wremove(ConvertUTF8ToWString(utf8_path).c_str());
+    return 0 == _wremove(ConvertUTF8ToWString(utf8_path).c_str());
   }
   return false;
 }
@@ -303,21 +303,76 @@ bool file_system::RemoveDirectory(const std::string& utf8_path,
     if (is_recursively) {
       RemoveDirectoryContent(utf8_path);
     }
-    return !_wrmdir(ConvertUTF8ToWString(utf8_path).c_str());
+    return 0 == _wrmdir(ConvertUTF8ToWString(utf8_path).c_str());
   }
   return false;
 }
 
-bool file_system::IsAccessible(const std::string& utf8_path, int32_t how) {
-  return !_waccess(ConvertUTF8ToWString(utf8_path).c_str(), how);
+bool file_system::IsAccessible(const std::string& utf8_path,
+                               int32_t access_rights) {
+  BOOL result = FALSE;
+
+  DWORD length = 0;
+  if (0 == GetFileSecurityW(ConvertUTF8ToWString(utf8_path).c_str(),
+                            OWNER_SECURITY_INFORMATION |
+                                GROUP_SECURITY_INFORMATION |
+                                DACL_SECURITY_INFORMATION,
+                            NULL,
+                            NULL,
+                            &length) &&
+      ERROR_INSUFFICIENT_BUFFER == GetLastError()) {
+    uint8_t* security_descriptor = new uint8_t[length];
+    if (0 != GetFileSecurityW(
+                 ConvertUTF8ToWString(utf8_path).c_str(),
+                 OWNER_SECURITY_INFORMATION | GROUP_SECURITY_INFORMATION |
+                     DACL_SECURITY_INFORMATION,
+                 static_cast<PSECURITY_DESCRIPTOR>(security_descriptor),
+                 length,
+                 &length)) {
+      HANDLE process_token = NULL;
+      if (OpenProcessToken(GetCurrentProcess(),
+                           TOKEN_IMPERSONATE | TOKEN_QUERY | TOKEN_DUPLICATE |
+                               STANDARD_RIGHTS_READ,
+                           &process_token)) {
+        HANDLE impersonated_token = NULL;
+        if (DuplicateToken(
+                process_token, SecurityImpersonation, &impersonated_token)) {
+          PRIVILEGE_SET privileges = {0};
+          DWORD privileges_length = sizeof(privileges);
+          DWORD granted_access = 0;
+
+          GENERIC_MAPPING mapping = {0xFFFFFFFF};
+          mapping.GenericRead = FILE_GENERIC_READ;
+          mapping.GenericWrite = FILE_GENERIC_WRITE;
+          mapping.GenericExecute = FILE_GENERIC_EXECUTE;
+          mapping.GenericAll = FILE_ALL_ACCESS;
+          MapGenericMask(reinterpret_cast<PDWORD>(&access_rights), &mapping);
+
+          AccessCheck(security_descriptor,
+                      impersonated_token,
+                      access_rights,
+                      &mapping,
+                      &privileges,
+                      &privileges_length,
+                      &granted_access,
+                      &result);
+          CloseHandle(impersonated_token);
+        }
+        CloseHandle(process_token);
+      }
+    }
+    delete security_descriptor;
+  }
+
+  return TRUE == result;
 }
 
 bool file_system::IsWritingAllowed(const std::string& utf8_path) {
-  return IsAccessible(utf8_path, 2) || IsAccessible(utf8_path, 6);
+  return IsAccessible(utf8_path, GENERIC_WRITE);
 }
 
 bool file_system::IsReadingAllowed(const std::string& utf8_path) {
-  return IsAccessible(utf8_path, 4) || IsAccessible(utf8_path, 6);
+  return IsAccessible(utf8_path, GENERIC_READ);
 }
 
 std::vector<std::string> file_system::ListFiles(const std::string& utf8_path) {

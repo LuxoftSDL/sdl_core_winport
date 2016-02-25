@@ -30,7 +30,6 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 #include "utils/file_system.h"
-#include "utils/logger.h"
 
 #include <sys/statvfs.h>
 #include <sys/stat.h>
@@ -43,8 +42,6 @@
 #include <fstream>
 #include <cstddef>
 #include <algorithm>
-
-CREATE_LOGGERPTR_GLOBAL(logger_, "Utils")
 
 file_system::FileSizeType file_system::GetAvailableDiskSpace(
     const std::string& utf8_path) {
@@ -194,14 +191,14 @@ std::string file_system::CurrentWorkingDirectory() {
   const std::size_t filename_max_length = 1024;
   char path[filename_max_length];
   if (0 == getcwd(path, filename_max_length)) {
-    LOGGER_WARN(logger_, "Could not get CWD");
+    return "";
   }
   return std::string(path);
 }
 
 bool file_system::DeleteFile(const std::string& utf8_path) {
   if (FileExists(utf8_path) && IsAccessible(utf8_path, W_OK)) {
-    return !remove(utf8_path.c_str());
+    return 0 == remove(utf8_path.c_str());
   }
   return false;
 }
@@ -254,13 +251,14 @@ bool file_system::RemoveDirectory(const std::string& utf8_path,
       RemoveDirectoryContent(utf8_path);
     }
 
-    return !rmdir(utf8_path.c_str());
+    return 0 == rmdir(utf8_path.c_str());
   }
   return false;
 }
 
-bool file_system::IsAccessible(const std::string& utf8_path, int32_t how) {
-  return !access(utf8_path.c_str(), how);
+bool file_system::IsAccessible(const std::string& utf8_path,
+                               int32_t access_rights) {
+  return 0 == access(utf8_path.c_str(), access_rights);
 }
 
 bool file_system::IsWritingAllowed(const std::string& utf8_path) {
