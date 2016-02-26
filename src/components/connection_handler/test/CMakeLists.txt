@@ -1,4 +1,4 @@
-# Copyright (c) 2014, Ford Motor Company
+# Copyright (c) 2015, Ford Motor Company
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -28,44 +28,44 @@
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 
+if(BUILD_TESTS)
+
+set(appMain_DIR ${CMAKE_SOURCE_DIR}/src/appMain)
 
 include_directories(
-  include
-  ${COMPONENTS_DIR}/utils/include/
-  ${COMPONENTS_DIR}/protocol_handler/include/
-  ${COMPONENTS_DIR}/connection_handler/include/
-  ${COMPONENTS_DIR}/config_profile/include/
-  ${LOG4CXX_INCLUDE_DIRECTORY}
-)
-
-set(SOURCES
-    ${COMPONENTS_DIR}/protocol_handler/src/incoming_data_handler.cc
-    ${COMPONENTS_DIR}/protocol_handler/src/protocol_handler_impl.cc
-    ${COMPONENTS_DIR}/protocol_handler/src/protocol_packet.cc
-    ${COMPONENTS_DIR}/protocol_handler/src/protocol_payload.cc
+    ${GMOCK_INCLUDE_DIRECTORY}
+    ${COMPONENTS_DIR}/connection_handler/include
+    ${COMPONENTS_DIR}/security_manager/test/include
+    ${COMPONENTS_DIR}/protocol_handler/test/include
+    ${COMPONENTS_DIR}/security_manager/include
+    ${COMPONENTS_DIR}/application_manager/include
+    ${COMPONENTS_DIR}/connection_handler/test/include
+    ${COMPONENTS_DIR}/transport_manager/test/include
+	${COMPONENTS_DIR}/include/test
 )
 
 set(LIBRARIES
-  ProtocolLibrary
-  Utils
+    gmock
+    connectionHandler
+    ConfigProfile
+    ProtocolHandler
+    TransportManager
 )
 
-get_property(dirs DIRECTORY "" PROPERTY LIBRARIES)
-foreach(dir ${dirs})
-  message(STATUS "libraries='${dir}'")
-endforeach()
+set(SOURCES
+    connection_handler_impl_test.cc
+    connection_test.cc
+    device_test.cc
+    heart_beat_monitor_test.cc
+)
 
-if (${CMAKE_SYSTEM_NAME} MATCHES "Windows")
-  file (GLOB inc ${COMPONENTS_DIR}/protocol_handler/include/protocol_handler/*.h) 
-  string( REPLACE / \\ group ${inc} )
-  source_group("Header Files" FILES ${inc} )
-  add_library(ProtocolHandler ${inc} ${SOURCES})
-else()
-  add_library(ProtocolHandler ${SOURCES})
-endif()
+if(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
+  set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /FORCE" )
+  set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /IGNORE:4099" )
+endif()  
 
-target_link_libraries(ProtocolHandler ${LIBRARIES})
+file(COPY ${appMain_DIR}/smartDeviceLink.ini DESTINATION "./")
 
-if(BUILD_TESTS)
-  add_subdirectory(test)
+create_test("connection_handler_test" "${SOURCES}" "${LIBRARIES}")
+
 endif()

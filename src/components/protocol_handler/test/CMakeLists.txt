@@ -1,4 +1,4 @@
-# Copyright (c) 2014, Ford Motor Company
+# Copyright (c) 2015, Ford Motor Company
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -28,44 +28,33 @@
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 
+if(BUILD_TESTS)
 
 include_directories(
-  include
-  ${COMPONENTS_DIR}/utils/include/
-  ${COMPONENTS_DIR}/protocol_handler/include/
-  ${COMPONENTS_DIR}/connection_handler/include/
-  ${COMPONENTS_DIR}/config_profile/include/
-  ${LOG4CXX_INCLUDE_DIRECTORY}
-)
-
-set(SOURCES
-    ${COMPONENTS_DIR}/protocol_handler/src/incoming_data_handler.cc
-    ${COMPONENTS_DIR}/protocol_handler/src/protocol_handler_impl.cc
-    ${COMPONENTS_DIR}/protocol_handler/src/protocol_packet.cc
-    ${COMPONENTS_DIR}/protocol_handler/src/protocol_payload.cc
+  ${GMOCK_INCLUDE_DIRECTORY}
+  ${COMPONENTS_DIR}/protocol_handler/include
+  ${COMPONENTS_DIR}/protocol_handler/test/include
+  ${COMPONENTS_DIR}/include/protocol
 )
 
 set(LIBRARIES
-  ProtocolLibrary
+  gmock
+  ProtocolHandler
+  connectionHandler
   Utils
+  ConfigProfile
+  ProtocolLibrary
 )
 
-get_property(dirs DIRECTORY "" PROPERTY LIBRARIES)
-foreach(dir ${dirs})
-  message(STATUS "libraries='${dir}'")
-endforeach()
+set(SOURCES
+  incoming_data_handler_test.cc
+  protocol_header_validator_test.cc
+  #protocol_handler_tm_test.cc#
+  protocol_packet_test.cc
+  protocol_payload_test.cc
+  #multiframe_builder_test.cc#
+)
 
-if (${CMAKE_SYSTEM_NAME} MATCHES "Windows")
-  file (GLOB inc ${COMPONENTS_DIR}/protocol_handler/include/protocol_handler/*.h) 
-  string( REPLACE / \\ group ${inc} )
-  source_group("Header Files" FILES ${inc} )
-  add_library(ProtocolHandler ${inc} ${SOURCES})
-else()
-  add_library(ProtocolHandler ${SOURCES})
-endif()
+create_test("protocol_handler_test" "${SOURCES}" "${LIBRARIES}")
 
-target_link_libraries(ProtocolHandler ${LIBRARIES})
-
-if(BUILD_TESTS)
-  add_subdirectory(test)
 endif()
