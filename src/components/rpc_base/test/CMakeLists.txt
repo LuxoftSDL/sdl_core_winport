@@ -1,4 +1,4 @@
-# Copyright (c) 2014, Ford Motor Company
+# Copyright (c) 2015, Ford Motor Company
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -28,32 +28,35 @@
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 
-
-set(RPC_BASE_INCLUDE_DIR ${COMPONENTS_DIR}/rpc_base/include)
-
-include_directories(
-  include
-  ${COMPONENTS_DIR}/utils/include/
-  ${JSONCPP_INCLUDE_DIRECTORY}
+if (BUILD_TESTS)
+  include_directories (
+    ${COMPONENTS_DIR}/dbus/include
+    ${COMPONENTS_DIR}/dbus/src
+    ${COMPONENTS_DIR}/rpc_base/include
+    ${CMAKE_SOURCE_DIR}/src/3rd_party/dbus-1.7.8
+    ${GMOCK_INCLUDE_DIRECTORY}
+    ${JSONCPP_INCLUDE_DIRECTORY}
 )
 
-set (SOURCES
-  ${COMPONENTS_DIR}/rpc_base/src/rpc_base/rpc_base.cc
+set(LIBRARIES
+  gmock
+  jsoncpp
 )
 
-set (HEADERS
-  ${RPC_BASE_INCLUDE_DIR}/rpc_base/gtest_support.h
-  ${RPC_BASE_INCLUDE_DIR}/rpc_base/rpc_base_dbus_inl.h
-  ${RPC_BASE_INCLUDE_DIR}/rpc_base/rpc_base.h
-  ${RPC_BASE_INCLUDE_DIR}/rpc_base/rpc_base_inl.h
-  ${RPC_BASE_INCLUDE_DIR}/rpc_base/rpc_base_json_inl.h
-  ${RPC_BASE_INCLUDE_DIR}/rpc_base/rpc_message.h
-  ${RPC_BASE_INCLUDE_DIR}/rpc_base/validation_report.h
+set(SOURCES
+  #rpc_base_json_test.cc
+  #rpc_base_test.cc
+  validation_report_test.cc
 )
 
-add_library(rpc_base ${HEADERS} ${SOURCES})
-target_link_libraries(rpc_base jsoncpp)
+if (${HMI_DBUS_API})
+  # Build dbus tests
+  include_directories(${DBUS_INCLUDE_DIRS})
+  set (LIBRARIES ${LIBRARIES} DBus)
+  set (SOURCES ${SOURCES} rpc_base_dbus_test.cc)
+endif ()
 
-if(BUILD_TESTS)
- add_subdirectory(test)
+create_test("rpc_base_test" "${SOURCES}" "${LIBRARIES}")
+
 endif()
+
