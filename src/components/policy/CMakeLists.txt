@@ -31,8 +31,8 @@
 # --- Policy
 add_subdirectory(./src/policy)
 #======================= Unit-Test section =======================
-#if(BUILD_TESTS)
-#  add_subdirectory(test)
-#endif()
+if(BUILD_TESTS)
+ add_subdirectory(test)
+endif()
 #=================================================================
 
