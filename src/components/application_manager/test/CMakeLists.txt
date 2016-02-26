@@ -215,6 +215,7 @@ endif()
 create_test("application_manager_test" "${testSources}" "${ApplicationManagerTest}")
 target_link_libraries("application_manager_test"
   ApplicationManagerTest ${test_exec_libraries}
+  gmock
   ApplicationManager
   ProtocolLibrary
   connectionHandler
@@ -223,6 +224,7 @@ target_link_libraries("application_manager_test"
   MediaManager
   ProtocolHandler
   Resumption
+  sqlite3
 )
 
   set(ResumptionData_SOURCES

@@ -52,7 +52,7 @@ set(LIBRARIES
 set(SOURCES
   ${COMPONENTS_DIR}/formatters/test/src/SmartFactoryTestHelper.cc
   ${COMPONENTS_DIR}/formatters/test/CSmartFactory_test.cc
-  ${COMPONENTS_DIR}/formatters/test/CFormatterJsonBase_test.cc
+ # ${COMPONENTS_DIR}/formatters/test/CFormatterJsonBase_test.cc
   ${COMPONENTS_DIR}/formatters/test/generic_json_formatter_test.cc
   ${COMPONENTS_DIR}/formatters/test/formatter_json_rpc_test.cc
   ${COMPONENTS_DIR}/formatters/test/src/create_smartSchema.cc 
