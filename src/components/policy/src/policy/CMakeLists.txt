@@ -91,7 +91,7 @@ if (${CMAKE_SYSTEM_NAME} MATCHES "Windows")
   endif()
 endif()
 
-add_library(${target} SHARED ${SOURCES} ${HEADERS})
+add_library(${target} ${SOURCES} ${HEADERS})
 target_link_libraries(${target} ${LIBRARIES})
 
 if (${CMAKE_SYSTEM_NAME} MATCHES "Linux")
