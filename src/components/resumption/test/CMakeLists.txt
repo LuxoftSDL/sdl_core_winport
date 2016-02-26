@@ -1,4 +1,4 @@
-# Copyright (c) 2014, Ford Motor Company
+# Copyright (c) 2015, Ford Motor Company
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -28,23 +28,35 @@
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 
-
-include_directories (
-  include
-  ${COMPONENTS_DIR}/utils/include/
-  ${COMPONENTS_DIR}/config_profile/include/
-  ${JSONCPP_INCLUDE_DIRECTORY}
-  ${LOG4CXX_INCLUDE_DIRECTORY}
-)
-set (HEADERS
-  ${COMPONENTS_DIR}/resumption/include/resumption/last_state.h
-)
-set (SOURCES
-  ${COMPONENTS_DIR}/resumption/src/last_state.cc
-)
-
-add_library("Resumption" ${HEADERS} ${SOURCES})
-
 if(BUILD_TESTS)
-  add_subdirectory(test)
+
+include_directories(
+  ${LOG4CXX_INCLUDE_DIRECTORY}
+  ${GMOCK_INCLUDE_DIRECTORY}
+  ${COMPONENTS_DIR}/utils/include
+  ${COMPONENTS_DIR}/resumption/include
+  ${COMPONENTS_DIR}/config_profile/include
+  ${COMPONENTS_DIR}/include
+  ${JSONCPP_INCLUDE_DIRECTORY}
+  ${CMAKE_BINARY_DIR}
+)
+
+set(LIBRARIES
+    gmock 
+    ConfigProfile 
+    Utils    
+    Resumption  
+    jsoncpp
+    ConfigProfile
+)
+
+set(SOURCES
+  ${COMPONENTS_DIR}/resumption/test/last_state_test.cc
+)          
+
+#file(COPY smartDeviceLink_test.ini DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
+#file(COPY app_info.dat DESTINATION ${CMAKE_CURRENT_BINARY_DIR}) 
+
+create_test("resumption_test" "${SOURCES}" "${LIBRARIES}")
+
 endif()
