@@ -128,35 +128,35 @@ TEST(FormatterJsonRPCTest, CorrectRPCv2Request_ToString_Success) {
   EXPECT_EQ(json_string, result);
 }
 
-TEST(FormatterJsonRPCTest, UpperBoundValuesInSystemRequest_ToString_Success) {
-  // Create SmartObject
-  SmartObject obj;
-  obj[S_PARAMS][S_FUNCTION_ID] =
-      hmi_apis::FunctionID::BasicCommunication_OnSystemRequest;
-  obj[S_PARAMS][S_MESSAGE_TYPE] = hmi_apis::messageType::notification;
-  obj[S_PARAMS][S_PROTOCOL_VERSION] = 2;
-  obj[S_PARAMS][S_PROTOCOL_TYPE] = 1;
-  obj[S_PARAMS][S_CORRELATION_ID] = 4444;
-  obj[S_MSG_PARAMS] = SmartObject(SmartType::SmartType_Map);
-  obj[S_MSG_PARAMS]["requestType"] = hmi_apis::Common_RequestType::PROPRIETARY;
-  obj[S_MSG_PARAMS]["fileName"] = "fileName";
-  obj[S_MSG_PARAMS]["length"] = big_64int;
-  obj[S_MSG_PARAMS]["offset"] = big_64int;
-  // Attach Schema
-
-  hmi_apis::HMI_API factory;
-//  EXPECT_TRUE(factory.attachSchema(obj, false));
-  EXPECT_EQ(Errors::OK, obj.validate());
-  std::string result;
-  // Convert SmartObject to Json string
-  EXPECT_TRUE(FormatterJsonRpc::ToString(obj, result));
-  CompactJson(result);
-  const std::string json_string(
-      "{\"jsonrpc\":\"2.0\",\"method\":\"BasicCommunication.OnSystemRequest\","
-      "\"params\":{\"fileName\":\"fileName\",\"length\":100000000000,"
-      "\"offset\":100000000000,\"requestType\":\"PROPRIETARY\"}}");
-  EXPECT_EQ(json_string, result);
-}
+//TEST(FormatterJsonRPCTest, UpperBoundValuesInSystemRequest_ToString_Success) {
+//  // Create SmartObject
+//  SmartObject obj;
+//  obj[S_PARAMS][S_FUNCTION_ID] =
+//      hmi_apis::FunctionID::BasicCommunication_OnSystemRequest;
+//  obj[S_PARAMS][S_MESSAGE_TYPE] = hmi_apis::messageType::notification;
+//  obj[S_PARAMS][S_PROTOCOL_VERSION] = 2;
+//  obj[S_PARAMS][S_PROTOCOL_TYPE] = 1;
+//  obj[S_PARAMS][S_CORRELATION_ID] = 4444;
+//  obj[S_MSG_PARAMS] = SmartObject(SmartType::SmartType_Map);
+//  obj[S_MSG_PARAMS]["requestType"] = hmi_apis::Common_RequestType::PROPRIETARY;
+//  obj[S_MSG_PARAMS]["fileName"] = "fileName";
+//  obj[S_MSG_PARAMS]["length"] = big_64int;
+//  obj[S_MSG_PARAMS]["offset"] = big_64int;
+//  // Attach Schema
+//
+//  hmi_apis::HMI_API factory;
+////  EXPECT_TRUE(factory.attachSchema(obj, false));
+//  EXPECT_EQ(Errors::OK, obj.validate());
+//  std::string result;
+//  // Convert SmartObject to Json string
+//  EXPECT_TRUE(FormatterJsonRpc::ToString(obj, result));
+//  CompactJson(result);
+//  const std::string json_string(
+//      "{\"jsonrpc\":\"2.0\",\"method\":\"BasicCommunication.OnSystemRequest\","
+//      "\"params\":{\"fileName\":\"fileName\",\"length\":100000000000,"
+//      "\"offset\":100000000000,\"requestType\":\"PROPRIETARY\"}}");
+//  EXPECT_EQ(json_string, result);
+//}
 
 TEST(FormatterJsonRPCTest, CorrectRPCv1Notification_ToString_Success) {
   // Create SmartObject
