@@ -1,4 +1,4 @@
-# Copyright (c) 2014, Ford Motor Company
+# Copyright (c) 2015, Ford Motor Company
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -28,44 +28,55 @@
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 
+if(BUILD_TESTS)
+set(TM_TEST_DIR ${COMPONENTS_DIR}/transport_manager/test)
 
 include_directories(
-  include
-  ${COMPONENTS_DIR}/utils/include/
-  ${COMPONENTS_DIR}/protocol_handler/include/
-  ${COMPONENTS_DIR}/connection_handler/include/
-  ${COMPONENTS_DIR}/config_profile/include/
   ${LOG4CXX_INCLUDE_DIRECTORY}
-)
-
-set(SOURCES
-    ${COMPONENTS_DIR}/protocol_handler/src/incoming_data_handler.cc
-    ${COMPONENTS_DIR}/protocol_handler/src/protocol_handler_impl.cc
-    ${COMPONENTS_DIR}/protocol_handler/src/protocol_packet.cc
-    ${COMPONENTS_DIR}/protocol_handler/src/protocol_payload.cc
+  ${GMOCK_INCLUDE_DIRECTORY}
+  ${COMPONENTS_DIR}/smart_objects/include
+  ${COMPONENTS_DIR}/transport_manager/include
+  ${COMPONENTS_DIR}/utils/include
+  ${COMPONENTS_DIR}/include
+  ${COMPONENTS_DIR}/connection_handler/include
+  ${JSONCPP_INCLUDE_DIRECTORY}
+  ${CMAKE_BINARY_DIR}
 )
 
 set(LIBRARIES
-  ProtocolLibrary
+  gmock
+  ConfigProfile
+  TransportManager
   Utils
+  ConfigProfile
+  ProtocolLibrary
+  Resumption
+  jsoncpp
 )
 
-get_property(dirs DIRECTORY "" PROPERTY LIBRARIES)
-foreach(dir ${dirs})
-  message(STATUS "libraries='${dir}'")
-endforeach()
-
-if (${CMAKE_SYSTEM_NAME} MATCHES "Windows")
-  file (GLOB inc ${COMPONENTS_DIR}/protocol_handler/include/protocol_handler/*.h) 
-  string( REPLACE / \\ group ${inc} )
-  source_group("Header Files" FILES ${inc} )
-  add_library(ProtocolHandler ${inc} ${SOURCES})
-else()
-  add_library(ProtocolHandler ${SOURCES})
+if (BUILD_USB_SUPPORT)
+  list(APPEND LIBRARIES Libusb-1.0.16)
 endif()
 
-target_link_libraries(ProtocolHandler ${LIBRARIES})
+if (BUILD_BT_SUPPORT)
+  list(APPEND LIBRARIES bluetooth)
+endif()
 
-if(BUILD_TESTS)
-  add_subdirectory(test)
+set(SOURCES
+  ${TM_TEST_DIR}/transport_manager_default_test.cc
+  ${TM_TEST_DIR}/transport_manager_impl_test.cc
+  ${TM_TEST_DIR}/transport_adapter_test.cc
+  #${TM_TEST_DIR}/transport_adapter_listener_test.cc
+  #${TM_TEST_DIR}/tcp_transport_adapter_test.cc
+  #${TM_TEST_DIR}/tcp_device_test.cc
+  ${TM_TEST_DIR}/tcp_client_listener_test.cc
+)
+
+create_test("transport_manager_test" "${SOURCES}" "${LIBRARIES}")
+file(COPY smartDeviceLink_test.ini DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
+
+if(MSVC)
+  target_link_libraries("transport_manager_test" ws2_32)
+endif()
+
 endif()
