@@ -31,8 +31,10 @@
  */
 #include "utils/socket.h"
 
+#include <arpa/inet.h>
 #include <sys/socket.h>
 #include <sys/types.h>
+#include <netinet/in.h>
 #include <poll.h>
 #include <errno.h>
 #include <fcntl.h>
@@ -57,7 +59,7 @@ bool CloseSocket(int& socket) {
     LOGGER_WARN(logger_, "Failed to close socket " << socket << ": " << errno);
     return false;
   }
-  socket = NULL;
+  socket = 0;
   return true;
 }
 
@@ -71,7 +73,7 @@ class utils::TcpSocketConnection::Impl {
  public:
   Impl();
 
-  explicit Impl(const SOCKET tcp_socket,
+  explicit Impl(const int tcp_socket,
                 const HostAddress& address,
                 const uint16_t port);
 
@@ -133,7 +135,7 @@ utils::TcpSocketConnection::Impl::Impl()
     , port_(0u)
     , event_handler_(NULL) {}
 
-utils::TcpSocketConnection::Impl::Impl(const SOCKET tcp_socket,
+utils::TcpSocketConnection::Impl::Impl(const int tcp_socket,
                                        const HostAddress& address,
                                        const uint16_t port)
     : tcp_socket_(tcp_socket)
@@ -184,7 +186,7 @@ bool utils::TcpSocketConnection::Impl::Send(const char* buffer,
   const int flags = MSG_NOSIGNAL;
   int written = send(tcp_socket_, buffer, size, flags);
   int socket_error = errno;
-  if (-1 == written && ) {
+  if (-1 == written) {
     if (EAGAIN != socket_error && EWOULDBLOCK != socket_error) {
       LOGGER_ERROR(logger_, "Failed to send data: " << socket_error);
       return false;
@@ -257,7 +259,7 @@ bool utils::TcpSocketConnection::Impl::Connect(const HostAddress& address,
   sockaddr_in server_address = {0};
   server_address.sin_family = AF_INET;
   server_address.sin_port = htons(port);
-  server_address.sin_addr.s_addr = address.ToIp4Address();
+  server_address.sin_addr.s_addr = address.ToIp4Address(true);
   if (!connect(client_socket,
                reinterpret_cast<sockaddr*>(&server_address),
                sizeof(server_address)) == 0) {
@@ -292,6 +294,7 @@ bool utils::TcpSocketConnection::Impl::Notify() {
                      << this << ". Error: " << errno);
     return false;
   }
+  return true;
 }
 
 void utils::TcpSocketConnection::Impl::SetEventHandler(
@@ -336,7 +339,7 @@ void utils::TcpSocketConnection::Impl::OnRead() {
     } else {
       LOGGER_WARN(logger_,
                   "Socket " << tcp_socket_ << " closed by remote peer");
-      OnError(WSAGetLastError());
+      OnError(errno);
       return;
     }
   } while (bytes_read > 0);
@@ -365,10 +368,9 @@ void utils::TcpSocketConnection::Impl::Wait() {
 
   const nfds_t kPollFdsSize = 2;
   pollfd poll_fds[kPollFdsSize];
-  poll_fds[0].fd = socket_;
+  poll_fds[0].fd = tcp_socket_;
   // TODO: Fix data race. frames_to_send_ should be protected
-  poll_fds[0].events =
-      POLLIN | POLLPRI | POLLOUT);
+  poll_fds[0].events = POLLIN | POLLPRI | POLLOUT;
   poll_fds[1].fd = read_fd_;
   poll_fds[1].events = POLLIN | POLLPRI;
   if (-1 == poll(poll_fds, kPollFdsSize, -1)) {
@@ -508,7 +510,7 @@ class utils::TcpServerSocket::Impl {
 };
 
 utils::TcpServerSocket::Impl::Impl()
-    : server_socket_(NULL), is_listening_(false) {}
+    : server_socket_(0), is_listening_(false) {}
 
 utils::TcpServerSocket::Impl::~Impl() {
   Close();
@@ -546,7 +548,7 @@ bool utils::TcpServerSocket::Impl::Listen(const HostAddress& address,
   }
 
   struct sockaddr_in server_address = {0};
-  server_address.sin_addr.s_addr = address.ToIp4Address();
+  server_address.sin_addr.s_addr = address.ToIp4Address(true);
   server_address.sin_family = AF_INET;
   server_address.sin_port = htons(port);
 
@@ -577,9 +579,10 @@ utils::TcpSocketConnection utils::TcpServerSocket::Impl::Accept() {
 
   struct sockaddr_in client_address = {0};
   int client_address_length = sizeof(client_address);
-  int client_socket = accept(server_socket_,
-                             reinterpret_cast<sockaddr*>(&client_address),
-                             &client_address_length);
+  int client_socket =
+      accept(server_socket_,
+             reinterpret_cast<sockaddr*>(&client_address),
+             reinterpret_cast<socklen_t*>(&client_address_length));
   if (-1 == client_socket) {
     LOGGER_ERROR(logger_, "Failed to accept client socket: " << errno);
     return utils::TcpSocketConnection();

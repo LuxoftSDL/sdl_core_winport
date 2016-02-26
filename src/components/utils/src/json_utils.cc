@@ -52,6 +52,8 @@ Json::Value CreateStorage(const utils::json::ValueType::Type type) {
       return Json::Value(Json::uintValue);
     case ValueType::REAL_VALUE:
       return Json::Value(Json::realValue);
+    default:
+      return Json::Value();
   }
   DCHECK(type == ValueType::NULL_VALUE);
   return Json::Value();
@@ -75,6 +77,8 @@ utils::json::ValueType::Type GetType(const Json::Value& value) {
       return ValueType::UINT_VALUE;
     case Json::realValue:
       return ValueType::REAL_VALUE;
+    default:
+      return ValueType::NULL_VALUE;
   }
   DCHECK(type == Json::nullValue);
   return ValueType::NULL_VALUE;
