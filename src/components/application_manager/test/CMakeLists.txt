@@ -201,10 +201,16 @@ endif()
 
 add_library("ApplicationManagerTest" ${mockedSources} ${testSources})
 
-target_link_libraries("ApplicationManagerTest" ${testLibraries} AMHMICommandsLibrary
+if(MSVC)
+	list(REMOVE_ITEM testLibraries dl)
+endif()
+
+if(NOT MSVC)
+   target_link_libraries("ApplicationManagerTest" ${testLibraries} AMHMICommandsLibrary
                                                                 AMMobileCommandsLibrary
                                                                 AMEventEngine
                                                                 AMPolicyLibrary)
+endif()
 
 create_test("application_manager_test" "${testSources}" "${ApplicationManagerTest}")
 target_link_libraries("application_manager_test"
