@@ -99,6 +99,8 @@ class utils::TcpSocketConnection::Impl {
 
   bool Connect(const HostAddress& address, const uint16_t port);
 
+  bool Connect(const SOCKET bth_soket);
+
   bool Notify();
 
   void Wait();
@@ -261,6 +263,11 @@ bool utils::TcpSocketConnection::Impl::Connect(const HostAddress& address,
   return true;
 }
 
+bool utils::TcpSocketConnection::Impl::Connect(const SOCKET bth_socket) {
+  notify_event_ = CreateNotifyEvent();
+  tcp_socket_ = bth_socket;
+  return true;
+}
 void utils::TcpSocketConnection::Impl::OnError(int error) {
   if (!event_handler_) {
     return;
@@ -457,6 +464,10 @@ uint16_t utils::TcpSocketConnection::GetPort() const {
 bool utils::TcpSocketConnection::Connect(const HostAddress& address,
                                          const uint16_t port) {
   return impl_->Connect(address, port);
+}
+
+bool utils::TcpSocketConnection::Connect(const int bth_socket) {
+  return impl_->Connect(bth_socket);
 }
 
 void utils::TcpSocketConnection::Wait() {
