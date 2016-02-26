@@ -92,6 +92,6 @@ target_link_libraries("HMIMessageHandler" ${LIBRARIES})
 # Tests temporary are inactivated. For details please check
 # Readme.txt in test directory of hmi_message_handler 
 
-#if(BUILD_TESTS)
-#  add_subdirectory(test)
-#endif()
+if(BUILD_TESTS)
+  add_subdirectory(test)
+endif()
