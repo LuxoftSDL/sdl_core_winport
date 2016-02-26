@@ -28,40 +28,39 @@
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 
-
-set(SMART_OBJECTS_SRC_DIR ${COMPONENTS_DIR}/smart_objects/src)
+if(BUILD_TESTS)
+add_definitions(-DUNIT_TESTS)
 
 include_directories (
-  include
-  ${COMPONENTS_DIR}/utils/include/
+  ${GMOCK_INCLUDE_DIRECTORY}
+  ${COMPONENTS_DIR}/smart_objects/include
+  ${COMPONENTS_DIR}/formatters/include/
+  ${JSONCPP_INCLUDE_DIRECTORY}
 )
 
-set (SOURCES
-    ${SMART_OBJECTS_SRC_DIR}/smart_object.cc
-    ${SMART_OBJECTS_SRC_DIR}/smart_schema.cc
-    ${SMART_OBJECTS_SRC_DIR}/schema_item.cc
-    ${SMART_OBJECTS_SRC_DIR}/always_false_schema_item.cc
-    ${SMART_OBJECTS_SRC_DIR}/always_true_schema_item.cc
-    ${SMART_OBJECTS_SRC_DIR}/bool_schema_item.cc
-    ${SMART_OBJECTS_SRC_DIR}/number_schema_item.cc
-    ${SMART_OBJECTS_SRC_DIR}/string_schema_item.cc
-    ${SMART_OBJECTS_SRC_DIR}/object_schema_item.cc
-    ${SMART_OBJECTS_SRC_DIR}/array_schema_item.cc
+set(LIBRARIES
+    gmock_main
+    SmartObjects
+    formatters
+    jsoncpp   
 )
-if(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
-  file (GLOB inc ${COMPONENTS_DIR}/smart_objects/include/smart_objects/*.h) 
-  string( REPLACE / \\ group ${inc} )
-  source_group("Header Files" FILES ${inc} )
-  add_library("SmartObjects" ${inc} ${SOURCES})
-  target_link_libraries("SmartObjects")
-else ()
-  add_library("SmartObjects" ${SOURCES})
-  if(ENABLE_LOG)
-    target_link_libraries("SmartObjects" log4cxx -L${LOG4CXX_LIBS_DIRECTORY})
-  endif()
-endif()
 
-if(BUILD_TESTS)
- add_subdirectory(test)
-endif()
+set(SOURCES
+  ${COMPONENTS_DIR}/smart_objects/test/SmartObjectDraft_test.cc
+  ${COMPONENTS_DIR}/smart_objects/test/SmartObjectInvalid_test.cc
+  ${COMPONENTS_DIR}/smart_objects/test/SmartObjectStress_test.cc
+  ${COMPONENTS_DIR}/smart_objects/test/SmartObjectUnit_test.cc
+  ${COMPONENTS_DIR}/smart_objects/test/smart_object_performance_test.cc
+  ${COMPONENTS_DIR}/smart_objects/test/map_performance_test.cc
+  ${COMPONENTS_DIR}/smart_objects/test/BoolSchemaItem_test.cc
+  ${COMPONENTS_DIR}/smart_objects/test/NumberSchemaItem_test.cc
+  ${COMPONENTS_DIR}/smart_objects/test/StringSchemaItem_test.cc
+  ${COMPONENTS_DIR}/smart_objects/test/ArraySchemaItem_test.cc
+  ${COMPONENTS_DIR}/smart_objects/test/CObjectSchemaItem_test.cc
+  ${COMPONENTS_DIR}/smart_objects/test/AlwaysTrueSchemaItem_test.cc
+  ${COMPONENTS_DIR}/smart_objects/test/AlwaysFalseSchemaItem_test.cc
+)
 
+create_test("smart_object_test" "${SOURCES}" "${LIBRARIES}")
+
+endif()
