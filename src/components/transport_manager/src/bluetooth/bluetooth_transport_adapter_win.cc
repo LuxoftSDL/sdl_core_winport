@@ -35,7 +35,8 @@
 
 #include <errno.h>
 #include <sys/types.h>
-
+#include "utils/winhdr.h"
+#include <ws2bth.h>
 #include <BluetoothAPIs.h>
 #include <sstream>
 #include <ws2bth.h>
@@ -50,6 +51,7 @@
 #include "transport_manager/bluetooth/bluetooth_transport_adapter.h"
 
 #include "utils/logger.h"
+#include "utils/bluetooth_win/bluetooth_utils.h"
 
 namespace transport_manager {
 namespace transport_adapter {
@@ -60,6 +62,8 @@ BluetoothTransportAdapter::BluetoothTransportAdapter()
     : TransportAdapterImpl(new BluetoothDeviceScanner(this, true, 0),
                            new BluetoothConnectionFactory(this),
                            0) {}
+
+BluetoothTransportAdapter::~BluetoothTransportAdapter() {}
 
 DeviceType BluetoothTransportAdapter::GetDeviceType() const {
   return BLUETOOTH;
@@ -83,20 +87,7 @@ void BluetoothTransportAdapter::Store() const {
     JsonValue device_dictionary;
     device_dictionary["name"] = bluetooth_device->name();
     char address[18];
-
-    DWORD addrSize = sizeof(struct sockaddr_storage);
-    int addr_size = sizeof(struct sockaddr_storage);
-    int ret_val = WSAAddressToString((LPSOCKADDR)&bluetooth_device->address(),
-                                     addr_size,
-                                     NULL,
-                                     address,
-                                     &addrSize);
-    if (ret_val != 0) {
-      LOGGER_ERROR(logger_,
-                   "WSAAddressToString() failed with error code"
-                       << WSAGetLastError());
-    }
-
+    sprintf(address, "%ws", bluetooth_device->address());
     device_dictionary["address"] = std::string(address);
     JsonValue applications_dictionary;
     ApplicationList app_ids = bluetooth_device->GetApplicationList();
@@ -113,16 +104,17 @@ void BluetoothTransportAdapter::Store() const {
         sprintf(rfcomm_channel_record, "%u", rfcomm_channel);
         application_dictionary["rfcomm_channel"] =
             std::string(rfcomm_channel_record);
-        applications_dictionary.append(application_dictionary);
+        applications_dictionary.Append(application_dictionary);
       }
     }
-    if (!applications_dictionary.empty()) {
+    if (!applications_dictionary.IsEmpty()) {
       device_dictionary["applications"] = applications_dictionary;
-      devices_dictionary.append(device_dictionary);
+      devices_dictionary.Append(device_dictionary);
     }
   }
   bluetooth_adapter_dictionary["devices"] = devices_dictionary;
-  JsonValue& dictionary = resumption::LastState::instance()->dictionary;
+
+  JsonValue& dictionary = resumption::LastState::instance()->dictionary();
   dictionary["TransportManager"]["BluetoothAdapter"] =
       bluetooth_adapter_dictionary;
   LOGGER_TRACE(logger_, "exit");
@@ -135,46 +127,68 @@ bool BluetoothTransportAdapter::Restore() {
 
   const JsonValue& bluetooth_adapter_dictionary =
       resumption::LastState::instance()
-          ->dictionary["TransportManager"]["BluetoothAdapter"];
+          ->dictionary()["TransportManager"]["BluetoothAdapter"];
   const JsonValueRef devices_dictionary =
       bluetooth_adapter_dictionary["devices"];
   for (JsonValue::const_iterator i = devices_dictionary.begin();
        i != devices_dictionary.end();
        ++i) {
     const JsonValueRef device_dictionary = *i;
-    std::string name = device_dictionary["name"].asString();
-    std::string address_record = device_dictionary["address"].asString();
-    BTH_ADDR address;
+    std::string name = device_dictionary["name"].AsString();
+    GUID smart_device_link_service_uuid;
+    BYTE smart_device_link_service_uuid_data[] = {0x93,
+                                                  0x6D,
+                                                  0xA0,
+                                                  0x1F,
+                                                  0x9A,
+                                                  0xBD,
+                                                  0x4D,
+                                                  0x9D,
+                                                  0x80,
+                                                  0xC7,
+                                                  0x02,
+                                                  0xAF,
+                                                  0x85,
+                                                  0xC8,
+                                                  0x22,
+                                                  0xA8};
+    utils::ConvertBytesToUUID(smart_device_link_service_uuid_data,
+                              &smart_device_link_service_uuid);
 
-    std::wstringstream w_address_record;
-    w_address_record << address_record.c_str();
-    int address_size = sizeof(struct sockaddr_storage);
-    int ret_val = WSAStringToAddress((LPSTR)w_address_record.str().c_str(),
-                                     AF_INET,
-                                     NULL,
-                                     (LPSOCKADDR)&address,
-                                     &address_size);
-    if (ret_val != 0) {
-      LOGGER_ERROR(logger_,
-                   "WSAStringToAddress() failed with error code"
-                       << WSAGetLastError());
-    }
+    SOCKADDR_BTH sock_addr_bth_server = {0};
+    sock_addr_bth_server.addressFamily = AF_BTH;
+    sock_addr_bth_server.btAddr =
+        utils::StringToSockBthAddr(device_dictionary["address"].AsString())
+            .btAddr;
+    sock_addr_bth_server.serviceClassId = smart_device_link_service_uuid;
 
     RfcommChannelVector rfcomm_channels;
-    const JsonValueRef applications_dictionary =
-        device_dictionary["applications"];
+    const JsonValue applications_dictionary = device_dictionary["applications"];
     for (JsonValue::const_iterator j = applications_dictionary.begin();
          j != applications_dictionary.end();
          ++j) {
-      const JsonValueRef application_dictionary = *j;
+      const JsonValue application_dictionary = *j;
       std::string rfcomm_channel_record =
-          application_dictionary["rfcomm_channel"].asString();
+          application_dictionary["rfcomm_channel"].AsString();
       uint8_t rfcomm_channel =
           static_cast<uint8_t>(atoi(rfcomm_channel_record.c_str()));
       rfcomm_channels.push_back(rfcomm_channel);
     }
+    BLUETOOTH_DEVICE_INFO bluetooth_dev_info = {0};
+    bluetooth_dev_info.dwSize = sizeof(BLUETOOTH_DEVICE_INFO);
+    bluetooth_dev_info.Address.ullLong =
+        utils::StringToSockBthAddr(device_dictionary["address"].AsString())
+            .btAddr;
+    bluetooth_dev_info.ulClassofDevice = 0;
+    bluetooth_dev_info.fConnected = true;
+    bluetooth_dev_info.fRemembered = true;
+    bluetooth_dev_info.fAuthenticated = true;
+
     BluetoothDevice* bluetooth_device =
-        new BluetoothDevice(address, name.c_str(), rfcomm_channels);
+        new BluetoothDevice(bluetooth_dev_info,
+                            name.c_str(),
+                            rfcomm_channels,
+                            sock_addr_bth_server);
     DeviceSptr device(bluetooth_device);
     AddDevice(device);
     for (RfcommChannelVector::const_iterator j = rfcomm_channels.begin();

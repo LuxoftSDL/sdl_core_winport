@@ -112,7 +112,7 @@ class BluetoothServiceRecordWin {
    *
    * @return True if service_uuid and stored UUID equil.
    */
-  bool IsUuidEquil(const std::string& service_uuid) const {
+  bool IsUuidEqual(const std::string& service_uuid) const {
     return uuid_.Value() == service_uuid;
   }
 
