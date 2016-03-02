@@ -297,7 +297,8 @@ TEST_F(SecurityQueryTest, Parse_HeaderDataWrong) {
  */
 TEST_F(SecurityQueryTest, Parse_InvalidQuery) {
   SecurityQuery::QueryHeader invalid_query_header(
-      SecurityQuery::INVALID_QUERY_TYPE, SecurityQuery::INVALID_QUERY_ID,
+      SecurityQuery::INVALID_QUERY_TYPE,
+      SecurityQuery::INVALID_QUERY_ID,
       SEQ_NUMBER);
 
   // some sample data
@@ -334,7 +335,8 @@ TEST_F(SecurityQueryTest, Parse_InvalidQuery_UnknownTypeId) {
   SecurityQuery::QueryHeader invalid_type_id_header(
       SecurityQuery::INVALID_QUERY_TYPE - 1,
       // Use not enum value for additional testing
-      SecurityQuery::INVALID_QUERY_ID - 1, SEQ_NUMBER);
+      SecurityQuery::INVALID_QUERY_ID - 1,
+      SEQ_NUMBER);
 
   const std::vector<uint8_t> vector =
       DeserializeData(invalid_type_id_header, NULL, 0u);
@@ -345,8 +347,8 @@ TEST_F(SecurityQueryTest, Parse_InvalidQuery_UnknownTypeId) {
   // Parse set all unknown types and ids to INVALID_QUERY_ID
   invalid_type_id_header.query_type = SecurityQuery::INVALID_QUERY_TYPE;
   invalid_type_id_header.query_id = SecurityQuery::INVALID_QUERY_ID;
-  EXPECT_PRED_FORMAT2(QueryHeader_EQ, query.get_header(),
-                      invalid_type_id_header);
+  EXPECT_PRED_FORMAT2(
+      QueryHeader_EQ, query.get_header(), invalid_type_id_header);
   // check side-effects
   ASSERT_EQ(query.get_data_size(), 0u);
   ASSERT_EQ(query.get_data(), reinterpret_cast<uint8_t*>(NULL));
@@ -361,7 +363,8 @@ TEST_F(SecurityQueryTest, Parse_InvalidQuery_UnknownId_Response) {
   SecurityQuery::QueryHeader invalid_id_header(
       SecurityQuery::RESPONSE,
       // Use not enum value for additional testing
-      SecurityQuery::INVALID_QUERY_ID - 2, SEQ_NUMBER);
+      SecurityQuery::INVALID_QUERY_ID - 2,
+      SEQ_NUMBER);
   const std::vector<uint8_t> vector =
       DeserializeData(invalid_id_header, NULL, 0u);
 
@@ -383,7 +386,8 @@ TEST_F(SecurityQueryTest, Parse_InvalidQuery_UnknownId_Response) {
  */
 TEST_F(SecurityQueryTest, Parse_Handshake) {
   SecurityQuery::QueryHeader handshake_header(
-      SecurityQuery::NOTIFICATION, SecurityQuery::SEND_HANDSHAKE_DATA,
+      SecurityQuery::NOTIFICATION,
+      SecurityQuery::SEND_HANDSHAKE_DATA,
       SEQ_NUMBER);
   // some sample data
   uint8_t raw_data[] = {0x6, 0x7, 0x8};
@@ -428,8 +432,8 @@ TEST_F(SecurityQueryTest, Parse_InternalError) {
   SecurityQuery query;
   const bool result = query.SerializeQuery(&vector[0], vector.size());
   ASSERT_TRUE(result);
-  EXPECT_PRED_FORMAT2(QueryHeader_EQ, query.get_header(),
-                      internal_error_header);
+  EXPECT_PRED_FORMAT2(
+      QueryHeader_EQ, query.get_header(), internal_error_header);
   // check side-effects
   ASSERT_EQ(query.get_data_size(), 0u);
   ASSERT_EQ(query.get_data(), reinterpret_cast<uint8_t*>(NULL));

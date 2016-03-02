@@ -43,7 +43,7 @@ namespace media_manager_test {
 using namespace ::media_manager;
 using ::testing::_;
 
-//TEST(MediaManagerImplTest, PlayA2DPSource) {
+// TEST(MediaManagerImplTest, PlayA2DPSource) {
 //  MediaManagerImpl* mediaManagerImpl = MediaManagerImpl::instance();
 //  EXPECT_TRUE(mediaManagerImpl->exists());
 //  int32_t application_key = 1;
@@ -54,7 +54,7 @@ using ::testing::_;
 //  mediaManagerImpl->PlayA2DPSource(application_key);
 //}
 
-//TEST(MediaManagerImplTest, StopA2DPSource) {
+// TEST(MediaManagerImplTest, StopA2DPSource) {
 //  MediaManagerImpl* mediaManagerImpl = MediaManagerImpl::instance();
 //  EXPECT_TRUE(mediaManagerImpl->exists());
 //  int32_t application_key = 1;

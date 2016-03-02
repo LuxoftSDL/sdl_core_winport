@@ -58,7 +58,6 @@ void CMetaFormatterTestHelper::TearDown() {
 
 void CMetaFormatterTestHelper::AnyObjectToJsonString(
     const SmartObject& obj, std::string& result_string) {
-
   Json::Value params(Json::objectValue);
 
   SmartObject formattedObj(obj);
@@ -72,7 +71,6 @@ void CMetaFormatterTestHelper::AnyObjectToJsonString(
 //-----------------------------------------------------------
 
 void CMetaFormatterTestHelper::FillObjectIdenticalToSchema(SmartObject& obj) {
-
   obj[S_PARAMS][S_MESSAGE_TYPE] = MessageTypeTest::request;
   obj[S_PARAMS][S_FUNCTION_ID] = FunctionIDTest::RegisterAppInterface;
   obj[S_PARAMS][S_CORRELATION_ID] = 12;
@@ -96,8 +94,8 @@ void CMetaFormatterTestHelper::FillObjectIdenticalToSchema(SmartObject& obj) {
 }
 
 //-----------------------------------------------------------
-void CMetaFormatterTestHelper::FillObjectIdenticalToSchemaWithoutNoMandatoriesParams(
-    SmartObject& obj) {
+void CMetaFormatterTestHelper::
+    FillObjectIdenticalToSchemaWithoutNoMandatoriesParams(SmartObject& obj) {
   obj[S_PARAMS][S_MESSAGE_TYPE] = MessageTypeTest::request;
   obj[S_PARAMS][S_FUNCTION_ID] = FunctionIDTest::RegisterAppInterface;
   obj[S_PARAMS][S_CORRELATION_ID] = 12;
@@ -114,16 +112,15 @@ void CMetaFormatterTestHelper::FillObjectIdenticalToSchemaWithoutNoMandatoriesPa
   obj[S_MSG_PARAMS]["appID"] = "APP ID";
 
   // Commented not mandatory params for check creation object without them
-//   obj[S_MSG_PARAMS]["ttsName"][0]["text"] = "ABC";
-//   obj[S_MSG_PARAMS]["ttsName"][0]["type"] =
-//       SpeechCapabilities::SC_TEXT;
+  //   obj[S_MSG_PARAMS]["ttsName"][0]["text"] = "ABC";
+  //   obj[S_MSG_PARAMS]["ttsName"][0]["type"] =
+  //       SpeechCapabilities::SC_TEXT;
 
-//   obj[S_MSG_PARAMS]["vrSynonyms"][0] = "Synonym1";
-//   obj[S_MSG_PARAMS]["vrSynonyms"][1] = "Synonym2";
+  //   obj[S_MSG_PARAMS]["vrSynonyms"][0] = "Synonym1";
+  //   obj[S_MSG_PARAMS]["vrSynonyms"][1] = "Synonym2";
 
-//   obj[S_MSG_PARAMS]["appType"][0] = AppTypeTest::SYSTEM; // not mandatory
-//   obj[S_MSG_PARAMS]["appType"][1] = AppTypeTest::MEDIA;
-
+  //   obj[S_MSG_PARAMS]["appType"][0] = AppTypeTest::SYSTEM; // not mandatory
+  //   obj[S_MSG_PARAMS]["appType"][1] = AppTypeTest::MEDIA;
 }
 
 void CMetaFormatterTestHelper::FillObjectWithoutSomeMandatoryFields(
@@ -134,10 +131,10 @@ void CMetaFormatterTestHelper::FillObjectWithoutSomeMandatoryFields(
   obj[S_PARAMS][S_PROTOCOL_VERSION] = 1;
   obj[S_PARAMS][S_PROTOCOL_TYPE] = 0;
 
-// Commented mandatory params for check creation object without them
-//   obj[S_PARAMS][S_CORRELATION_ID] = 12;
-//   obj[S_MSG_PARAMS]["syncMsgVersion"]["majorVersion"] = 2;
-//   obj[S_MSG_PARAMS]["syncMsgVersion"]["minorVersion"] = 10;
+  // Commented mandatory params for check creation object without them
+  //   obj[S_PARAMS][S_CORRELATION_ID] = 12;
+  //   obj[S_MSG_PARAMS]["syncMsgVersion"]["majorVersion"] = 2;
+  //   obj[S_MSG_PARAMS]["syncMsgVersion"]["minorVersion"] = 10;
 
   obj[S_MSG_PARAMS]["appName"] = "APP NAME";
   obj[S_MSG_PARAMS]["ttsName"][0]["text"] = "ABC";
@@ -157,7 +154,6 @@ void CMetaFormatterTestHelper::FillObjectWithoutSomeMandatoryFields(
 
 void CMetaFormatterTestHelper::CompareObjects(const SmartObject& first,
                                               const SmartObject& second) {
-
   if (SmartType_Array == first.getType()) {
     ASSERT_EQ(SmartType_Array, second.getType());
     for (size_t i = 0; i < first.length(); i++) {
@@ -165,10 +161,11 @@ void CMetaFormatterTestHelper::CompareObjects(const SmartObject& first,
     }
   } else if (SmartType_Map == first.getType()) {
     ASSERT_EQ(SmartType_Map, second.getType());
-    std::set < std::string > keys = first.enumerate();
+    std::set<std::string> keys = first.enumerate();
 
     for (std::set<std::string>::const_iterator key = keys.begin();
-        key != keys.end(); key++) {
+         key != keys.end();
+         key++) {
       CompareObjects(first.getElement(*key), second.getElement(*key));
     }
   } else if (SmartType_Boolean == first.getType()) {
@@ -182,14 +179,13 @@ void CMetaFormatterTestHelper::CompareObjects(const SmartObject& first,
   } else if (SmartType_Null == first.getType()) {
     ASSERT_EQ(SmartType_Null, second.getType());
   } else {
-    FAIL()<< "Unknown SmartObject type: " << first.getType();
+    FAIL() << "Unknown SmartObject type: " << first.getType();
   }
 }
 
 //-----------------------------------------------------------
 
 void CMetaFormatterTestHelper::FillObjectWithDefaultValues(SmartObject& obj) {
-
   obj[S_PARAMS][S_MESSAGE_TYPE] = -1;
   obj[S_PARAMS][S_FUNCTION_ID] = -1;
   obj[S_PARAMS][S_CORRELATION_ID] = 0;
@@ -205,17 +201,16 @@ void CMetaFormatterTestHelper::FillObjectWithDefaultValues(SmartObject& obj) {
   obj[S_MSG_PARAMS]["hmiDisplayLanguageDesired"] = -1;
   obj[S_MSG_PARAMS]["appID"] = "";
 
-// Commented params for check creation object with only default values
-//   obj[S_MSG_PARAMS]["ttsName"][0]["text"] = "ABC";
-//   obj[S_MSG_PARAMS]["ttsName"][0]["type"] =
-//       SpeechCapabilities::SC_TEXT;
+  // Commented params for check creation object with only default values
+  //   obj[S_MSG_PARAMS]["ttsName"][0]["text"] = "ABC";
+  //   obj[S_MSG_PARAMS]["ttsName"][0]["type"] =
+  //       SpeechCapabilities::SC_TEXT;
 
-//   obj[S_MSG_PARAMS]["vrSynonyms"][0] = "Synonym1";
-//   obj[S_MSG_PARAMS]["vrSynonyms"][1] = "Synonym2";
+  //   obj[S_MSG_PARAMS]["vrSynonyms"][0] = "Synonym1";
+  //   obj[S_MSG_PARAMS]["vrSynonyms"][1] = "Synonym2";
 
-//   obj[S_MSG_PARAMS]["appType"][0] = AppTypeTest::SYSTEM;
-//   obj[S_MSG_PARAMS]["appType"][1] = AppTypeTest::MEDIA;
-
+  //   obj[S_MSG_PARAMS]["appType"][0] = AppTypeTest::SYSTEM;
+  //   obj[S_MSG_PARAMS]["appType"][1] = AppTypeTest::MEDIA;
 }
 
 }  // namespace formatters

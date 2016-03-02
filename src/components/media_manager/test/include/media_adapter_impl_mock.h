@@ -53,18 +53,15 @@ typedef utils::SharedPtr<MediaAdapterListener> MediaListenerPtr;
 class MediaAdapterImplMock : public ::media_manager::MediaAdapterImpl {
  public:
   MOCK_METHOD1(AddListener,
-        void(const utils::SharedPtr<MediaAdapterListener>&));
+               void(const utils::SharedPtr<MediaAdapterListener>&));
   MOCK_METHOD1(RemoveListener,
-      void(const utils::SharedPtr<MediaAdapterListener> &));
+               void(const utils::SharedPtr<MediaAdapterListener>&));
   MOCK_METHOD2(SendData,
-      void(int32_t application_key,
-           const ::protocol_handler::RawMessagePtr message));
-  MOCK_METHOD1(StartActivity,
-      void(int32_t application_key));
-  MOCK_METHOD1(StopActivity,
-      void(int32_t application_key));
-  MOCK_CONST_METHOD1(is_app_performing_activity,
-      bool(int32_t application_key));
+               void(int32_t application_key,
+                    const ::protocol_handler::RawMessagePtr message));
+  MOCK_METHOD1(StartActivity, void(int32_t application_key));
+  MOCK_METHOD1(StopActivity, void(int32_t application_key));
+  MOCK_CONST_METHOD1(is_app_performing_activity, bool(int32_t application_key));
 };
 
 /*
@@ -74,22 +71,21 @@ using namespace protocol_handler;
 class ProtocolHandlerMock : public protocol_handler::ProtocolHandler {
  public:
   MOCK_METHOD2(SendMessageToMobileApp,
-      void(const ::protocol_handler::RawMessagePtr message,
-          bool final_message));
+               void(const ::protocol_handler::RawMessagePtr message,
+                    bool final_message));
   MOCK_METHOD1(AddProtocolObserver,
-      void(::protocol_handler::ProtocolObserver *observer));
+               void(::protocol_handler::ProtocolObserver* observer));
   MOCK_METHOD1(RemoveProtocolObserver,
-      void(::protocol_handler::ProtocolObserver *observer));
+               void(::protocol_handler::ProtocolObserver* observer));
   MOCK_METHOD2(SendFramesNumber,
-      void(uint32_t connection_key, int32_t number_of_frames));
-  MOCK_METHOD2(SendHeartBeat,
-      void(int32_t connection_id, uint8_t session_id));
-  MOCK_METHOD2(SendEndSession,
-      void(int32_t connection_id, uint8_t session_id));
+               void(uint32_t connection_key, int32_t number_of_frames));
+  MOCK_METHOD2(SendHeartBeat, void(int32_t connection_id, uint8_t session_id));
+  MOCK_METHOD2(SendEndSession, void(int32_t connection_id, uint8_t session_id));
   MOCK_METHOD3(SendEndService,
-      void(int32_t connection_id, uint8_t session_id, uint8_t service_type));
+               void(int32_t connection_id,
+                    uint8_t session_id,
+                    uint8_t service_type));
 };
-
 
 }  // namespace media_manager_test
 }  // namespace components

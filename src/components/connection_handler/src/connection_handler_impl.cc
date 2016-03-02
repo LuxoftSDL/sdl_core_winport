@@ -1031,7 +1031,7 @@ ConnectionList& ConnectionHandlerImpl::getConnectionList() {
 }
 
 const DeviceMap& ConnectionHandlerImpl::getDeviceList() {
-	return device_list_;
+  return device_list_;
 }
 
 void ConnectionHandlerImpl::addDeviceConnection(

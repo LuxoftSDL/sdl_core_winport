@@ -39,11 +39,7 @@ using namespace rpc;
 using Json::Value;
 
 namespace {
-enum TestEnum {
-  kValue0,
-  kValue1,
-  kInvalidValue
-};
+enum TestEnum { kValue0, kValue1, kInvalidValue };
 
 bool EnumFromJsonString(const std::string& value, TestEnum* enm) {
   if (value == "kValue0") {
@@ -58,10 +54,13 @@ bool EnumFromJsonString(const std::string& value, TestEnum* enm) {
 }
 
 const char* EnumToJsonString(TestEnum enm) {
-  switch(enm) {
-    case kValue0: return "kValue0";
-    case kValue1: return "kValue1";
-    default: return "UNKNOWN";
+  switch (enm) {
+    case kValue0:
+      return "kValue0";
+    case kValue1:
+      return "kValue1";
+    default:
+      return "UNKNOWN";
   }
 }
 
@@ -98,7 +97,7 @@ TEST(ValidatedTypesJson, BooleanFromInvalidJsonTest) {
   ASSERT_FALSE(boolean.is_valid());
 }
 
-//TEST(ValidatedTypesJson, IntegerFromJsonTest) {
+// TEST(ValidatedTypesJson, IntegerFromJsonTest) {
 //  Value int_val(42);
 //  Integer<int32_t, -5, 192> integer(&int_val);
 //  ASSERT_TRUE(integer.is_initialized());
@@ -108,41 +107,41 @@ TEST(ValidatedTypesJson, BooleanFromInvalidJsonTest) {
 //  ASSERT_EQ(readback.asInt(), 42);
 //}
 
-//TEST(ValidatedTypesJson, IntegerNullTest) {
+// TEST(ValidatedTypesJson, IntegerNullTest) {
 //  Integer<int32_t, -5, 192> integer(&Value::null);
 //  ASSERT_TRUE(integer.is_initialized());
 //  ASSERT_FALSE(integer.is_valid());
 //}
 
-//TEST(ValidatedTypesJson, IntegerAbsentValueTest) {
+// TEST(ValidatedTypesJson, IntegerAbsentValueTest) {
 //  Value* novalue = NULL;
 //  Integer<int32_t, -5, 192> integer(novalue);
 //  ASSERT_FALSE(integer.is_initialized());
 //  ASSERT_FALSE(integer.is_valid());
 //}
 
-//TEST(ValidatedTypesJson, IntegerFromOverflowingJsonTest) {
+// TEST(ValidatedTypesJson, IntegerFromOverflowingJsonTest) {
 //  Value int_val(0xFFFFFFFFFFll);
 //  Integer<int32_t, -5, 192> integer(&int_val);
 //  ASSERT_TRUE(integer.is_initialized());
 //  ASSERT_FALSE(integer.is_valid());
 //}
 
-//TEST(ValidatedTypesJson, IntegerFromInvalidJsonTest) {
+// TEST(ValidatedTypesJson, IntegerFromInvalidJsonTest) {
 //  Value str_val("Hello");
 //  Integer<int8_t, -3, 15> integer(&str_val);
 //  ASSERT_TRUE(integer.is_initialized());
 //  ASSERT_FALSE(integer.is_valid());
 //}
 
-//TEST(ValidatedTypesJson, IntegerFromOutOfRangeValueTest) {
+// TEST(ValidatedTypesJson, IntegerFromOutOfRangeValueTest) {
 //  Value big_int_val(500);
 //  Integer<int8_t, 0, 100> integer(&big_int_val);
 //  ASSERT_TRUE(integer.is_initialized());
 //  ASSERT_FALSE(integer.is_valid());
 //}
 //
-//TEST(ValidatedTypesJson, FloatFromJsonTest) {
+// TEST(ValidatedTypesJson, FloatFromJsonTest) {
 //  Value float_value(4.2);
 //  Float<1, 7> flt(&float_value);
 //  ASSERT_TRUE(flt.is_initialized());
@@ -152,27 +151,27 @@ TEST(ValidatedTypesJson, BooleanFromInvalidJsonTest) {
 //  ASSERT_EQ(readback.asDouble(), 4.2);
 //}
 //
-//TEST(ValidatedTypesJson, FloatNullTest) {
+// TEST(ValidatedTypesJson, FloatNullTest) {
 //  Float<1, 7> flt(&Value::null);
 //  ASSERT_TRUE(flt.is_initialized());
 //  ASSERT_FALSE(flt.is_valid());
 //}
 //
-//TEST(ValidatedTypesJson, FloatAbsentValueTest) {
+// TEST(ValidatedTypesJson, FloatAbsentValueTest) {
 //  Value* novalue = NULL;
 //  Float<1, 7> flt(novalue);
 //  ASSERT_FALSE(flt.is_initialized());
 //  ASSERT_FALSE(flt.is_valid());
 //}
 //
-//TEST(ValidatedTypesJson, FloatFromInvalidJsonTest) {
+// TEST(ValidatedTypesJson, FloatFromInvalidJsonTest) {
 //  Value str_val("Hello");
 //  Float<-5, 3> flt(&str_val);
 //  ASSERT_TRUE(flt.is_initialized());
 //  ASSERT_FALSE(flt.is_valid());
 //}
 //
-//TEST(ValidatedTypesJson, StringFromJsonTest) {
+// TEST(ValidatedTypesJson, StringFromJsonTest) {
 //  Value str_val("Hello");
 //  String<1, 42> str(&str_val);
 //  ASSERT_TRUE(str.is_initialized());
@@ -182,7 +181,7 @@ TEST(ValidatedTypesJson, BooleanFromInvalidJsonTest) {
 //  ASSERT_STREQ(readback.asCString(), "Hello");
 //}
 //
-//TEST(ValidatedTypesJson, StringNullTest) {
+// TEST(ValidatedTypesJson, StringNullTest) {
 //  String<1, 42> str(&Value::null);
 //  ASSERT_TRUE(str.is_initialized());
 //  ASSERT_FALSE(str.is_valid());
@@ -272,7 +271,7 @@ TEST(ValidatedTypesJson, MandatoryMapNullTest) {
 
 TEST(ValidatedTypesJson, OptionalMapAbsentValueTest) {
   Value* novalue = NULL;
-  Optional< Map<String<1, 32>, 0, 5> > map(novalue);
+  Optional<Map<String<1, 32>, 0, 5> > map(novalue);
   ASSERT_FALSE(map.is_initialized());
   ASSERT_TRUE(map.is_valid());
 }
@@ -303,7 +302,7 @@ TEST(ValidatedTypesJson, MapFromNonArrayJsonTest) {
   ASSERT_TRUE(int_map.empty());
 }
 
-//TEST(ValidatedTypesJson, OptionalBoolFromJsonTest) {
+// TEST(ValidatedTypesJson, OptionalBoolFromJsonTest) {
 //  Value bool_value(true);
 //  Optional< Boolean > optional_bool;
 //  *optional_bool = Boolean(&bool_value);
@@ -316,7 +315,7 @@ TEST(ValidatedTypesJson, MapFromNonArrayJsonTest) {
 
 TEST(ValidatedTypesJson, OptionalBoolFromAbsentValueTest) {
   Value* none = NULL;
-  Optional< Boolean > optional_bool;
+  Optional<Boolean> optional_bool;
   *optional_bool = Boolean(none);
   ASSERT_FALSE(optional_bool.is_initialized());
   // It is ok for Optional value to be absent
@@ -324,7 +323,7 @@ TEST(ValidatedTypesJson, OptionalBoolFromAbsentValueTest) {
 }
 
 TEST(ValidatedTypesJson, OptionalBoolFromNullValueTest) {
-  Optional< Boolean > optional_bool;
+  Optional<Boolean> optional_bool;
   *optional_bool = Boolean(&Value::null);
   ASSERT_TRUE(optional_bool.is_initialized());
   // Optional values should not be absent
@@ -332,7 +331,7 @@ TEST(ValidatedTypesJson, OptionalBoolFromNullValueTest) {
 }
 
 TEST(ValidatedTypesJson, NullableIntFromNullValueTest) {
-  Nullable< Integer<int8_t, 1, 15> > nullable_int(&Value::null);
+  Nullable<Integer<int8_t, 1, 15> > nullable_int(&Value::null);
   ASSERT_TRUE(nullable_int.is_initialized());
   ASSERT_TRUE(nullable_int.is_valid());
   ASSERT_TRUE(nullable_int.is_null());
@@ -340,7 +339,7 @@ TEST(ValidatedTypesJson, NullableIntFromNullValueTest) {
 
 TEST(ValidatedTypesJson, NullableIntFromNonNullValueTest) {
   Value json(3);
-  Nullable< Integer<int8_t, 1, 15> > nullable_int(&json);
+  Nullable<Integer<int8_t, 1, 15> > nullable_int(&json);
   ASSERT_TRUE(nullable_int.is_initialized());
   ASSERT_TRUE(nullable_int.is_valid());
   ASSERT_FALSE(nullable_int.is_null());
@@ -349,7 +348,7 @@ TEST(ValidatedTypesJson, NullableIntFromNonNullValueTest) {
 
 TEST(ValidatedTypesJson, NullableIntFromAbsentValueTest) {
   Value* noval = NULL;
-  Nullable< Integer<int8_t, 1, 15> > nullable_int(noval);
+  Nullable<Integer<int8_t, 1, 15> > nullable_int(noval);
   ASSERT_FALSE(nullable_int.is_initialized());
   ASSERT_FALSE(nullable_int.is_valid());
   ASSERT_FALSE(nullable_int.is_null());
@@ -357,8 +356,8 @@ TEST(ValidatedTypesJson, NullableIntFromAbsentValueTest) {
 
 TEST(ValidatedTypesJson, OptionalIntFromJsonTest) {
   Value int_value(42);
-  Optional< Integer<int64_t, 42, 43> > optional_int;
-  *optional_int = Integer<int64_t, 42, 43> (&int_value);
+  Optional<Integer<int64_t, 42, 43> > optional_int;
+  *optional_int = Integer<int64_t, 42, 43>(&int_value);
   ASSERT_TRUE(optional_int.is_initialized());
   ASSERT_TRUE(optional_int.is_valid());
   Value readback = optional_int->ToJsonValue();
@@ -366,8 +365,4 @@ TEST(ValidatedTypesJson, OptionalIntFromJsonTest) {
   ASSERT_EQ(readback.asInt(), 42);
 }
 
-
 }  // namespace test
-
-
-

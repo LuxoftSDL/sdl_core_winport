@@ -147,10 +147,10 @@ typedef threads::MessageLoopThread<RawAudioDataQueue> AudioPassThruQueue;
 typedef std::vector<std::string> RPCParams;
 
 struct ApplicationsAppIdSorter {
-	bool operator()(const ApplicationSharedPtr lhs,
-		const ApplicationSharedPtr rhs) {
-		return lhs->app_id() < rhs->app_id();
-	}
+  bool operator()(const ApplicationSharedPtr lhs,
+                  const ApplicationSharedPtr rhs) {
+    return lhs->app_id() < rhs->app_id();
+  }
 };
 
 // typedef for Applications list

@@ -30,14 +30,12 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-
 #ifndef SRC_COMPONENTS_APPLICATION_MANAGER_TEST_MOCK_POLICY_HANDLER_INTERFACE_MOCK_H_
 #define SRC_COMPONENTS_APPLICATION_MANAGER_TEST_MOCK_POLICY_HANDLER_INTERFACE_MOCK_H_
 
 #include "application_manager/policies/policy_handler_interface.h"
 #include "gmock/gmock.h"
 #include "policy/policy_types.h"
-
 
 namespace policy {
 
@@ -49,5 +47,4 @@ class MockPolicyHandlerInterface : public PolicyHandlerInterface {
 
 }  // namespace policy
 
-#endif // SRC_COMPONENTS_APPLICATION_MANAGER_TEST_MOCK_POLICY_HANDLER_INTERFACE_MOCK_H_
-
+#endif  // SRC_COMPONENTS_APPLICATION_MANAGER_TEST_MOCK_POLICY_HANDLER_INTERFACE_MOCK_H_

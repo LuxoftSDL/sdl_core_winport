@@ -59,7 +59,7 @@ StringArray MergeStringsToArray(const std::string& first,
 }
 }
 
-//TEST(FileSystemTest, CreateDeleteDirectory) {
+// TEST(FileSystemTest, CreateDeleteDirectory) {
 //  ASSERT_FALSE(DirectoryExists("./Test directory"));
 //  // Directory creation
 //  CreateDirectory("./Test directory");
@@ -72,7 +72,7 @@ StringArray MergeStringsToArray(const std::string& first,
 //  EXPECT_FALSE(DirectoryExists("./Test directory"));
 //}
 //
-//TEST(FileSystemTest, CreateDirectoryTwice) {
+// TEST(FileSystemTest, CreateDirectoryTwice) {
 //  ASSERT_FALSE(DirectoryExists("./Test directory"));
 //  // Directory creation
 //  CreateDirectory("./Test directory");
@@ -91,7 +91,7 @@ StringArray MergeStringsToArray(const std::string& first,
 //  EXPECT_FALSE(DirectoryExists("./Test directory"));
 //}
 //
-//TEST(FileSystemTest, DeleteDirectoryRecursively) {
+// TEST(FileSystemTest, DeleteDirectoryRecursively) {
 //  ASSERT_FALSE(DirectoryExists("./Test directory"));
 //  // Create directories
 //  CreateDirectory("./Test directory");
@@ -108,7 +108,7 @@ StringArray MergeStringsToArray(const std::string& first,
 //  EXPECT_FALSE(DirectoryExists("./Test directory"));
 //}
 //
-//TEST(FileSystemTest, CreateDirectoryRecursivelyDeleteRecursively) {
+// TEST(FileSystemTest, CreateDirectoryRecursivelyDeleteRecursively) {
 //  ASSERT_FALSE(DirectoryExists("./Test directory"));
 //  // Create directories recursively
 //  CreateDirectoryRecursively(
@@ -133,7 +133,7 @@ StringArray MergeStringsToArray(const std::string& first,
 //      DirectoryExists("./Test directory/Test directory 2/Test directory 3"));
 //}
 //
-//TEST(FileSystemTest, TwiceCreateDirectoryRecursivelyDeleteRecursivelyOnce) {
+// TEST(FileSystemTest, TwiceCreateDirectoryRecursivelyDeleteRecursivelyOnce) {
 //  ASSERT_FALSE(DirectoryExists("./Test directory"));
 //  // Create directories recursively
 //  EXPECT_TRUE(CreateDirectoryRecursively(
@@ -174,7 +174,7 @@ StringArray MergeStringsToArray(const std::string& first,
 //      DirectoryExists("./Test directory/Test directory 2/Test directory 3"));
 //}
 //
-//TEST(FileSystemTest, CreateDeleteFile) {
+// TEST(FileSystemTest, CreateDeleteFile) {
 //  ASSERT_FALSE(FileExists("./test file"));
 //  // File creation
 //  EXPECT_TRUE(CreateFile("./test file"));
@@ -187,7 +187,7 @@ StringArray MergeStringsToArray(const std::string& first,
 //  EXPECT_FALSE(FileExists("./test file"));
 //}
 //
-//TEST(FileSystemTest, CheckIsDirectory) {
+// TEST(FileSystemTest, CheckIsDirectory) {
 //  ASSERT_FALSE(DirectoryExists("./Test directory"));
 //  // Create directory and check that IsDirectory=true
 //  CreateDirectory("./Test directory");
@@ -1002,7 +1002,7 @@ TEST(FileSystemTest, WriteFileGetSize) {
   EXPECT_FALSE(FileExists("./test file"));
 }
 
-//TEST(FileSystemTest, CreateFileCheckDefaultAccess) {
+// TEST(FileSystemTest, CreateFileCheckDefaultAccess) {
 //  // File creation
 //  ASSERT_FALSE(FileExists("./test file"));
 //  EXPECT_TRUE(CreateFile("./test file"));
@@ -1145,7 +1145,7 @@ TEST(FileSystemTest, DirectorySize) {
   EXPECT_FALSE(DirectoryExists("./Test directory"));
 }
 
-//TEST(FileSystemTest, DeleteAllContentInDirectory) {
+// TEST(FileSystemTest, DeleteAllContentInDirectory) {
 //  ASSERT_FALSE(DirectoryExists("./Test directory"));
 //  CreateDirectory("./Test directory");
 //
@@ -1186,7 +1186,7 @@ TEST(FileSystemTest, DirectorySize) {
 //  EXPECT_FALSE(DirectoryExists("./Test directory"));
 //}
 
-//TEST(FileSystemTest, GetAbsolutePath) {
+// TEST(FileSystemTest, GetAbsolutePath) {
 //  const std::string& abs_path = GetAbsolutePath(".");
 //  // Getting absolute current path from system
 //  const std::string& absolute_current_path = CurrentWorkingDirectory();
@@ -1194,7 +1194,7 @@ TEST(FileSystemTest, DirectorySize) {
 //  EXPECT_EQ(absolute_current_path, abs_path);
 //}
 
-//TEST(FileSystemTest,
+// TEST(FileSystemTest,
 //     GetAbsolutePath_InvalidOrEmptyPathName_EmptyAbsolutePathName) {
 //  // Array of invalid paths
 //  const StringArray rel_path = MergeStringsToArray("not_exists_dir", "     ");
@@ -1206,7 +1206,7 @@ TEST(FileSystemTest, DirectorySize) {
 //  }
 //}
 
-//TEST(FileSystemTest, GetAbsolutePath_ValidRelPaths_CorrectAbsolutePath) {
+// TEST(FileSystemTest, GetAbsolutePath_ValidRelPaths_CorrectAbsolutePath) {
 //  // Array of relative dirs
 //  const StringArray rel_path = MergeStringsToArray(
 //      "first_level_path", "first_level_path/second_level_path1");
@@ -1230,7 +1230,7 @@ TEST(FileSystemTest, DirectorySize) {
 //  }
 //}
 
-//TEST(FileSystemTest,
+// TEST(FileSystemTest,
 //     GetAbsolutePath_ValidRelPathsFromParrentDir_CorrectAbsolutePath) {
 //  // Array of relative dirs
 //  const StringArray rel_path = MergeStringsToArray(
@@ -1257,7 +1257,7 @@ TEST(FileSystemTest, DirectorySize) {
 //  }
 //}
 
-//TEST(FileSystemTest, GetAbsolutePath_TrickiPath_CorrectAbsolutePath) {
+// TEST(FileSystemTest, GetAbsolutePath_TrickiPath_CorrectAbsolutePath) {
 //  // Array of relative dirs
 //  const StringArray rel_path =
 //      MergeStringsToArray("../src/../../application_manager/../utils/test",

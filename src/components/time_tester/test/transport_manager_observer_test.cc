@@ -46,7 +46,8 @@ using ::testing::_;
 TEST(TransportManagerObserverTest, MessageProcess) {
   TimeManagerMock time_manager_mock;
   TransportManagerObserver tr_observer(&time_manager_mock);
-  protocol_handler::RawMessage* ptr = new ::protocol_handler::RawMessage(0, 0, NULL, 0);
+  protocol_handler::RawMessage* ptr =
+      new ::protocol_handler::RawMessage(0, 0, NULL, 0);
   tr_observer.StartRawMsg(ptr);
   EXPECT_CALL(time_manager_mock, SendMetric(_));
   tr_observer.StopRawMsg(ptr);

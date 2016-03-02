@@ -181,7 +181,9 @@ class PolicyManagerImpl : public PolicyManager {
   virtual void OnAppsSearchCompleted();
 
 #ifdef BUILD_TESTS
-  inline CacheManagerInterfaceSPtr GetCache() { return cache_; }
+  inline CacheManagerInterfaceSPtr GetCache() {
+    return cache_;
+  }
 #endif  // BUILD_TESTS
 
   virtual const std::vector<std::string> GetAppRequestTypes(

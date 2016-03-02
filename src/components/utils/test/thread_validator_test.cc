@@ -45,9 +45,8 @@ using namespace ::threads;
 TEST(ThreadValidatorTest, CompareID_CurrentThreadAndPthread_AreEqual) {
   SingleThreadSimpleValidator object;
   ASSERT_EQ(object.creation_thread_id(), Thread::CurrentId());
-
 }
 
-} // namespace utils
-} // namespace components
-} // namespace test
+}  // namespace utils
+}  // namespace components
+}  // namespace test

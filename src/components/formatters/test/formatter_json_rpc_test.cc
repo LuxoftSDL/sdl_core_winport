@@ -60,7 +60,7 @@ void CompactJson(std::string& str) {
   Json::FastWriter writer;
   str = writer.write(root);
   if (str[str.size() - 1] == '\n') {
-      str.erase(str.size()-1,1);
+    str.erase(str.size() - 1, 1);
   }
 }
 
@@ -69,11 +69,14 @@ const int64_t big_64int = 100000000000;
 const std::string str_with_big_int64 = "100000000000";
 }  // namespace
 
-TEST(FormatterJsonRPCTest, CheckCompactJson){
+TEST(FormatterJsonRPCTest, CheckCompactJson) {
   std::string before_compact(
-     "{\n   \"jsonrpc\" : \"2.0\",\n   \"method\" : \"BasicCommunication.OnSystemRequest\","
-     "\n   \"params\" : {\n      \"fileName\" : \"file \n Name\",\n      \"length\" : 100000000000,\n"
-     "\"offset\" : 100000000000,\n      \"requestType\" : \"PROPRIETARY\"\n   }\n}\n");
+      "{\n   \"jsonrpc\" : \"2.0\",\n   \"method\" : "
+      "\"BasicCommunication.OnSystemRequest\","
+      "\n   \"params\" : {\n      \"fileName\" : \"file \n Name\",\n      "
+      "\"length\" : 100000000000,\n"
+      "\"offset\" : 100000000000,\n      \"requestType\" : \"PROPRIETARY\"\n   "
+      "}\n}\n");
   std::string after_compact = before_compact;
   CompactJson(after_compact);
 
@@ -97,7 +100,7 @@ TEST(FormatterJsonRPCTest, CorrectRPCv1Request_ToString_Success) {
   obj[S_MSG_PARAMS] = SmartObject(SmartType::SmartType_Map);
   // Attach Schema
   hmi_apis::HMI_API factory;
-  //EXPECT_TRUE(factory.attachSchema(obj, false));
+  // EXPECT_TRUE(factory.attachSchema(obj, false));
 
   std::string result;
   // Convert SmartObject to Json string
@@ -117,7 +120,7 @@ TEST(FormatterJsonRPCTest, CorrectRPCv2Request_ToString_Success) {
   obj[S_MSG_PARAMS] = SmartObject(SmartType::SmartType_Map);
   // Attach Schema
   mobile_apis::MOBILE_API factory;
-//  EXPECT_TRUE(factory.attachSchema(obj, false));
+  //  EXPECT_TRUE(factory.attachSchema(obj, false));
 
   std::string result;
   // Convert SmartObject to Json string
@@ -128,7 +131,8 @@ TEST(FormatterJsonRPCTest, CorrectRPCv2Request_ToString_Success) {
   EXPECT_EQ(json_string, result);
 }
 
-//TEST(FormatterJsonRPCTest, UpperBoundValuesInSystemRequest_ToString_Success) {
+// TEST(FormatterJsonRPCTest, UpperBoundValuesInSystemRequest_ToString_Success)
+// {
 //  // Create SmartObject
 //  SmartObject obj;
 //  obj[S_PARAMS][S_FUNCTION_ID] =
@@ -138,7 +142,8 @@ TEST(FormatterJsonRPCTest, CorrectRPCv2Request_ToString_Success) {
 //  obj[S_PARAMS][S_PROTOCOL_TYPE] = 1;
 //  obj[S_PARAMS][S_CORRELATION_ID] = 4444;
 //  obj[S_MSG_PARAMS] = SmartObject(SmartType::SmartType_Map);
-//  obj[S_MSG_PARAMS]["requestType"] = hmi_apis::Common_RequestType::PROPRIETARY;
+//  obj[S_MSG_PARAMS]["requestType"] =
+//  hmi_apis::Common_RequestType::PROPRIETARY;
 //  obj[S_MSG_PARAMS]["fileName"] = "fileName";
 //  obj[S_MSG_PARAMS]["length"] = big_64int;
 //  obj[S_MSG_PARAMS]["offset"] = big_64int;
@@ -170,7 +175,7 @@ TEST(FormatterJsonRPCTest, CorrectRPCv1Notification_ToString_Success) {
   obj[S_MSG_PARAMS] = SmartObject(SmartType::SmartType_Map);
   // Attach Schema
   hmi_apis::HMI_API factory;
-//  EXPECT_TRUE(factory.attachSchema(obj, false));
+  //  EXPECT_TRUE(factory.attachSchema(obj, false));
   // Convert SmartObject to Json string
   EXPECT_TRUE(FormatterJsonRpc::ToString(obj, result));
   CompactJson(result);
@@ -190,7 +195,7 @@ TEST(FormatterJsonRPCTest, CorrectResponseToString_Success) {
   obj[S_MSG_PARAMS] = SmartObject(SmartType::SmartType_Map);
   // Attach Schema
   hmi_apis::HMI_API factory;
-//  EXPECT_TRUE(factory.attachSchema(obj, false));
+  //  EXPECT_TRUE(factory.attachSchema(obj, false));
 
   std::string result;
   // Convert SmartObject to Json string
@@ -213,7 +218,7 @@ TEST(FormatterJsonRPCTest, ErrorResponse_ToString_Success) {
   obj[S_MSG_PARAMS] = SmartObject(SmartType::SmartType_Map);
   // Attach Schema
   hmi_apis::HMI_API factory;
-//  EXPECT_TRUE(factory.attachSchema(obj, false));
+  //  EXPECT_TRUE(factory.attachSchema(obj, false));
 
   std::string result;
   // Convert SmartObject to Json string
@@ -237,7 +242,7 @@ TEST(FormatterJsonRPCTest, ResponseWithoutCorID_ToString_Fail) {
   obj[S_MSG_PARAMS] = SmartObject(SmartType::SmartType_Map);
   // Attach Schema
   hmi_apis::HMI_API factory;
-//  EXPECT_TRUE(factory.attachSchema(obj, false));
+  //  EXPECT_TRUE(factory.attachSchema(obj, false));
 
   std::string result;
   // Convert SmartObject to Json string will finish wrong
@@ -252,7 +257,7 @@ TEST(FormatterJsonRPCTest, RequestWithoutMSGParams_ToString_Success) {
   obj[S_PARAMS][S_CORRELATION_ID] = 4444;
   // Attach Schema
   mobile_apis::MOBILE_API factory;
-//  EXPECT_TRUE(factory.attachSchema(obj, false));
+  //  EXPECT_TRUE(factory.attachSchema(obj, false));
 
   std::string result;
   // Convert SmartObject to Json string
@@ -271,14 +276,15 @@ TEST(FormatterJsonRPCTest, RequestWithoutCorID_ToString_Fail) {
   obj[S_MSG_PARAMS] = SmartObject(SmartType::SmartType_Map);
   // Attach Schema
   mobile_apis::MOBILE_API factory;
-//  EXPECT_TRUE(factory.attachSchema(obj, false));
+  //  EXPECT_TRUE(factory.attachSchema(obj, false));
 
   std::string result;
   // Converting SmartObject to Json string is failed
   EXPECT_FALSE(FormatterJsonRpc::ToString(obj, result));
   CompactJson(result);
 
-  const std::string json_string("{\"jsonrpc\":\"2.0\",\"method\":\"AddCommandID\"}");
+  const std::string json_string(
+      "{\"jsonrpc\":\"2.0\",\"method\":\"AddCommandID\"}");
   EXPECT_EQ(json_string, result);
 }
 
@@ -289,7 +295,7 @@ TEST(FormatterJsonRPCTest, RequestWithoutType_ToString_Fail) {
   obj[S_MSG_PARAMS] = SmartObject(SmartType::SmartType_Map);
   // Attach Schema is impossible
   mobile_apis::MOBILE_API factory;
-//  EXPECT_FALSE(factory.attachSchema(obj, false));
+  //  EXPECT_FALSE(factory.attachSchema(obj, false));
 
   std::string result;
   // Converting SmartObject to Json string is failed
@@ -310,7 +316,7 @@ TEST(FormatterJsonRPCTest, InvalidRPC_ToString_False) {
   obj[S_MSG_PARAMS] = SmartObject(SmartType::SmartType_Map);
   // Attach Schema
   hmi_apis::HMI_API factory;
-//  EXPECT_FALSE(factory.attachSchema(obj, false));
+  //  EXPECT_FALSE(factory.attachSchema(obj, false));
   // Convert SmrtObject to Json string
   EXPECT_FALSE(FormatterJsonRpc::ToString(obj, result));
   // Expect result with default value. No correct conversion was done
