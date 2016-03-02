@@ -83,6 +83,8 @@ class utils::TcpSocketConnection::Impl : public QObject {
 
   bool Connect(const HostAddress& address, const uint16_t port);
 
+  bool Connect(const int descriptor);
+
   void SetEventHandler(TcpConnectionEventHandler* event_handler);
 
   void Copy(TcpSocketConnection& rhs);
@@ -244,6 +246,11 @@ void utils::TcpSocketConnection::Impl::OnError(int error) {
     return;
   }
   event_handler_->OnError(error);
+}
+
+bool utils::TcpSocketConnection::Impl::Connect(const int descriptor) {
+  tcp_socket_.reset(new QTcpSocket());
+  return tcp_socket_->setSocketDescriptor(descriptor);
 }
 
 void utils::TcpSocketConnection::Impl::OnWrite() {
@@ -415,6 +422,10 @@ uint16_t utils::TcpSocketConnection::GetPort() const {
 bool utils::TcpSocketConnection::Connect(const HostAddress& address,
                                          const uint16_t port) {
   return impl_->Connect(address, port);
+}
+
+bool utils::TcpSocketConnection::Connect(const int descriptor) {
+  return impl_->Connect(descriptor);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
