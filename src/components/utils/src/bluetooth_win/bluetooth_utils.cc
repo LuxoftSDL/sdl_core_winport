@@ -32,50 +32,65 @@
 #include "utils/bluetooth_win/bluetooth_utils.h"
 #include "utils/bluetooth_win/bluetooth_uuid.h"
 
-TCHAR* utils::GetLastErrorMessage(const DWORD last_error) {
-  static TCHAR errmsg[512];
+std::string utils::GetLastErrorMessage(const DWORD last_error) {
+  TCHAR errmsg[512];
   if (!FormatMessage(
           FORMAT_MESSAGE_FROM_SYSTEM, 0, last_error, 0, errmsg, 511, NULL)) {
-    return (utils::GetLastErrorMessage(GetLastError()));
+    return std::string(utils::GetLastErrorMessage(GetLastError()));
   }
-  return errmsg;
+  return std::string(errmsg);
 }
 
-void utils::ConvertBytesToUUID(BYTE* bytes, GUID* uuid) {
-  uuid->Data1 = bytes[0] << 24 & 0xff000000 | bytes[1] << 16 & 0x00ff0000 |
-                bytes[2] << 8 & 0x0000ff00 | bytes[3] & 0x000000ff;
-  uuid->Data2 = bytes[4] << 8 & 0xff00 | bytes[5] & 0x00ff;
-  uuid->Data3 = bytes[6] << 8 & 0xff00 | bytes[7] & 0x00ff;
+void utils::ConvertBytesToUUID(const BYTE* bytes, GUID& uuid) {
+  DCHECK(bytes);
+  uuid.Data1 = bytes[0] << 24 & 0xff000000 | bytes[1] << 16 & 0x00ff0000 |
+               bytes[2] << 8 & 0x0000ff00 | bytes[3] & 0x000000ff;
+  uuid.Data2 = bytes[4] << 8 & 0xff00 | bytes[5] & 0x00ff;
+  uuid.Data3 = bytes[6] << 8 & 0xff00 | bytes[7] & 0x00ff;
 
-  for (int i = 0; i < 8; i++)
-    uuid->Data4[i] = bytes[i + 8];
+  for (int i = 0; i < 8; i++) {
+    uuid.Data4[i] = bytes[i + 8];
+  }
 }
 
 bool utils::HexStringToBytes(const std::string& input,
-                             std::vector<uint8_t>* output) {
-  return utils::HexStringToBytesT(input, output);
+                             std::vector<uint8_t>& output) {
+  size_t count = input.size();
+  if (count == 0u || (count % 2) != 0) {
+    return false;
+  }
+  for (uintptr_t i = 0u; i < count / 2; ++i) {
+    uint8_t msb = 0u;  // most significant 4 bits
+    uint8_t lsb = 0u;  // least significant 4 bits
+    if (!CharToDigit<16>(input[i * 2], msb) ||
+        !CharToDigit<16>(input[i * 2 + 1], lsb)) {
+      return false;
+    }
+    output.push_back((msb << 4) | lsb);
+  }
+  return true;
 }
 
 void utils::GetCanonicalUuid(std::string uuid,
-                             std::string* canonical,
-                             std::string* canonical_128,
-                             utils::UUIDFormat* format) {
-  canonical->clear();
-  canonical_128->clear();
-  *format = utils::UUIDFormat::kFormatInvalid;
+                             std::string& canonical,
+                             std::string& canonical_128,
+                             utils::UUIDFormat& format) {
+  canonical.clear();
+  canonical_128.clear();
+  format = utils::UUIDFormat::kFormatInvalid;
 
   if (uuid.empty()) {
     return;
   }
 
-  if (uuid.size() < 11 && uuid.find("0x") == 0) {
+  if (uuid.size() < 11u && uuid.find("0x") == 0u) {
     uuid = uuid.substr(2);
   }
-  if (!(uuid.size() == 4 || uuid.size() == 8 || uuid.size() == 36)) {
+  if (!(uuid.size() == 4u || uuid.size() == 8u || uuid.size() == 36u)) {
     return;
   }
-  for (size_t i = 0; i < uuid.size(); ++i) {
-    if (i == 8 || i == 13 || i == 18 || i == 23) {
+  for (size_t i = 0u; i < uuid.size(); ++i) {
+    if (i == 8u || i == 13u || i == 18u || i == 23u) {
       if (uuid[i] != '-') {
         return;
       }
@@ -86,29 +101,29 @@ void utils::GetCanonicalUuid(std::string uuid,
       uuid[i] = utils::ToLowerASCII(uuid[i]);
     }
   }
-  canonical->assign(uuid);
-  if (uuid.size() == 4) {
-    canonical_128->assign(kCommonUuidPrefix + uuid + kCommonUuidPostfix);
-    *format = utils::UUIDFormat::kFormat16Bit;
-  } else if (uuid.size() == 8) {
-    canonical_128->assign(uuid + kCommonUuidPostfix);
-    *format = utils::UUIDFormat::kFormat32Bit;
+  canonical.assign(uuid);
+  if (uuid.size() == 4u) {
+    canonical_128.assign(kCommonUuidPrefix + uuid + kCommonUuidPostfix);
+    format = utils::UUIDFormat::kFormat16Bit;
+  } else if (uuid.size() == 8u) {
+    canonical_128.assign(uuid + kCommonUuidPostfix);
+    format = utils::UUIDFormat::kFormat32Bit;
   } else {
-    canonical_128->assign(uuid);
-    *format = utils::UUIDFormat::kFormat128Bit;
+    canonical_128.assign(uuid);
+    format = utils::UUIDFormat::kFormat128Bit;
   }
 }
 
 bool utils::AdvanceToSdpType(const SDP_ELEMENT_DATA& sequence_data,
                              SDP_TYPE type,
-                             HBLUETOOTH_CONTAINER_ELEMENT* element,
-                             SDP_ELEMENT_DATA* sdp_data) {
+                             HBLUETOOTH_CONTAINER_ELEMENT& element,
+                             SDP_ELEMENT_DATA& sdp_data) {
   while (ERROR_SUCCESS ==
          BluetoothSdpGetContainerElementData(sequence_data.data.sequence.value,
                                              sequence_data.data.sequence.length,
-                                             element,
-                                             sdp_data)) {
-    if (sdp_data->type == type) {
+                                             &element,
+                                             &sdp_data)) {
+    if (sdp_data.type == type) {
       return true;
     }
   }
@@ -117,50 +132,57 @@ bool utils::AdvanceToSdpType(const SDP_ELEMENT_DATA& sequence_data,
 
 void utils::ExtractChannels(
     const SDP_ELEMENT_DATA& protocol_descriptor_list_data,
-    bool* supports_rfcomm,
-    uint8_t* rfcomm_channel) {
+    bool& supports_rfcomm,
+    uint8_t& rfcomm_channel) {
   HBLUETOOTH_CONTAINER_ELEMENT sequence_element = NULL;
   SDP_ELEMENT_DATA sequence_data;
   while (utils::AdvanceToSdpType(protocol_descriptor_list_data,
                                  SDP_TYPE_SEQUENCE,
-                                 &sequence_element,
-                                 &sequence_data)) {
+                                 sequence_element,
+                                 sequence_data)) {
     HBLUETOOTH_CONTAINER_ELEMENT inner_sequence_element = NULL;
     SDP_ELEMENT_DATA inner_sequence_data;
     if (utils::AdvanceToSdpType(sequence_data,
                                 SDP_TYPE_UUID,
-                                &inner_sequence_element,
-                                &inner_sequence_data) &&
+                                inner_sequence_element,
+                                inner_sequence_data) &&
         inner_sequence_data.data.uuid32 == utils::kRfcommUuid &&
         utils::AdvanceToSdpType(sequence_data,
                                 SDP_TYPE_UINT,
-                                &inner_sequence_element,
-                                &inner_sequence_data) &&
+                                inner_sequence_element,
+                                inner_sequence_data) &&
         inner_sequence_data.specificType == SDP_ST_UINT8) {
-      *rfcomm_channel = inner_sequence_data.data.uint8;
-      *supports_rfcomm = true;
+      rfcomm_channel = inner_sequence_data.data.uint8;
+      supports_rfcomm = true;
     }
   }
 }
 
 void utils::ExtractUuid(const SDP_ELEMENT_DATA& uuid_data,
-                        utils::BluetoothUUID* uuid) {
+                        utils::BluetoothUUID& uuid) {
   HBLUETOOTH_CONTAINER_ELEMENT inner_uuid_element = NULL;
   SDP_ELEMENT_DATA inner_uuid_data;
   if (utils::AdvanceToSdpType(
-          uuid_data, SDP_TYPE_UUID, &inner_uuid_element, &inner_uuid_data)) {
+          uuid_data, SDP_TYPE_UUID, inner_uuid_element, inner_uuid_data)) {
     if (inner_uuid_data.specificType == SDP_ST_UUID16) {
-      TCHAR temp_uuid_str[10];
-      sprintf_s(temp_uuid_str, 10, "%04x", inner_uuid_data.data.uuid16);
-      *uuid = utils::BluetoothUUID(std::string(temp_uuid_str));
-    } else if (inner_uuid_data.specificType == SDP_ST_UUID32) {
-      TCHAR temp_uuid_str[10];
-      sprintf_s(temp_uuid_str, 10, "%08x", inner_uuid_data.data.uuid32);
-      *uuid = utils::BluetoothUUID(std::string(temp_uuid_str));
-    } else if (inner_uuid_data.specificType == SDP_ST_UUID128) {
-      TCHAR temp_uuid_str[40];
+      TCHAR temp_uuid_str[sizeof(inner_uuid_data)];
       sprintf_s(temp_uuid_str,
-                40,
+                sizeof(temp_uuid_str),
+                "%04x",
+                inner_uuid_data.data.uuid16);
+      uuid = utils::BluetoothUUID(std::string(temp_uuid_str));
+    } else if (inner_uuid_data.specificType == SDP_ST_UUID32) {
+      TCHAR temp_uuid_str[sizeof(inner_uuid_data)];
+      sprintf_s(temp_uuid_str,
+                sizeof(temp_uuid_str),
+                "%08x",
+                inner_uuid_data.data.uuid32);
+      uuid = utils::BluetoothUUID(std::string(temp_uuid_str));
+    } else if (inner_uuid_data.specificType == SDP_ST_UUID128) {
+      TCHAR temp_uuid_str[sizeof(inner_uuid_data) +
+                          sizeof(inner_uuid_data.data.uuid128)];
+      sprintf_s(temp_uuid_str,
+                sizeof(temp_uuid_str),
                 "%08x-%04x-%04x-%02x%02x-%02x%02x%02x%02x%02x%02x",
                 inner_uuid_data.data.uuid128.Data1,
                 inner_uuid_data.data.uuid128.Data2,
@@ -173,9 +195,9 @@ void utils::ExtractUuid(const SDP_ELEMENT_DATA& uuid_data,
                 inner_uuid_data.data.uuid128.Data4[5],
                 inner_uuid_data.data.uuid128.Data4[6],
                 inner_uuid_data.data.uuid128.Data4[7]);
-      *uuid = utils::BluetoothUUID(std::string(temp_uuid_str));
+      uuid = utils::BluetoothUUID(std::string(temp_uuid_str));
     } else {
-      *uuid = utils::BluetoothUUID();
+      uuid = utils::BluetoothUUID();
     }
   }
 }
@@ -188,7 +210,7 @@ BTH_ADDR utils::StringToBthAddr(const std::string& address) {
   }
 
   std::vector<uint8_t> address_bytes;
-  HexStringToBytes(numbers_only, &address_bytes);
+  HexStringToBytes(numbers_only, address_bytes);
   int byte_position = 0;
   for (std::vector<uint8_t>::reverse_iterator iter = address_bytes.rbegin();
        iter != address_bytes.rend();
@@ -204,7 +226,9 @@ SOCKADDR_BTH utils::StringToSockBthAddr(const std::string& address) {
   std::stringstream address_record;
   address_record << address.c_str();
   int address_size = sizeof(struct sockaddr_storage);
-  WSAStringToAddress(const_cast<LPSTR>(address_record.str().c_str()),
+  std::string addr_str_tmp = address_record.str();
+  LPSTR addr_str = static_cast<LPSTR>(&addr_str_tmp[0]);
+  WSAStringToAddress(addr_str,
                      AF_BTH,
                      NULL,
                      reinterpret_cast<LPSOCKADDR>(&socket_address),
@@ -278,10 +302,10 @@ std::string utils::GetDeviceAddrStr(LPCSADDR_INFO& addr_info,
   return std::string(addressAsString);
 }
 
-std::vector<uint8_t> utils::ByteArrayToVector(const BLOB*& p_blob) {
+std::vector<uint8_t> utils::ByteArrayToVector(const BLOB& p_blob) {
   std::vector<uint8_t> sdp_data;
-  for (uint64_t i = 0; i < p_blob->cbSize; i++) {
-    sdp_data.push_back(p_blob->pBlobData[i]);
+  for (uint64_t i = 0; i < p_blob.cbSize; i++) {
+    sdp_data.push_back(p_blob.pBlobData[i]);
   }
   return sdp_data;
 }

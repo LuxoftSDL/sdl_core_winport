@@ -37,6 +37,7 @@
 
 #include "transport_manager/bluetooth/bluetooth_device.h"
 #include "transport_manager/transport_adapter/transport_adapter_controller.h"
+#include "utils/host_address.h"
 
 #include "utils/logger.h"
 
@@ -84,9 +85,8 @@ bool BluetoothSocketConnection::Establish(ConnectError** error) {
       LOGGER_TRACE(logger_, "exit with FALSE");
       return false;
     }
-    sockaddr* p_sockaddr = new sockaddr{NULL};
-    p_sockaddr = reinterpret_cast<sockaddr*>(&bthAddr);
-    connect_status = connect(rfcomm_socket, p_sockaddr, sizeof(SOCKADDR_BTH));
+    const sockaddr* p_sockaddr = reinterpret_cast<const sockaddr*>(&bthAddr);
+    connect_status = ::connect(rfcomm_socket, p_sockaddr, sizeof(SOCKADDR_BTH));
     if (0 == connect_status) {
       LOGGER_DEBUG(logger_, "rfcomm Connect ok");
       break;

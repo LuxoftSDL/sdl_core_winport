@@ -42,11 +42,10 @@ namespace utils {
 class BluetoothUUID {
  public:
   explicit BluetoothUUID(const std::string& uuid) {
-    utils::GetCanonicalUuid(uuid, &value_, &canonical_value_, &format_);
+    utils::GetCanonicalUuid(uuid, value_, canonical_value_, format_);
   }
 
   BluetoothUUID() : format_(utils::UUIDFormat::kFormatInvalid) {}
-  virtual ~BluetoothUUID() {}
 
   /**
   * @brief  Returns true, if the UUID is in a valid canonical format.

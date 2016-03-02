@@ -52,7 +52,10 @@ class BluetoothServiceRecordWin {
       , uuid_(get_uuid)
       , supports_rfcomm_(false)
       , rfcomm_channel_(-1) {
-    if (sdp_bytes.size() > 0) {
+    if (sdp_bytes.size() > 0u) {
+      // BluetoothSdpGetAttributeValue requires non const input params,
+      // therefore we use const_cast to remove constness from the sdp_bytes
+      // to prevent array redundant copy.
       LPBYTE blob_data = const_cast<LPBYTE>(&sdp_bytes[0]);
       ULONG blob_size = static_cast<ULONG>(sdp_bytes.size());
       SDP_ELEMENT_DATA protocol_descriptor_list_data;
@@ -62,13 +65,13 @@ class BluetoothServiceRecordWin {
                                         utils::kProtocolDescriptorListId,
                                         &protocol_descriptor_list_data)) {
         utils::ExtractChannels(
-            protocol_descriptor_list_data, &supports_rfcomm_, &rfcomm_channel_);
+            protocol_descriptor_list_data, supports_rfcomm_, rfcomm_channel_);
       }
       SDP_ELEMENT_DATA uuid_data;
       if (ERROR_SUCCESS ==
           BluetoothSdpGetAttributeValue(
               blob_data, blob_size, utils::kUuidId, &uuid_data)) {
-        utils::ExtractUuid(uuid_data, &uuid_);
+        utils::ExtractUuid(uuid_data, uuid_);
       }
     }
   }

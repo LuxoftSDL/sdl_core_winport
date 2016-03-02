@@ -86,9 +86,8 @@ void BluetoothTransportAdapter::Store() const {
         DeviceSptr::static_pointer_cast<BluetoothDevice>(device);
     JsonValue device_dictionary;
     device_dictionary["name"] = bluetooth_device->name();
-    char address[18];
-    sprintf(address, "%ws", bluetooth_device->address());
-    device_dictionary["address"] = std::string(address);
+    device_dictionary["address"] =
+        utils::BthDeviceAddrToStr(bluetooth_device->address());
     JsonValue applications_dictionary;
     ApplicationList app_ids = bluetooth_device->GetApplicationList();
     for (ApplicationList::const_iterator j = app_ids.begin();
@@ -153,7 +152,7 @@ bool BluetoothTransportAdapter::Restore() {
                                                   0x22,
                                                   0xA8};
     utils::ConvertBytesToUUID(smart_device_link_service_uuid_data,
-                              &smart_device_link_service_uuid);
+                              smart_device_link_service_uuid);
 
     SOCKADDR_BTH sock_addr_bth_server = {0};
     sock_addr_bth_server.addressFamily = AF_BTH;

@@ -52,31 +52,15 @@ const uint16_t kUuidId = 1;
 enum UUIDFormat { kFormatInvalid, kFormat16Bit, kFormat32Bit, kFormat128Bit };
 
 template <int BASE, typename T>
-bool CharToDigit(T c, uint8_t* digit) {
+bool CharToDigit(T c, uint8_t& digit) {
   if (c >= '0' && c <= '9') {
-    *digit = c - '0';
+    digit = c - '0';
   } else if (c >= 'a' && c < 'a' + BASE - 10) {
-    *digit = c - 'a' + 10;
+    digit = c - 'a' + 10;
   } else if (c >= 'A' && c < 'A' + BASE - 10) {
-    *digit = c - 'A' + 10;
+    digit = c - 'A' + 10;
   } else {
     return false;
-  }
-  return true;
-}
-
-template <typename STR>
-bool HexStringToBytesT(const STR& input, std::vector<uint8_t>* output) {
-  size_t count = input.size();
-  if (count == 0 || (count % 2) != 0)
-    return false;
-  for (uintptr_t i = 0; i < count / 2; ++i) {
-    uint8_t msb = 0;  // most significant 4 bits
-    uint8_t lsb = 0;  // least significant 4 bits
-    if (!CharToDigit<16>(input[i * 2], &msb) ||
-        !CharToDigit<16>(input[i * 2 + 1], &lsb))
-      return false;
-    output->push_back((msb << 4) | lsb);
   }
   return true;
 }
@@ -97,31 +81,31 @@ bool IsHexDigit(T c) {
          (c >= 'a' && c <= 'f');
 }
 
-bool HexStringToBytes(const std::string& input, std::vector<uint8_t>* output);
+bool HexStringToBytes(const std::string& input, std::vector<uint8_t>& output);
 
-TCHAR* GetLastErrorMessage(const DWORD last_error);
+std::string GetLastErrorMessage(const DWORD last_error);
 
-void ConvertBytesToUUID(BYTE* bytes, GUID* uuid);
+void ConvertBytesToUUID(const BYTE* bytes, GUID& uuid);
 
 /**
  * @brief Returns the canonical, 128-bit canonical, and the format of the UUID
  *        in |canonical|, |canonical_128|, and |format| based on |uuid|.
  */
 void GetCanonicalUuid(std::string uuid,
-                      std::string* canonical,
-                      std::string* canonical_128,
-                      utils::UUIDFormat* format);
+                      std::string& canonical,
+                      std::string& canonical_128,
+                      utils::UUIDFormat& format);
 
 bool AdvanceToSdpType(const SDP_ELEMENT_DATA& sequence_data,
                       SDP_TYPE type,
-                      HBLUETOOTH_CONTAINER_ELEMENT* element,
-                      SDP_ELEMENT_DATA* sdp_data);
+                      HBLUETOOTH_CONTAINER_ELEMENT& element,
+                      SDP_ELEMENT_DATA& sdp_data);
 
 void ExtractChannels(const SDP_ELEMENT_DATA& protocol_descriptor_list_data,
-                     bool* supports_rfcomm,
-                     uint8_t* rfcomm_channel);
+                     bool& supports_rfcomm,
+                     uint8_t& rfcomm_channel);
 
-void ExtractUuid(const SDP_ELEMENT_DATA& uuid_data, BluetoothUUID* uuid);
+void ExtractUuid(const SDP_ELEMENT_DATA& uuid_data, BluetoothUUID& uuid);
 
 BTH_ADDR StringToBthAddr(const std::string& address);
 
@@ -136,6 +120,6 @@ std::string GuidToStr(const GUID& guid);
 std::string GetDeviceAddrStr(LPCSADDR_INFO& addr_info,
                              WSAPROTOCOL_INFO& protocolInfo);
 
-std::vector<uint8_t> ByteArrayToVector(const BLOB*& p_blob);
+std::vector<uint8_t> ByteArrayToVector(const BLOB& p_blob);
 }  // namespace utils
 #endif  // SRC_COMPONENTS_UTILS_INCLUDE_UTILS_BLUETOOTH_UTILS_WIN_H_

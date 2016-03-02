@@ -74,8 +74,7 @@ if(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
             ${UTILS_SRC_DIR}/socket_qt.cc
             ${UTILS_SRC_DIR}/json_utils_qt.cc
             ${UTILS_SRC_DIR}/host_address.cc
-            ${UTILS_SRC_DIR}/socket_utils.cc
-            ${UTILS_SRC_DIR}/bluetooth_utils_win.cc)
+            ${UTILS_SRC_DIR}/socket_utils.cc)
     # Files copied for the Qt MOC.
     # Because MOC is looking headre nearby with *.cc
     # This headers include in .git exception. see .gitignore

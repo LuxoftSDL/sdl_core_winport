@@ -69,24 +69,26 @@ BluetoothDeviceScanner::BluetoothDeviceScanner(
     , device_scan_requested_cv_()
     , auto_repeat_search_(auto_repeat_search)
     , auto_repeat_pause_sec_(auto_repeat_pause_sec) {
-  BYTE smart_device_link_service_uuid_data[] = {0x93,
-                                                0x6D,
-                                                0xA0,
-                                                0x1F,
-                                                0x9A,
-                                                0xBD,
-                                                0x4D,
-                                                0x9D,
-                                                0x80,
-                                                0xC7,
-                                                0x02,
-                                                0xAF,
-                                                0x85,
-                                                0xC8,
-                                                0x22,
-                                                0xA8};
+  BYTE smart_device_link_service_uuid_data[16];
+  smart_device_link_service_uuid_data[0] = 0x93;
+  smart_device_link_service_uuid_data[1] = 0x6D;
+  smart_device_link_service_uuid_data[2] = 0xA0;
+  smart_device_link_service_uuid_data[3] = 0x1F;
+  smart_device_link_service_uuid_data[4] = 0x9A;
+  smart_device_link_service_uuid_data[5] = 0xBD;
+  smart_device_link_service_uuid_data[6] = 0x4D;
+  smart_device_link_service_uuid_data[7] = 0x9D;
+  smart_device_link_service_uuid_data[8] = 0x80;
+  smart_device_link_service_uuid_data[9] = 0xC7;
+  smart_device_link_service_uuid_data[10] = 0x02;
+  smart_device_link_service_uuid_data[11] = 0xAF;
+  smart_device_link_service_uuid_data[12] = 0x85;
+  smart_device_link_service_uuid_data[13] = 0xC8;
+  smart_device_link_service_uuid_data[14] = 0x22;
+  smart_device_link_service_uuid_data[15] = 0xA8;
+
   utils::ConvertBytesToUUID(smart_device_link_service_uuid_data,
-                            &smart_device_link_service_uuid_);
+                            smart_device_link_service_uuid_);
   service_uuid_str_ =
       utils::BluetoothUUID(utils::GuidToStr(smart_device_link_service_uuid_))
           .Value();
@@ -117,7 +119,6 @@ void BluetoothDeviceScanner::UpdateTotalDeviceList() {
 }
 
 void BluetoothDeviceScanner::DoInquiry() {
-  LOGGER_AUTO_TRACE(logger_);
   HANDLE radio_handle;
   BLUETOOTH_FIND_RADIO_PARAMS bluetooth_seraach_param = {
       sizeof(bluetooth_seraach_param)};
@@ -133,29 +134,27 @@ void BluetoothDeviceScanner::DoInquiry() {
   device_search_params.dwSize = sizeof(device_search_params);
 
   device_search_params.fReturnAuthenticated = true;
-  device_search_params.fReturnRemembered = true;
   device_search_params.fReturnConnected = true;
-  device_search_params.fIssueInquiry = false;
   device_search_params.hRadio = radio_handle;
-
   if (hdbluetooth_dev_find_res) {
     do {
       BLUETOOTH_RADIO_INFO radio_info;
       radio_info.dwSize = sizeof(radio_info);
       if (ERROR_SUCCESS != BluetoothGetRadioInfo(radio_handle, &radio_info)) {
-        LOGGER_WARN(logger_, "Not find bluetooth device");
+        LOGGER_WARN(logger_,
+                    "Not find bluetooth device, See: "
+                        << utils::GetLastErrorMessage(GetLastError()));
         return;
       }
       HANDLE device_find =
           BluetoothFindFirstDevice(&device_search_params, &device_info);
-      DWORD numServices = sizeof(smart_device_link_service_uuid_);
+      GUID* installed_services = &smart_device_link_service_uuid_;
+      DWORD num_services = sizeof(installed_services);
       if (device_find) {
         do {
-          BluetoothEnumerateInstalledServices(radio_handle,
-                                              &device_info,
-                                              &numServices,
-                                              &smart_device_link_service_uuid_);
-          if (numServices) {
+          BluetoothEnumerateInstalledServices(
+              radio_handle, &device_info, &num_services, installed_services);
+          if (num_services) {
             found_devices.push_back(device_info);
           }
         } while (BluetoothFindNextDevice(device_find, &device_info));
@@ -170,9 +169,11 @@ void BluetoothDeviceScanner::DoInquiry() {
   QueryBthProtocolInfo();
   CheckSDLServiceOnDevices(
       found_devices, (int)hdbluetooth_dev_find_res, &found_devices_with_sdl_);
-
-  UpdateTotalDeviceList();
-  controller_->FindNewApplicationsRequest();
+  if (found_devices_with_sdl_ != paired_devices_with_sdl_) {
+    paired_devices_with_sdl_ = found_devices_with_sdl_;
+    UpdateTotalDeviceList();
+    controller_->FindNewApplicationsRequest();
+  }
   if (found_devices.empty()) {
     LOGGER_DEBUG(logger_, "number_of_devices < 0");
     controller_->SearchDeviceFailed(SearchDeviceError());
@@ -207,11 +208,6 @@ void BluetoothDeviceScanner::CheckSDLServiceOnDevices(
     const std::vector<BLUETOOTH_DEVICE_INFO>& bd_addresses,
     int device_handle,
     DeviceVector* discovered_devices) {
-  LOGGER_TRACE(logger_,
-               "enter. bd_addresses: " << &bd_addresses << ", device_handle: "
-                                       << device_handle
-                                       << ", discovered_devices: "
-                                       << discovered_devices);
   std::vector<RfcommChannelVector> sdl_rfcomm_channels =
       DiscoverSmartDeviceLinkRFCOMMChannels(bd_addresses);
 
@@ -249,18 +245,18 @@ void BluetoothDeviceScanner::CheckSDLServiceOnDevices(
       LOGGER_WARN(logger_, "Can't create bluetooth device " << deviceName);
     }
   }
-  LOGGER_TRACE(logger_, "exit");
 }
 
 std::vector<BluetoothDeviceScanner::RfcommChannelVector>
 BluetoothDeviceScanner::DiscoverSmartDeviceLinkRFCOMMChannels(
     const std::vector<BLUETOOTH_DEVICE_INFO>& device_addresses) {
-  LOGGER_TRACE(logger_, "enter device_addresses: " << &device_addresses);
   const size_t size = device_addresses.size();
   std::vector<RfcommChannelVector> result(size);
-  sock_addr_bth_server_ = {0};
+  sock_addr_bth_server_.addressFamily = NULL;
+  sock_addr_bth_server_.btAddr = NULL;
+  sock_addr_bth_server_.port = NULL;
   static const int attempts = 4;
-  static const int attempt_timeout = 5;
+  static const int attempt_timeout = 1000;
   std::vector<bool> processed(size, false);
   unsigned processed_count = 0;
   for (int nattempt = 0; nattempt < attempts; ++nattempt) {
@@ -280,9 +276,6 @@ BluetoothDeviceScanner::DiscoverSmartDeviceLinkRFCOMMChannels(
     }
     Sleep(attempt_timeout);
   }
-  LOGGER_TRACE(
-      logger_,
-      "exit with vector<RfcommChannelVector>: size = " << result.size());
   return result;
 }
 
@@ -304,7 +297,6 @@ bool BluetoothDeviceScanner::DiscoverSmartDeviceLinkRFCOMMChannels(
   service_search_quiery.lpszContext =
       const_cast<LPSTR>(str_device_address.c_str());
 
-  LOGGER_TRACE(logger_, "Start search SPT Service...");
   int service_scan_result = WSALookupServiceBegin(
       &service_search_quiery, LUP_FLUSHCACHE, &handle_service_search);
   if (!service_scan_result) {
@@ -314,27 +306,30 @@ bool BluetoothDeviceScanner::DiscoverSmartDeviceLinkRFCOMMChannels(
       WSAQUERYSET* pResults = reinterpret_cast<WSAQUERYSET*>(&buffer);
       if (WSALookupServiceNext(
               handle_service_search, flags, &bufferLength, pResults)) {
-        LOGGER_WARN(logger_,
-                    "Service scan error:"
-                        << utils::GetLastErrorMessage(GetLastError()));
+        DWORD error = GetLastError();
+        if (WSA_E_NO_MORE != error) {
+          LOGGER_WARN(
+              logger_,
+              "Service scan error: " << utils::GetLastErrorMessage(error));
+        }
         break;
       } else {
         if (pResults->lpBlob) {
-          const BLOB* pBlob = static_cast<BLOB*>(pResults->lpBlob);
+          const BLOB pBlob = static_cast<BLOB>(*pResults->lpBlob);
           utils::BluetoothServiceRecordWin BtHServiceParser(
               str_device_address,
               std::string(pResults->lpszServiceInstanceName),
               utils::ByteArrayToVector(pBlob),
               utils::BluetoothUUID(service_uuid_str_));
           if (BtHServiceParser.IsUuidEqual(service_uuid_str_)) {
-            ULONGLONG ululRemoteBthAddr = 0;
+            ULONGLONG ululRemoteBthAddr = 0u;
             BTH_ADDR* pRemoteBtAddr =
                 static_cast<BTH_ADDR*>(&ululRemoteBthAddr);
-            CopyMemory(pRemoteBtAddr,
-                       &(reinterpret_cast<PSOCKADDR_BTH>(
-                             pResults->lpcsaBuffer->RemoteAddr.lpSockaddr))
-                            ->btAddr,
-                       sizeof(*pRemoteBtAddr));
+            CopyMemory(
+                pRemoteBtAddr,
+                &(reinterpret_cast<PSOCKADDR_BTH>(
+                      pResults->lpcsaBuffer->RemoteAddr.lpSockaddr))->btAddr,
+                sizeof(*pRemoteBtAddr));
             sock_addr_bth_server.addressFamily = AF_BTH;
             sock_addr_bth_server.btAddr = *pRemoteBtAddr;
             sock_addr_bth_server.serviceClassId =
@@ -352,10 +347,6 @@ bool BluetoothDeviceScanner::DiscoverSmartDeviceLinkRFCOMMChannels(
         "Service serach error:" << utils::GetLastErrorMessage(GetLastError()));
     return false;
   }
-  LOGGER_TRACE(logger_,
-               "enter. device_address: " << &str_device_address
-                                         << ", channels: "
-                                         << channels);
   return true;
 }
 
@@ -386,10 +377,7 @@ void BluetoothDeviceScanner::Thread() {
 }
 
 void BluetoothDeviceScanner::TimedWaitForDeviceScanRequest() {
-  LOGGER_AUTO_TRACE(logger_);
-
   if (auto_repeat_pause_sec_ == 0) {
-    LOGGER_TRACE(logger_, "exit. Condition: auto_repeat_pause_sec_ == 0");
     return;
   }
 
