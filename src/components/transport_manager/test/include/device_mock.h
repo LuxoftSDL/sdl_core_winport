@@ -54,7 +54,7 @@ class DeviceMock : public ::transport_manager::transport_adapter::Device {
 
 class TCPDeviceMock : public ::transport_manager::transport_adapter::TcpDevice {
  public:
-	 TCPDeviceMock(const utils::HostAddress& in_addr_t, const std::string& name)
+  TCPDeviceMock(const utils::HostAddress& in_addr_t, const std::string& name)
       : TcpDevice(in_addr_t, name) {}
   MOCK_CONST_METHOD1(IsSameAs, bool(const Device* other_device));
   MOCK_CONST_METHOD0(GetApplicationList, std::vector<int>());

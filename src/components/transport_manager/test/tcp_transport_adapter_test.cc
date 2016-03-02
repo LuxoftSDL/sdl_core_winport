@@ -65,8 +65,12 @@ class TestTCPTransportAdapter : public TcpTransportAdapter {
   MOCK_METHOD2(Connect,
                TransportAdapter::Error(const DeviceUID& device_handle,
                                        const ApplicationHandle& app_handle));
-  void CallStore() { Store(); }
-  bool CallRestore() { return Restore(); }
+  void CallStore() {
+    Store();
+  }
+  bool CallRestore() {
+    return Restore();
+  }
 };
 
 class TcpAdapterTest : public ::testing::Test {
@@ -75,11 +79,13 @@ class TcpAdapterTest : public ::testing::Test {
     ::profile::Profile::instance()->config_file_name(
         "smartDeviceLink_test.ini");
   }
-   virtual void SetUp() {
-       resumption::LastState::instance()->dictionary = Json::Value();
+  virtual void SetUp() {
+    resumption::LastState::instance()->dictionary = Json::Value();
   }
 
-  virtual void TearDown() { resumption::LastState::destroy(); }
+  virtual void TearDown() {
+    resumption::LastState::destroy();
+  }
 
   const uint32_t port = 12345;
   const std::string string_port = "12345";

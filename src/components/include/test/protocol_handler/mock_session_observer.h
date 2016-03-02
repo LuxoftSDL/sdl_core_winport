@@ -49,11 +49,13 @@ class MockSessionObserver : public ::protocol_handler::SessionObserver {
       uint32_t(const transport_manager::ConnectionUID& connection_handle,
                const uint8_t session_id,
                const ::protocol_handler::ServiceType& service_type,
-               const bool is_protected, uint32_t* hash_id));
+               const bool is_protected,
+               uint32_t* hash_id));
   MOCK_METHOD4(
       OnSessionEndedCallback,
       uint32_t(const transport_manager::ConnectionUID& connection_handle,
-               const uint8_t sessionId, const uint32_t& hashCode,
+               const uint8_t sessionId,
+               const uint32_t& hashCode,
                const ::protocol_handler::ServiceType& service_type));
   MOCK_METHOD1(OnApplicationFloodCallBack, void(const uint32_t&));
   MOCK_METHOD1(OnMalformedMessageCallback, void(const uint32_t&));
@@ -65,21 +67,27 @@ class MockSessionObserver : public ::protocol_handler::SessionObserver {
                     transport_manager::ConnectionUID* connection_handle,
                     uint8_t* sessionId));
   MOCK_METHOD4(GetDataOnSessionKey,
-               int32_t(uint32_t key, uint32_t* app_id,
-                       std::list<int32_t>* sessions_list, uint32_t* device_id));
+               int32_t(uint32_t key,
+                       uint32_t* app_id,
+                       std::list<int32_t>* sessions_list,
+                       uint32_t* device_id));
   MOCK_METHOD5(GetDataOnDeviceID,
-               int32_t(uint32_t device_handle, std::string* device_name,
+               int32_t(uint32_t device_handle,
+                       std::string* device_name,
                        std::list<uint32_t>* applications_list,
-                       std::string* mac_address, std::string* connection_type));
+                       std::string* mac_address,
+                       std::string* connection_type));
   MOCK_METHOD2(IsHeartBeatSupported,
                bool(transport_manager::ConnectionUID connection_handle,
                     uint8_t session_id));
   MOCK_METHOD3(ProtocolVersionUsed,
-               bool(uint32_t connection_id, uint8_t session_id,
+               bool(uint32_t connection_id,
+                    uint8_t session_id,
                     uint8_t& protocol_version));
 #ifdef ENABLE_SECURITY
-  MOCK_METHOD2(SetSSLContext, int(const uint32_t& key,
-                                  ::security_manager::SSLContext* context));
+  MOCK_METHOD2(SetSSLContext,
+               int(const uint32_t& key,
+                   ::security_manager::SSLContext* context));
   MOCK_METHOD2(GetSSLContext,
                ::security_manager::SSLContext*(
                    const uint32_t& key,

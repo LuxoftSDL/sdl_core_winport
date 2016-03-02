@@ -71,7 +71,7 @@ class ConnectionHandlerImpl
       public DevicesDiscoveryStarter,
       public utils::Singleton<ConnectionHandlerImpl> {
  public:
-	 //const DeviceMap& getDeviceList();
+  // const DeviceMap& getDeviceList();
   /**
    * \brief Destructor
    */

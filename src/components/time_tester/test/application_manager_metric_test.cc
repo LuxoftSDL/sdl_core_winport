@@ -57,23 +57,29 @@ TEST(ApplicationManagerMetricWrapper, GetJsonMetric) {
   TimevalStruct end_time;
   end_time.tv_sec = 10;
   end_time.tv_usec = 0;
-  metric_test.message_metric = new application_manager::AMMetricObserver::MessageMetric();
+  metric_test.message_metric =
+      new application_manager::AMMetricObserver::MessageMetric();
   metric_test.message_metric->begin = start_time;
   metric_test.message_metric->end = end_time;
   NsSmartDeviceLink::NsSmartObjects::SmartObject obj;
   obj["params"][application_manager::strings::correlation_id] = 11;
   obj["params"][application_manager::strings::connection_key] = 12;
-  metric_test.message_metric->message = new NsSmartDeviceLink::NsSmartObjects::SmartObject(obj);
+  metric_test.message_metric->message =
+      new NsSmartDeviceLink::NsSmartObjects::SmartObject(obj);
   Json::Value jvalue = metric_test.GetJsonMetric();
 
   EXPECT_EQ("null\n", jvalue[time_tester::strings::stime].toStyledString());
   EXPECT_EQ("null\n", jvalue[time_tester::strings::utime].toStyledString());
   EXPECT_EQ("null\n", jvalue[time_tester::strings::memory].toStyledString());
 
-  EXPECT_EQ(date_time::DateTime::getuSecs(start_time), jvalue[time_tester::strings::begin].asInt64());
-  EXPECT_EQ(date_time::DateTime::getuSecs(end_time), jvalue[time_tester::strings::end].asInt64());
-  EXPECT_EQ(obj["params"][application_manager::strings::correlation_id].asInt(), jvalue[time_tester::strings::correlation_id].asInt64());
-  EXPECT_EQ(obj["params"][application_manager::strings::connection_key].asInt(), jvalue[time_tester::strings::connection_key].asInt());
+  EXPECT_EQ(date_time::DateTime::getuSecs(start_time),
+            jvalue[time_tester::strings::begin].asInt64());
+  EXPECT_EQ(date_time::DateTime::getuSecs(end_time),
+            jvalue[time_tester::strings::end].asInt64());
+  EXPECT_EQ(obj["params"][application_manager::strings::correlation_id].asInt(),
+            jvalue[time_tester::strings::correlation_id].asInt64());
+  EXPECT_EQ(obj["params"][application_manager::strings::connection_key].asInt(),
+            jvalue[time_tester::strings::connection_key].asInt());
 }
 
 TEST(ApplicationManagerMetricWrapper, GetJsonMetricWithGrabResources) {
@@ -89,25 +95,33 @@ TEST(ApplicationManagerMetricWrapper, GetJsonMetricWithGrabResources) {
   end_time.tv_sec = 10;
   end_time.tv_usec = 0;
 
-  metric_test.message_metric = new application_manager::AMMetricObserver::MessageMetric();
+  metric_test.message_metric =
+      new application_manager::AMMetricObserver::MessageMetric();
   metric_test.message_metric->begin = start_time;
   metric_test.message_metric->end = end_time;
   NsSmartDeviceLink::NsSmartObjects::SmartObject obj;
   obj["params"][application_manager::strings::correlation_id] = 11;
   obj["params"][application_manager::strings::connection_key] = 12;
-  metric_test.message_metric->message = new NsSmartDeviceLink::NsSmartObjects::SmartObject(obj);
+  metric_test.message_metric->message =
+      new NsSmartDeviceLink::NsSmartObjects::SmartObject(obj);
   Json::Value jvalue = metric_test.GetJsonMetric();
 
-  EXPECT_EQ(date_time::DateTime::getuSecs(start_time), jvalue[time_tester::strings::begin].asInt64());
-  EXPECT_EQ(date_time::DateTime::getuSecs(end_time), jvalue[time_tester::strings::end].asInt64());
-  EXPECT_EQ(obj["params"][application_manager::strings::correlation_id].asInt(), jvalue[time_tester::strings::correlation_id].asInt64());
-  EXPECT_EQ(obj["params"][application_manager::strings::connection_key].asInt(), jvalue[time_tester::strings::connection_key].asInt());
+  EXPECT_EQ(date_time::DateTime::getuSecs(start_time),
+            jvalue[time_tester::strings::begin].asInt64());
+  EXPECT_EQ(date_time::DateTime::getuSecs(end_time),
+            jvalue[time_tester::strings::end].asInt64());
+  EXPECT_EQ(obj["params"][application_manager::strings::correlation_id].asInt(),
+            jvalue[time_tester::strings::correlation_id].asInt64());
+  EXPECT_EQ(obj["params"][application_manager::strings::connection_key].asInt(),
+            jvalue[time_tester::strings::connection_key].asInt());
 
-  EXPECT_EQ(date_time::DateTime::getuSecs(start_time), jvalue[time_tester::strings::begin].asInt64());
-  EXPECT_EQ(date_time::DateTime::getuSecs(end_time), jvalue[time_tester::strings::end].asInt64());
+  EXPECT_EQ(date_time::DateTime::getuSecs(start_time),
+            jvalue[time_tester::strings::begin].asInt64());
+  EXPECT_EQ(date_time::DateTime::getuSecs(end_time),
+            jvalue[time_tester::strings::end].asInt64());
 
-  EXPECT_NEAR(resources->stime, jvalue[time_tester::strings::stime].asInt(),1);
-  EXPECT_NEAR(resources->utime, jvalue[time_tester::strings::utime].asInt(),1);
+  EXPECT_NEAR(resources->stime, jvalue[time_tester::strings::stime].asInt(), 1);
+  EXPECT_NEAR(resources->utime, jvalue[time_tester::strings::utime].asInt(), 1);
   EXPECT_EQ(resources->memory, jvalue[time_tester::strings::memory].asInt());
 
   delete resources;

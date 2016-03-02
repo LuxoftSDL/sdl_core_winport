@@ -72,7 +72,7 @@ namespace test {
 namespace components {
 namespace policy {
 
-//namespace custom_str = utils::custom_string;
+// namespace custom_str = utils::custom_string;
 
 typedef std::multimap<std::string, policy_table::Rpcs&>
     UserConsentPromptToRpcsConnections;
@@ -102,8 +102,8 @@ class PolicyManagerImplTest : public ::testing::Test {
   NiceMock<MockPolicyListener> listener;
 
   void SetUp() OVERRIDE {
-	std::string str;
-	manager = new PolicyManagerImpl(str, 1, 10000);
+    std::string str;
+    manager = new PolicyManagerImpl(str, 1, 10000);
     manager->set_listener(&listener);
     cache_manager = new MockCacheManagerInterface();
     manager->set_cache_manager(cache_manager);
@@ -114,14 +114,14 @@ class PolicyManagerImplTest : public ::testing::Test {
   }
 
   ::testing::AssertionResult IsValid(const policy_table::Table& table) {
-     if (table.is_valid()) {
-       return ::testing::AssertionSuccess();
-     } else {
-       ::rpc::ValidationReport report(" - table");
-       table.ReportErrors(&report);
-       return ::testing::AssertionFailure() << ::rpc::PrettyFormat(report);
-     }
-   }
+    if (table.is_valid()) {
+      return ::testing::AssertionSuccess();
+    } else {
+      ::rpc::ValidationReport report(" - table");
+      table.ReportErrors(&report);
+      return ::testing::AssertionFailure() << ::rpc::PrettyFormat(report);
+    }
+  }
 };
 
 class PolicyManagerImplTest2 : public ::testing::Test {
@@ -184,7 +184,7 @@ class PolicyManagerImplTest2 : public ::testing::Test {
   }
 
   void CreateLocalPT(std::string file_name) {
-    //file_system::remove_directory_content("storage1");
+    // file_system::remove_directory_content("storage1");
     ASSERT_TRUE(manager->InitPT(file_name));
   }
 
@@ -312,96 +312,96 @@ class PolicyManagerImplTest2 : public ::testing::Test {
 
 Json::Value CreatePTforLoad() {
   const std::string load_table(
-  "{"
-  "\"policy_table\": {"
+      "{"
+      "\"policy_table\": {"
       "\"module_config\": {"
-          "\"preloaded_pt\": true,"
-          "\"exchange_after_x_ignition_cycles\": 10,"
-          "\"exchange_after_x_kilometers\": 100,"
-          "\"exchange_after_x_days\": 5,"
-          "\"timeout_after_x_seconds\": 500,"
-          "\"seconds_between_retries\": [10, 20, 30],"
-          "\"endpoints\": {"
-              "\"0x00\": {"
-                  "\"default\": [\"http://ford.com/cloud/default\"]"
-               "}"
-           "},"
-          "\"notifications_per_minute_by_priority\": {"
-              "\"emergency\": 1,"
-              "\"navigation\": 2,"
-              "\"VOICECOMM\": 3,"
-              "\"communication\": 4,"
-              "\"normal\": 5,"
-              "\"none\": 6"
-           "},"
-          "\"vehicle_make\" : \"MakeT\","
-          "\"vehicle_model\" : \"ModelT\","
-          "\"vehicle_year\": \"2014\""
-       "},"
-      "\"app_policies\": {"
-          "\"default\": {"
-              "\"memory_kb\": 50,"
-              "\"heart_beat_timeout_ms\": 100,"
-              "\"groups\": [\"default\"],"
-              "\"keep_context\": true,"
-              "\"steal_focus\": true,"
-              "\"priority\": \"EMERGENCY\","
-              "\"default_hmi\": \"FULL\","
-              "\"certificate\": \"sign\""
-           "},   "
-          "\"pre_DataConsent\": {"
-              "\"memory_kb\": 50,"
-              "\"heart_beat_timeout_ms\": 100,"
-              "\"groups\": [\"default\"],"
-              "\"keep_context\": true,"
-              "\"steal_focus\": true,"
-              "\"priority\": \"EMERGENCY\","
-              "\"default_hmi\": \"FULL\","
-              "\"certificate\": \"sign\""
-           "},         "
-          "\"device\": {"
-              "\"memory_kb\": 50,"
-              "\"heart_beat_timeout_ms\": 100,"
-              "\"groups\": [\"default\"],"
-              "\"keep_context\": true,"
-              "\"steal_focus\": true,"
-              "\"priority\": \"EMERGENCY\","
-              "\"default_hmi\": \"FULL\","
-              "\"certificate\": \"sign\""
-           "},"
-          "\"1234\": {"
-              "\"memory_kb\": 50,"
-              "\"heart_beat_timeout_ms\": 100,"
-              "\"groups\": [\"default\"],"
-              "\"keep_context\": true,"
-              "\"steal_focus\": true,"
-              "\"priority\": \"EMERGENCY\","
-              "\"default_hmi\": \"FULL\","
-              "\"certificate\": \"sign\""
-           "}"
-       "},"
-      "\"consumer_friendly_messages\": {"
-          "\"version\": \"1.2\""
-       "},"
-      "\"functional_groupings\": {"
-          "\"default\": {"
-              "\"rpcs\": {"
-                  "\"Update\": {"
-                      "\"hmi_levels\": [\"FULL\"],"
-                      "\"parameters\" : [\"speed\"]"
-                  "}"
-              "}"
-          "}"
+      "\"preloaded_pt\": true,"
+      "\"exchange_after_x_ignition_cycles\": 10,"
+      "\"exchange_after_x_kilometers\": 100,"
+      "\"exchange_after_x_days\": 5,"
+      "\"timeout_after_x_seconds\": 500,"
+      "\"seconds_between_retries\": [10, 20, 30],"
+      "\"endpoints\": {"
+      "\"0x00\": {"
+      "\"default\": [\"http://ford.com/cloud/default\"]"
       "}"
-    "}"
-  "}");
+      "},"
+      "\"notifications_per_minute_by_priority\": {"
+      "\"emergency\": 1,"
+      "\"navigation\": 2,"
+      "\"VOICECOMM\": 3,"
+      "\"communication\": 4,"
+      "\"normal\": 5,"
+      "\"none\": 6"
+      "},"
+      "\"vehicle_make\" : \"MakeT\","
+      "\"vehicle_model\" : \"ModelT\","
+      "\"vehicle_year\": \"2014\""
+      "},"
+      "\"app_policies\": {"
+      "\"default\": {"
+      "\"memory_kb\": 50,"
+      "\"heart_beat_timeout_ms\": 100,"
+      "\"groups\": [\"default\"],"
+      "\"keep_context\": true,"
+      "\"steal_focus\": true,"
+      "\"priority\": \"EMERGENCY\","
+      "\"default_hmi\": \"FULL\","
+      "\"certificate\": \"sign\""
+      "},   "
+      "\"pre_DataConsent\": {"
+      "\"memory_kb\": 50,"
+      "\"heart_beat_timeout_ms\": 100,"
+      "\"groups\": [\"default\"],"
+      "\"keep_context\": true,"
+      "\"steal_focus\": true,"
+      "\"priority\": \"EMERGENCY\","
+      "\"default_hmi\": \"FULL\","
+      "\"certificate\": \"sign\""
+      "},         "
+      "\"device\": {"
+      "\"memory_kb\": 50,"
+      "\"heart_beat_timeout_ms\": 100,"
+      "\"groups\": [\"default\"],"
+      "\"keep_context\": true,"
+      "\"steal_focus\": true,"
+      "\"priority\": \"EMERGENCY\","
+      "\"default_hmi\": \"FULL\","
+      "\"certificate\": \"sign\""
+      "},"
+      "\"1234\": {"
+      "\"memory_kb\": 50,"
+      "\"heart_beat_timeout_ms\": 100,"
+      "\"groups\": [\"default\"],"
+      "\"keep_context\": true,"
+      "\"steal_focus\": true,"
+      "\"priority\": \"EMERGENCY\","
+      "\"default_hmi\": \"FULL\","
+      "\"certificate\": \"sign\""
+      "}"
+      "},"
+      "\"consumer_friendly_messages\": {"
+      "\"version\": \"1.2\""
+      "},"
+      "\"functional_groupings\": {"
+      "\"default\": {"
+      "\"rpcs\": {"
+      "\"Update\": {"
+      "\"hmi_levels\": [\"FULL\"],"
+      "\"parameters\" : [\"speed\"]"
+      "}"
+      "}"
+      "}"
+      "}"
+      "}"
+      "}");
   Json::Value table(Json::objectValue);
   Json::Reader reader;
   EXPECT_TRUE(reader.parse(load_table, table));
   return table;
 }
 
-//TEST_F(PolicyManagerImplTest, GetNotificationsNumber) {
+// TEST_F(PolicyManagerImplTest, GetNotificationsNumber) {
 //  const std::string priority = "EMERGENCY";
 //  const uint32_t notif_number = 100u;
 //  EXPECT_CALL(*cache_manager, GetNotificationsNumber(priority))
@@ -410,8 +410,8 @@ Json::Value CreatePTforLoad() {
 //  EXPECT_EQ(notif_number, manager->GetNotificationsNumber(priority));
 //}
 
-//TEST_F(PolicyManagerImplTest2, GetNotificationsNumberAfterPTUpdate) {
-//  // Arrange  
+// TEST_F(PolicyManagerImplTest2, GetNotificationsNumberAfterPTUpdate) {
+//  // Arrange
 //  Json::Value table = CreatePTforLoad();
 //  policy_table::Table update(&table);
 //  update.SetPolicyTableType(rpc::policy_table_interface_base::PT_UPDATE);
@@ -502,7 +502,7 @@ TEST_F(PolicyManagerImplTest, ResetPT) {
   EXPECT_FALSE(manager->ResetPT("filename"));
 }
 
-//TEST_F(PolicyManagerImplTest, LoadPT_SetPT_PTIsLoaded) {
+// TEST_F(PolicyManagerImplTest, LoadPT_SetPT_PTIsLoaded) {
 //  // Arrange
 //  Json::Value table = CreatePTforLoad();
 //  policy_table::Table update(&table);
@@ -532,7 +532,7 @@ TEST_F(PolicyManagerImplTest, ResetPT) {
 //  EXPECT_TRUE(manager->LoadPT("file_pt_update.json", msg));
 //}
 
-//TEST_F(PolicyManagerImplTest, LoadPT_SetInvalidUpdatePT_PTIsNotLoaded) {
+// TEST_F(PolicyManagerImplTest, LoadPT_SetInvalidUpdatePT_PTIsNotLoaded) {
 //  // Arrange
 //  Json::Value table(Json::objectValue);
 //
@@ -765,14 +765,15 @@ TEST_F(PolicyManagerImplTest2,
   EXPECT_TRUE(manager->CanAppKeepContext(app_id2));
 }
 
-//TEST_F(PolicyManagerImplTest2, GetCurrentDeviceId) {
+// TEST_F(PolicyManagerImplTest2, GetCurrentDeviceId) {
 //  // Arrange
 //  EXPECT_CALL(listener, OnCurrentDeviceIdUpdateRequired(app_id2)).Times(2);
-//  EXPECT_EQ(custom_str::CustomString(""), manager->GetCurrentDeviceId(app_id2));
+//  EXPECT_EQ(custom_str::CustomString(""),
+//  manager->GetCurrentDeviceId(app_id2));
 //  EXPECT_EQ("", manager->GetCurrentDeviceId(app_id2));
 //}
 
-//TEST_F(PolicyManagerImplTest2,
+// TEST_F(PolicyManagerImplTest2,
 //       GetVehicleInfo_SetVehicleInfo_ExpectReceivedInfoCorrect) {
 //  // Arrange
 //  CreateLocalPT("sdl_preloaded_pt.json");

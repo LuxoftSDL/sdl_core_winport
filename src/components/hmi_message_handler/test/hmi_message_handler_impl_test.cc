@@ -45,9 +45,9 @@ namespace hmi_message_handler_test {
 class HMIMessageHandlerImplTest : public ::testing::Test {
  public:
   HMIMessageHandlerImplTest()
-      : mb_adapter_(NULL),
-        hmi_handler_(NULL),
-        mock_hmi_message_observer_(NULL) {}
+      : mb_adapter_(NULL)
+      , hmi_handler_(NULL)
+      , mock_hmi_message_observer_(NULL) {}
 
  protected:
   hmi_message_handler::MessageBrokerAdapter* mb_adapter_;

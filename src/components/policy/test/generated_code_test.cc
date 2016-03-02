@@ -63,7 +63,7 @@ TEST(PolicyGeneratedCodeTest, TestValidPTUpdateJsonIsValid) {
   ASSERT_TRUE(json_file.is_open());
   Json::Value valid_table;
   Json::Reader reader;
-  
+
   ASSERT_TRUE(reader.parse(json_file, valid_table));
   utils::json::JsonValueRef json_value_ptr;
   json_value_ptr.Append(valid_table);

@@ -57,7 +57,9 @@ using namespace ::transport_manager;
 
 class TransportManagerTest : public TransportManagerImpl {
  public:
-  void TestHandle(TransportAdapterEvent test_event) { Handle(test_event); }
+  void TestHandle(TransportAdapterEvent test_event) {
+    Handle(test_event);
+  }
 };
 
 class TransportManagerImplTest : public ::testing::Test {
@@ -80,13 +82,15 @@ class TransportManagerImplTest : public ::testing::Test {
 
     const unsigned int version_protocol_ = 1;
     const unsigned int kSize = 12;
-    unsigned char data[kSize] = {0x20, 0x07, 0x01, 0x00, 0x00, 0x00,
-                                 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
+    unsigned char data[kSize] = {
+        0x20, 0x07, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
     test_message_ =
         new RawMessage(connection_key_, version_protocol_, data, kSize);
   }
 
-  virtual void TearDown() { delete tm_listener; }
+  virtual void TearDown() {
+    delete tm_listener;
+  }
 
   void HandleDeviceListUpdated();
   void HandleConnection();
@@ -120,11 +124,15 @@ class TransportManagerImplTest : public ::testing::Test {
 void TransportManagerImplTest::HandleDeviceListUpdated() {
   int type = static_cast<int>(
       TransportAdapterListenerImpl::EventTypeEnum::ON_DEVICE_LIST_UPDATED);
-  const DeviceInfo dev_info(device_handle_, mac_address_, "TestDeviceName",
-                            "BTMAC");
+  const DeviceInfo dev_info(
+      device_handle_, mac_address_, "TestDeviceName", "BTMAC");
 
-  TransportAdapterEvent test_event(type, mock_adapter, dev_info.mac_address(),
-                                   application_id, test_message_, error_);
+  TransportAdapterEvent test_event(type,
+                                   mock_adapter,
+                                   dev_info.mac_address(),
+                                   application_id,
+                                   test_message_,
+                                   error_);
   dev.push_back(dev_info.mac_address());
   std::vector<DeviceInfo> vector_dev_info;
   std::vector<DeviceInfo>::iterator it = vector_dev_info.begin();
@@ -151,11 +159,15 @@ void TransportManagerImplTest::HandleDeviceListUpdated() {
 void TransportManagerImplTest::HandleConnection() {
   int type = static_cast<int>(
       TransportAdapterListenerImpl::EventTypeEnum::ON_CONNECT_DONE);
-  const DeviceInfo dev_info(device_handle_, mac_address_, "TestDeviceName",
-                            "BTMAC");
+  const DeviceInfo dev_info(
+      device_handle_, mac_address_, "TestDeviceName", "BTMAC");
 
-  TransportAdapterEvent test_event(type, mock_adapter, dev_info.mac_address(),
-                                   application_id, test_message_, error_);
+  TransportAdapterEvent test_event(type,
+                                   mock_adapter,
+                                   dev_info.mac_address(),
+                                   application_id,
+                                   test_message_,
+                                   error_);
 
   EXPECT_CALL(*mock_adapter, DeviceName(dev_info.mac_address()))
       .WillOnce(Return(dev_info.name()));
@@ -171,11 +183,15 @@ void TransportManagerImplTest::HandleConnectionFailed() {
   int type = static_cast<int>(
       TransportAdapterListenerImpl::EventTypeEnum::ON_CONNECT_FAIL);
 
-  const DeviceInfo dev_info(device_handle_, mac_address_, "TestDeviceName",
-                            "BTMAC");
+  const DeviceInfo dev_info(
+      device_handle_, mac_address_, "TestDeviceName", "BTMAC");
 
-  TransportAdapterEvent test_event(type, mock_adapter, dev_info.mac_address(),
-                                   application_id, test_message_, error_);
+  TransportAdapterEvent test_event(type,
+                                   mock_adapter,
+                                   dev_info.mac_address(),
+                                   application_id,
+                                   test_message_,
+                                   error_);
 
   EXPECT_CALL(*mock_adapter, DeviceName(dev_info.mac_address()))
       .WillOnce(Return(dev_info.name()));
@@ -190,8 +206,8 @@ void TransportManagerImplTest::HandleConnectionFailed() {
 void TransportManagerImplTest::HandleSendDone() {
   int type = static_cast<int>(
       TransportAdapterListenerImpl::EventTypeEnum::ON_SEND_DONE);
-  TransportAdapterEvent test_event(type, mock_adapter, mac_address_,
-                                   application_id, test_message_, error_);
+  TransportAdapterEvent test_event(
+      type, mock_adapter, mac_address_, application_id, test_message_, error_);
 
   EXPECT_CALL(*tm_listener, OnTMMessageSend(test_message_));
 
@@ -201,8 +217,8 @@ void TransportManagerImplTest::HandleSendDone() {
 void TransportManagerImplTest::HandleReceiveDone() {
   int type = static_cast<int>(
       TransportAdapterListenerImpl::EventTypeEnum::ON_RECEIVED_DONE);
-  TransportAdapterEvent test_event(type, mock_adapter, mac_address_,
-                                   application_id, test_message_, error_);
+  TransportAdapterEvent test_event(
+      type, mock_adapter, mac_address_, application_id, test_message_, error_);
 
   EXPECT_CALL(*tm_listener, OnTMMessageReceived(test_message_));
 
@@ -213,8 +229,8 @@ void TransportManagerImplTest::HandleSendFailed() {
   int type = static_cast<int>(
       TransportAdapterListenerImpl::EventTypeEnum::ON_SEND_FAIL);
 
-  TransportAdapterEvent test_event(type, mock_adapter, mac_address_,
-                                   application_id, test_message_, error_);
+  TransportAdapterEvent test_event(
+      type, mock_adapter, mac_address_, application_id, test_message_, error_);
 
   tm.TestHandle(test_event);
 }
@@ -223,8 +239,8 @@ void TransportManagerImplTest::HandleSearchDone() {
   int type = static_cast<int>(
       TransportAdapterListenerImpl::EventTypeEnum::ON_SEARCH_DONE);
 
-  TransportAdapterEvent test_event(type, mock_adapter, mac_address_,
-                                   application_id, test_message_, error_);
+  TransportAdapterEvent test_event(
+      type, mock_adapter, mac_address_, application_id, test_message_, error_);
 
   EXPECT_CALL(*tm_listener, OnScanDevicesFinished());
 
@@ -235,8 +251,8 @@ void TransportManagerImplTest::HandleSearchFail() {
   int type = static_cast<int>(
       TransportAdapterListenerImpl::EventTypeEnum::ON_SEARCH_FAIL);
 
-  TransportAdapterEvent test_event(type, mock_adapter, mac_address_,
-                                   application_id, test_message_, error_);
+  TransportAdapterEvent test_event(
+      type, mock_adapter, mac_address_, application_id, test_message_, error_);
 
   EXPECT_CALL(*tm_listener, OnScanDevicesFailed(_));
 
@@ -247,8 +263,8 @@ void TransportManagerImplTest::HandleFindNewApplicationsRequest() {
   int type = static_cast<int>(TransportAdapterListenerImpl::EventTypeEnum::
                                   ON_FIND_NEW_APPLICATIONS_REQUEST);
 
-  TransportAdapterEvent test_event(type, mock_adapter, mac_address_,
-                                   application_id, test_message_, error_);
+  TransportAdapterEvent test_event(
+      type, mock_adapter, mac_address_, application_id, test_message_, error_);
 
   EXPECT_CALL(*tm_listener, OnFindNewApplicationsRequest());
 
@@ -259,8 +275,8 @@ void TransportManagerImplTest::HandleConnectionClosed() {
   int type = static_cast<int>(
       TransportAdapterListenerImpl::EventTypeEnum::ON_DISCONNECT_DONE);
 
-  TransportAdapterEvent test_event(type, mock_adapter, mac_address_,
-                                   application_id, test_message_, error_);
+  TransportAdapterEvent test_event(
+      type, mock_adapter, mac_address_, application_id, test_message_, error_);
 
   EXPECT_CALL(*tm_listener, OnConnectionClosed(application_id));
 
@@ -271,8 +287,8 @@ void TransportManagerImplTest::HandleDisconnectionFailed() {
   int type = static_cast<int>(
       TransportAdapterListenerImpl::EventTypeEnum::ON_DISCONNECT_FAIL);
 
-  TransportAdapterEvent test_event(type, mock_adapter, mac_address_,
-                                   application_id, test_message_, error_);
+  TransportAdapterEvent test_event(
+      type, mock_adapter, mac_address_, application_id, test_message_, error_);
 
   EXPECT_CALL(*tm_listener, OnDisconnectFailed(device_handle_, _));
 
@@ -438,7 +454,7 @@ TEST_F(TransportManagerImplTest, SendMessageToDevice) {
   testing::Mock::AsyncVerifyAndClearExpectations(10000);
 }
 
-//TEST_F(TransportManagerImplTest, SendMessageToDevice_SendingFailed) {
+// TEST_F(TransportManagerImplTest, SendMessageToDevice_SendingFailed) {
 //  // Arrange
 //  HandleConnection();
 //
@@ -459,7 +475,7 @@ TEST_F(TransportManagerImplTest, SendMessageToDevice) {
 //  testing::Mock::AsyncVerifyAndClearExpectations(10000);
 //}
 
-//TEST_F(TransportManagerImplTest, SendMessageToDevice_StartTimeObserver) {
+// TEST_F(TransportManagerImplTest, SendMessageToDevice_StartTimeObserver) {
 //  // Arrange
 //  HandleConnection();
 //
@@ -475,7 +491,7 @@ TEST_F(TransportManagerImplTest, SendMessageToDevice) {
 //  testing::Mock::AsyncVerifyAndClearExpectations(10000);
 //}
 
-//TEST_F(TransportManagerImplTest, SendMessageToDevice_SendDone) {
+// TEST_F(TransportManagerImplTest, SendMessageToDevice_SendDone) {
 //  // Arrange
 //  HandleConnection();
 //
@@ -495,7 +511,7 @@ TEST_F(TransportManagerImplTest, SendMessageToDevice) {
 //  testing::Mock::AsyncVerifyAndClearExpectations(10000);
 //}
 
-//TEST_F(TransportManagerImplTest, SendMessageFailed_GetHandleSendFailed) {
+// TEST_F(TransportManagerImplTest, SendMessageFailed_GetHandleSendFailed) {
 //  // Arrange
 //  HandleConnection();
 //
@@ -566,8 +582,8 @@ TEST_F(TransportManagerImplTest, Reinit_InitAdapterFailed) {
 }
 
 TEST_F(TransportManagerImplTest, UpdateDeviceList_AddNewDevice) {
-  const DeviceInfo dev_info(device_handle_, mac_address_, "TestDeviceName",
-                            "BTMAC");
+  const DeviceInfo dev_info(
+      device_handle_, mac_address_, "TestDeviceName", "BTMAC");
 
   dev.push_back(dev_info.mac_address());
   std::vector<DeviceInfo> vector_dev_info;
@@ -586,8 +602,8 @@ TEST_F(TransportManagerImplTest, UpdateDeviceList_AddNewDevice) {
 }
 
 TEST_F(TransportManagerImplTest, UpdateDeviceList_RemoveDevice) {
-  const DeviceInfo dev_info(device_handle_, mac_address_, "TestDeviceName",
-                            "BTMAC");
+  const DeviceInfo dev_info(
+      device_handle_, mac_address_, "TestDeviceName", "BTMAC");
 
   dev.push_back(dev_info.mac_address());
   std::vector<DeviceInfo> vector_dev_info;
@@ -617,8 +633,8 @@ TEST_F(TransportManagerImplTest, ReceiveEventFromDevice_OnSearchDeviceDone) {
   int type = static_cast<int>(
       TransportAdapterListenerImpl::EventTypeEnum::ON_SEARCH_DONE);
 
-  TransportAdapterEvent test_event(type, mock_adapter, mac_address_,
-                                   application_id, test_message_, error_);
+  TransportAdapterEvent test_event(
+      type, mock_adapter, mac_address_, application_id, test_message_, error_);
 
   EXPECT_CALL(*tm_listener, OnScanDevicesFinished());
 
@@ -630,8 +646,8 @@ TEST_F(TransportManagerImplTest, ReceiveEventFromDevice_OnSearchDeviceFail) {
   int type = static_cast<int>(
       TransportAdapterListenerImpl::EventTypeEnum::ON_SEARCH_FAIL);
 
-  TransportAdapterEvent test_event(type, mock_adapter, mac_address_,
-                                   application_id, test_message_, error_);
+  TransportAdapterEvent test_event(
+      type, mock_adapter, mac_address_, application_id, test_message_, error_);
 
   EXPECT_CALL(*tm_listener, OnScanDevicesFailed(_));
 
@@ -642,11 +658,15 @@ TEST_F(TransportManagerImplTest, ReceiveEventFromDevice_OnSearchDeviceFail) {
 TEST_F(TransportManagerImplTest, ReceiveEventFromDevice_DeviceListUpdated) {
   int type = static_cast<int>(
       TransportAdapterListenerImpl::EventTypeEnum::ON_DEVICE_LIST_UPDATED);
-  const DeviceInfo dev_info(device_handle_, mac_address_, "TestDeviceName",
-                            "BTMAC");
+  const DeviceInfo dev_info(
+      device_handle_, mac_address_, "TestDeviceName", "BTMAC");
 
-  TransportAdapterEvent test_event(type, mock_adapter, dev_info.mac_address(),
-                                   application_id, test_message_, error_);
+  TransportAdapterEvent test_event(type,
+                                   mock_adapter,
+                                   dev_info.mac_address(),
+                                   application_id,
+                                   test_message_,
+                                   error_);
   dev.push_back(dev_info.mac_address());
   std::vector<DeviceInfo> vector_dev_info;
   std::vector<DeviceInfo>::iterator it = vector_dev_info.begin();

@@ -95,15 +95,15 @@ class HMIMessageHandlerImpl : public HMIMessageHandler,
   void AddHMIMessageAdapter(HMIMessageAdapter* adapter);
   void RemoveHMIMessageAdapter(HMIMessageAdapter* adapter);
 
-  #ifdef BUILD_TESTS
+#ifdef BUILD_TESTS
   std::set<HMIMessageAdapter*> message_adapters() const {
-      return message_adapters_;
+    return message_adapters_;
   }
 
   HMIMessageObserver* observer() const {
-      return observer_;
+    return observer_;
   }
-  #endif // BUILD_TESTS
+#endif  // BUILD_TESTS
 
  private:
   HMIMessageHandlerImpl();

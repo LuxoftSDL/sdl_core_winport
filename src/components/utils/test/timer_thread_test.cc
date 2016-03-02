@@ -49,12 +49,7 @@ using namespace sync_primitives;
 
 class TimerThreadTest : public ::testing::Test {
  public:
-  TimerThreadTest()
-      : check_val(0),
-        val1(3),
-        val2(4),
-        wait_val(3000) {
-  }
+  TimerThreadTest() : check_val(0), val1(3), val2(4), wait_val(3000) {}
 
   void function() {
     AutoLock alock(lock_);
@@ -71,10 +66,12 @@ class TimerThreadTest : public ::testing::Test {
   const uint32_t wait_val;
 };
 
-TEST_F(TimerThreadTest, StartTimerThreadWithTimeoutOneSec_ExpectSuccessfullInvokeCallbackFuncOnTimeout) {
+TEST_F(
+    TimerThreadTest,
+    StartTimerThreadWithTimeoutOneSec_ExpectSuccessfullInvokeCallbackFuncOnTimeout) {
   // Create Timer with TimerDeleagate
-  TimerThread<TimerThreadTest> timer("Test", this, &TimerThreadTest::function,
-                                     false);
+  TimerThread<TimerThreadTest> timer(
+      "Test", this, &TimerThreadTest::function, false);
   AutoLock alock(lock_);
   EXPECT_EQ(0u, check_val);
   timer.start(100);
@@ -82,10 +79,12 @@ TEST_F(TimerThreadTest, StartTimerThreadWithTimeoutOneSec_ExpectSuccessfullInvok
   EXPECT_EQ(1u, check_val);
 }
 
-TEST_F(TimerThreadTest, StartTimerThreadWithTimeoutOneSecInLoop_ExpectSuccessfullInvokeCallbackFuncOnEveryTimeout) {
+TEST_F(
+    TimerThreadTest,
+    StartTimerThreadWithTimeoutOneSecInLoop_ExpectSuccessfullInvokeCallbackFuncOnEveryTimeout) {
   // Create Timer with TimerLooperDeleagate
-  TimerThread<TimerThreadTest> timer("Test", this, &TimerThreadTest::function,
-                                     true);
+  TimerThread<TimerThreadTest> timer(
+      "Test", this, &TimerThreadTest::function, true);
   AutoLock alock(lock_);
   EXPECT_EQ(0u, check_val);
   timer.start(100);
@@ -96,10 +95,11 @@ TEST_F(TimerThreadTest, StartTimerThreadWithTimeoutOneSecInLoop_ExpectSuccessful
   EXPECT_EQ(val2, check_val);
 }
 
-TEST_F(TimerThreadTest, StopStartedTimerThreadWithTimeoutOneSecInLoop_ExpectSuccessfullStop) {
+TEST_F(TimerThreadTest,
+       StopStartedTimerThreadWithTimeoutOneSecInLoop_ExpectSuccessfullStop) {
   // Create Timer with TimerLooperDeleagate
-  TimerThread<TimerThreadTest> timer("Test", this, &TimerThreadTest::function,
-                                     true);
+  TimerThread<TimerThreadTest> timer(
+      "Test", this, &TimerThreadTest::function, true);
   AutoLock alock(lock_);
   EXPECT_EQ(0u, check_val);
   timer.start(100);
@@ -114,10 +114,12 @@ TEST_F(TimerThreadTest, StopStartedTimerThreadWithTimeoutOneSecInLoop_ExpectSucc
   EXPECT_EQ(val1, check_val);
 }
 
-TEST_F(TimerThreadTest, ChangeTimeoutForStartedTimerThreadWithTimeoutOneSecInLoop_ExpectSuccessfullStop) {
+TEST_F(
+    TimerThreadTest,
+    ChangeTimeoutForStartedTimerThreadWithTimeoutOneSecInLoop_ExpectSuccessfullStop) {
   // Create Timer with TimerLooperDeleagate
-  TimerThread<TimerThreadTest> timer("Test", this, &TimerThreadTest::function,
-                                     true);
+  TimerThread<TimerThreadTest> timer(
+      "Test", this, &TimerThreadTest::function, true);
   AutoLock alock(lock_);
   EXPECT_EQ(0u, check_val);
   timer.start(100);
@@ -133,8 +135,8 @@ TEST_F(TimerThreadTest, ChangeTimeoutForStartedTimerThreadWithTimeoutOneSecInLoo
 
 TEST_F(TimerThreadTest, CheckStartedTimerIsRunning_ExpectTrue) {
   // Create Timer with TimerLooperDeleagate
-  TimerThread<TimerThreadTest> timer("Test", this, &TimerThreadTest::function,
-                                     true);
+  TimerThread<TimerThreadTest> timer(
+      "Test", this, &TimerThreadTest::function, true);
   AutoLock alock(lock_);
   EXPECT_EQ(0u, check_val);
   timer.start(100);
@@ -150,4 +152,3 @@ TEST_F(TimerThreadTest, CheckStartedTimerIsRunning_ExpectTrue) {
 }  // namespace utils
 }  // namespace components
 }  // namespace test
-

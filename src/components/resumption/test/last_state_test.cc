@@ -55,12 +55,12 @@ class LastStateTest : public ::testing::Test {
   }
 };
 
-//TEST_F(LastStateTest, Basic) {
+// TEST_F(LastStateTest, Basic) {
 //  utils::json::JsonValue& dictionary = LastState::instance()->dictionary();
 //  EXPECT_EQ("null\n", dictionary.IsString());
 //}
 //
-//TEST_F(LastStateTest, SetGetData) {
+// TEST_F(LastStateTest, SetGetData) {
 //  {
 //	utils::json::JsonValue& dictionary = LastState::instance()->dictionary();
 //    Value bluetooth_info = dictionary["TransportManager"]["BluetoothAdapter"];
@@ -80,7 +80,8 @@ class LastStateTest : public ::testing::Test {
 //    test_value["name"] = "test_device";
 //
 //    LastState::instance()
-//        ->dictionary()["TransportManager"]["TcpAdapter"]["devices"] = test_value;
+//        ->dictionary()["TransportManager"]["TcpAdapter"]["devices"] =
+//        test_value;
 //    LastState::instance()
 //        ->dictionary()["TransportManager"]["BluetoothAdapter"]["devices"] =
 //        "bluetooth_device";

@@ -43,21 +43,20 @@ using ::utils::MessageQueue;
 class MessageQueueTest : public testing::Test {
  public:
   MessageQueueTest()
-      : test_val_1("Hello,"),
-        test_val_2("Beautiful "),
-        test_val_3("World!"),
-        test_line(""),
-        check_value(false) {
-  }
+      : test_val_1("Hello,")
+      , test_val_2("Beautiful ")
+      , test_val_3("World!")
+      , test_line("")
+      , check_value(false) {}
   void add_one_element_to_queue();
   void extract_from_queue();
   void add_three_elements_to_queue();
   void ShutDownQueue();
 
-  static void* add_one_element_to_queue_helper(void *context);
-  static void* extract_from_queue_helper(void *context);
-  static void* add_three_elements_to_queue_helper(void *context);
-  static void* ShutDownQueue_helper(void *context);
+  static void* add_one_element_to_queue_helper(void* context);
+  static void* extract_from_queue_helper(void* context);
+  static void* add_three_elements_to_queue_helper(void* context);
+  static void* ShutDownQueue_helper(void* context);
 
  protected:
   MessageQueue<std::string> test_queue;
@@ -69,20 +68,20 @@ class MessageQueueTest : public testing::Test {
 };
 
 //// Thread function - adds 1 element1 to the queue
-//void MessageQueueTest::add_one_element_to_queue() {
+// void MessageQueueTest::add_one_element_to_queue() {
 //  test_queue.push(test_val_1);
 //  pthread_exit(NULL);
 //}
 //
 //// Thread function - removes 1 element from beginning of queue
-//void MessageQueueTest::extract_from_queue() {
+// void MessageQueueTest::extract_from_queue() {
 //  test_queue.wait();
 //  test_queue.pop(test_line);
 //  pthread_exit(NULL);
 //}
 //
 //// Thread function - adds 3 elements to the queue
-//void MessageQueueTest::add_three_elements_to_queue() {
+// void MessageQueueTest::add_three_elements_to_queue() {
 //  test_queue.push(test_val_1);
 //  test_queue.push(test_val_2);
 //  test_queue.push(test_val_3);
@@ -90,25 +89,26 @@ class MessageQueueTest : public testing::Test {
 //}
 //
 //// Thread function - adds 3 elements to the queue
-//void MessageQueueTest::ShutDownQueue() {
+// void MessageQueueTest::ShutDownQueue() {
 //  check_value = true;
 //  test_queue.Shutdown();
 //  pthread_exit(NULL);
 //}
 
-//void* MessageQueueTest::add_one_element_to_queue_helper(void *context) {
+// void* MessageQueueTest::add_one_element_to_queue_helper(void *context) {
 //  (reinterpret_cast<MessageQueueTest *>(context))->add_one_element_to_queue();
 //  return NULL;
 //}
-//void* MessageQueueTest::extract_from_queue_helper(void *context) {
+// void* MessageQueueTest::extract_from_queue_helper(void *context) {
 //  (reinterpret_cast<MessageQueueTest *>(context))->extract_from_queue();
 //  return NULL;
 //}
-//void* MessageQueueTest::add_three_elements_to_queue_helper(void *context) {
-//  (reinterpret_cast<MessageQueueTest *>(context))->add_three_elements_to_queue();
+// void* MessageQueueTest::add_three_elements_to_queue_helper(void *context) {
+//  (reinterpret_cast<MessageQueueTest
+//  *>(context))->add_three_elements_to_queue();
 //  return NULL;
 //}
-//void* MessageQueueTest::ShutDownQueue_helper(void *context) {
+// void* MessageQueueTest::ShutDownQueue_helper(void *context) {
 //  (reinterpret_cast<MessageQueueTest *>(context))->ShutDownQueue();
 //  return NULL;
 //}
@@ -119,9 +119,11 @@ TEST_F(MessageQueueTest, DefaultCtorTest_ExpectEmptyQueueCreated) {
   ASSERT_EQ(test_value, test_queue.empty());
 }
 
-//TEST_F(MessageQueueTest, MessageQueuePushThreeElementsTest_ExpectThreeElementsAdded) {
+// TEST_F(MessageQueueTest,
+// MessageQueuePushThreeElementsTest_ExpectThreeElementsAdded) {
 //  pthread_t thread1;
-//  pthread_create(&thread1, NULL, &MessageQueueTest::add_three_elements_to_queue_helper, this);
+//  pthread_create(&thread1, NULL,
+//  &MessageQueueTest::add_three_elements_to_queue_helper, this);
 //  pthread_join(thread1, NULL);
 //  // check if 3 elements were added successfully
 //  ASSERT_EQ(3u, test_queue.size());
@@ -140,12 +142,15 @@ TEST_F(MessageQueueTest, NotEmptyMessageQueueResetTest_ExpectEmptyQueue) {
   ASSERT_EQ(0u, test_queue.size());
 }
 
-//TEST_F(MessageQueueTest, MessageQueuePopOneElementTest_ExpectOneElementRemovedFromQueue) {
+// TEST_F(MessageQueueTest,
+// MessageQueuePopOneElementTest_ExpectOneElementRemovedFromQueue) {
 //  pthread_t thread1;
 //  pthread_t thread2;
 //  // Creating threads with thread function mentioned above
-//  pthread_create(&thread1, NULL, &MessageQueueTest::add_one_element_to_queue_helper, this);
-//  pthread_create(&thread2, NULL, &MessageQueueTest::extract_from_queue_helper, this);
+//  pthread_create(&thread1, NULL,
+//  &MessageQueueTest::add_one_element_to_queue_helper, this);
+//  pthread_create(&thread2, NULL, &MessageQueueTest::extract_from_queue_helper,
+//  this);
 //  // Primary thread waits until thread 2 to be finished
 //  pthread_join(thread2, NULL);
 //  // Check if first element was removed successfully
@@ -154,10 +159,12 @@ TEST_F(MessageQueueTest, NotEmptyMessageQueueResetTest_ExpectEmptyQueue) {
 //  ASSERT_EQ(0u, test_queue.size());
 //}
 //
-//TEST_F(MessageQueueTest, MessageQueueShutdownTest_ExpectMessageQueueWillBeShutDown) {
+// TEST_F(MessageQueueTest,
+// MessageQueueShutdownTest_ExpectMessageQueueWillBeShutDown) {
 //  pthread_t thread1;
 //  // Creating thread with thread function mentioned above
-//  pthread_create(&thread1, NULL, &MessageQueueTest::ShutDownQueue_helper, this);
+//  pthread_create(&thread1, NULL, &MessageQueueTest::ShutDownQueue_helper,
+//  this);
 //  // Primary thread sleeps until thread1 will make queue shutdown
 //  test_queue.wait();
 //  check_value = true;

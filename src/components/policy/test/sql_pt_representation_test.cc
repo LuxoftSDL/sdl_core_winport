@@ -76,7 +76,9 @@ class SQLPTRepresentationTest : public SQLPTRepresentation,
     EXPECT_TRUE(dbms->Open());
   }
 
-  void TearDown() { EXPECT_TRUE(reps->Clear()); }
+  void TearDown() {
+    EXPECT_TRUE(reps->Clear());
+  }
 
   static void TearDownTestCase() {
     EXPECT_TRUE(reps->Drop());
@@ -86,7 +88,9 @@ class SQLPTRepresentationTest : public SQLPTRepresentation,
     dbms->Close();
   }
 
-  virtual utils::dbms::SQLDatabase* db() const { return reps->db(); }
+  virtual utils::dbms::SQLDatabase* db() const {
+    return reps->db();
+  }
 
   void GatherModuleMeta(policy_table::ModuleMeta* meta) const {
     ::SQLPTRepresentation::GatherModuleMeta(meta);
@@ -135,9 +139,12 @@ class SQLPTRepresentationTest : public SQLPTRepresentation,
   }
 
   void CheckAppPoliciesSection(
-      policy_table::ApplicationPoliciesSection& policies, uint16_t apps_size,
-      policy_table::Priority prio, const std::string& section,
-      uint16_t memory_kb, uint32_t heart_beat_timeout_ms,
+      policy_table::ApplicationPoliciesSection& policies,
+      uint16_t apps_size,
+      policy_table::Priority prio,
+      const std::string& section,
+      uint16_t memory_kb,
+      uint32_t heart_beat_timeout_ms,
       policy_table::Strings& groups) const {
     if (section != "device") {
       policy_table::ApplicationPolicies& apps = policies.apps;
@@ -323,8 +330,7 @@ class SQLPTRepresentationTest2 : public ::testing::Test {
   }
 };
 
-TEST_F(SQLPTRepresentationTest2,
-       OpenAttemptTimeOut_ExpectCorrectNumber) {
+TEST_F(SQLPTRepresentationTest2, OpenAttemptTimeOut_ExpectCorrectNumber) {
   EXPECT_EQ(::policy::FAIL, reps->Init());
   // Check  Actual attempts number made to try to open DB
   // Check timeout value correctly read from config file.
@@ -1093,10 +1099,12 @@ TEST_F(
   const policy_table::HmiLevels& hmi_levels1 = rpc_it->second.hmi_levels;
   EXPECT_EQ(3u, hmi_levels1.size());
   EXPECT_TRUE(hmi_levels1.end() !=
-              std::find(hmi_levels1.begin(), hmi_levels1.end(),
+              std::find(hmi_levels1.begin(),
+                        hmi_levels1.end(),
                         policy_table::HmiLevel::HL_BACKGROUND));
   EXPECT_TRUE(hmi_levels1.end() !=
-              std::find(hmi_levels1.begin(), hmi_levels1.end(),
+              std::find(hmi_levels1.begin(),
+                        hmi_levels1.end(),
                         policy_table::HmiLevel::HL_LIMITED));
   EXPECT_TRUE(hmi_levels1.end() != std::find(hmi_levels1.begin(),
                                              hmi_levels1.end(),
@@ -1387,7 +1395,7 @@ TEST_F(SQLPTRepresentationTest,
   update.SetPolicyTableType(rpc::policy_table_interface_base::PT_UPDATE);
 
   // Assert
-  //ASSERT_TRUE(IsValid(update));
+  // ASSERT_TRUE(IsValid(update));
   ASSERT_TRUE(reps->Save(update));
 
   // Act
@@ -1467,7 +1475,7 @@ TEST_F(SQLPTRepresentationTest, Save_SetPolicyTableThenSave_ExpectSavedToPT) {
   policy_table::UsageAndErrorCounts counts;
   GatherUsageAndErrorCounts(&counts);
   EXPECT_EQ(0u, counts.app_level->size());
-  //ASSERT_TRUE(IsValid(update));
+  // ASSERT_TRUE(IsValid(update));
   // Act
   ASSERT_TRUE(reps->Save(update));
 
@@ -1502,17 +1510,33 @@ TEST_F(SQLPTRepresentationTest, Save_SetPolicyTableThenSave_ExpectSavedToPT) {
   rpc::String<1ul, 255ul> str("default");
   policy_table::Strings groups;
   groups.push_back(str);
-  CheckAppPoliciesSection(policies, apps_size,
-                          policy_table::Priority::P_EMERGENCY, "1234", 150u,
-                          200u, groups);
-  CheckAppPoliciesSection(policies, apps_size,
-                          policy_table::Priority::P_EMERGENCY, "default", 50u,
-                          100u, groups);
-  CheckAppPoliciesSection(policies, apps_size,
+  CheckAppPoliciesSection(policies,
+                          apps_size,
                           policy_table::Priority::P_EMERGENCY,
-                          "pre_DataConsent", 40u, 90u, groups);
-  CheckAppPoliciesSection(policies, apps_size,
-                          policy_table::Priority::P_EMERGENCY, "device", 0u, 0u,
+                          "1234",
+                          150u,
+                          200u,
+                          groups);
+  CheckAppPoliciesSection(policies,
+                          apps_size,
+                          policy_table::Priority::P_EMERGENCY,
+                          "default",
+                          50u,
+                          100u,
+                          groups);
+  CheckAppPoliciesSection(policies,
+                          apps_size,
+                          policy_table::Priority::P_EMERGENCY,
+                          "pre_DataConsent",
+                          40u,
+                          90u,
+                          groups);
+  CheckAppPoliciesSection(policies,
+                          apps_size,
+                          policy_table::Priority::P_EMERGENCY,
+                          "device",
+                          0u,
+                          0u,
                           groups);
 
   CheckAppGroups("1234", groups);

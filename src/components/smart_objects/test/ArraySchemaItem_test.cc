@@ -46,11 +46,12 @@ namespace SchemaItem {
 /**
  * Test ArraySchemaItem no schema item, no min and max size
  **/
-//TEST(test_no_default_value, test_ArraySchemaItemTest) {
+// TEST(test_no_default_value, test_ArraySchemaItemTest) {
 //  using namespace NsSmartDeviceLink::NsSmartObjects;
 //  SmartObject obj;
 //
-//  ISchemaItemPtr item = CArraySchemaItem::create();  // No schema item, no min and max size
+//  ISchemaItemPtr item = CArraySchemaItem::create();  // No schema item, no min
+//  and max size
 //
 //  obj[0] = 38;
 //  obj[1] = true;
@@ -123,7 +124,7 @@ namespace SchemaItem {
  * Create ArraySchemaItem with schema item. Method validate should return true
  * only if all array elements are valid schema item objects
  **/
-//TEST(test_item_with_default_value, test_ArraySchemaItemTest) {
+// TEST(test_item_with_default_value, test_ArraySchemaItemTest) {
 //  using namespace NsSmartDeviceLink::NsSmartObjects;
 //  SmartObject obj;
 //
@@ -221,7 +222,8 @@ TEST(test_array_with_max_size, test_ArraySchemaItemTest) {
   ISchemaItemPtr item = CArraySchemaItem::create(
       CStringSchemaItem::create(TSchemaItemParameter<size_t>(),
                                 TSchemaItemParameter<size_t>(25)),
-      TSchemaItemParameter<size_t>(), TSchemaItemParameter<size_t>(3));  // No min size
+      TSchemaItemParameter<size_t>(),
+      TSchemaItemParameter<size_t>(3));  // No min size
 
   obj[0] = "Some String";
 
@@ -259,7 +261,8 @@ TEST(test_array_with_min_and_max_size, test_ArraySchemaItemTest) {
   ISchemaItemPtr item = CArraySchemaItem::create(
       CStringSchemaItem::create(TSchemaItemParameter<size_t>(),
                                 TSchemaItemParameter<size_t>(25)),
-      TSchemaItemParameter<size_t>(2), TSchemaItemParameter<size_t>(4));
+      TSchemaItemParameter<size_t>(2),
+      TSchemaItemParameter<size_t>(4));
 
   obj[0] = "Some String";
 
@@ -300,7 +303,8 @@ TEST(test_map_validate, test_ArraySchemaItemTest) {
   ISchemaItemPtr item = CArraySchemaItem::create(
       CStringSchemaItem::create(TSchemaItemParameter<size_t>(),
                                 TSchemaItemParameter<size_t>(25)),
-      TSchemaItemParameter<size_t>(2), TSchemaItemParameter<size_t>(4));
+      TSchemaItemParameter<size_t>(2),
+      TSchemaItemParameter<size_t>(4));
 
   obj["array"][0] = "Some String";
 
@@ -339,4 +343,3 @@ TEST(test_map_validate, test_ArraySchemaItemTest) {
 }  // namespace SmartObjects
 }  // namespace components
 }  // namespace test
-

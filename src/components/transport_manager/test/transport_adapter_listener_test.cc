@@ -45,9 +45,9 @@ using namespace ::transport_manager;
 class TransportAdapterListenerTest : public ::testing::Test {
  public:
   TransportAdapterListenerTest()
-      : app_handle(1),
-        dev_id("device_id"),
-        transport_listener(&tr_mock, &adapter_mock) {}
+      : app_handle(1)
+      , dev_id("device_id")
+      , transport_listener(&tr_mock, &adapter_mock) {}
 
  protected:
   const int app_handle;
@@ -70,7 +70,7 @@ MATCHER_P5(IsEvent, eventType, adapter, dev_id, app_id, data, "") {
          event.event_data == data;
 }
 
-//TEST_F(TransportAdapterListenerTest, OnCommunicationError) {
+// TEST_F(TransportAdapterListenerTest, OnCommunicationError) {
 //  EXPECT_CALL(
 //      tr_mock,
 //      ReceiveEventFromDevice(IsEvent(
@@ -79,7 +79,7 @@ MATCHER_P5(IsEvent, eventType, adapter, dev_id, app_id, data, "") {
 //  transport_listener.OnCommunicationError(&adapter_mock, dev_id, app_handle);
 //}
 //
-//TEST_F(TransportAdapterListenerTest, OnConnectDone) {
+// TEST_F(TransportAdapterListenerTest, OnConnectDone) {
 //  EXPECT_CALL(tr_mock,
 //              ReceiveEventFromDevice(IsEvent(
 //                  TransportAdapterListenerImpl::EventTypeEnum::ON_CONNECT_DONE,
@@ -88,7 +88,7 @@ MATCHER_P5(IsEvent, eventType, adapter, dev_id, app_id, data, "") {
 //  transport_listener.OnConnectDone(&adapter_mock, dev_id, app_handle);
 //}
 //
-//TEST_F(TransportAdapterListenerTest, OnConnectFailed) {
+// TEST_F(TransportAdapterListenerTest, OnConnectFailed) {
 //  ConnectError er;
 //
 //  EXPECT_CALL(tr_mock,
@@ -99,7 +99,7 @@ MATCHER_P5(IsEvent, eventType, adapter, dev_id, app_id, data, "") {
 //  transport_listener.OnConnectFailed(&adapter_mock, dev_id, app_handle, er);
 //}
 //
-//TEST_F(TransportAdapterListenerTest, OnDataReceiveDone) {
+// TEST_F(TransportAdapterListenerTest, OnDataReceiveDone) {
 //  ::protocol_handler::RawMessagePtr data_container;
 //
 //  EXPECT_CALL(tr_mock,
@@ -111,7 +111,7 @@ MATCHER_P5(IsEvent, eventType, adapter, dev_id, app_id, data, "") {
 //                                       data_container);
 //}
 //
-//TEST_F(TransportAdapterListenerTest, OnDataReceiveFailed) {
+// TEST_F(TransportAdapterListenerTest, OnDataReceiveFailed) {
 //  DataReceiveError err;
 //
 //  EXPECT_CALL(tr_mock,
@@ -123,7 +123,7 @@ MATCHER_P5(IsEvent, eventType, adapter, dev_id, app_id, data, "") {
 //                                         err);
 //}
 //
-//TEST_F(TransportAdapterListenerTest, OnDataSendDone) {
+// TEST_F(TransportAdapterListenerTest, OnDataSendDone) {
 //  unsigned char data[3] = {0x20, 0x07, 0x01};
 //  ::protocol_handler::RawMessagePtr data_container =
 //      new ::protocol_handler::RawMessage(1, 1, data, 3);
@@ -137,7 +137,7 @@ MATCHER_P5(IsEvent, eventType, adapter, dev_id, app_id, data, "") {
 //                                    data_container);
 //}
 //
-//TEST_F(TransportAdapterListenerTest, OnDataSendFailed) {
+// TEST_F(TransportAdapterListenerTest, OnDataSendFailed) {
 //  unsigned char data[3] = {0x20, 0x07, 0x01};
 //  ::protocol_handler::RawMessagePtr data_container =
 //      new ::protocol_handler::RawMessage(1, 1, data, 3);
@@ -152,7 +152,7 @@ MATCHER_P5(IsEvent, eventType, adapter, dev_id, app_id, data, "") {
 //                                      data_container, err);
 //}
 //
-//TEST_F(TransportAdapterListenerTest, OnDeviceListUpdated) {
+// TEST_F(TransportAdapterListenerTest, OnDeviceListUpdated) {
 //  EXPECT_CALL(
 //      tr_mock,
 //      ReceiveEventFromDevice(IsEvent(
@@ -161,7 +161,7 @@ MATCHER_P5(IsEvent, eventType, adapter, dev_id, app_id, data, "") {
 //  transport_listener.OnDeviceListUpdated(&adapter_mock);
 //}
 //
-//TEST_F(TransportAdapterListenerTest, OnDisconnectDeviceDone) {
+// TEST_F(TransportAdapterListenerTest, OnDisconnectDeviceDone) {
 //  EXPECT_CALL(
 //      tr_mock,
 //      ReceiveEventFromDevice(IsEvent(
@@ -170,7 +170,7 @@ MATCHER_P5(IsEvent, eventType, adapter, dev_id, app_id, data, "") {
 //  transport_listener.OnDisconnectDone(&adapter_mock, dev_id, app_handle);
 //}
 //
-//TEST_F(TransportAdapterListenerTest, OnDisconnectFailed) {
+// TEST_F(TransportAdapterListenerTest, OnDisconnectFailed) {
 //  DisconnectError err;
 //
 //  EXPECT_CALL(
@@ -178,18 +178,20 @@ MATCHER_P5(IsEvent, eventType, adapter, dev_id, app_id, data, "") {
 //      ReceiveEventFromDevice(IsEvent(
 //          TransportAdapterListenerImpl::EventTypeEnum::ON_DISCONNECT_FAIL,
 //          &adapter_mock, dev_id, app_handle))).WillOnce(Return(E_SUCCESS));
-//  transport_listener.OnDisconnectFailed(&adapter_mock, dev_id, app_handle, err);
+//  transport_listener.OnDisconnectFailed(&adapter_mock, dev_id, app_handle,
+//  err);
 //}
 //
-//TEST_F(TransportAdapterListenerTest, OnFindNewApplicationsRequest) {
+// TEST_F(TransportAdapterListenerTest, OnFindNewApplicationsRequest) {
 //  EXPECT_CALL(tr_mock, ReceiveEventFromDevice(IsEvent(
 //                           TransportAdapterListenerImpl::EventTypeEnum::
 //                               ON_FIND_NEW_APPLICATIONS_REQUEST,
-//                           &adapter_mock, "", 0))).WillOnce(Return(E_SUCCESS));
+//                           &adapter_mock, "",
+//                           0))).WillOnce(Return(E_SUCCESS));
 //  transport_listener.OnFindNewApplicationsRequest(&adapter_mock);
 //}
 //
-//TEST_F(TransportAdapterListenerTest, OnSearchDeviceDone) {
+// TEST_F(TransportAdapterListenerTest, OnSearchDeviceDone) {
 //  EXPECT_CALL(tr_mock,
 //              ReceiveEventFromDevice(IsEvent(
 //                  TransportAdapterListenerImpl::EventTypeEnum::ON_SEARCH_DONE,
@@ -197,7 +199,7 @@ MATCHER_P5(IsEvent, eventType, adapter, dev_id, app_id, data, "") {
 //  transport_listener.OnSearchDeviceDone(&adapter_mock);
 //}
 //
-//TEST_F(TransportAdapterListenerTest, OnSearchDeviceFailed) {
+// TEST_F(TransportAdapterListenerTest, OnSearchDeviceFailed) {
 //  SearchDeviceError er;
 //
 //  EXPECT_CALL(tr_mock,
@@ -207,7 +209,7 @@ MATCHER_P5(IsEvent, eventType, adapter, dev_id, app_id, data, "") {
 //  transport_listener.OnSearchDeviceFailed(&adapter_mock, er);
 //}
 //
-//TEST_F(TransportAdapterListenerTest, OnUnexpectedDisconnect) {
+// TEST_F(TransportAdapterListenerTest, OnUnexpectedDisconnect) {
 //  CommunicationError err;
 //
 //  EXPECT_CALL(

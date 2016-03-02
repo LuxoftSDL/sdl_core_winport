@@ -52,8 +52,10 @@ class MockProtocolHandler : public ::protocol_handler::ProtocolHandler {
                void(uint32_t connection_key, int32_t number_of_frames));
   MOCK_METHOD2(SendHeartBeat, void(int32_t connection_id, uint8_t session_id));
   MOCK_METHOD2(SendEndSession, void(int32_t connection_id, uint8_t session_id));
-  MOCK_METHOD3(SendEndService, void(int32_t connection_id, uint8_t session_id,
-                                    uint8_t service_type));
+  MOCK_METHOD3(SendEndService,
+               void(int32_t connection_id,
+                    uint8_t session_id,
+                    uint8_t service_type));
 };
 }  // namespace protocol_handler_test
 }  // namespace components

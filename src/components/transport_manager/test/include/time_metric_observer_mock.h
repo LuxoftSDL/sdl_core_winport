@@ -42,12 +42,10 @@ namespace test {
 namespace components {
 namespace transport_manager_test {
 
-class TMMetricObserverMock: public ::transport_manager::TMMetricObserver {
+class TMMetricObserverMock : public ::transport_manager::TMMetricObserver {
  public:
-  MOCK_METHOD1(StartRawMsg,
-               void(const protocol_handler::RawMessage* ptr));
-  MOCK_METHOD1(StopRawMsg,
-               void(const protocol_handler::RawMessage* ptr));
+  MOCK_METHOD1(StartRawMsg, void(const protocol_handler::RawMessage* ptr));
+  MOCK_METHOD1(StopRawMsg, void(const protocol_handler::RawMessage* ptr));
 };
 }  // namespace transport_manager_test
 }  // namespace components

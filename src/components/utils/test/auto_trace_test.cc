@@ -68,12 +68,12 @@ void InitLogger() {
   INIT_LOGGER("log4cxx.properties");
 }
 
-void CreateDeleteAutoTrace(const std::string & testlog) {
+void CreateDeleteAutoTrace(const std::string& testlog) {
   LOG4CXX_AUTO_TRACE(logger_);
   LOG4CXX_DEBUG(logger_, testlog);
 }
 
-bool CheckAutoTraceDebugInFile(const std::string & testlog) {
+bool CheckAutoTraceDebugInFile(const std::string& testlog) {
   bool isLogFound = false;
   std::string line;
 
@@ -100,8 +100,7 @@ void DeinitLogger() {
 }
 
 TEST(AutoTraceTest, AutoTrace_WriteToFile_ReadCorrectString) {
-  const std::string testlog =
-      "Test trace is working!";
+  const std::string testlog = "Test trace is working!";
   Preconditions();
   InitLogger();
   CreateDeleteAutoTrace(testlog);
@@ -111,7 +110,8 @@ TEST(AutoTraceTest, AutoTrace_WriteToFile_ReadCorrectString) {
   // Waiting for empty Logger MessageQueue 10 seconds
   while (LogMessageLoopThread::instance()->GetMessageQueueSize()) {
     ASSERT_LT(date_time::DateTime::calculateTimeDiff(
-        date_time::DateTime::getCurrentTime(), startTime), timeout_msec);
+                  date_time::DateTime::getCurrentTime(), startTime),
+              timeout_msec);
     threads::Thread::yield();
   }
   DeinitLogger();

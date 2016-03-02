@@ -60,7 +60,7 @@ const size_t updates_before_hour = 24;
 namespace test {
 namespace components {
 namespace ssl_context_test {
-//namespace custom_str = utils::custom_string;
+// namespace custom_str = utils::custom_string;
 
 class SSLTest : public testing::Test {
  protected:
@@ -102,7 +102,7 @@ class SSLTest : public testing::Test {
     client_ctx = client_manager->CreateSSLContext();
 
     security_manager::SSLContext::HandshakeContext ctx;
-    //ctx.make_context(custom_str::CustomString("SPT"),
+    // ctx.make_context(custom_str::CustomString("SPT"),
     //                 custom_str::CustomString("client"));
     server_ctx->SetHandshakeContext(ctx);
 
