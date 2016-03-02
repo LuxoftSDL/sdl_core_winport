@@ -1,6 +1,6 @@
 /*
  *
- * Copyright (c) 2013, Ford Motor Company
+ * Copyright (c) 2016, Ford Motor Company
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -32,19 +32,13 @@
  */
 
 #include "transport_manager/bluetooth/bluetooth_device.h"
+#include "utils/bluetooth_win/bluetooth_utils.h"
 
-#include <bluetooth/bluetooth.h>
-#include <bluetooth/hci.h>
-#include <bluetooth/hci_lib.h>
-#include <bluetooth/sdp.h>
-#include <bluetooth/sdp_lib.h>
-#include <bluetooth/rfcomm.h>
 #include <errno.h>
 #include <sys/types.h>
-
-#include <sys/socket.h>
 #include <algorithm>
 #include <limits>
+
 #include "utils/logger.h"
 
 namespace transport_manager {
@@ -76,22 +70,25 @@ bool BluetoothDevice::GetRfcommChannel(const ApplicationHandle app_handle,
   return true;
 }
 
-std::string BluetoothDevice::GetUniqueDeviceId(const bdaddr_t& device_address) {
+std::string BluetoothDevice::GetUniqueDeviceId(
+    const BLUETOOTH_DEVICE_INFO& device_address) {
   LOGGER_TRACE(
       logger_,
       "enter. device_adress: " << utils::BthDeviceAddrToStr(device_address));
   char device_address_string[32];
-  ba2str(&device_address, device_address_string);
+  sprintf(device_address_string, "%ws", device_address.szName);
   LOGGER_TRACE(logger_, "exit with BT-" << device_address_string);
   return std::string("BT-") + device_address_string;
 }
 
-BluetoothDevice::BluetoothDevice(const bdaddr_t& device_address,
+BluetoothDevice::BluetoothDevice(const BLUETOOTH_DEVICE_INFO& device_address,
                                  const char* device_name,
-                                 const RfcommChannelVector& rfcomm_channels)
+                                 const RfcommChannelVector& rfcomm_channels,
+                                 const SOCKADDR_BTH& sock_addr_bth_server)
     : Device(device_name, GetUniqueDeviceId(device_address))
     , address_(device_address)
-    , rfcomm_channels_(rfcomm_channels) {}
+    , rfcomm_channels_(rfcomm_channels)
+    , sock_addr_bth_server_(sock_addr_bth_server) {}
 
 bool BluetoothDevice::IsSameAs(const Device* other) const {
   LOGGER_TRACE(logger_, "enter. device: " << other);
@@ -103,7 +100,7 @@ bool BluetoothDevice::IsSameAs(const Device* other) const {
   if (0 != other_bluetooth_device) {
     if (0 == memcmp(&address_,
                     &other_bluetooth_device->address_,
-                    sizeof(bdaddr_t))) {
+                    sizeof(BTH_ADDR))) {
       result = true;
     }
   }

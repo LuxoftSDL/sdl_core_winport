@@ -101,7 +101,7 @@ if (${CMAKE_SYSTEM_NAME} MATCHES "Windows")
   if (BUILD_BT_SUPPORT)
     file (GLOB bt_inc ${TM_INC_DIR}/bluetooth/*.h )
     set( bt_src ${TM_SRC_DIR}/bluetooth/bluetooth_connection_factory.cc
-                ${TM_SRC_DIR}/bluetooth/bluetooth_device.cc
+                ${TM_SRC_DIR}/bluetooth/bluetooth_device_win.cc
                 ${TM_SRC_DIR}/bluetooth/bluetooth_device_scanner_win.cc
                 ${TM_SRC_DIR}/bluetooth/bluetooth_socket_connection_win.cc
                 ${TM_SRC_DIR}/bluetooth/bluetooth_transport_adapter_win.cc)
