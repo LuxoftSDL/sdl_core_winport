@@ -90,26 +90,7 @@ void BluetoothTransportAdapter::Store() const {
         utils::BthDeviceAddrToStr(bluetooth_device->address());
     JsonValue applications_dictionary;
     ApplicationList app_ids = bluetooth_device->GetApplicationList();
-    for (ApplicationList::const_iterator j = app_ids.begin();
-         j != app_ids.end();
-         ++j) {
-      ApplicationHandle app_handle = *j;
-      if (FindEstablishedConnection(bluetooth_device->unique_device_id(),
-                                    app_handle)) {
-        uint8_t rfcomm_channel;
-        bluetooth_device->GetRfcommChannel(app_handle, &rfcomm_channel);
-        JsonValue application_dictionary;
-        char rfcomm_channel_record[4];
-        sprintf(rfcomm_channel_record, "%u", rfcomm_channel);
-        application_dictionary["rfcomm_channel"] =
-            std::string(rfcomm_channel_record);
-        applications_dictionary.Append(application_dictionary);
-      }
-    }
-    if (!applications_dictionary.IsEmpty()) {
-      device_dictionary["applications"] = applications_dictionary;
-      devices_dictionary.Append(device_dictionary);
-    }
+    devices_dictionary.Append(device_dictionary);
   }
   bluetooth_adapter_dictionary["devices"] = devices_dictionary;
 
