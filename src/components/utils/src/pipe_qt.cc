@@ -116,9 +116,6 @@ void utils::Pipe::Impl::Close() {
                 "Named pipe: " << name_.toStdString() << " is not opened");
     return;
   }
-  if (client_socket_) {
-    client_socket_->disconnectFromServer();
-  }
   if (server_socket_) {
     server_socket_->close();
   }
