@@ -67,24 +67,37 @@ class BluetoothDevice : public Device {
  * @return string with device unique identifier.
  */
 #ifdef OS_WINDOWS
-  static std::string GetUniqueDeviceId(const BTH_ADDR& device_address);
+  static std::string GetUniqueDeviceId(
+      const BLUETOOTH_DEVICE_INFO& device_address);
 #else
   static std::string GetUniqueDeviceId(const bdaddr_t& device_address);
 #endif
 
-/**
- * @brief Constructor.
- *
- * @param address Bluetooth address.
- * @param name Human-readable device name.
- * @param rfcomm_channels List of RFCOMM channels where SmartDeviceLink service
- *has been discovered.
- **/
 #ifdef OS_WINDOWS
-  BluetoothDevice(const BTH_ADDR& device_address,
+  /**
+   * @brief Constructor.
+   *
+   * @param address Bluetooth address.
+   * @param name Human-readable device name.
+   * @param rfcomm_channels List of RFCOMM channels where SmartDeviceLink
+   *service
+   * @param sock_addr_bth_server reference on SOCKADDR_BTH for connect to the
+   *SmartDeviceLink service
+   *has been discovered.
+   **/
+  BluetoothDevice(const BLUETOOTH_DEVICE_INFO& device_address,
                   const char* device_name,
-                  const RfcommChannelVector& rfcomm_channels);
+                  const RfcommChannelVector& rfcomm_channels,
+                  const SOCKADDR_BTH& sock_addr_bth_server);
 #else
+  /**
+  * @brief Constructor.
+  *
+  * @param address Bluetooth address.
+  * @param name Human-readable device name.
+  * @param rfcomm_channels List of RFCOMM channels where SmartDeviceLink service
+  *has been discovered.
+  **/
   BluetoothDevice(const bdaddr_t& device_address,
                   const char* device_name,
                   const RfcommChannelVector& rfcomm_channels);
@@ -117,8 +130,11 @@ class BluetoothDevice : public Device {
  * @return Device bluetooth address.
  */
 #ifdef OS_WINDOWS
-  const BTH_ADDR& address() const {
+  const BLUETOOTH_DEVICE_INFO& address() const {
     return address_;
+  }
+  SOCKADDR_BTH getSocketBthAddr() {
+    return sock_addr_bth_server_;
   }
 #else
   const bdaddr_t& address() const {
@@ -130,7 +146,12 @@ class BluetoothDevice : public Device {
  * @brief Device bluetooth address.
  **/
 #ifdef OS_WINDOWS
-  BTH_ADDR address_;
+  BLUETOOTH_DEVICE_INFO address_;
+
+  /**
+  * @brief windows struct for bluetooth connection
+  **/
+  SOCKADDR_BTH sock_addr_bth_server_;
 #else
   bdaddr_t address_;
 #endif
