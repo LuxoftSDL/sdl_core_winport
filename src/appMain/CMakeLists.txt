@@ -178,6 +178,9 @@ add_executable(${PROJECT} ${HEADERS} ${SOURCES})
 
 if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
   target_link_libraries(${PROJECT} ws2_32 ${LIBRARIES})
+  if (BUILD_BT_SUPPORT)
+    target_link_libraries(${PROJECT} irprops ${LIBRARIES})
+  endif()
 endif()
 
 if(QT_PORT)
