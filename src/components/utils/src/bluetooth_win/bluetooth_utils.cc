@@ -251,28 +251,28 @@ std::string utils::BthAddrTostring(BTH_ADDR& address) {
 
 std::string utils::BthDeviceAddrToStr(
     const BLUETOOTH_DEVICE_INFO_STRUCT& bt_dev_info) {
-  TCHAR tmp_str[20];
+  TCHAR tmp_str[sizeof(bt_dev_info.Address.rgBytes) * 6];
   sprintf_s(tmp_str,
-            20,
+            sizeof(bt_dev_info.Address.rgBytes) * 6,
             "(%02x:%02x:%02x:%02x:%02x:%02x)",
-            utils::ToUpperASCII(bt_dev_info.Address.rgBytes[5]),
-            utils::ToUpperASCII(bt_dev_info.Address.rgBytes[4]),
-            utils::ToUpperASCII(bt_dev_info.Address.rgBytes[3]),
-            utils::ToUpperASCII(bt_dev_info.Address.rgBytes[2]),
-            utils::ToUpperASCII(bt_dev_info.Address.rgBytes[1]),
-            utils::ToUpperASCII(bt_dev_info.Address.rgBytes[0]));
+            bt_dev_info.Address.rgBytes[5],
+            bt_dev_info.Address.rgBytes[4],
+            bt_dev_info.Address.rgBytes[3],
+            bt_dev_info.Address.rgBytes[2],
+            bt_dev_info.Address.rgBytes[1],
+            bt_dev_info.Address.rgBytes[0]);
   std::string retval(tmp_str);
   for (std::string::iterator it = retval.begin(); it != retval.end(); ++it) {
-    *it = static_cast<char>(towupper(*it));
+    *it = static_cast<char>(toupper(*it));
   }
   return retval;
 }
 
 std::string utils::GuidToStr(const GUID& guid) {
-  TCHAR data[40];
+  TCHAR data[sizeof(guid) * 4];
   sprintf_s(
       data,
-      40,
+      sizeof(guid) * 4,
       "%08lX-%04hX-%04hX-%02hhX%02hhX-%02hhX%02hhX%02hhX%02hhX%02hhX%02hhX",
       utils::ToLowerASCII(guid.Data1),
       utils::ToLowerASCII(guid.Data2),
