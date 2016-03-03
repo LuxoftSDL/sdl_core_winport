@@ -2099,12 +2099,14 @@ void MessageHelper::SendSystemRequestNotification(
 
   (*content)[strings::params][strings::connection_key] = connection_key;
 
-  smart_objects::SmartObject* so = new smart_objects::SmartObject(*content);
+  commands::MessageSharedPtr message =
+      utils::MakeShared<smart_objects::SmartObject>(*content);
 #ifdef DEBUG
-  PrintSmartObject(*so);
+  PrintSmartObject(*message);
 #endif
-
-  DCHECK(ApplicationManagerImpl::instance()->ManageMobileCommand(so));
+  const bool handled =
+      ApplicationManagerImpl::instance()->ManageMobileCommand(message);
+  DCHECK(handled);
 }
 
 void MessageHelper::SendLaunchApp(uint32_t connection_key,
