@@ -112,6 +112,10 @@ bool BluetoothDevice::IsSameAs(const Device* other) const {
   return result;
 }
 
+SOCKADDR_BTH BluetoothDevice::getSocketBthAddr() {
+  return sock_addr_bth_server_;
+}
+
 ApplicationList BluetoothDevice::GetApplicationList() const {
   return ApplicationList(rfcomm_channels_.begin(), rfcomm_channels_.end());
 }

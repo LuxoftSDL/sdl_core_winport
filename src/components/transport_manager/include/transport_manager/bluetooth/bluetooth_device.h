@@ -121,13 +121,10 @@ class BluetoothDevice : public Device {
    *
    * @return Device bluetooth address.
    */
-  const BLUETOOTH_ADDR_INFO& address() const {
-    return address_;
-  }
+  const BLUETOOTH_ADDR_INFO& address() const;
+
 #if defined(OS_WINDOWS)
-  SOCKADDR_BTH getSocketBthAddr() {
-    return sock_addr_bth_server_;
-  }
+  SOCKADDR_BTH getSocketBthAddr();
 #endif
  private:
   /**
@@ -147,6 +144,10 @@ class BluetoothDevice : public Device {
   **/
   RfcommChannelVector rfcomm_channels_;
 };
+
+inline const BLUETOOTH_ADDR_INFO& BluetoothDevice::address() const {
+  return address_;
+}
 
 }  // namespace transport_adapter
 }  // namespace transport_manager
