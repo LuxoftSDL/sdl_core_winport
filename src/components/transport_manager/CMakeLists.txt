@@ -164,11 +164,11 @@ set (SOURCES
 
 if (BUILD_BT_SUPPORT)
   list (APPEND SOURCES
-  ${TM_SRC_DIR}/bluetooth/bluetooth_device_scanner.cc
-  ${TM_SRC_DIR}/bluetooth/bluetooth_transport_adapter.cc
+  ${TM_SRC_DIR}/bluetooth/bluetooth_device_scanner_posix.cc
+  ${TM_SRC_DIR}/bluetooth/bluetooth_transport_adapter_posix.cc
   ${TM_SRC_DIR}/bluetooth/bluetooth_connection_factory.cc
-  ${TM_SRC_DIR}/bluetooth/bluetooth_socket_connection.cc
-  ${TM_SRC_DIR}/bluetooth/bluetooth_device.cc
+  ${TM_SRC_DIR}/bluetooth/bluetooth_socket_connection_posix.cc
+  ${TM_SRC_DIR}/bluetooth/bluetooth_device_posix.cc
   )
 endif()
 

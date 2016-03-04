@@ -71,7 +71,7 @@ bool BluetoothDevice::GetRfcommChannel(const ApplicationHandle app_handle,
 }
 
 std::string BluetoothDevice::GetUniqueDeviceId(
-    const BLUETOOTH_DEVICE_INFO& device_address) {
+    const BLUETOOTH_ADDR_INFO& device_address) {
   LOGGER_TRACE(
       logger_,
       "enter. device_adress: " << utils::BthDeviceAddrToStr(device_address));
@@ -81,7 +81,7 @@ std::string BluetoothDevice::GetUniqueDeviceId(
   return std::string("BT-") + device_address_string;
 }
 
-BluetoothDevice::BluetoothDevice(const BLUETOOTH_DEVICE_INFO& device_address,
+BluetoothDevice::BluetoothDevice(const BLUETOOTH_ADDR_INFO& device_address,
                                  const char* device_name,
                                  const RfcommChannelVector& rfcomm_channels,
                                  const SOCKADDR_BTH& sock_addr_bth_server)

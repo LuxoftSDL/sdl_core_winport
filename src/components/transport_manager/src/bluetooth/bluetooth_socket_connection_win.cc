@@ -427,6 +427,18 @@ TransportAdapter::Error BluetoothSocketConnection::Disconnect() {
   return Notify();
 }
 
+TransportAdapterController* BluetoothSocketConnection::controller() {
+  return controller_;
+}
+
+DeviceUID BluetoothSocketConnection::device_handle() const {
+  return device_uid_;
+}
+
+ApplicationHandle BluetoothSocketConnection::application_handle() const {
+  return app_handle_;
+}
+
 void BluetoothSocketConnection::OnRead() {
   LOGGER_AUTO_TRACE(logger_);
   if (!event_handler_) {

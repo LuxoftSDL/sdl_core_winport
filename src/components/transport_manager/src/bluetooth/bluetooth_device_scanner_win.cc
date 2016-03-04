@@ -142,14 +142,14 @@ void BluetoothDeviceScanner::DoInquiry() {
       radio_info.dwSize = sizeof(radio_info);
       if (ERROR_SUCCESS != BluetoothGetRadioInfo(radio_handle, &radio_info)) {
         LOGGER_WARN(logger_,
-                    "Not find bluetooth device, See: "
+                    "Bluetooth device not found. Error: "
                         << utils::GetLastErrorMessage(GetLastError()));
         return;
       }
       HANDLE device_find =
           BluetoothFindFirstDevice(&device_search_params, &device_info);
       GUID* installed_services = &smart_device_link_service_uuid_;
-      DWORD num_services = sizeof(installed_services);
+      DWORD num_services = NULL;
       if (device_find) {
         do {
           BluetoothEnumerateInstalledServices(
@@ -344,7 +344,7 @@ bool BluetoothDeviceScanner::DiscoverSmartDeviceLinkRFCOMMChannels(
   } else {
     LOGGER_ERROR(
         logger_,
-        "Service serach error:" << utils::GetLastErrorMessage(GetLastError()));
+        "Service search error:" << utils::GetLastErrorMessage(GetLastError()));
     return false;
   }
   return true;

@@ -89,8 +89,8 @@ class BluetoothSocketConnection : public Connection,
   *
   * @return Error Information about possible reason of sending data failure.
   */
-  virtual TransportAdapter::Error SendData(
-      ::protocol_handler::RawMessagePtr message);
+  TransportAdapter::Error SendData(
+      ::protocol_handler::RawMessagePtr message) OVERRIDE;
 
   /**
   * @brief Disconnect the current connection.
@@ -102,23 +102,17 @@ class BluetoothSocketConnection : public Connection,
   /**
   * @brief Return pointer to the device adapter controller.
   */
-  TransportAdapterController* controller() {
-    return controller_;
-  }
+  TransportAdapterController* controller();
 
   /**
   * @brief Return device unique identifier.
   */
-  DeviceUID device_handle() const {
-    return device_uid_;
-  }
+  DeviceUID device_handle() const;
 
   /**
   * @brief Return handle of application.
   */
-  ApplicationHandle application_handle() const {
-    return app_handle_;
-  }
+  ApplicationHandle application_handle() const;
 
   // Implementation of the TcpConnectionEventHandler
   void OnError(int error) OVERRIDE;

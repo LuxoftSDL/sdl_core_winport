@@ -34,8 +34,13 @@
 
 std::string utils::GetLastErrorMessage(const DWORD last_error) {
   TCHAR errmsg[512];
-  if (!FormatMessage(
-          FORMAT_MESSAGE_FROM_SYSTEM, 0, last_error, 0, errmsg, 511, NULL)) {
+  if (!FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM,
+                     0,
+                     last_error,
+                     0,
+                     errmsg,
+                     sizeof(errmsg) - 1,
+                     NULL)) {
     return std::string(utils::GetLastErrorMessage(GetLastError()));
   }
   return std::string(errmsg);
@@ -55,7 +60,7 @@ void utils::ConvertBytesToUUID(const BYTE* bytes, GUID& uuid) {
 
 bool utils::HexStringToBytes(const std::string& input,
                              std::vector<uint8_t>& output) {
-  size_t count = input.size();
+  const size_t count = input.size();
   if (count == 0u || (count % 2) != 0) {
     return false;
   }
@@ -251,8 +256,8 @@ std::string utils::BthAddrTostring(BTH_ADDR& address) {
 
 std::string utils::BthDeviceAddrToStr(
     const BLUETOOTH_DEVICE_INFO_STRUCT& bt_dev_info) {
-  TCHAR tmp_str[sizeof(bt_dev_info.Address.rgBytes) * 6];
-  sprintf_s(tmp_str,
+  TCHAR address[sizeof(bt_dev_info.Address.rgBytes) * 6];
+  sprintf_s(address,
             sizeof(bt_dev_info.Address.rgBytes) * 6,
             "(%02x:%02x:%02x:%02x:%02x:%02x)",
             bt_dev_info.Address.rgBytes[5],
@@ -261,11 +266,11 @@ std::string utils::BthDeviceAddrToStr(
             bt_dev_info.Address.rgBytes[2],
             bt_dev_info.Address.rgBytes[1],
             bt_dev_info.Address.rgBytes[0]);
-  std::string retval(tmp_str);
-  for (std::string::iterator it = retval.begin(); it != retval.end(); ++it) {
+  std::string result(address);
+  for (std::string::iterator it = result.begin(); it != result.end(); ++it) {
     *it = static_cast<char>(toupper(*it));
   }
-  return retval;
+  return result;
 }
 
 std::string utils::GuidToStr(const GUID& guid) {
