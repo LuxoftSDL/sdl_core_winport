@@ -324,11 +324,6 @@ void BluetoothSocketConnection::OnCanWrite() {
   Send();
 }
 
-void ThreadedSocketConnection::OnClose() {
-  LOGGER_DEBUG(logger_, "Connection has been closed");
-  Abort();
-}
-
 bool BluetoothSocketConnection::Establish(ConnectError** error) {
   LOGGER_AUTO_TRACE(logger_);
   LOGGER_DEBUG(logger_, "error: " << error);

@@ -167,8 +167,9 @@ void BluetoothDeviceScanner::DoInquiry() {
   }
   found_devices_with_sdl_.clear();
   QueryBthProtocolInfo();
-  CheckSDLServiceOnDevices(
-      found_devices, (int)hdbluetooth_dev_find_res, &found_devices_with_sdl_);
+  CheckSDLServiceOnDevices(found_devices,
+                           reinterpret_cast<int>(hdbluetooth_dev_find_res),
+                           &found_devices_with_sdl_);
   if (found_devices_with_sdl_ != paired_devices_with_sdl_) {
     paired_devices_with_sdl_ = found_devices_with_sdl_;
     UpdateTotalDeviceList();

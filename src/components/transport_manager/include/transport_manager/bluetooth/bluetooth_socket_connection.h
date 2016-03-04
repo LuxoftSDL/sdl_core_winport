@@ -36,7 +36,14 @@
 #ifndef SRC_COMPONENTS_TRANSPORT_MANAGER_INCLUDE_TRANSPORT_MANAGER_BLUETOOTH_BLUETOOTH_SOCKET_CONNECTION_H_
 #define SRC_COMPONENTS_TRANSPORT_MANAGER_INCLUDE_TRANSPORT_MANAGER_BLUETOOTH_BLUETOOTH_SOCKET_CONNECTION_H_
 
-#include "transport_manager/transport_adapter/threaded_socket_connection.h"
+#include <queue>
+
+#include "transport_manager/transport_adapter/connection.h"
+#include "protocol/common.h"
+#include "utils/threads/thread_delegate.h"
+#include "utils/lock.h"
+#include "utils/socket.h"
+#include "utils/atomic_object.h"
 #include "utils/threads/thread_delegate.h"
 #ifdef OS_WINDOWS
 #include <ws2bth.h>
