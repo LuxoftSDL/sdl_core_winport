@@ -551,7 +551,8 @@ inline bool JsonValue::IsString() const {
 }
 
 inline bool JsonValue::IsObject() const {
-  return Type() == ValueType::OBJECT_VALUE;
+  const ValueType::Type type = Type();
+  return type == ValueType::NULL_VALUE || type == ValueType::OBJECT_VALUE;
 }
 
 inline bool JsonValue::IsNull() const {
@@ -559,7 +560,8 @@ inline bool JsonValue::IsNull() const {
 }
 
 inline bool JsonValue::IsArray() const {
-  return Type() == ValueType::ARRAY_VALUE;
+  const ValueType::Type type = Type();
+  return type == ValueType::NULL_VALUE || type == ValueType::ARRAY_VALUE;
 }
 
 inline JsonValue::iterator JsonValue::begin() {

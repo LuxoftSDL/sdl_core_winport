@@ -54,6 +54,7 @@ if(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
                 ${UTILS_INCLUDE_DIR}/utils/host_address.h
                 ${UTILS_INCLUDE_DIR}/utils/socket.h
                 ${UTILS_INCLUDE_DIR}/utils/socket_utils.h
+                ${UTILS_INCLUDE_DIR}/utils/type_traits.h
                 )
 
       set (src ${UTILS_SRC_DIR}/bitstream.cc

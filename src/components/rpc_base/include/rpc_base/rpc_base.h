@@ -38,6 +38,8 @@
 #include <string>
 #include <vector>
 
+#include "utils/type_traits.h"
+
 namespace utils {
 namespace json {
 class JsonValue;
@@ -347,22 +349,56 @@ class Nullable : public T {
  public:
   // Methods
   Nullable();
+
   explicit Nullable(dbus::MessageReader* reader);
+
   // Need const and non-const versions to beat all-type accepting constructor
   explicit Nullable(utils::json::JsonValueRef& value);
+
   explicit Nullable(const utils::json::JsonValueRef& value);
+
+  /**
+   * Creates Nullable from non nullable object
+   * @remark Should be implemented in the template itself. Otherwise the VS2010
+   * fails with error (unable to match function definition to an existing
+   * declaration).
+   */
   template <typename U>
-  explicit Nullable(const U& value);
+  explicit Nullable(
+      const U& non_nullable,
+      typename utils::type_traits::enable_if<
+          !utils::type_traits::is_base_of<Nullable, U>::value>::type* = 0)
+      : T(non_nullable), marked_null_(false) {}
+
+  /**
+   * Creates Nullable from nullable object.
+   * @remark Should be implemented in the template itself. Otherwise the VS2010
+   * fails with error (unable to match function definition to an existing
+   * declaration).
+   */
+  template <typename U>
+  explicit Nullable(
+      const U& nullable,
+      typename utils::type_traits::enable_if<
+          utils::type_traits::is_base_of<Nullable, U>::value>::type* = 0)
+      : T(nullable), marked_null_(nullable.marked_null_) {}
+
   template <typename U>
   Nullable(const utils::json::JsonValueRef& value, const U& def_value);
+
   template <typename U>
   Nullable& operator=(const U& new_val);
+
   utils::json::JsonValue ToJsonValue() const;
 
   bool is_valid() const;
+
   bool is_initialized() const;
+
   bool is_null() const;
+
   void set_to_null();
+
   void ReportErrors(ValidationReport* report) const;
 
  private:
@@ -374,23 +410,59 @@ class Stringifyable : public T {
  public:
   // Methods
   Stringifyable();
+
   explicit Stringifyable(dbus::MessageReader* reader);
+
   // Need const and non-const versions to beat all-type accepting constructor
   explicit Stringifyable(utils::json::JsonValueRef& value);
+
   explicit Stringifyable(const utils::json::JsonValueRef& value);
+
+  /**
+   * Creates Stringifyable from non stringifyable object.
+   * @remark Should be implemented in the template itself. Otherwise the VS2010
+   * fails with error (unable to match function definition to an existing
+   * declaration).
+   */
   template <typename U>
-  explicit Stringifyable(const U& value);
+  explicit Stringifyable(
+      const U& non_stringifyable,
+      typename utils::type_traits::enable_if<
+          !utils::type_traits::is_base_of<Stringifyable, U>::value>::type* = 0)
+      : T(non_nullable), predefined_string_("") {}
+
+  /**
+   * Creates Stringifyable from non stringifyable object.
+   * @remark Should be implemented in the template itself. Otherwise the VS2010
+   * fails with error (unable to match function definition to an existing
+   * declaration).
+   */
+  template <typename U>
+  explicit Stringifyable(
+      const U& stringifyable,
+      typename utils::type_traits::enable_if<
+          utils::type_traits::is_base_of<Stringifyable, U>::value>::type* = 0)
+      : T(stringifyable)
+      , predefined_string_(stringifyable.predefined_string_) {}
+
   template <typename U>
   Stringifyable(const utils::json::JsonValueRef& value, const U& def_value);
+
   template <typename U>
   Stringifyable& operator=(const U& new_val);
+
   utils::json::JsonValue ToJsonValue() const;
 
   bool is_valid() const;
+
   bool is_initialized() const;
+
   bool is_string() const;
+
   std::string get_string() const;
+
   void set_to_string(const std::string& input);
+
   void ReportErrors(ValidationReport* report) const;
 
  private:
