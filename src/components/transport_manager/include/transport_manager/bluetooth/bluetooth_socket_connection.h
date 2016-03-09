@@ -36,7 +36,15 @@
 #ifndef SRC_COMPONENTS_TRANSPORT_MANAGER_INCLUDE_TRANSPORT_MANAGER_BLUETOOTH_BLUETOOTH_SOCKET_CONNECTION_H_
 #define SRC_COMPONENTS_TRANSPORT_MANAGER_INCLUDE_TRANSPORT_MANAGER_BLUETOOTH_BLUETOOTH_SOCKET_CONNECTION_H_
 
-#include "transport_manager/transport_adapter/threaded_socket_connection.h"
+#include <queue>
+
+#include "transport_manager/transport_adapter/connection.h"
+#include "protocol/common.h"
+#include "utils/threads/thread_delegate.h"
+#include "utils/lock.h"
+#include "utils/socket.h"
+#include "utils/atomic_object.h"
+#include "utils/threads/thread_delegate.h"
 #ifdef OS_WINDOWS
 #include <ws2bth.h>
 #include <BluetoothAPIs.h>
@@ -50,7 +58,8 @@ class TransportAdapterController;
 /**
  * @brief Class responsible for communication over bluetooth sockets.
  */
-class BluetoothSocketConnection : public ThreadedSocketConnection {
+class BluetoothSocketConnection : public Connection,
+                                  public utils::TcpConnectionEventHandler {
  public:
   /**
    * @brief Constructor.
@@ -63,6 +72,7 @@ class BluetoothSocketConnection : public ThreadedSocketConnection {
                             const ApplicationHandle& app_handle,
                             TransportAdapterController* controller);
 
+  TransportAdapter::Error Start();
   /**
    * @brief Destructor.
    */
@@ -78,6 +88,94 @@ class BluetoothSocketConnection : public ThreadedSocketConnection {
    * false - connection not established.
    */
   virtual bool Establish(ConnectError** error);
+
+  /**
+  * @brief Send data frame.
+  *
+  * @param message Smart pointer to the raw message.
+  *
+  * @return Error Information about possible reason of sending data failure.
+  */
+  TransportAdapter::Error SendData(
+      ::protocol_handler::RawMessagePtr message) OVERRIDE;
+
+  /**
+  * @brief Disconnect the current connection.
+  *
+  * @return Error Information about possible reason of Disconnect failure.
+  */
+  virtual TransportAdapter::Error Disconnect();
+
+  /**
+  * @brief Return pointer to the device adapter controller.
+  */
+  TransportAdapterController* controller();
+
+  /**
+  * @brief Return device unique identifier.
+  */
+  DeviceUID device_handle() const;
+
+  /**
+  * @brief Return handle of application.
+  */
+  ApplicationHandle application_handle() const;
+
+  // Implementation of the TcpConnectionEventHandler
+  void OnError(int error) OVERRIDE;
+
+  void OnData(const uint8_t* const buffer, std::size_t buffer_size) OVERRIDE;
+
+  void OnCanWrite() OVERRIDE;
+
+  void OnClose() OVERRIDE;
+  // End of implementation
+ private:
+  class BthConnectionDelegate : public threads::ThreadDelegate {
+   public:
+    explicit BthConnectionDelegate(BluetoothSocketConnection* connection);
+    void threadMain() OVERRIDE;
+    void exitThreadMain() OVERRIDE;
+
+   private:
+    BluetoothSocketConnection* connection_;
+  };
+  void threadMain();
+  void Transmit();
+  void Finalize();
+  TransportAdapter::Error Notify();
+  bool Receive();
+  void Send();
+  void Abort();
+
+  bool Close();
+  bool IsValid() const;
+  bool Send(const char* const buffer,
+            const std::size_t size,
+            std::size_t& bytes_written);
+  void OnRead();
+  void OnWrite();
+
+  TransportAdapterController* controller_;
+
+  /**
+  * @brief Frames that must be sent to remote device.
+  **/
+  typedef std::queue<protocol_handler::RawMessagePtr> FrameQueue;
+  FrameQueue frames_to_send_;
+  mutable sync_primitives::Lock frames_to_send_mutex_;
+
+  sync_primitives::atomic_bool terminate_flag_;
+  sync_primitives::atomic_bool unexpected_disconnect_;
+
+  const DeviceUID device_uid_;
+  const ApplicationHandle app_handle_;
+
+  HANDLE notify_event_;
+  SOCKET rfcomm_socket_;
+  TcpConnectionEventHandler* event_handler_;
+
+  threads::Thread* thread_;
 };
 
 }  // namespace transport_adapter

@@ -1,6 +1,6 @@
 /*
  *
- * Copyright (c) 2013, Ford Motor Company
+ * Copyright (c) 2016, Ford Motor Company
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -32,25 +32,13 @@
  */
 
 #include "transport_manager/bluetooth/bluetooth_device.h"
-
-#ifndef OS_WINDOWS
-#include <bluetooth/bluetooth.h>
-#include <bluetooth/hci.h>
-#include <bluetooth/hci_lib.h>
-#include <bluetooth/sdp.h>
-#include <bluetooth/sdp_lib.h>
-#include <bluetooth/rfcomm.h>
-#endif
+#include "utils/bluetooth_win/bluetooth_utils.h"
 
 #include <errno.h>
 #include <sys/types.h>
-
-#ifndef OS_WINDOWS
-#include <sys/socket.h>
-#endif
-
 #include <algorithm>
 #include <limits>
+
 #include "utils/logger.h"
 
 namespace transport_manager {
@@ -82,46 +70,25 @@ bool BluetoothDevice::GetRfcommChannel(const ApplicationHandle app_handle,
   return true;
 }
 
-#ifdef OS_WINDOWS
-std::string BluetoothDevice::GetUniqueDeviceId(const BTH_ADDR& device_address) {
-#else
-std::string BluetoothDevice::GetUniqueDeviceId(const bdaddr_t& device_address) {
-#endif
-  LOGGER_TRACE(logger_, "enter. device_adress: " << &device_address);
+std::string BluetoothDevice::GetUniqueDeviceId(
+    const BLUETOOTH_ADDR_INFO& device_address) {
+  LOGGER_TRACE(
+      logger_,
+      "enter. device_adress: " << utils::BthDeviceAddrToStr(device_address));
   char device_address_string[32];
-#ifdef OS_WINDOWS
-  DWORD addrSize = sizeof(struct sockaddr_storage);
-  int addr_size = sizeof(struct sockaddr_storage);
-  int ret_val = WSAAddressToString((LPSOCKADDR)&device_address,
-                                   addr_size,
-                                   NULL,
-                                   device_address_string,
-                                   &addrSize);
-  if (ret_val != 0) {
-    LOGGER_ERROR(logger_,
-                 "WSAAddressToString() failed with error code"
-                     << WSAGetLastError());
-  }
-#else
-  ba2str(&device_address, device_address_string);
-#endif
+  sprintf(device_address_string, "%ws", device_address.szName);
   LOGGER_TRACE(logger_, "exit with BT-" << device_address_string);
   return std::string("BT-") + device_address_string;
 }
 
-#ifdef OS_WINDOWS
-BluetoothDevice::BluetoothDevice(const BTH_ADDR& device_address,
+BluetoothDevice::BluetoothDevice(const BLUETOOTH_ADDR_INFO& device_address,
                                  const char* device_name,
-                                 const RfcommChannelVector& rfcomm_channels)
-#else
-BluetoothDevice::BluetoothDevice(const bdaddr_t& device_address,
-                                 const char* device_name,
-                                 const RfcommChannelVector& rfcomm_channels)
-#endif
+                                 const RfcommChannelVector& rfcomm_channels,
+                                 const SOCKADDR_BTH& sock_addr_bth_server)
     : Device(device_name, GetUniqueDeviceId(device_address))
     , address_(device_address)
-    , rfcomm_channels_(rfcomm_channels) {
-}
+    , rfcomm_channels_(rfcomm_channels)
+    , sock_addr_bth_server_(sock_addr_bth_server) {}
 
 bool BluetoothDevice::IsSameAs(const Device* other) const {
   LOGGER_TRACE(logger_, "enter. device: " << other);
@@ -133,11 +100,7 @@ bool BluetoothDevice::IsSameAs(const Device* other) const {
   if (0 != other_bluetooth_device) {
     if (0 == memcmp(&address_,
                     &other_bluetooth_device->address_,
-#ifdef OS_WINDOWS
                     sizeof(BTH_ADDR))) {
-#else
-                    sizeof(bdaddr_t))) {
-#endif
       result = true;
     }
   }
@@ -147,6 +110,10 @@ bool BluetoothDevice::IsSameAs(const Device* other) const {
     LOGGER_TRACE(logger_, "exit with FALSE");
   }
   return result;
+}
+
+SOCKADDR_BTH BluetoothDevice::getSocketBthAddr() {
+  return sock_addr_bth_server_;
 }
 
 ApplicationList BluetoothDevice::GetApplicationList() const {

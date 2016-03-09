@@ -61,33 +61,38 @@ typedef std::vector<uint8_t> RfcommChannelVector;
  */
 class BluetoothDevice : public Device {
  public:
-/**
- * @brief Return device unique identifier.
- *
- * @return string with device unique identifier.
- */
-#ifdef OS_WINDOWS
-  static std::string GetUniqueDeviceId(const BTH_ADDR& device_address);
+#if defined(OS_WINDOWS)
+#define BLUETOOTH_ADDR_INFO BLUETOOTH_DEVICE_INFO
 #else
-  static std::string GetUniqueDeviceId(const bdaddr_t& device_address);
+#define BLUETOOTH_DEVICE_INFO bdaddr_t
 #endif
+  /**
+   * @brief Return device unique identifier.
+   *
+   * @return string with device unique identifier.
+   */
+  static std::string GetUniqueDeviceId(
+      const BLUETOOTH_ADDR_INFO& device_address);
 
-/**
- * @brief Constructor.
- *
- * @param address Bluetooth address.
- * @param name Human-readable device name.
- * @param rfcomm_channels List of RFCOMM channels where SmartDeviceLink service
- *has been discovered.
- **/
-#ifdef OS_WINDOWS
-  BluetoothDevice(const BTH_ADDR& device_address,
+  /**
+   * @brief Constructor.
+   *
+   * @param address Bluetooth address.
+   * @param name Human-readable device name.
+   * @param rfcomm_channels List of RFCOMM channels where SmartDeviceLink
+   *service
+   * @param sock_addr_bth_server reference on SOCKADDR_BTH for connect to the
+   *SmartDeviceLink service
+   *has been discovered.
+   **/
+  BluetoothDevice(const BLUETOOTH_ADDR_INFO& device_address,
                   const char* device_name,
-                  const RfcommChannelVector& rfcomm_channels);
+                  const RfcommChannelVector& rfcomm_channels
+#if defined(OS_WINDOWS)
+                  ,
+                  const SOCKADDR_BTH& sock_addr_bth_server);
 #else
-  BluetoothDevice(const bdaddr_t& device_address,
-                  const char* device_name,
-                  const RfcommChannelVector& rfcomm_channels);
+                  );
 #endif
   /**
    * @brief Compare devices.
@@ -111,35 +116,38 @@ class BluetoothDevice : public Device {
    */
   virtual ApplicationList GetApplicationList() const;
 
-/**
- * @brief Return device bluetooth address.
- *
- * @return Device bluetooth address.
- */
-#ifdef OS_WINDOWS
-  const BTH_ADDR& address() const {
-    return address_;
-  }
-#else
-  const bdaddr_t& address() const {
-    return address_;
-  }
+  /**
+   * @brief Return device bluetooth address.
+   *
+   * @return Device bluetooth address.
+   */
+  const BLUETOOTH_ADDR_INFO& address() const;
+
+#if defined(OS_WINDOWS)
+  SOCKADDR_BTH getSocketBthAddr();
 #endif
  private:
-/**
- * @brief Device bluetooth address.
- **/
-#ifdef OS_WINDOWS
-  BTH_ADDR address_;
-#else
-  bdaddr_t address_;
-#endif
   /**
-   * @brief List of RFCOMM channels where SmartDeviceLink service has been
-   *discovered.
+   * @brief Device bluetooth address.
    **/
+  BLUETOOTH_ADDR_INFO address_;
+
+#if defined(OS_WINDOWS)
+  /**
+  * @brief windows struct for bluetooth connection
+  **/
+  SOCKADDR_BTH sock_addr_bth_server_;
+#endif
+
+  /* @brief List of RFCOMM channels where SmartDeviceLink service has been
+  *discovered.
+  **/
   RfcommChannelVector rfcomm_channels_;
 };
+
+inline const BLUETOOTH_ADDR_INFO& BluetoothDevice::address() const {
+  return address_;
+}
 
 }  // namespace transport_adapter
 }  // namespace transport_manager
