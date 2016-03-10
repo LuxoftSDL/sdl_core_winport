@@ -413,15 +413,12 @@ void BluetoothDeviceScanner::Thread() {
       TimedWaitForDeviceScanRequest();
     }
   } else {  // search only on demand
-    while (true) {
+    while (!shutdown_requested_) {
       {
         sync_primitives::AutoLock auto_lock(device_scan_requested_lock_);
         while (!(device_scan_requested_ || shutdown_requested_)) {
           device_scan_requested_cv_.Wait(auto_lock);
         }
-      }
-      if (shutdown_requested_) {
-        break;
       }
       DoInquiry();
       device_scan_requested_ = false;

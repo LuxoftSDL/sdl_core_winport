@@ -176,7 +176,7 @@ void BluetoothDeviceScanner::DoInquiry() {
     controller_->FindNewApplicationsRequest();
   }
   if (found_devices.empty()) {
-    LOGGER_DEBUG(logger_, "number_of_devices < 0");
+    LOGGER_DEBUG(logger_, "No devices were found");
     controller_->SearchDeviceFailed(SearchDeviceError());
   }
 }
@@ -361,15 +361,12 @@ void BluetoothDeviceScanner::Thread() {
       TimedWaitForDeviceScanRequest();
     }
   } else {  // search only on demand
-    while (true) {
+    while (!shutdown_requested_) {
       {
         sync_primitives::AutoLock auto_lock(device_scan_requested_lock_);
         while (!(device_scan_requested_ || shutdown_requested_)) {
           device_scan_requested_cv_.Wait(auto_lock);
         }
-      }
-      if (shutdown_requested_) {
-        break;
       }
       DoInquiry();
       device_scan_requested_ = false;
