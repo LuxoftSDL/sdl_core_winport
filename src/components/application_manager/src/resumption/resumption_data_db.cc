@@ -473,8 +473,8 @@ bool ResumptionDataDB::CheckExistenceHMIId(uint32_t hmi_app_id) const {
       return true;
     }
   }
-  LOGGER_FATAL(logger_,
-               "HMI appID = " << hmi_app_id << " doesn't exist in saved data");
+  LOGGER_DEBUG(logger_,
+    "HMI appID = " << hmi_app_id << " doesn't exist in saved data");
   return false;
 }
 
