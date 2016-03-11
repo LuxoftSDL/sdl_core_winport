@@ -2,60 +2,75 @@
 
 #include <QSqlError>
 
+namespace {
+const QString kDatabaseExtension = ".sqlite";
+}  // namespace
+
 namespace utils {
 namespace dbms {
 
-SQLDatabase::SQLDatabase(const std::string& filename)
-    : databasename_(filename) {
-  db_ = QSqlDatabase::addDatabase("QSQLITE");
+SQLDatabase::SQLDatabase(const std::string& database_path,
+                         const std::string& connection_name)
+    : database_path_((database_path + kDatabaseExtension.toStdString()).c_str())
+    , connection_name_(connection_name.c_str()) {
+  db_ = QSqlDatabase::addDatabase("QSQLITE", connection_name_);
 }
 
 SQLDatabase::~SQLDatabase() {
   Close();
+  sync_primitives::AutoLock auto_lock(conn_lock_);
+  /*
+   * All database queries and connections should be destroyed
+   * before database removing. See
+   * http://doc.qt.io/qt-5/qsqldatabase.html#removeDatabase
+   */
+  db_ = QSqlDatabase();
+  QSqlDatabase::removeDatabase(connection_name_);
 }
 
 bool SQLDatabase::Open() {
-  db_.setDatabaseName(databasename_.c_str());
+  sync_primitives::AutoLock auto_lock(conn_lock_);
+  db_.setDatabaseName(database_path_);
   return db_.open();
 }
 
 void SQLDatabase::Close() {
-  db_.close();
+  sync_primitives::AutoLock auto_lock(conn_lock_);
+  if (db_.isOpen()) {
+    db_.close();
+  }
 }
 
 bool SQLDatabase::BeginTransaction() {
+  sync_primitives::AutoLock auto_lock(conn_lock_);
   return db_.transaction();
 }
 
 bool SQLDatabase::CommitTransaction() {
+  sync_primitives::AutoLock auto_lock(conn_lock_);
   return db_.commit();
 }
 
 bool SQLDatabase::RollbackTransaction() {
+  sync_primitives::AutoLock auto_lock(conn_lock_);
   return db_.rollback();
 }
 
 SQLError SQLDatabase::LastError() const {
+  sync_primitives::AutoLock auto_lock(conn_lock_);
   return SQLError(db_.lastError());
 }
 
 bool SQLDatabase::HasErrors() const {
+  sync_primitives::AutoLock auto_lock(conn_lock_);
   return db_.lastError().type() != QSqlError::NoError;
 }
 
-void SQLDatabase::set_path(const std::string& path) {
-  databasename_ = path + databasename_;
-}
-
 std::string SQLDatabase::get_path() const {
-  return databasename_;
+  return database_path_.toStdString();
 }
 
 bool SQLDatabase::IsReadWrite() {
-  return true;
-}
-
-bool SQLDatabase::Backup() {
   return true;
 }
 
@@ -63,7 +78,7 @@ SQLDatabase::operator QSqlDatabase() const {
   return db_;
 }
 
-bool SQLDatabase::Exec(const std::string& query) {
+bool SQLDatabase::Backup() {
   return true;
 }
 
