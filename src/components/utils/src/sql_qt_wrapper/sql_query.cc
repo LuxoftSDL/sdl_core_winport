@@ -63,16 +63,35 @@ void PreparePullValue(QSqlQuery& query) {
 
 }  // namespace
 
-SQLQuery::SQLQuery(SQLDatabase* db) : query_(static_cast<QSqlDatabase>(*db)) {}
+SQLQuery::SQLQuery(SQLDatabase* db)
+    : query_(static_cast<QSqlDatabase>(*db)), queries_cache_() {}
 
-SQLQuery::~SQLQuery() {}
+SQLQuery::~SQLQuery() {
+  Finalize();
+}
 
 bool SQLQuery::Prepare(const std::string& query) {
-  return query_.prepare(query.c_str());
+  Finalize();
+  const QStringList& list = SplitQuery(query);
+  if (1 == list.size()) {
+    return query_.prepare(list[0]);
+  }
+  queries_cache_ = list;
+  return true;
 }
 
 bool SQLQuery::Exec() {
-  return query_.exec();
+  if (queries_cache_.empty()) {
+    return query_.exec();
+  }
+  foreach (QString q, queries_cache_) {
+    if (!query_.exec(q)) {
+      queries_cache_.clear();
+      return false;
+    }
+  }
+  queries_cache_.clear();
+  return true;
 }
 
 bool SQLQuery::Next() {
@@ -93,17 +112,15 @@ bool SQLQuery::Reset() {
 }
 
 void SQLQuery::Finalize() {
+  queries_cache_.clear();
   query_.finish();
 }
 
 bool SQLQuery::Exec(const std::string& query) {
-  QString qstr = QString::fromStdString(query);
-  // QSqlQuery is unable to process several statements
-  // in one string, so need to split queries and execute them one by one
-  QStringList list = qstr.split(";", QString::SkipEmptyParts);
-  foreach (QString q, list) {
-    if (!query_.exec(q))
+  foreach (QString q, SplitQuery(query)) {
+    if (!query_.exec(q)) {
       return false;
+    }
   }
   return true;
 }
@@ -190,6 +207,13 @@ SQLError SQLQuery::LastError() const {
 int64_t SQLQuery::LastInsertId() const {
   const QVariant val = query_.lastInsertId();
   return val.toLongLong();
+}
+
+QStringList SQLQuery::SplitQuery(const std::string& query) const {
+  // QSqlQuery is unable to process several statements
+  // in one string, so need to split queries and execute them one by one
+  QString qstr = QString::fromStdString(query).trimmed();
+  return qstr.split(";", QString::SkipEmptyParts);
 }
 
 }  // namespace dbms

@@ -16,8 +16,8 @@ namespace dbms {
  */
 class SQLDatabase {
  public:
-  SQLDatabase();
-  explicit SQLDatabase(const std::string& filename);
+  SQLDatabase(const std::string& database_path,
+              const std::string& connection_name);
   ~SQLDatabase();
 
   /**
@@ -63,12 +63,6 @@ class SQLDatabase {
   bool HasErrors() const;
 
   /**
-   * Sets path to database
-   * If the database is already opened then need reopen it
-   */
-  void set_path(const std::string& path);
-
-  /**
    * @brief get_path databse location path.
    *
    * @return the path to the database location
@@ -88,41 +82,23 @@ class SQLDatabase {
 
   operator QSqlDatabase() const;
 
- protected:
  private:
   QSqlDatabase db_;
-  /**
-   * Lock for guarding connection to database
-   */
-  sync_primitives::Lock conn_lock_;
 
   /**
    * The filename of database
    */
-  std::string databasename_;
+  const QString database_path_;
 
   /**
-   * The last error that occurred on the database
+   * The database connection name
    */
-  int error_;
+  const QString connection_name_;
 
   /**
-   *  The temporary in-memory database
-   *  @see SQLite manual
+   * Lock for guarding connection to database
    */
-  static const std::string kInMemory;
-
-  /**
-   * The extension of filename of database
-   */
-  static const std::string kExtension;
-
-  /**
-   * Execs query for internal using in this class
-   * @param query sql query without return results
-   * @return true if query was executed successfully
-   */
-  inline bool Exec(const std::string& query);
+  mutable sync_primitives::Lock conn_lock_;
 };
 
 }  // namespace dbms
