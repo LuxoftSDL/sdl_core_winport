@@ -120,13 +120,18 @@ void BluetoothDeviceScanner::UpdateTotalDeviceList() {
 
 void BluetoothDeviceScanner::DoInquiry() {
   HANDLE radio_handle;
-  BLUETOOTH_FIND_RADIO_PARAMS bluetooth_seraach_param = {
-      sizeof(bluetooth_seraach_param)};
+  BLUETOOTH_FIND_RADIO_PARAMS bluetooth_find_param = {
+      sizeof(bluetooth_find_param)};
+  bluetooth_find_param.dwSize = sizeof(bluetooth_find_param);
   HBLUETOOTH_RADIO_FIND hdbluetooth_dev_find_res =
-      BluetoothFindFirstRadio(&bluetooth_seraach_param, &radio_handle);
+      BluetoothFindFirstRadio(&bluetooth_find_param, &radio_handle);
+
+  if (!hdbluetooth_dev_find_res) {
+    LOGGER_ERROR(logger_, "Failed to find first radio: " << GetLastError());
+    return;
+  }
 
   std::vector<BLUETOOTH_DEVICE_INFO> found_devices;
-  int number_of_devices = -1;
   BLUETOOTH_DEVICE_INFO_STRUCT device_info;
   device_info.dwSize = sizeof(device_info);
   BLUETOOTH_DEVICE_SEARCH_PARAMS device_search_params;
@@ -136,6 +141,7 @@ void BluetoothDeviceScanner::DoInquiry() {
   device_search_params.fReturnAuthenticated = true;
   device_search_params.fReturnConnected = true;
   device_search_params.hRadio = radio_handle;
+
   if (hdbluetooth_dev_find_res) {
     do {
       BLUETOOTH_RADIO_INFO radio_info;
