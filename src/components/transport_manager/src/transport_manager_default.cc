@@ -59,17 +59,16 @@ int TransportManagerDefault::Init() {
     return E_TM_IS_NOT_INITIALIZED;
   }
   transport_adapter::TransportAdapterImpl* ta;
-#ifdef BLUETOOTH_SUPPORT
 
-  ta = new transport_adapter::BluetoothTransportAdapter;
-
+#if defined(USB_SUPPORT)
+  ta = new transport_adapter::UsbAoaAdapter();
 #ifdef TIME_TESTER
   if (metric_observer_) {
     ta->SetTimeMetricObserver(metric_observer_);
   }
 #endif  // TIME_TESTER
   AddTransportAdapter(ta);
-#endif
+#endif  // USB_SUPPORT
 
   uint16_t port =
       profile::Profile::instance()->transport_manager_tcp_adapter_port();
@@ -81,15 +80,15 @@ int TransportManagerDefault::Init() {
 #endif  // TIME_TESTER
   AddTransportAdapter(ta);
 
-#if defined(USB_SUPPORT)
-  ta = new transport_adapter::UsbAoaAdapter();
+#ifdef BLUETOOTH_SUPPORT
+  ta = new transport_adapter::BluetoothTransportAdapter;
 #ifdef TIME_TESTER
   if (metric_observer_) {
     ta->SetTimeMetricObserver(metric_observer_);
   }
 #endif  // TIME_TESTER
   AddTransportAdapter(ta);
-#endif  // USB_SUPPORT
+#endif  // BLUETOOTH_SUPPORT
 
   LOGGER_TRACE(logger_, "exit with E_SUCCESS");
   return E_SUCCESS;

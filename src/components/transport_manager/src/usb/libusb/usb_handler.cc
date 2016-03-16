@@ -262,12 +262,7 @@ int LIBUSB_CALL LeftCallback(libusb_context* context,
 
 TransportAdapter::Error UsbHandler::Init() {
   LOGGER_TRACE(logger_, "enter");
-  if (!libusb_context_) {
-    LOGGER_ERROR(logger_,
-                 "libusb context is NULL. "
-                 "Exit with TransportAdapter::FAIL.");
-    return TransportAdapter::FAIL;
-  }
+
   int libusb_ret = libusb_init(&libusb_context_);
 
   if (LIBUSB_SUCCESS != libusb_ret) {
