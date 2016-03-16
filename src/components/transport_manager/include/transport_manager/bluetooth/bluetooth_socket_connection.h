@@ -58,8 +58,7 @@ class TransportAdapterController;
 /**
  * @brief Class responsible for communication over bluetooth sockets.
  */
-class BluetoothSocketConnection : public Connection,
-                                  public utils::TcpConnectionEventHandler {
+class BluetoothSocketConnection : public Connection {
  public:
   /**
    * @brief Constructor.
@@ -121,15 +120,6 @@ class BluetoothSocketConnection : public Connection,
   */
   ApplicationHandle application_handle() const;
 
-  // Implementation of the TcpConnectionEventHandler
-  void OnError(int error) OVERRIDE;
-
-  void OnData(const uint8_t* const buffer, std::size_t buffer_size) OVERRIDE;
-
-  void OnCanWrite() OVERRIDE;
-
-  void OnClose() OVERRIDE;
-  // End of implementation
  private:
   class BthConnectionDelegate : public threads::ThreadDelegate {
    public:
@@ -140,6 +130,11 @@ class BluetoothSocketConnection : public Connection,
    private:
     BluetoothSocketConnection* connection_;
   };
+  void OnError(int error);
+  void OnData(const uint8_t* const buffer, std::size_t buffer_size);
+  void OnCanWrite();
+  void OnClose();
+
   void threadMain();
   void Transmit();
   void Finalize();
@@ -173,7 +168,6 @@ class BluetoothSocketConnection : public Connection,
 
   HANDLE notify_event_;
   SOCKET rfcomm_socket_;
-  TcpConnectionEventHandler* event_handler_;
 
   threads::Thread* thread_;
 };
