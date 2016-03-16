@@ -87,8 +87,7 @@ BluetoothSocketConnection::BluetoothSocketConnection(
     , unexpected_disconnect_(false)
     , device_uid_(device_uid)
     , app_handle_(app_handle)
-    , notify_event_(NULL)
-    , event_handler_(this) {
+    , notify_event_(NULL) {
   const std::string thread_name = std::string("Socket ") + device_handle();
   thread_ = threads::CreateThread(thread_name.c_str(),
                                   new BthConnectionDelegate(this));
@@ -306,10 +305,7 @@ bool BluetoothSocketConnection::IsValid() const {
 
 void BluetoothSocketConnection::OnError(int error) {
   LOGGER_ERROR(logger_, "Connection error: " << error);
-  if (!event_handler_) {
-    return;
-  }
-  event_handler_->OnError(error);
+  Abort();
 }
 
 void BluetoothSocketConnection::OnData(const uint8_t* const buffer,
@@ -436,9 +432,6 @@ ApplicationHandle BluetoothSocketConnection::application_handle() const {
 
 void BluetoothSocketConnection::OnRead() {
   LOGGER_AUTO_TRACE(logger_);
-  if (!event_handler_) {
-    return;
-  }
   const std::size_t buffer_size = 4096u;
   char buffer[buffer_size];
   int bytes_read = -1;
@@ -450,7 +443,7 @@ void BluetoothSocketConnection::OnRead() {
                    "Received " << bytes_read << " bytes from socket "
                                << rfcomm_socket_);
       uint8_t* casted_buffer = reinterpret_cast<uint8_t*>(buffer);
-      event_handler_->OnData(casted_buffer, bytes_read);
+      OnData(casted_buffer, bytes_read);
     } else if (bytes_read < 0) {
       int socket_error = WSAGetLastError();
       if (bytes_read == SOCKET_ERROR && WSAEWOULDBLOCK != socket_error) {
@@ -470,17 +463,11 @@ void BluetoothSocketConnection::OnRead() {
 }
 
 void BluetoothSocketConnection::OnWrite() {
-  if (!event_handler_) {
-    return;
-  }
-  event_handler_->OnCanWrite();
+  OnCanWrite();
 }
 
 void BluetoothSocketConnection::OnClose() {
-  if (!event_handler_) {
-    return;
-  }
-  event_handler_->OnClose();
+  Abort();
 }
 
 ////////////////////////////////////////////////////////////////////////////////
