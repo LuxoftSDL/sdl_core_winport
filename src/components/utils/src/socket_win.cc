@@ -413,10 +413,14 @@ utils::TcpSocketConnection::TcpSocketConnection() {}
 
 utils::TcpSocketConnection::~TcpSocketConnection() {}
 
-// This must be implemented since default assign operator takes const arg
+utils::TcpSocketConnection::TcpSocketConnection(
+    const TcpSocketConnection& rhs) {
+  impl_ = const_cast<TcpSocketConnection&>(rhs).impl_;
+}
+
 utils::TcpSocketConnection& utils::TcpSocketConnection::operator=(
-    TcpSocketConnection& rhs) {
-  impl_ = rhs.impl_;
+    const TcpSocketConnection& rhs) {
+  impl_ = const_cast<TcpSocketConnection&>(rhs).impl_;
   return *this;
 }
 
@@ -614,13 +618,6 @@ utils::TcpSocketConnection utils::TcpServerSocket::Impl::Accept() {
 utils::TcpServerSocket::TcpServerSocket() {}
 
 utils::TcpServerSocket::~TcpServerSocket() {}
-
-// This must be implemented since default assign operator takes const arg
-utils::TcpServerSocket& utils::TcpServerSocket::operator=(
-    TcpServerSocket& rhs) {
-  impl_ = rhs.impl_;
-  return *this;
-}
 
 bool utils::TcpServerSocket::IsListening() const {
   return impl_->IsListening();
