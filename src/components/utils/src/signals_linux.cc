@@ -94,8 +94,7 @@ void WaitForSdlExecute() {
   pause();
 }
 
-void CreateSdlEvent() {
-}
+void CreateSdlEvent() {}
 
 void SubscribeToTerminationSignals() {
   if (!SubscribeToInterruptSignal(&SigHandler) ||
