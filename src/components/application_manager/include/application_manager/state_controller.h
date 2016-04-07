@@ -47,7 +47,7 @@ namespace application_manager {
 
 class StateController : public event_engine::EventObserver {
  public:
-  StateController(ApplicationManager* app_mngr);
+  explicit StateController(ApplicationManager* app_mngr);
 
   /**
    * @brief SetRegularState setup regular hmi state, that will appear if no
