@@ -60,8 +60,7 @@ CREATE_LOGGERPTR_GLOBAL(logger_, "CacheManager")
       LOGGER_WARN(logger_, "The cache manager is not initialized"); \
       return return_value;                                          \
     }                                                               \
-  \
-}
+  }
 
 #define CACHE_MANAGER_CHECK_VOID()                                  \
   {                                                                 \
@@ -69,8 +68,7 @@ CREATE_LOGGERPTR_GLOBAL(logger_, "CacheManager")
       LOGGER_WARN(logger_, "The cache manager is not initialized"); \
       return;                                                       \
     }                                                               \
-  \
-}
+  }
 
 struct LanguageFinder {
   LanguageFinder(const std::string& language) : language_(language) {}
