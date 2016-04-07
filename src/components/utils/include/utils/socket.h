@@ -62,7 +62,15 @@ class TcpSocketConnection {
 
   ~TcpSocketConnection();
 
-  TcpSocketConnection& operator=(TcpSocketConnection& rhs);
+  /*
+   * We should implement copy constructor and assignment operator
+   * with const argument for TcpSocketConnection class because
+   * Accept() method of TcpServerSocket requires them to be able
+   * to return copy of TcpServerSocket instance
+   */
+  TcpSocketConnection(const TcpSocketConnection& rhs);
+
+  TcpSocketConnection& operator=(const TcpSocketConnection& rhs);
 
   bool Send(const char* const buffer,
             const std::size_t size,
@@ -112,8 +120,6 @@ class TcpServerSocket {
   TcpServerSocket();
 
   ~TcpServerSocket();
-
-  TcpServerSocket& operator=(TcpServerSocket& rhs);
 
   bool IsListening() const;
 

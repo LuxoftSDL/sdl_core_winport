@@ -51,7 +51,8 @@ bool IsStatusChanged(HmiStatePtr old_state, HmiStatePtr new_state) {
   return false;
 }
 
-StateController::StateController() : EventObserver() {
+StateController::StateController(ApplicationManager* app_mngr)
+    : EventObserver(), app_mngr_(app_mngr) {
   subscribe_on_event(hmi_apis::FunctionID::BasicCommunication_OnAppActivated);
   subscribe_on_event(hmi_apis::FunctionID::BasicCommunication_OnAppDeactivated);
   subscribe_on_event(hmi_apis::FunctionID::BasicCommunication_OnEmergencyEvent);

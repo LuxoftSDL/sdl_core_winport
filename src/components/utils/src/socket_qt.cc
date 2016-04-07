@@ -371,10 +371,14 @@ utils::TcpSocketConnection::TcpSocketConnection() {}
 
 utils::TcpSocketConnection::~TcpSocketConnection() {}
 
-// This must be implemented since default assign operator takes const arg
+utils::TcpSocketConnection::TcpSocketConnection(
+    const TcpSocketConnection& rhs) {
+  impl_->Copy(const_cast<TcpSocketConnection&>(rhs));
+}
+
 utils::TcpSocketConnection& utils::TcpSocketConnection::operator=(
-    TcpSocketConnection& rhs) {
-  impl_->Copy(rhs);
+    const TcpSocketConnection& rhs) {
+  impl_->Copy(const_cast<TcpSocketConnection&>(rhs));
   return *this;
 }
 
@@ -531,14 +535,6 @@ utils::TcpSocketConnection utils::TcpServerSocket::Impl::Accept() {
 utils::TcpServerSocket::TcpServerSocket() {}
 
 utils::TcpServerSocket::~TcpServerSocket() {}
-
-// This must be implemented since default assign operator takes const arg
-utils::TcpServerSocket& utils::TcpServerSocket::operator=(
-    TcpServerSocket& rhs) {
-  LOGGER_AUTO_TRACE(logger_);
-  impl_ = rhs.impl_;
-  return *this;
-}
 
 bool utils::TcpServerSocket::IsListening() const {
   return impl_->IsListening();

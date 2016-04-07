@@ -223,6 +223,7 @@ class ApplicationManagerImpl
 
   /////////////////////////////////////////////////////
 
+  DataAccessor<ApplicationSet> applications() const OVERRIDE;
   ApplicationSharedPtr application(uint32_t app_id) const;
   ApplicationSharedPtr application_by_policy_id(
       const std::string& policy_app_id) const;
@@ -970,13 +971,6 @@ class ApplicationManagerImpl
   bool IsApplicationForbidden(uint32_t connection_key,
                               const std::string& mobile_app_id);
 
-  struct ApplicationsAppIdSorter {
-    bool operator()(const ApplicationSharedPtr lhs,
-                    const ApplicationSharedPtr rhs) {
-      return lhs->app_id() < rhs->app_id();
-    }
-  };
-
   struct ApplicationsMobileAppIdSorter {
     bool operator()(const ApplicationSharedPtr lhs,
                     const ApplicationSharedPtr rhs) {
@@ -988,7 +982,6 @@ class ApplicationManagerImpl
   };
 
   // typedef for Applications list
-  typedef std::set<ApplicationSharedPtr, ApplicationsAppIdSorter> ApplictionSet;
 
   typedef std::multiset<ApplicationSharedPtr, ApplicationsMobileAppIdSorter>
       AppsWaitRegistrationSet;
@@ -996,10 +989,10 @@ class ApplicationManagerImpl
   typedef std::set<std::string> ForbiddenApps;
 
   // typedef for Applications list iterator
-  typedef ApplictionSet::iterator ApplictionSetIt;
+  typedef ApplicationSet::iterator ApplicationSetIt;
 
   // typedef for Applications list const iterator
-  typedef ApplictionSet::const_iterator ApplictionSetConstIt;
+  typedef ApplicationSet::const_iterator ApplicationSetConstIt;
 
   DataAccessor<AppsWaitRegistrationSet> apps_waiting_for_registration() const;
   ApplicationConstSharedPtr waiting_app(const uint32_t hmi_id) const;
@@ -1007,13 +1000,13 @@ class ApplicationManagerImpl
   /**
    * Class for thread-safe access to applications list
    */
-  class ApplicationListAccessor : public DataAccessor<ApplictionSet> {
+  class ApplicationListAccessor : public DataAccessor<ApplicationSet> {
    public:
     /**
      * @brief ApplicationListAccessor class constructor
      */
     ApplicationListAccessor()
-        : DataAccessor<ApplictionSet>(
+        : DataAccessor<ApplicationSet>(
               ApplicationManagerImpl::instance()->applications_,
               ApplicationManagerImpl::instance()->applications_list_lock_) {}
 
@@ -1023,22 +1016,22 @@ class ApplicationManagerImpl
      * @brief thread-safe getter for applications
      * @return applications list
      */
-    const ApplictionSet& applications() const {
+    const ApplicationSet& applications() const {
       return GetData();
     }
 
-    ApplictionSetConstIt begin() {
+    ApplicationSetConstIt begin() {
       return applications().begin();
     }
 
-    ApplictionSetConstIt end() {
+    ApplicationSetConstIt end() {
       return applications().end();
     }
 
     template <class UnaryPredicate>
     ApplicationSharedPtr Find(UnaryPredicate finder) {
       ApplicationSharedPtr result;
-      ApplictionSetConstIt it = std::find_if(begin(), end(), finder);
+      ApplicationSetConstIt it = std::find_if(begin(), end(), finder);
       if (it != end()) {
         result = *it;
       }
@@ -1048,7 +1041,7 @@ class ApplicationManagerImpl
     template <class UnaryPredicate>
     std::vector<ApplicationSharedPtr> FindAll(UnaryPredicate finder) {
       std::vector<ApplicationSharedPtr> result;
-      ApplictionSetConstIt it = std::find_if(begin(), end(), finder);
+      ApplicationSetConstIt it = std::find_if(begin(), end(), finder);
       while (it != end()) {
         result.push_back(*it);
         it = std::find_if(++it, end(), finder);
@@ -1401,7 +1394,7 @@ class ApplicationManagerImpl
   /**
    * @brief List of applications
    */
-  ApplictionSet applications_;
+  ApplicationSet applications_;
   AppsWaitRegistrationSet apps_to_register_;
   ForbiddenApps forbidden_applications;
 

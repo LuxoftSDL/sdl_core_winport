@@ -114,21 +114,21 @@ class SQLDatabase {
   bool Backup();
 
  protected:
-#if defined WIN_NATIVE
+#ifndef QT_PORT
   /**
     * Gets connection to the SQLite database
     * @return pointer to connection
     */
   sqlite3* conn() const;
-#endif  // WIN_NATIVE
+#endif  // QT_PORT
 
  private:
-#if defined WIN_NATIVE
+#ifndef QT_PORT
   /**
    * The connection to the SQLite database
    */
   sqlite3* conn_;
-#endif  // WIN_NATIVE
+#endif  // QT_PORT
 
   /**
    * Lock for guarding connection to database

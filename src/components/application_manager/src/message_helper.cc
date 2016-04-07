@@ -2689,7 +2689,7 @@ bool MessageHelper::PrintSmartObject(const smart_objects::SmartObject& object) {
       break;
     }
     case NsSmartDeviceLink::NsSmartObjects::SmartType_Integer:
-      printf("%I64", object.asInt64());
+      printf("%ld", object.asInt64());
       break;
     case NsSmartDeviceLink::NsSmartObjects::SmartType_String:
       printf("%s", object.asString().c_str());
