@@ -64,6 +64,8 @@ struct timeval {
 
 int gettimeofday(struct timeval *tv/*in*/, struct timezone *tz/*in*/)
 {
+	tz = NULL;
+
 	FILETIME ft;
 	__int64 tmpres = 0;
 	TIME_ZONE_INFORMATION tz_winapi;
@@ -86,8 +88,8 @@ int gettimeofday(struct timeval *tv/*in*/, struct timezone *tz/*in*/)
 
 	//_tzset(),don't work properly, so we use GetTimeZoneInformation
 	rez = GetTimeZoneInformation(&tz_winapi);
-	tz->tz_dsttime = (rez == 2) ? true : false;
-	tz->tz_minuteswest = tz_winapi.Bias + ((rez == 2) ? tz_winapi.DaylightBias : 0);
+	//tz->tz_dsttime = (rez == 2) ? true : false;
+	//tz->tz_minuteswest = tz_winapi.Bias + ((rez == 2) ? tz_winapi.DaylightBias : 0);
 
 	return 0;
 }

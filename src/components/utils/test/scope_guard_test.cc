@@ -31,6 +31,7 @@
  */
 
 #include "gmock/gmock.h"
+#include "gtest/gtest.h"
 #include "utils/scope_guard.h"
 #include "utils/macro.h"
 
@@ -42,6 +43,7 @@ using ::utils::ScopeGuard;
 using ::utils::MakeGuard;
 using ::utils::MakeObjGuard;
 using ::testing::Mock;
+using testing::GTEST_FLAG(catch_exceptions);
 
 class TestObject {
  public:
@@ -68,10 +70,12 @@ TEST(ScopeGuardTest, CallFreeFunctionWithParam) {
 }
 
 TEST(ScopeGuardTest, CallObjectFunction) {
+	
   TestObject obj;
   Mock::AllowLeak(&obj);  // Google tests bug
   EXPECT_CALL(obj, function_to_call()).Times(1);
   {
+  //EXPECT_CALL(obj, function_to_call());
     ScopeGuard guard = MakeObjGuard(obj, &TestObject::function_to_call);
     UNUSED(guard);
   }

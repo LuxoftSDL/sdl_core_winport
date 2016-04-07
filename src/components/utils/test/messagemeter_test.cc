@@ -222,7 +222,8 @@ TEST_P(MessageMeterTest, CountingOutOfPeriod) {
   EXPECT_EQ(one_message, meter.TrackMessage(id3));
 
   // sleep more than time range
-  usleep(time_range_msecs * usecs * 1.1);
+  //usleep(time_range_msecs * usecs * 1.1);
+  Sleep(time_range_msecs * 1.1);
   EXPECT_EQ(0u, meter.Frequency(id1));
   EXPECT_EQ(0u, meter.Frequency(id2));
   EXPECT_EQ(0u, meter.Frequency(id3));

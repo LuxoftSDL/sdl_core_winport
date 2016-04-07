@@ -119,7 +119,7 @@ TEST(DateTimeTest, CalculateTimeSpan) {
   const TimevalStruct time = date_time::DateTime::getCurrentTime();
 
   const uint32_t sleep_time_mSec = 10;
-  usleep(sleep_time_mSec * date_time::kMicrosecondsInMillisecond);
+  Sleep(sleep_time_mSec);
 
   // assert
   ASSERT_GE(date_time::DateTime::calculateTimeSpan(time), sleep_time_mSec);
