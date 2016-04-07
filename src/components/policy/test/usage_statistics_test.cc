@@ -1,4 +1,4 @@
-/* Copyright (c) 2014, Ford Motor Company
+/* Copyright (c) 2015, Ford Motor Company
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -131,83 +131,56 @@ TEST(StatisticsManagerSetMethod,
   gui_language_info.Update("UA");
 }
 
-TEST(
-    StatisticsManagerAddMethod,
-    DISABLED_AppStopwatchStartMethod_CallONCE_StatisticsManagerAddMethodCalledONCE) {
+TEST(StatisticsManagerAddMethod,
+     AppStopwatchStartMethod_CallONCE_StatisticsManagerAddMethodCalledONCE) {
   // Arrange
   MockStatisticsManager* msm = new StrictMock<MockStatisticsManager>();
   const std::uint32_t time_out = 1;
   AppStopwatch hmi_full_stopwatch(msm, "HelloApp", time_out);
 
+  hmi_full_stopwatch.Start(SECONDS_HMI_FULL);
   // Assert
-  EXPECT_CALL(*msm, Add("HelloApp", SECONDS_HMI_FULL, 0));
+  EXPECT_CALL(*msm, Add("HelloApp", SECONDS_HMI_FULL, time_out));
 
   // Act
-  hmi_full_stopwatch.Start(SECONDS_HMI_FULL);
+  hmi_full_stopwatch.WriteTime();
 }
 
 TEST(StatisticsManagerAddMethod,
-     DISABLED_AppStopwatchStartMethod_Call_StatisticsManagerAddMethodCALLED) {
-  // Arrange
-
-  MockStatisticsManager* msm = new StrictMock<MockStatisticsManager>();
-  const std::uint32_t time_out = 1;
-  AppStopwatch hmi_full_stopwatch(msm, "HelloApp", time_out);
-
-  // Assert
-  EXPECT_CALL(*msm, Add("HelloApp", SECONDS_HMI_FULL, 0));
-
-  // Act
-  hmi_full_stopwatch.Start(SECONDS_HMI_FULL);
-  sleep(2);
-}
-
-TEST(StatisticsManagerAddMethod,
-     DISABLED_AppStopwatchSwitchMethod_Call_StatisticsManagerAddMethodCALLED) {
+     AppStopwatchSwitchMethod_Call_StatisticsManagerAddMethodCalled) {
   // Arrange
   MockStatisticsManager* msm = new StrictMock<MockStatisticsManager>();
   AppStopwatch hmi_full_stopwatch(msm, "HelloApp");
   hmi_full_stopwatch.Start(SECONDS_HMI_FULL);
 
-  // Assert
-  EXPECT_CALL(*msm, Add("HelloApp", SECONDS_HMI_FULL, 0))
-      .Times(2);  // Once in stop(), once in destructor
-
-  // Act
   hmi_full_stopwatch.Switch(SECONDS_HMI_FULL);
-}
-
-TEST(
-    StatisticsManagerAddMethod,
-    DISABLED_AppStopwatchStartMethod_CallAnd1SecSleepAfter_StatisticsManagerAddMethodCalledWith1SecTimespan) {
-  // Arrange
-  MockStatisticsManager* msm = new StrictMock<MockStatisticsManager>();
-  AppStopwatch hmi_full_stopwatch(msm, "HelloApp");
-
   // Assert
-  EXPECT_CALL(*msm, Add("HelloApp", SECONDS_HMI_FULL, 1));
+  EXPECT_CALL(*msm, Add("HelloApp", SECONDS_HMI_FULL, 60));
 
   // Act
-  hmi_full_stopwatch.Start(SECONDS_HMI_FULL);
-  sleep(1);
+  hmi_full_stopwatch.WriteTime();
 }
 
 TEST(
     StatisticsManagerAddMethod,
-    DISABLED_AppStopwatchSwitchMethod_CallAnd1SecSleepAfter_StatisticsManagerAddMethodCalledWith1SecTimespan) {
+    AppStopwatchSwitchMethod_CallAnd1SecSleepAfter_StatisticsManagerAddMethodCalledWith1SecTimespan) {
   // Arrange
   MockStatisticsManager* msm = new StrictMock<MockStatisticsManager>();
   const std::uint32_t time_out = 1;
   AppStopwatch hmi_full_stopwatch(msm, "HelloApp", time_out);
-
-  // Assert
-  EXPECT_CALL(*msm, Add("HelloApp", SECONDS_HMI_NONE, 0));
-  EXPECT_CALL(*msm, Add("HelloApp", SECONDS_HMI_BACKGROUND, 1));
 
   // Act
   hmi_full_stopwatch.Start(SECONDS_HMI_NONE);
+  // Assert
+  EXPECT_CALL(*msm, Add("HelloApp", SECONDS_HMI_NONE, time_out));
+  // Act
+  hmi_full_stopwatch.WriteTime();
+
   hmi_full_stopwatch.Switch(SECONDS_HMI_BACKGROUND);
-  sleep(2);
+  // Assert
+  EXPECT_CALL(*msm, Add("HelloApp", SECONDS_HMI_BACKGROUND, time_out));
+  // Act
+  hmi_full_stopwatch.WriteTime();
 }
 }  // namespace test
 }  // namespace usage_statistics

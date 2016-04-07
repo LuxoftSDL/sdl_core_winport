@@ -30,8 +30,8 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include <unistd.h>
-
+//#include <unistd.h>
+//#include <Windows.h>
 #include "gtest/gtest.h"
 
 #include "utils/threads/thread_validator.h"
@@ -44,7 +44,7 @@ using namespace ::threads;
 
 TEST(ThreadValidatorTest, CompareID_CurrentThreadAndPthread_AreEqual) {
   SingleThreadSimpleValidator object;
-  ASSERT_EQ(object.creation_thread_id(), pthread_self());
+  ASSERT_EQ(object.creation_thread_id(), Thread::CurrentId());
 }
 
 }  // namespace utils

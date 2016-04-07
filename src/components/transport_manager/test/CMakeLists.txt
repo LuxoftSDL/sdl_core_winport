@@ -1,4 +1,4 @@
-# Copyright (c) 2014, Ford Motor Company
+# Copyright (c) 2015, Ford Motor Company
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -29,6 +29,7 @@
 # POSSIBILITY OF SUCH DAMAGE.
 
 if(BUILD_TESTS)
+set(TM_TEST_DIR ${COMPONENTS_DIR}/transport_manager/test)
 
 include_directories(
   ${LOG4CXX_INCLUDE_DIRECTORY}
@@ -43,14 +44,14 @@ include_directories(
 )
 
 set(LIBRARIES
-    gmock 
-    ConfigProfile 
-    transport_manager
-    ApplicationManagerTest 
-    Utils    
-    ConfigProfile
-    Resumption
-    jsoncpp     
+  gmock
+  ConfigProfile
+  TransportManager
+  Utils
+  ConfigProfile
+  ProtocolLibrary
+  Resumption
+  jsoncpp
 )
 
 if (BUILD_USB_SUPPORT)
@@ -62,17 +63,20 @@ if (BUILD_BT_SUPPORT)
 endif()
 
 set(SOURCES
-  ${COMPONENTS_DIR}/transport_manager/test/mock_application.cc
-  ${COMPONENTS_DIR}/transport_manager/test/transport_manager_test.cc
-  ${COMPONENTS_DIR}/transport_manager/test/mock_connection_factory.cc
-  ${COMPONENTS_DIR}/transport_manager/test/mock_connection.cc
-  ${COMPONENTS_DIR}/transport_manager/test/mock_device.cc
-  ${COMPONENTS_DIR}/transport_manager/test/mock_device_scanner.cc
-  ${COMPONENTS_DIR}/transport_manager/test/raw_message_matcher.cc
-  ${COMPONENTS_DIR}/transport_manager/test/tcp_transport_adapter_test.cc
-  ${COMPONENTS_DIR}/transport_manager/test/mock_transport_adapter.cc
+  ${TM_TEST_DIR}/transport_manager_default_test.cc
+  ${TM_TEST_DIR}/transport_manager_impl_test.cc
+  ${TM_TEST_DIR}/transport_adapter_test.cc
+  #${TM_TEST_DIR}/transport_adapter_listener_test.cc
+  #${TM_TEST_DIR}/tcp_transport_adapter_test.cc
+  #${TM_TEST_DIR}/tcp_device_test.cc
+  ${TM_TEST_DIR}/tcp_client_listener_test.cc
 )
 
 create_test("transport_manager_test" "${SOURCES}" "${LIBRARIES}")
+file(COPY smartDeviceLink_test.ini DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
+
+if(MSVC)
+  target_link_libraries("transport_manager_test" ws2_32)
+endif()
 
 endif()

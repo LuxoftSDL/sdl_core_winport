@@ -1,4 +1,4 @@
-# Copyright (c) 2014, Ford Motor Company
+# Copyright (c) 2015, Ford Motor Company
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -33,6 +33,7 @@ if(BUILD_TESTS)
 include_directories(
     ${GMOCK_INCLUDE_DIRECTORY}
     ${COMPONENTS_DIR}/media_manager/include
+    ${COMPONENTS_DIR}/include/
 )
 
 if(EXTENDED_MEDIA_MODE)
@@ -43,12 +44,13 @@ if(EXTENDED_MEDIA_MODE)
 endif()
 
 set(SOURCES
-    media_manager_impl_test.cc
+    ${COMPONENTS_DIR}/media_manager/test/media_manager_impl_test.cc
 )
 
 set(LIBRARIES
     MediaManager
     ApplicationManager
+    #MessageHelper
     ProtocolHandler
     gmock
     connectionHandler
@@ -63,12 +65,22 @@ if(EXTENDED_MEDIA_MODE)
     ${GSTREAMER_gstreamer_LIBRARY})
 endif()
 
+#if(MSVC)
+#  target_link_libraries("media_manager_test" log4cxx -L${LOG4CXX_LIBS_DIRECTORY})
+#endif()
+
 create_test("media_manager_test" "${SOURCES}" "${LIBRARIES}")
 
-if(ENABLE_LOG)
+if(MSVC)
+  target_link_libraries("media_manager_test" ws2_32)
+  set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /FORCE" )
+  set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /IGNORE:4099" )
+endif()
+
+if(ENABLE_LOG AND NOT MSVC)
     target_link_libraries("media_manager_test" log4cxx -L${LOG4CXX_LIBS_DIRECTORY})
 endif()
 
-endif() # BUILD_TESTS
+endif()
 
 # vim: set ts=2 sw=2 et:

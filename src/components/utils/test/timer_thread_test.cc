@@ -30,7 +30,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include <pthread.h>
+//#include <pthread.h>
 #include <iostream>
 
 #include "lock.h"
@@ -76,7 +76,7 @@ TEST_F(
   EXPECT_EQ(0u, check_val);
   timer.start(100);
   condvar_.WaitFor(alock, wait_val);
-  EXPECT_EQ(1, check_val);
+  EXPECT_EQ(1u, check_val);
 }
 
 TEST_F(

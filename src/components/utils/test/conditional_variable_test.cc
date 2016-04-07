@@ -30,7 +30,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include <pthread.h>
+//#include <pthread.h>
 #include <iostream>
 
 #include "lock.h"
@@ -90,33 +90,39 @@ void ConditionalVariableTest::task_one() {
   test_value_ = "changed again by thread 1";
 }
 
-TEST_F(ConditionalVariableTest,
-       CheckNotifyOne_OneThreadNotified_ExpectSuccessful) {
-  pthread_t thread1;
-  sync_primitives::AutoLock test_lock(test_mutex_);
-  test_value_ = "changed by main thread";
-  const bool thread_created = pthread_create(
-      &thread1, NULL, &ConditionalVariableTest::task_one_helper, this);
-  ASSERT_FALSE(thread_created) << "thread1 is not created!";
-  test_value_ = "changed twice by main thread";
-  cond_var_.WaitFor(test_lock, 2000);
-  std::string last_value("changed again by thread 1");
-  EXPECT_EQ(last_value, test_value_);
-}
+// TEST_F(ConditionalVariableTest,
+// CheckNotifyOne_OneThreadNotified_ExpectSuccessful) {
+//  pthread_t thread1;
+//  sync_primitives::AutoLock test_lock(test_mutex_);
+//  test_value_ = "changed by main thread";
+//  const bool thread_created = pthread_create(&thread1,
+//      NULL,
+//      &ConditionalVariableTest::task_one_helper,
+//      this);
+//  ASSERT_FALSE(thread_created) << "thread1 is not created!";
+//  test_value_ = "changed twice by main thread";
+//  cond_var_.WaitFor(test_lock, 2000);
+//  std::string last_value("changed again by thread 1");
+//  EXPECT_EQ(last_value, test_value_);
+//}
 
-TEST_F(ConditionalVariableTest,
-       CheckBroadcast_AllThreadsNotified_ExpectSuccessful) {
-  pthread_t thread1;
-  pthread_t thread2;
-  bool thread_created = pthread_create(
-      &thread1, NULL, &ConditionalVariableTest::check_counter_helper, this);
-  ASSERT_FALSE(thread_created) << "thread1 is not created!";
-  thread_created = pthread_create(
-      &thread2, NULL, &ConditionalVariableTest::check_counter_helper, this);
-  ASSERT_FALSE(thread_created) << "thread2 is not created!";
-  check_counter();
-  EXPECT_EQ(2u, counter_);
-}
+// TEST_F(ConditionalVariableTest,
+// CheckBroadcast_AllThreadsNotified_ExpectSuccessful) {
+//  pthread_t thread1;
+//  pthread_t thread2;
+//  bool thread_created = pthread_create(&thread1,
+//      NULL,
+//      &ConditionalVariableTest::check_counter_helper,
+//      this);
+//  ASSERT_FALSE(thread_created) << "thread1 is not created!";
+//  thread_created = pthread_create(&thread2,
+//      NULL,
+//      &ConditionalVariableTest::check_counter_helper,
+//      this);
+//  ASSERT_FALSE(thread_created) << "thread2 is not created!";
+//  check_counter();
+//  EXPECT_EQ(2u, counter_);
+//}
 
 TEST_F(
     ConditionalVariableTest,

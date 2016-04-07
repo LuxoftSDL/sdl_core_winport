@@ -30,6 +30,8 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
+#include <vector>
+#include <map>
 #include "gtest/gtest.h"
 #include "utils/stl_utils.h"
 
@@ -52,9 +54,9 @@ TEST(StlDeleter, DestructMapWithOneElement) {
   TestMap test_map;
   test_map[1] = new TestObject();
 
-  EXPECT_EQ(1, test_map.size());
+  EXPECT_EQ(1u, test_map.size());
   { StlMapDeleter<TestMap> test_list_deleter_(&test_map); }
-  EXPECT_EQ(1, test_map.size());
+  EXPECT_EQ(1u, test_map.size());
   EXPECT_EQ(NULL, test_map[1]);
 }
 
@@ -63,9 +65,9 @@ TEST(StlDeleter, DestructMapWithSeveralElements) {
   test_map[1] = new TestObject();
   test_map[2] = new TestObject();
 
-  EXPECT_EQ(2, test_map.size());
+  EXPECT_EQ(2u, test_map.size());
   { StlMapDeleter<TestMap> test_list_deleter_(&test_map); }
-  EXPECT_EQ(2, test_map.size());
+  EXPECT_EQ(2u, test_map.size());
   EXPECT_EQ(NULL, test_map[1]);
   EXPECT_EQ(NULL, test_map[2]);
 }
@@ -74,9 +76,9 @@ TEST(StlDeleter, DestructVectorWithOneElement) {
   TestVector test_vector;
   test_vector.push_back(new TestObject());
 
-  EXPECT_EQ(1, test_vector.size());
+  EXPECT_EQ(1u, test_vector.size());
   { StlCollectionDeleter<TestVector> test_list_deleter_(&test_vector); }
-  EXPECT_EQ(1, test_vector.size());
+  EXPECT_EQ(1u, test_vector.size());
   EXPECT_EQ(NULL, test_vector[0]);
 }
 
@@ -85,9 +87,9 @@ TEST(StlDeleter, DestructVectorWithSeveralElements) {
   test_vector.push_back(new TestObject());
   test_vector.push_back(new TestObject());
 
-  EXPECT_EQ(2, test_vector.size());
+  EXPECT_EQ(2u, test_vector.size());
   { StlCollectionDeleter<TestVector> test_list_deleter_(&test_vector); }
-  EXPECT_EQ(2, test_vector.size());
+  EXPECT_EQ(2u, test_vector.size());
   EXPECT_EQ(NULL, test_vector[0]);
   EXPECT_EQ(NULL, test_vector[1]);
 }

@@ -63,14 +63,16 @@ class ProtocolHandlerImplTest : public ::testing::Test {
                                const size_t max_messages,
                                bool malformed_message_filtering = false,
                                const size_t malformd_period_msec = 0u,
-                               const size_t malformd_max_messages = 0u) {
+                               const size_t malformd_max_messages = 0u,
+                               const int32_t multiframe_waiting_timeout = 0) {
     protocol_handler_impl.reset(
         new ProtocolHandlerImpl(&transport_manager_mock,
                                 period_msec,
                                 max_messages,
                                 malformed_message_filtering,
                                 malformd_period_msec,
-                                malformd_max_messages));
+                                malformd_max_messages,
+                                multiframe_waiting_timeout));
     protocol_handler_impl->set_session_observer(&session_observer_mock);
     tm_listener = protocol_handler_impl.get();
   }
@@ -96,7 +98,7 @@ class ProtocolHandlerImplTest : public ::testing::Test {
 
   void TearDown() OVERRIDE {
     // Wait call methods in thread
-    usleep(100000);
+    testing::Mock::AsyncVerifyAndClearExpectations(10000);
   }
 
   // Emulate connection establish
@@ -212,15 +214,16 @@ class ProtocolHandlerImplTest : public ::testing::Test {
 #ifdef ENABLE_SECURITY
 class OnHandshakeDoneFunctor {
  public:
-  OnHandshakeDoneFunctor(const uint32_t connection_key, const bool result)
-      : connection_key(connection_key), result(result) {}
+  OnHandshakeDoneFunctor(const uint32_t connection_key,
+                         security_manager::SSLContext::HandshakeResult error)
+      : connection_key(connection_key), result(error) {}
   void operator()(security_manager::SecurityManagerListener* listener) const {
     listener->OnHandshakeDone(connection_key, result);
   }
 
  private:
   const uint32_t connection_key;
-  const bool result;
+  const security_manager::SSLContext::HandshakeResult result;
 };
 #endif  // ENABLE_SECURITY
 
@@ -299,7 +302,7 @@ TEST_F(ProtocolHandlerImplTest, StartSession_Protected_SessionObserverReject) {
   // For enabled protection callback shall use protection ON
   const bool callback_protection_flag = PROTECTION_ON;
 #else
-  // For disabled protection callback shall ignore protection income flad and
+  // For disabled protection callback shall ignore protection income flag and
   // use protection OFF
   const bool callback_protection_flag = PROTECTION_OFF;
 #endif  // ENABLE_SECURITY
@@ -592,7 +595,9 @@ TEST_F(ProtocolHandlerImplTest,
   // expect add listener for handshake result
   EXPECT_CALL(security_manager_mock, AddListener(_))
       // emulate handshake fail
-      .WillOnce(Invoke(OnHandshakeDoneFunctor(connection_key, PROTECTION_OFF)));
+      .WillOnce(Invoke(OnHandshakeDoneFunctor(
+          connection_key,
+          security_manager::SSLContext::Handshake_Result_Fail)));
 
   // Listener check SSLContext
   EXPECT_CALL(session_observer_mock,
@@ -649,7 +654,9 @@ TEST_F(ProtocolHandlerImplTest,
   // expect add listener for handshake result
   EXPECT_CALL(security_manager_mock, AddListener(_))
       // emulate handshake fail
-      .WillOnce(Invoke(OnHandshakeDoneFunctor(connection_key, PROTECTION_ON)));
+      .WillOnce(Invoke(OnHandshakeDoneFunctor(
+          connection_key,
+          security_manager::SSLContext::Handshake_Result_Success)));
 
   // Listener check SSLContext
   EXPECT_CALL(session_observer_mock,
@@ -711,7 +718,9 @@ TEST_F(
   // expect add listener for handshake result
   EXPECT_CALL(security_manager_mock, AddListener(_))
       // emulate handshake fail
-      .WillOnce(Invoke(OnHandshakeDoneFunctor(connection_key, PROTECTION_ON)));
+      .WillOnce(Invoke(OnHandshakeDoneFunctor(
+          connection_key,
+          security_manager::SSLContext::Handshake_Result_Success)));
 
   // Listener check SSLContext
   EXPECT_CALL(session_observer_mock,
@@ -775,7 +784,9 @@ TEST_F(ProtocolHandlerImplTest,
   // expect add listener for handshake result
   EXPECT_CALL(security_manager_mock, AddListener(_))
       // emulate handshake fail
-      .WillOnce(Invoke(OnHandshakeDoneFunctor(connection_key, PROTECTION_ON)));
+      .WillOnce(Invoke(OnHandshakeDoneFunctor(
+          connection_key,
+          security_manager::SSLContext::Handshake_Result_Success)));
 
   // Listener check SSLContext
   EXPECT_CALL(session_observer_mock,
