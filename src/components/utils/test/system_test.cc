@@ -39,16 +39,16 @@ namespace utils {
 
 using namespace ::utils;
 
-// TEST(SystemTest, Constructor_WithCommandName_ExpectArgsStored) {
-//  // Command creation without any arguments
-//  const std::string test_command("ls");
-//  System object(test_command);
-//
-//  // Check if the object was created with correct command
-//  ASSERT_EQ(object.command(), test_command);
-//  int vec_size = object.argv().size();
-//  ASSERT_EQ(vec_size, 1);
-//}
+TEST(SystemTest, Constructor_WithCommandName_ExpectArgsStored) {
+  // Command creation without any arguments
+  const std::string test_command("dir");
+  System object(test_command);
+
+  // Check if the object was created with correct command
+  ASSERT_EQ(object.command(), test_command);
+  int vec_size = object.argv().size();
+  ASSERT_EQ(vec_size, 1);
+}
 
 // TEST(SystemTest, Constructor_WithFileNameCommandName_ExpectArgsStored) {
 //  // Command creation with 1 argument

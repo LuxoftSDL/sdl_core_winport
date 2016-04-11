@@ -39,29 +39,52 @@ namespace utils {
 
 using sync_primitives::Lock;
 
-// Commented tests checks non-recursive lock
+// Linux specific tests checks non-recursive lock
+// Windows Lock support only recursive lock
+#ifdef __linux__
 
-//TEST(LockPosixTest, DefaultCtorTest_ExpectNonRecursiveMutexCreated) {
-//  // Create Lock object
-//  Lock test_mutex;
-//  // Lock mutex
-//  test_mutex.Acquire();
-//  // Check if created mutex is non-recursive
-//  EXPECT_FALSE(test_mutex.Try());
-//  // Release mutex before destroy
-//  test_mutex.Release();
-//}
-//
-//TEST(LockPosixTest, CtorTestWithFalseArgument_ExpectNonRecursiveMutexCreated) {
-//  // Create Lock object
-//  Lock test_mutex(false);
-//  // Lock mutex
-//  test_mutex.Acquire();
-//  // Check if created mutex is non-recursive
-//  EXPECT_FALSE(test_mutex.Try());
-//  // Release mutex before destroy
-//  test_mutex.Release();
-//}
+TEST(LockPosixTest, DefaultCtorTest_ExpectNonRecursiveMutexCreated) {
+  // Create Lock object
+  Lock test_mutex;
+  // Lock mutex
+  test_mutex.Acquire();
+  // Check if created mutex is non-recursive
+  EXPECT_FALSE(test_mutex.Try());
+  // Release mutex before destroy
+  test_mutex.Release();
+}
+
+TEST(LockPosixTest, CtorTestWithFalseArgument_ExpectNonRecursiveMutexCreated) {
+  // Create Lock object
+  Lock test_mutex(false);
+  // Lock mutex
+  test_mutex.Acquire();
+  // Check if created mutex is non-recursive
+  EXPECT_FALSE(test_mutex.Try());
+  // Release mutex before destroy
+  test_mutex.Release();
+}
+TEST(LockPosixTest, AcquireMutex_ExpectMutexLocked) {
+  // Create Lock object (non-recursive mutex)
+  Lock test_mutex;
+  // Lock mutex
+  test_mutex.Acquire();
+  // Try to lock it again. If locked expect false
+  EXPECT_FALSE(test_mutex.Try());
+  test_mutex.Release();
+}
+
+TEST(LockPosixTest, TryLockNonRecursiveMutex_ExpectMutexNotLockedTwice) {
+  // Create Lock object (non-recursive mutex)
+  Lock test_mutex;
+  // Lock mutex
+  test_mutex.Try();
+  // Try to lock it again. If locked expect false
+  EXPECT_FALSE(test_mutex.Try());
+  test_mutex.Release();
+}
+
+#endif // __linux__
 
 TEST(LockPosixTest, CtorTestWithTrueArgument_ExpectRecursiveMutexCreated) {
   // Create Lock object
@@ -75,16 +98,6 @@ TEST(LockPosixTest, CtorTestWithTrueArgument_ExpectRecursiveMutexCreated) {
   test_mutex.Release();
 }
 
-//TEST(LockPosixTest, AcquireMutex_ExpectMutexLocked) {
-//  // Create Lock object (non-recursive mutex)
-//  Lock test_mutex;
-//  // Lock mutex
-//  test_mutex.Acquire();
-//  // Try to lock it again. If locked expect false
-//  EXPECT_FALSE(test_mutex.Try());
-//  test_mutex.Release();
-//}
-
 TEST(LockPosixTest, ReleaseMutex_ExpectMutexReleased) {
   // Create Lock object (non-recursive mutex)
   Lock test_mutex;
@@ -96,16 +109,6 @@ TEST(LockPosixTest, ReleaseMutex_ExpectMutexReleased) {
   EXPECT_TRUE(test_mutex.Try());
   test_mutex.Release();
 }
-
-//TEST(LockPosixTest, TryLockNonRecursiveMutex_ExpectMutexNotLockedTwice) {
-//  // Create Lock object (non-recursive mutex)
-//  Lock test_mutex;
-//  // Lock mutex
-//  test_mutex.Try();
-//  // Try to lock it again. If locked expect false
-//  EXPECT_FALSE(test_mutex.Try());
-//  test_mutex.Release();
-//}
 
 TEST(LockPosixTest, TryLockRecursiveMutex_ExpectMutexLockedTwice) {
   // Create Lock object (recursive mutex)

@@ -87,6 +87,9 @@ class MessageLoopThread {
   // Process already posted messages and stop thread processing. Thread-safe.
   void Shutdown();
 
+  // Added for utils/test/auto_trace_test.cc
+  size_t GetMessageQueueSize() const;
+
  private:
   /*
    * Implementation of ThreadDelegate that actually pumps the queue and is
@@ -116,6 +119,10 @@ class MessageLoopThread {
 };
 
 ///////// Implementation
+template<class Q>
+size_t MessageLoopThread<Q>::GetMessageQueueSize() const {
+	return message_queue_.size();
+}
 
 template <class Q>
 MessageLoopThread<Q>::MessageLoopThread(const std::string& name,

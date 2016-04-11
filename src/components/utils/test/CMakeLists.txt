@@ -30,6 +30,15 @@
 
 if(BUILD_TESTS)
 
+if (${CMAKE_SYSTEM_NAME} MATCHES "Windows")
+  add_custom_target(copy_sqlite_lib ALL
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+	%SDL_SQLITE_DIR%/sqlite3.lib
+	${CMAKE_CURRENT_BINARY_DIR}/sqlite3.lib
+	#$(TargetDir)sqlite3.lib
+    COMMENT "Copying sqlite lib")
+endif()
+
 include_directories (
   ${JSONCPP_INCLUDE_DIRECTORY}
   ${CMAKE_SOURCE_DIR}/src/3rd_party-static/gmock-1.7.0/include
@@ -41,29 +50,29 @@ include_directories (
 )
 
 set(testSources
-  #messagemeter_test.cc
+  #messagemeter_test.cc #done
   file_system_test.cc
-  #date_time_test.cc
+  #date_time_test.cc #done
   #system_test.cc
-  #thread_validator_test.cc
-  #conditional_variable_test.cc
-  #message_queue_test.cc
-  ##resource_usage_test.cc###
-  #bitstream_test.cc
-  #prioritized_queue_test.cc
-  #data_accessor_test.cc
-  #lock_posix_test.cc
-  #singleton_test.cc
-  ###posix_thread_test.cc
-  #stl_utils_test.cc
-  #timer_thread_test.cc
-  ##rwlock_posix_test.cc####
-  #async_runner_test.cc
-  #shared_ptr_test.cc
-  #scope_guard_test.cc
-  #atomic_object_test.cc
-  #message_loop_thread_test.cc####
-  #custom_string_test.cc #### 
+  #thread_validator_test.cc #done
+  #conditional_variable_test.cc #done
+  #message_queue_test.cc #done
+  #resource_usage_test.cc### not used in win_sdl
+  #bitstream_test.cc #done
+  #prioritized_queue_test.cc #done
+  #data_accessor_test.cc #done
+  #lock_posix_test.cc #done
+  #singleton_test.cc ####
+  #posix_thread_test.cc #### disalowed in linux
+  #stl_utils_test.cc #done
+  #timer_thread_test.cc #done
+  #rwlock_posix_test.cc #done
+  #async_runner_test.cc #done
+  #shared_ptr_test.cc #done
+  #scope_guard_test.cc #done
+  #atomic_object_test.cc #done
+  #message_loop_thread_test.cc #done
+  #custom_string_test.cc #### no custom string in win_sdl
 )
 
 set(testLibraries
@@ -114,5 +123,9 @@ if(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
   set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /FORCE" )
   set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /IGNORE:4099" )
 endif()  
+
+if (${CMAKE_SYSTEM_NAME} MATCHES "Windows")
+    add_dependencies(utils_test copy_sqlite_lib)
+endif()
 
 endif()

@@ -54,12 +54,12 @@ set(SOURCES
   ${COMPONENTS_DIR}/formatters/test/CSmartFactory_test.cc
  # ${COMPONENTS_DIR}/formatters/test/CFormatterJsonBase_test.cc
   ${COMPONENTS_DIR}/formatters/test/generic_json_formatter_test.cc
-  ${COMPONENTS_DIR}/formatters/test/formatter_json_rpc_test.cc
+  #${COMPONENTS_DIR}/formatters/test/formatter_json_rpc_test.cc
   ${COMPONENTS_DIR}/formatters/test/src/create_smartSchema.cc 
   ${COMPONENTS_DIR}/formatters/test/cFormatterJsonSDLRPCv1_test.cc
   ${COMPONENTS_DIR}/formatters/test/cFormatterJsonSDLRPCv2_test.cc
-  ${COMPONENTS_DIR}/formatters/test/src/meta_formatter_test_helper.cc
-  ${COMPONENTS_DIR}/formatters/test/meta_formatter_test.cc
+  #${COMPONENTS_DIR}/formatters/test/src/meta_formatter_test_helper.cc
+#  ${COMPONENTS_DIR}/formatters/test/meta_formatter_test.cc
 )
 
 if(${CMAKE_SYSTEM_NAME} MATCHES "Windows")

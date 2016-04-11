@@ -60,7 +60,6 @@ StringArray MergeStringsToArray(const std::string& first,
 }
 
  TEST(FileSystemTest, CreateDeleteDirectory) {
-  //ASSERT_FALSE(DirectoryExists("./Test directory"));
   // Directory creation
   CreateDirectory("./Test directory");
 
@@ -1064,6 +1063,7 @@ TEST(FileSystemTest, ListFiles) {
   EXPECT_FALSE(FileExists("./test123/test_file_2"));
 }
 
+// Run-time error
 //TEST(FileSystemTest, ListFilesIncludeSubdirectory) {
 //  ASSERT_FALSE(DirectoryExists("./Test directory"));
 //  CreateDirectoryRecursively("./Test directory/Test directory 2/");
@@ -1151,131 +1151,143 @@ TEST(FileSystemTest, DirectorySize) {
   //EXPECT_FALSE(DirectoryExists("./Test directory"));
 }
 
-// TEST(FileSystemTest, DeleteAllContentInDirectory) {
-//  ASSERT_FALSE(DirectoryExists("./Test directory"));
-//  CreateDirectory("./Test directory");
-//
-//  // Create files in directory
-//  EXPECT_TRUE(CreateFile("./Test directory/test file"));
-//  EXPECT_TRUE(CreateFile("./Test directory/test file 2"));
-//
-//  EXPECT_TRUE(FileExists("./Test directory/test file"));
-//  EXPECT_TRUE(FileExists("./Test directory/test file 2"));
-//
-//  EXPECT_TRUE(DirectoryExists("./Test directory"));
-//
-//  // Create subdirectories
-//  CreateDirectoryRecursively(
-//      "./Test directory/Test directory 2/Test directory 3");
-//
-//  EXPECT_TRUE(DirectoryExists("./Test directory/Test directory 2"));
-//  EXPECT_TRUE(
-//      DirectoryExists("./Test directory/Test directory 2/Test directory 3"));
-//
-//  remove_directory_content("./Test directory");
-//
-//  // Directory does not include files and subdirectories
-//  EXPECT_FALSE(FileExists("./Test directory/test file"));
-//  EXPECT_FALSE(FileExists("./Test directory/test file 2"));
-//
-//  EXPECT_FALSE(
-//      DirectoryExists("./Test directory/Test directory 2/Test directory 3"));
-//  EXPECT_FALSE(DirectoryExists("./Test directory/Test directory 2"));
-//
-//  std::vector<std::string> list;
-//  list = ListFiles("./Test directory");
-//  EXPECT_TRUE(list.empty());
-//
-//  EXPECT_TRUE(DirectoryExists("./Test directory"));
-//
-//  EXPECT_TRUE(RemoveDirectory("./Test directory", true));
-//  EXPECT_FALSE(DirectoryExists("./Test directory"));
-//}
+TEST(FileSystemTest, rarara) {
+	CreateDirectory("./rarara");
+	EXPECT_TRUE(CreateFile("./rarara/test_file"));
+	RemoveDirectoryContent("./rarara");
+	DeleteFile("./rarara/test_file");
+	EXPECT_TRUE(RemoveDirectory("./rarara", true));
+}
 
-// TEST(FileSystemTest, GetAbsolutePath) {
-//  const std::string& abs_path = GetAbsolutePath(".");
-//  // Getting absolute current path from system
-//  const std::string& absolute_current_path = CurrentWorkingDirectory();
-//  EXPECT_EQ('/', abs_path[0]);
-//  EXPECT_EQ(absolute_current_path, abs_path);
-//}
+ TEST(FileSystemTest, DeleteAllContentInDirectory) {
+  //ASSERT_FALSE(DirectoryExists("./Test directory"));
+  CreateDirectory("./Test directory");
 
-// TEST(FileSystemTest,
-//     GetAbsolutePath_InvalidOrEmptyPathName_EmptyAbsolutePathName) {
-//  // Array of invalid paths
-//  const StringArray rel_path = MergeStringsToArray("not_exists_dir", "     ");
-//
-//  // Check
-//  for (size_t i = 0; i < rel_path.size(); ++i) {
-//    const std::string& path_for_check = GetAbsolutePath(rel_path[i]);
-//    EXPECT_EQ("", path_for_check);
-//  }
-//}
+  // Create files in directory
+  EXPECT_TRUE(CreateFile("./Test directory/test file"));
+  EXPECT_TRUE(CreateFile("./Test directory/test file 2"));
 
-// TEST(FileSystemTest, GetAbsolutePath_ValidRelPaths_CorrectAbsolutePath) {
-//  // Array of relative dirs
-//  const StringArray rel_path = MergeStringsToArray(
-//      "first_level_path", "first_level_path/second_level_path1");
-//
-//  // Create some directories in current
-//  CreateDirectoryRecursively(rel_path[1]);
-//  // Get absolute current dir
-//  const std::string& absolute_current_dir = GetAbsolutePath(".");
-//  // Check
-//  for (size_t i = 0; i < rel_path.size(); ++i) {
-//    // Concating rel_path to current dir path
-//    const std::string& correct_absolute_path =
-//        absolute_current_dir + "/" + rel_path[i];
-//    // Get absolute path for rel dir
-//    const std::string& path_for_check = GetAbsolutePath(rel_path[i]);
-//    EXPECT_EQ(correct_absolute_path, path_for_check);
-//  }
-//  // Cleanup after test case
-//  if (DirectoryExists(rel_path[0])) {
-//    RemoveDirectory(rel_path[0], true);
-//  }
-//}
+  EXPECT_TRUE(FileExists("./Test directory/test file"));
+  EXPECT_TRUE(FileExists("./Test directory/test file 2"));
 
-// TEST(FileSystemTest,
-//     GetAbsolutePath_ValidRelPathsFromParrentDir_CorrectAbsolutePath) {
-//  // Array of relative dirs
-//  const StringArray rel_path = MergeStringsToArray(
-//      "../first_level_path", "../first_level_path/second_level_path1");
-//
-//  // Create some directories in parrent of this
-//  CreateDirectoryRecursively(rel_path[1]);
-//
-//  // Get absolute parrent dir
-//  const std::string& absolute_parrent_dir = GetAbsolutePath("../");
-//  // Check
-//  for (size_t i = 0; i < rel_path.size(); ++i) {
-//    // Concatenation rel_path to current dir path
-//    const std::string& relative_dir_name = rel_path[i].substr(3);
-//    const std::string& correct_absolute_path =
-//        absolute_parrent_dir + "/" + relative_dir_name;
-//    // Get absolute path for rel dir
-//    const std::string& path_for_check = GetAbsolutePath(rel_path[i]);
-//    EXPECT_EQ(correct_absolute_path, path_for_check);
-//  }
-//  // Cleanup after test case
-//  if (DirectoryExists(rel_path[0])) {
-//    RemoveDirectory(rel_path[0], true);
-//  }
-//}
+  EXPECT_TRUE(DirectoryExists("./Test directory"));
 
-// TEST(FileSystemTest, GetAbsolutePath_TrickiPath_CorrectAbsolutePath) {
-//  // Array of relative dirs
-//  const StringArray rel_path =
-//      MergeStringsToArray("../src/../../application_manager/../utils/test",
-//                          "../../../components/utils/test");
-//
-//  const std::string& absolute_current_path = CurrentWorkingDirectory();
-//  for (size_t i = 0; i < rel_path.size(); ++i) {
-//    // Get absolute path for rel dir
-//    const std::string& path_for_check = GetAbsolutePath(rel_path[i]);
-//    EXPECT_EQ(absolute_current_path, path_for_check);
-//  }
-//}
+  // Create subdirectories
+  CreateDirectoryRecursively(
+      "./Test directory/Test directory 2/Test directory 3");
+
+  EXPECT_TRUE(DirectoryExists("./Test directory/Test directory 2"));
+  EXPECT_TRUE(
+      DirectoryExists("./Test directory/Test directory 2/Test directory 3"));
+
+  RemoveDirectoryContent("./Test directory");
+
+  // Directory does not include files and subdirectories
+  EXPECT_FALSE(FileExists("./Test directory/test file"));
+  EXPECT_FALSE(FileExists("./Test directory/test file 2"));
+
+  EXPECT_FALSE(
+      DirectoryExists("./Test directory/Test directory 2/Test directory 3"));
+  EXPECT_FALSE(DirectoryExists("./Test directory/Test directory 2"));
+
+  std::vector<std::string> list;
+  list = ListFiles("./Test directory");
+  EXPECT_TRUE(list.empty());
+
+  EXPECT_TRUE(DirectoryExists("./Test directory"));
+
+  EXPECT_TRUE(RemoveDirectory("./Test directory", true));
+  EXPECT_FALSE(DirectoryExists("./Test directory"));
+}
+
+#ifdef __linux__
+ // no GetAbsolutePath method in win_sdl
+TEST(FileSystemTest, GetAbsolutePath) {
+	const std::string& abs_path = GetAbsolutePath(".");
+	// Getting absolute current path from system
+	const std::string& absolute_current_path = CurrentWorkingDirectory();
+	EXPECT_EQ('/', abs_path[0]);
+	EXPECT_EQ(absolute_current_path, abs_path);
+}
+
+TEST(FileSystemTest,
+	GetAbsolutePath_InvalidOrEmptyPathName_EmptyAbsolutePathName) {
+	// Array of invalid paths
+	const StringArray rel_path = MergeStringsToArray("not_exists_dir", "     ");
+
+	// Check
+	for (size_t i = 0; i < rel_path.size(); ++i) {
+		const std::string& path_for_check = GetAbsolutePath(rel_path[i]);
+		EXPECT_EQ("", path_for_check);
+	}
+}
+
+TEST(FileSystemTest, GetAbsolutePath_ValidRelPaths_CorrectAbsolutePath) {
+	// Array of relative dirs
+	const StringArray rel_path = MergeStringsToArray(
+		"first_level_path", "first_level_path/second_level_path1");
+
+	// Create some directories in current
+	CreateDirectoryRecursively(rel_path[1]);
+	// Get absolute current dir
+	const std::string& absolute_current_dir = GetAbsolutePath(".");
+	// Check
+	for (size_t i = 0; i < rel_path.size(); ++i) {
+		// Concating rel_path to current dir path
+		const std::string& correct_absolute_path =
+			absolute_current_dir + "/" + rel_path[i];
+		// Get absolute path for rel dir
+		const std::string& path_for_check = GetAbsolutePath(rel_path[i]);
+		EXPECT_EQ(correct_absolute_path, path_for_check);
+	}
+	// Cleanup after test case
+	if (DirectoryExists(rel_path[0])) {
+		RemoveDirectory(rel_path[0], true);
+	}
+}
+
+TEST(FileSystemTest,
+	GetAbsolutePath_ValidRelPathsFromParrentDir_CorrectAbsolutePath) {
+	// Array of relative dirs
+	const StringArray rel_path = MergeStringsToArray(
+		"../first_level_path", "../first_level_path/second_level_path1");
+
+	// Create some directories in parrent of this
+	CreateDirectoryRecursively(rel_path[1]);
+
+	// Get absolute parrent dir
+	const std::string& absolute_parrent_dir = GetAbsolutePath("../");
+	// Check
+	for (size_t i = 0; i < rel_path.size(); ++i) {
+		// Concatenation rel_path to current dir path
+		const std::string& relative_dir_name = rel_path[i].substr(3);
+		const std::string& correct_absolute_path =
+			absolute_parrent_dir + "/" + relative_dir_name;
+		// Get absolute path for rel dir
+		const std::string& path_for_check = GetAbsolutePath(rel_path[i]);
+		EXPECT_EQ(correct_absolute_path, path_for_check);
+  }
+	// Cleanup after test case
+	if (DirectoryExists(rel_path[0])) {
+		RemoveDirectory(rel_path[0], true);
+	}
+}
+
+ TEST(FileSystemTest, GetAbsolutePath_TrickiPath_CorrectAbsolutePath) {
+  // Array of relative dirs
+  const StringArray rel_path =
+      MergeStringsToArray("../src/../../application_manager/../utils/test",
+                          "../../../components/utils/test");
+
+  const std::string& absolute_current_path = CurrentWorkingDirectory();
+  for (size_t i = 0; i < rel_path.size(); ++i) {
+    // Get absolute path for rel dir
+    const std::string& path_for_check = GetAbsolutePath(rel_path[i]);
+    EXPECT_EQ(absolute_current_path, path_for_check);
+  }
+}
+
+#endif // __linux__
 
 }  // namespace utils
 }  // namespace components

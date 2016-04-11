@@ -858,7 +858,9 @@ bool Mock::AsyncVerifyAndClearExpectationsLocked(int timeout_msec)
 
   // TODO(ezamakhov@gmail.com): refactor the next loops
   bool expectations_met = true;
-  timeval first_register_time {0, 0};
+  timeval first_register_time;
+  first_register_time.tv_sec = 0;
+  first_register_time.tv_usec = 0;
 
   for (MockObjectRegistry::StateMap::iterator mock_it = state_map.begin();
       state_map.end() != mock_it; ++mock_it) {

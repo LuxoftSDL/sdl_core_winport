@@ -46,5 +46,5 @@ set (SOURCES
 add_library("Resumption" ${HEADERS} ${SOURCES})
 
 if(BUILD_TESTS)
-  add_subdirectory(test)
+  #add_subdirectory(test)
 endif()

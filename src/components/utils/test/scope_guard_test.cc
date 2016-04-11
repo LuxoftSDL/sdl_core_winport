@@ -75,7 +75,6 @@ TEST(ScopeGuardTest, CallObjectFunction) {
   Mock::AllowLeak(&obj);  // Google tests bug
   EXPECT_CALL(obj, function_to_call()).Times(1);
   {
-  //EXPECT_CALL(obj, function_to_call());
     ScopeGuard guard = MakeObjGuard(obj, &TestObject::function_to_call);
     UNUSED(guard);
   }
