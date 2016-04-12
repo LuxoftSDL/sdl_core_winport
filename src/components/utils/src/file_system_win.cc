@@ -189,6 +189,7 @@ bool file_system::CreateDirectoryRecursively(const std::string& utf8_path) {
       pos = utf8_path.length();
     }
     if (!DirectoryExists(utf8_path.substr(0, pos))) {
+		std::string s = utf8_path.substr(0, pos);
       if (0 !=
           _wmkdir(ConvertUTF8ToWString(utf8_path.substr(0, pos)).c_str())) {
         return false;
@@ -290,7 +291,8 @@ void file_system::RemoveDirectoryContent(const std::string& utf8_path) {
         RemoveDirectory(utf8_file_name, true);
       }
     } else {
-      _wremove(ffd.cFileName);
+		std::string s = utf8_path + "/" + ConvertWStringToUTF8(ffd.cFileName);
+		int x = _wremove(ConvertUTF8ToWString(s).c_str());
     }
   } while (FindNextFileW(find, &ffd) != 0);
 

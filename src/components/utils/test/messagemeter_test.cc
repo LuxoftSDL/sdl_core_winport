@@ -73,6 +73,9 @@ class MessageMeterTest : public ::testing::TestWithParam<TimePair> {
     id2 = 0xABCDEF;
     id3 = 0xFEBCDA;
 
+	time_range.tv_sec = 0;
+	time_range.tv_usec = 0;
+
     const TimePair time_pair = GetParam();
     EXPECT_GT(usecs, time_pair.second) << "Wrong time (msecs) value";
 
@@ -86,7 +89,7 @@ class MessageMeterTest : public ::testing::TestWithParam<TimePair> {
   }
   void TearDown() OVERRIDE {}
   ::utils::MessageMeter<int> meter;
-  TimevalStruct time_range = {};
+  TimevalStruct time_range;
   int64_t time_range_msecs;
   int usecs;
   int id1, id2, id3;
@@ -94,13 +97,17 @@ class MessageMeterTest : public ::testing::TestWithParam<TimePair> {
 
 TEST(MessageMeterTest, DefaultTimeRange) {
   const ::utils::MessageMeter<int> default_meter;
-  const TimevalStruct time_second{1, 0};
+  TimevalStruct time_second;
+  time_second.tv_sec = 1;
+  time_second.tv_usec = 0;
   EXPECT_EQ(time_second, default_meter.time_range());
 }
 
 TEST(MessageMeterTest, TimeRangeSetter) {
   ::utils::MessageMeter<int> meter;
-  TimevalStruct time_range{0, 0};
+  TimevalStruct time_range;
+  time_range.tv_sec = 0;
+  time_range.tv_usec = 0;
   const int test_count_secs = 1000;
   // Skip 1000th msec value as wrong for TimevalStruct
   const int test_count_msecs = 999;
@@ -122,7 +129,9 @@ TEST(MessageMeterTest, AddingWithNullTimeRange) {
   ::utils::MessageMeter<int> meter;
   const int id1 = 1;
   const int id2 = 2;
-  const TimevalStruct null_time_range{0, 0};
+  TimevalStruct null_time_range;
+  null_time_range.tv_sec = 0;
+  null_time_range.tv_usec = 0;
   meter.set_time_range(null_time_range);
   for (int i = 0; i < 10000; ++i) {
     // 1st Connection

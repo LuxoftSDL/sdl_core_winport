@@ -50,28 +50,28 @@ include_directories (
 )
 
 set(testSources
-  #messagemeter_test.cc #done
-  file_system_test.cc
-  #date_time_test.cc #done
-  #system_test.cc
-  #thread_validator_test.cc #done
-  #conditional_variable_test.cc #done
-  #message_queue_test.cc #done
+  messagemeter_test.cc #done
+  file_system_test.cc #done
+  date_time_test.cc #done
+  #system_test.cc # not used in win_sdl
+  thread_validator_test.cc #done
+  conditional_variable_test.cc #done
+  message_queue_test.cc #done
   #resource_usage_test.cc### not used in win_sdl
-  #bitstream_test.cc #done
-  #prioritized_queue_test.cc #done
-  #data_accessor_test.cc #done
-  #lock_posix_test.cc #done
-  #singleton_test.cc ####
-  #posix_thread_test.cc #### disalowed in linux
-  #stl_utils_test.cc #done
-  #timer_thread_test.cc #done
-  #rwlock_posix_test.cc #done
-  #async_runner_test.cc #done
-  #shared_ptr_test.cc #done
-  #scope_guard_test.cc #done
-  #atomic_object_test.cc #done
-  #message_loop_thread_test.cc #done
+  bitstream_test.cc #done
+  prioritized_queue_test.cc #done
+  data_accessor_test.cc #done
+  lock_posix_test.cc #done
+  singleton_test.cc ####
+  #posix_thread_test.cc #### disalowed in linux too
+  stl_utils_test.cc #done
+  timer_thread_test.cc #done
+  rwlock_posix_test.cc #done
+  async_runner_test.cc #done
+  shared_ptr_test.cc #done
+  scope_guard_test.cc #done
+  atomic_object_test.cc #done
+  message_loop_thread_test.cc #done
   #custom_string_test.cc #### no custom string in win_sdl
 )
 

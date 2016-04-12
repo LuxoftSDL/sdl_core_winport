@@ -59,6 +59,7 @@ StringArray MergeStringsToArray(const std::string& first,
 }
 }
 
+#ifndef QT_PORT
  TEST(FileSystemTest, CreateDeleteDirectory) {
   // Directory creation
   CreateDirectory("./Test directory");
@@ -90,6 +91,8 @@ StringArray MergeStringsToArray(const std::string& first,
   EXPECT_FALSE(DirectoryExists("./Test directory"));
 }
 
+#endif // QT_PORT
+
  TEST(FileSystemTest, DeleteDirectoryRecursively) {
   ASSERT_FALSE(DirectoryExists("./Test directory"));
   // Create directories
@@ -109,77 +112,68 @@ StringArray MergeStringsToArray(const std::string& first,
   EXPECT_FALSE(DirectoryExists("./Test directory"));
 }
 
-// TEST(FileSystemTest, CreateDirectoryRecursivelyDeleteRecursively) {
-//  ASSERT_FALSE(DirectoryExists("./Test directory"));
-//  // Create directories recursively
-//  CreateDirectoryRecursively(
-//      "./Test directory/Test directory 2/Test directory 3");
-//
-//  EXPECT_TRUE(DirectoryExists("./Test directory"));
-//  //EXPECT_TRUE(IsDirectory("./Test directory"));
-//
-//  EXPECT_TRUE(DirectoryExists("./Test directory/Test directory 2"));
-//  //EXPECT_TRUE(IsDirectory("./Test directory/Test directory 2"));
-//
-//  EXPECT_TRUE(
-//      DirectoryExists("./Test directory/Test directory 2/Test directory 3"));
-//  //EXPECT_TRUE(
-//    //  IsDirectory("./Test directory/Test directory 2/Test directory 3"));
-//
-//  // Delete recursively
-//  EXPECT_TRUE(RemoveDirectory("./Test directory", true));
-//  EXPECT_FALSE(DirectoryExists("./Test directory"));
-//  EXPECT_FALSE(DirectoryExists("./Test directory/Test directory 2"));
-//  EXPECT_FALSE(
-//      DirectoryExists("./Test directory/Test directory 2/Test directory 3"));
-//}
+ TEST(FileSystemTest, CreateDirectoryRecursivelyDeleteRecursively) {
+  ASSERT_FALSE(DirectoryExists("./Test directory"));
+  // Create directories recursively
+  CreateDirectoryRecursively(
+      "./Test directory/Test directory 2/Test directory 3");
 
-// TEST(FileSystemTest, TwiceCreateDirectoryRecursivelyDeleteRecursivelyOnce) {
-//  ASSERT_FALSE(DirectoryExists("./Test directory"));
-//  // Create directories recursively
-//  EXPECT_TRUE(CreateDirectoryRecursively(
-//      "./Test directory/Test directory 2/Test directory 3"));
-//
-//  // Check that all directories are created
-//  EXPECT_TRUE(DirectoryExists("./Test directory"));
-//  EXPECT_TRUE(IsDirectory("./Test directory"));
-//
-//  EXPECT_TRUE(DirectoryExists("./Test directory/Test directory 2"));
-//  EXPECT_TRUE(IsDirectory("./Test directory/Test directory 2"));
-//
-//  EXPECT_TRUE(
-//      DirectoryExists("./Test directory/Test directory 2/Test directory 3"));
-//  EXPECT_TRUE(
-//      IsDirectory("./Test directory/Test directory 2/Test directory 3"));
-//
-//  // Create directories recursively second time
-//  EXPECT_TRUE(CreateDirectoryRecursively(
-//      "./Test directory/Test directory 2/Test directory 3"));
-//
-//  EXPECT_TRUE(DirectoryExists("./Test directory"));
-//
-//  EXPECT_TRUE(DirectoryExists("./Test directory/Test directory 2"));
-//
-//  EXPECT_TRUE(
-//      DirectoryExists("./Test directory/Test directory 2/Test directory 3"));
-//
-//  // Delete recursively
-//  EXPECT_TRUE(RemoveDirectory("./Test directory", true));
-//  EXPECT_FALSE(DirectoryExists("./Test directory"));
-//  // Delete recursively again is impossible
-//  EXPECT_FALSE(RemoveDirectory("./Test directory", true));
-//
-//  EXPECT_FALSE(DirectoryExists("./Test directory"));
-//  EXPECT_FALSE(DirectoryExists("./Test directory/Test directory 2"));
-//  EXPECT_FALSE(
-//      DirectoryExists("./Test directory/Test directory 2/Test directory 3"));
-//}
-//
+  EXPECT_TRUE(DirectoryExists("./Test directory"));
+
+  EXPECT_TRUE(DirectoryExists("./Test directory/Test directory 2"));
+
+  EXPECT_TRUE(
+      DirectoryExists("./Test directory/Test directory 2/Test directory 3"));
+
+  // Delete recursively
+  EXPECT_TRUE(RemoveDirectory("./Test directory", true));
+  EXPECT_FALSE(DirectoryExists("./Test directory"));
+  EXPECT_FALSE(DirectoryExists("./Test directory/Test directory 2"));
+  EXPECT_FALSE(
+      DirectoryExists("./Test directory/Test directory 2/Test directory 3"));
+}
+
+ TEST(FileSystemTest, TwiceCreateDirectoryRecursivelyDeleteRecursivelyOnce) {
+  ASSERT_FALSE(DirectoryExists("./Test directory"));
+  // Create directories recursively
+  EXPECT_TRUE(CreateDirectoryRecursively(
+      "./Test directory/Test directory 2/Test directory 3"));
+
+  // Check that all directories are created
+  EXPECT_TRUE(DirectoryExists("./Test directory"));
+
+  EXPECT_TRUE(DirectoryExists("./Test directory/Test directory 2"));
+
+  EXPECT_TRUE(
+      DirectoryExists("./Test directory/Test directory 2/Test directory 3"));
+
+  // Create directories recursively second time
+  EXPECT_TRUE(CreateDirectoryRecursively(
+      "./Test directory/Test directory 2/Test directory 3"));
+
+  EXPECT_TRUE(DirectoryExists("./Test directory"));
+
+  EXPECT_TRUE(DirectoryExists("./Test directory/Test directory 2"));
+
+  EXPECT_TRUE(
+      DirectoryExists("./Test directory/Test directory 2/Test directory 3"));
+
+  // Delete recursively
+  EXPECT_TRUE(RemoveDirectory("./Test directory", true));
+  EXPECT_FALSE(DirectoryExists("./Test directory"));
+  // Delete recursively again is impossible
+  EXPECT_FALSE(RemoveDirectory("./Test directory", true));
+
+  EXPECT_FALSE(DirectoryExists("./Test directory"));
+  EXPECT_FALSE(DirectoryExists("./Test directory/Test directory 2"));
+  EXPECT_FALSE(
+      DirectoryExists("./Test directory/Test directory 2/Test directory 3"));
+}
+
  TEST(FileSystemTest, CreateDeleteFile) {
   ASSERT_FALSE(FileExists("./test file"));
   // File creation
   EXPECT_TRUE(CreateFile("./test file"));
-  //EXPECT_FALSE(IsDirectory("./test file"));
 
   // Delete file
   EXPECT_TRUE(DeleteFile("./test file"));
@@ -187,28 +181,6 @@ StringArray MergeStringsToArray(const std::string& first,
   EXPECT_FALSE(DeleteFile("./test file"));
   EXPECT_FALSE(FileExists("./test file"));
 }
-//
-// TEST(FileSystemTest, CheckIsDirectory) {
-//  ASSERT_FALSE(DirectoryExists("./Test directory"));
-//  // Create directory and check that IsDirectory=true
-//  CreateDirectory("./Test directory");
-//  EXPECT_TRUE(IsDirectory("./Test directory"));
-//
-//  // Delete directory and check, that IsDirectory=false
-//  EXPECT_TRUE(RemoveDirectory("./Test directory", false));
-//  EXPECT_FALSE(DirectoryExists("./Test directory"));
-//  EXPECT_FALSE(IsDirectory("./Test directory"));
-//
-//  // Create file and check that IsDirectory=false
-//  ASSERT_FALSE(FileExists("./test file"));
-//  EXPECT_TRUE(CreateFile("./test file"));
-//  EXPECT_FALSE(IsDirectory("./test file"));
-//
-//  // Delete file and check that IsDirectory=false
-//  EXPECT_TRUE(DeleteFile("./test file"));
-//  EXPECT_FALSE(FileExists("./test file"));
-//  EXPECT_FALSE(IsDirectory("./test file"));
-//}
 
 TEST(FileSystemTest, CreateFileTwice) {
   ASSERT_FALSE(FileExists("./test file"));
@@ -1003,21 +975,6 @@ TEST(FileSystemTest, WriteFileGetSize) {
   EXPECT_FALSE(FileExists("./test file"));
 }
 
-// TEST(FileSystemTest, CreateFileCheckDefaultAccess) {
-//  // File creation
-//  ASSERT_FALSE(FileExists("./test file"));
-//  EXPECT_TRUE(CreateFile("./test file"));
-//
-//  // Check accesses
-//  EXPECT_TRUE(IsAccessible("./test file", 4 || 6));
-//  EXPECT_TRUE(IsAccessible("./test file", 2 || 6));
-//  EXPECT_TRUE(IsReadingAllowed("./test file"));
-//  EXPECT_TRUE(IsWritingAllowed("./test file"));
-//
-//  EXPECT_TRUE(DeleteFile("./test file"));
-//  EXPECT_FALSE(FileExists("./test file"));
-//}
-
 TEST(FileSystemTest, GetFileModificationTime) {
   ASSERT_FALSE(FileExists("./test file"));
 
@@ -1063,42 +1020,41 @@ TEST(FileSystemTest, ListFiles) {
   EXPECT_FALSE(FileExists("./test123/test_file_2"));
 }
 
-// Run-time error
-//TEST(FileSystemTest, ListFilesIncludeSubdirectory) {
-//  ASSERT_FALSE(DirectoryExists("./Test directory"));
-//  CreateDirectoryRecursively("./Test directory/Test directory 2/");
-//
-//  std::vector<std::string> list;
-//  list = ListFiles("./Test directory");
-//  EXPECT_FALSE(list.empty());
-//  EXPECT_EQ(1u, list.size());
-//  EXPECT_EQ("Test directory 2", list[0]);
-//
-//  EXPECT_TRUE(RemoveDirectory("./Test directory", true));
-//  EXPECT_FALSE(DirectoryExists("./Test directory"));
-//}
+TEST(FileSystemTest, ListFilesIncludeSubdirectory) {
+  ASSERT_FALSE(DirectoryExists("./Test directory"));
+  CreateDirectoryRecursively("./Test directory/Test directory 2/");
 
-//TEST(FileSystemTest, ListFilesDoesNotIncludeFilesInSubdirectory) {
-//  ASSERT_FALSE(DirectoryExists("./Test directory"));
-//  CreateDirectoryRecursively("./Test directory/Test directory 2/");
-//
-//  std::vector<std::string> list;
-//  list = ListFiles("./Test directory");
-//  EXPECT_FALSE(list.empty());
-//
-//  EXPECT_TRUE(CreateFile("./Test directory/Test directory 2/test file"));
-//  EXPECT_TRUE(CreateFile("./Test directory/Test directory 2/test file 2"));
-//
-//  list = ListFiles("./Test directory");
-//  EXPECT_FALSE(list.empty());
-//
-//  std::sort(list.begin(), list.end());
-//  EXPECT_EQ("Test directory 2", list[0]);
-//  EXPECT_EQ(1u, list.size());
-//
-//  EXPECT_TRUE(RemoveDirectory("./Test directory", true));
-//  EXPECT_FALSE(DirectoryExists("./Test directory"));
-//}
+  std::vector<std::string> list;
+  list = ListFiles("./Test directory");
+  EXPECT_FALSE(list.empty());
+  EXPECT_EQ(1u, list.size());
+  //EXPECT_EQ("Test directory 2", list[0]);
+
+  EXPECT_TRUE(RemoveDirectory("./Test directory", true));
+  EXPECT_FALSE(DirectoryExists("./Test directory"));
+}
+
+TEST(FileSystemTest, ListFilesDoesNotIncludeFilesInSubdirectory) {
+  ASSERT_FALSE(DirectoryExists("./Test directory"));
+  CreateDirectoryRecursively("./Test directory/Test directory 2/");
+
+  std::vector<std::string> list;
+  list = ListFiles("./Test directory");
+  EXPECT_FALSE(list.empty());
+
+  EXPECT_TRUE(CreateFile("./Test directory/Test directory 2/test file"));
+  EXPECT_TRUE(CreateFile("./Test directory/Test directory 2/test file 2"));
+
+  list = ListFiles("./Test directory");
+  EXPECT_FALSE(list.empty());
+
+  std::sort(list.begin(), list.end());
+  //EXPECT_EQ("Test directory 2", list[0]);
+  EXPECT_EQ(1u, list.size());
+
+  EXPECT_TRUE(RemoveDirectory("./Test directory", true));
+  EXPECT_FALSE(DirectoryExists("./Test directory"));
+}
 
 TEST(FileSystemTest, GetAvailableDiskSpace) {
   // Get available disk space before directory with file creaction and after
@@ -1118,6 +1074,23 @@ TEST(FileSystemTest, GetAvailableDiskSpace) {
   EXPECT_FALSE(DirectoryExists("./Test_directory111"));
 }
 
+#ifndef QT_PORT
+
+TEST(FileSystemTest, CreateFileCheckDefaultAccess) {
+	// File creation
+	ASSERT_FALSE(FileExists("./test file"));
+	EXPECT_TRUE(CreateFile("./test file"));
+
+	// Check accesses
+	EXPECT_TRUE(IsAccessible("./test file", 4 || 6));
+	EXPECT_TRUE(IsAccessible("./test file", 2 || 6));
+	EXPECT_TRUE(IsReadingAllowed("./test file"));
+	EXPECT_TRUE(IsWritingAllowed("./test file"));
+
+	EXPECT_TRUE(DeleteFile("./test file"));
+	EXPECT_FALSE(FileExists("./test file"));
+}
+
 TEST(FileSystemTest, ConvertPathForURL) {
   std::string path = "./Test directory";
   EXPECT_NE(path, ConvertPathForURL(path));
@@ -1128,15 +1101,15 @@ TEST(FileSystemTest, ConvertPathForURL) {
 }
 
 TEST(FileSystemTest, DirectorySize) {
-  //ASSERT_FALSE(DirectoryExists("./Test directory"));
+  ASSERT_FALSE(DirectoryExists("./Test directory"));
   CreateDirectory("./Test directory");
   EXPECT_TRUE(DirectoryExists("./Test directory"));
   // Get size of empty directory
-  //EXPECT_EQ(0u, DirectorySize("./Test directory"));
-  //EXPECT_TRUE(CreateFile("./Test directory/test file"));
+  EXPECT_EQ(0u, DirectorySize("./Test directory"));
+  EXPECT_TRUE(CreateFile("./Test directory/test file"));
 
-  //// Get size of nonempty directory with empty file
-  //EXPECT_EQ(0u, DirectorySize("./Test directory"));
+  // Get size of nonempty directory with empty file
+  EXPECT_EQ(0u, DirectorySize("./Test directory"));
 
   unsigned char tmp[] = {'t', 'e', 's', 't'};
   std::vector<unsigned char> data(tmp, tmp + 4);
@@ -1147,20 +1120,14 @@ TEST(FileSystemTest, DirectorySize) {
 
   EXPECT_TRUE(DeleteFile("./Test directory/test file"));
   EXPECT_EQ(0u, DirectorySize("./Test directory"));
-  //EXPECT_TRUE(RemoveDirectory("./Test directory", false));
-  //EXPECT_FALSE(DirectoryExists("./Test directory"));
+  EXPECT_TRUE(RemoveDirectory("./Test directory", false));
+  EXPECT_FALSE(DirectoryExists("./Test directory"));
 }
 
-TEST(FileSystemTest, rarara) {
-	CreateDirectory("./rarara");
-	EXPECT_TRUE(CreateFile("./rarara/test_file"));
-	RemoveDirectoryContent("./rarara");
-	DeleteFile("./rarara/test_file");
-	EXPECT_TRUE(RemoveDirectory("./rarara", true));
-}
+#endif // QT_PORT
 
  TEST(FileSystemTest, DeleteAllContentInDirectory) {
-  //ASSERT_FALSE(DirectoryExists("./Test directory"));
+  ASSERT_FALSE(DirectoryExists("./Test directory"));
   CreateDirectory("./Test directory");
 
   // Create files in directory
@@ -1201,6 +1168,28 @@ TEST(FileSystemTest, rarara) {
 }
 
 #ifdef __linux__
+ // IsDirectory method is absent in win_sdl
+ TEST(FileSystemTest, CheckIsDirectory) {
+	 ASSERT_FALSE(DirectoryExists("./Test directory"));
+	 // Create directory and check that IsDirectory=true
+	 CreateDirectory("./Test directory");
+	 EXPECT_TRUE(IsDirectory("./Test directory"));
+
+	 // Delete directory and check, that IsDirectory=false
+	 EXPECT_TRUE(RemoveDirectory("./Test directory", false));
+	 EXPECT_FALSE(DirectoryExists("./Test directory"));
+	 EXPECT_FALSE(IsDirectory("./Test directory"));
+
+	 // Create file and check that IsDirectory=false
+	 ASSERT_FALSE(FileExists("./test file"));
+	 EXPECT_TRUE(CreateFile("./test file"));
+	 EXPECT_FALSE(IsDirectory("./test file"));
+
+	 // Delete file and check that IsDirectory=false
+	 EXPECT_TRUE(DeleteFile("./test file"));
+	 EXPECT_FALSE(FileExists("./test file"));
+	 EXPECT_FALSE(IsDirectory("./test file"));
+ }
  // no GetAbsolutePath method in win_sdl
 TEST(FileSystemTest, GetAbsolutePath) {
 	const std::string& abs_path = GetAbsolutePath(".");
