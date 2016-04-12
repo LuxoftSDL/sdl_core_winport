@@ -33,7 +33,7 @@
 #include "utils/signals.h"
 #include "utils/logger.h"
 
-CREATE_LOGGERPTR_GLOBAL(logger_, "Util")
+CREATE_LOGGERPTR_GLOBAL(logger_, "Utils")
 
 namespace {
 HANDLE signal_handle = NULL;

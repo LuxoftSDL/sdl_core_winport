@@ -34,6 +34,8 @@
 #if defined(OS_POSIX)
 #include <sys/socket.h>
 #include <sys/types.h>
+#include <netinet/in.h>
+#include <netinet/tcp.h>
 #elif defined(OS_WINDOWS)
 #include "utils/winhdr.h"
 #endif

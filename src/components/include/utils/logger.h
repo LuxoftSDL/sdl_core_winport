@@ -65,7 +65,7 @@ struct LogLocation {
 };
 
 #if defined(LOG4CXX_LOGGER)
-typedef log4cxx::LoggerPtr logger LoggerType;
+typedef log4cxx::LoggerPtr LoggerType;
 #else
 typedef std::string LoggerType;
 #endif

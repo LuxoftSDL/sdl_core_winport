@@ -130,7 +130,7 @@ Integer<T, minval, maxval>::Integer(const utils::json::JsonValueRef& value)
     : PrimitiveType(InitHelper(value, &utils::json::JsonValueRef::IsInt))
     , value_() {
   if (is_valid()) {
-    utils::json::JsonValue::Int intval = value.AsInt();
+    utils::json::JsonValue::UInt intval = value.AsUInt();
     if (range_.Includes(intval)) {
       value_ = IntType(intval);
     } else {
@@ -240,7 +240,7 @@ Enum<T>::Enum(const utils::json::JsonValueRef& value, EnumType def_value)
     value_state_ = kValid;
   } else if (is_valid()) {
     value_state_ =
-        EnumFromJsonString(value.asString(), &value_) ? kValid : kInvalid;
+        EnumFromJsonString(value.AsString(), &value_) ? kValid : kInvalid;
   }
 }
 
@@ -254,7 +254,7 @@ template <typename T, size_t minsize, size_t maxsize>
 Array<T, minsize, maxsize>::Array(utils::json::JsonValueRef& value)
     : CompositeType(InitHelper(value, &utils::json::JsonValueRef::IsArray)) {
   if (value.IsValid()) {
-    if (value.isArray()) {
+    if (value.IsArray()) {
       this->reserve(value.Size());
       for (utils::json::JsonValue::iterator i = value.begin(),
                                             end = value.end();
@@ -302,7 +302,7 @@ utils::json::JsonValue Array<T, minsize, maxsize>::ToJsonValue() const {
 // Non-const version
 template <typename T, size_t minsize, size_t maxsize>
 Map<T, minsize, maxsize>::Map(utils::json::JsonValueRef& value)
-    : CompositeType(InitHelper(value, &utils::json::JsonValueRef::isObject)) {
+    : CompositeType(InitHelper(value, &utils::json::JsonValueRef::IsObject)) {
   if (value.IsValid()) {
     if (value.IsObject()) {
       for (utils::json::JsonValue::iterator i = value.begin(),
@@ -395,8 +395,8 @@ template <typename T>
 template <typename U>
 Stringifyable<T>::Stringifyable(const utils::json::JsonValueRef& value,
                                 const U& def_value)
-    : T(value.IsValid && !value.IsString() ? (value, def_value)
-                                           : utils::json::JsonValueRef())
+    : T(value.IsValid() && !value.IsString() ? (value, def_value)
+                                             : utils::json::JsonValueRef())
     , predefined_string_(value.IsValid() && value.IsString() ? value.AsString()
                                                              : "") {}
 

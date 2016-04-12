@@ -30,28 +30,28 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 #include "utils/macro.h"
-#include "utils/threads/message_loop_thread.h"
+#include "utils/log_message_loop_thread.h"
 
 #if defined(LOG4CXX_LOGGER)
 #include <log4cxx/logger.h>
 
 namespace {
 
-log4cxx::Level GetLog4cxxLogLevel(const logger::LogLevel::Type level) {
+log4cxx::LevelPtr GetLog4cxxLogLevel(const logger::LogLevel::Type level) {
   using namespace logger;
   switch (level) {
     case LogLevel::LL_TRACE:
-      return level = log4cxx::Level::getTrace();
+      return log4cxx::Level::getTrace();
     case LogLevel::LL_DEBUG:
-      return level = log4cxx::Level::getDebug();
+      return log4cxx::Level::getDebug();
     case LogLevel::LL_INFO:
-      return level = log4cxx::Level::getInfo();
+      return log4cxx::Level::getInfo();
     case LogLevel::LL_WARN:
-      return level = log4cxx::Level::getWarn();
+      return log4cxx::Level::getWarn();
     case LogLevel::LL_ERROR:
-      return level = log4cxx::Level::getError();
+      return log4cxx::Level::getError();
     case LogLevel::LL_FATAL:
-      return level = log4cxx::Level::getFatal();
+      return log4cxx::Level::getFatal();
     default:
       NOTREACHED();
   }

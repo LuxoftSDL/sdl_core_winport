@@ -33,7 +33,7 @@
 #include "utils/logger.h"
 #include <QCoreApplication>
 
-CREATE_LOGGERPTR_GLOBAL(logger_, "Util")
+CREATE_LOGGERPTR_GLOBAL(logger_, "Utils")
 
 namespace {
 
