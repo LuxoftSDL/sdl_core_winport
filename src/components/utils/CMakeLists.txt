@@ -1,4 +1,4 @@
-# Copyright (c) 2015, Ford Motor Company
+# Copyright (c) 2016, Ford Motor Company
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -62,7 +62,6 @@ if(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
             ${UTILS_SRC_DIR}/lock_qt.cc
             ${UTILS_SRC_DIR}/rwlock_qt.cc
             ${UTILS_SRC_DIR}/date_time_qt.cc
-            ${UTILS_SRC_DIR}/system.cc
             ${UTILS_SRC_DIR}/signals_qt.cc
             ${UTILS_SRC_DIR}/gen_hash.cc
             ${UTILS_SRC_DIR}/threads/thread_validator.cc
@@ -245,10 +244,6 @@ else()
 
     target_link_libraries("Utils" ${LIBRARIES})
 
-
-    if(BUILD_TESTS)
-      add_subdirectory(test)
-    endif()
 endif()
 
     install(TARGETS "Utils"
@@ -258,3 +253,8 @@ endif()
         GROUP_READ
         WORLD_READ
     )
+
+
+if(BUILD_TESTS)
+  add_subdirectory(test)
+endif()

@@ -36,20 +36,33 @@ include_directories(
     ${GMOCK_INCLUDE_DIRECTORY}
     ${COMPONENTS_DIR}/connection_handler/include
     ${COMPONENTS_DIR}/security_manager/test/include
+    ${COMPONENTS_DIR}/protocol_handler/test/include
     ${COMPONENTS_DIR}/security_manager/include
+    ${COMPONENTS_DIR}/application_manager/include
+    ${COMPONENTS_DIR}/connection_handler/test/include
+    ${COMPONENTS_DIR}/transport_manager/test/include
+	${COMPONENTS_DIR}/include/test
 )
 
 set(LIBRARIES
     gmock
     connectionHandler
     ConfigProfile
+    ProtocolHandler
+    TransportManager
 )
 
 set(SOURCES
-    connection_handler_impl_test.cc
+    #connection_handler_impl_test.cc
     connection_test.cc
+    device_test.cc
     heart_beat_monitor_test.cc
 )
+
+if(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
+  set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /FORCE" )
+  set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /IGNORE:4099" )
+endif()  
 
 file(COPY ${appMain_DIR}/smartDeviceLink.ini DESTINATION "./")
 

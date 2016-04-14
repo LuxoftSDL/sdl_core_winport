@@ -70,7 +70,7 @@ const std::string GeneratedCodeTest::kEndpointsCreation =
 
 const std::string GeneratedCodeTest::kEndpointsContent =
     "INSERT INTO Endpoints "
-    "VALUES (1, '0x07', null, 'http://test.example.com', 1)";
+    "VALUES (1, '0x07', null, 'http://url.example.com', 1)";
 
 const std::string GeneratedCodeTest::kAppPoliciesCreation =
     "CREATE TABLE AppPolicies ("
@@ -88,7 +88,7 @@ const std::string GeneratedCodeTest::kGroupsCreation =
 TEST_F(GeneratedCodeTest,
        FindSectionEndpoints_OpenDBSetDefaultUrl_ExpectDefaultUrl) {
   // arrange
-  dbms::SQLDatabase db(GeneratedCodeTest::kDatabaseName);
+  dbms::SQLDatabase db(GeneratedCodeTest::kDatabaseName, "test");
 
   // assert
   EXPECT_TRUE(db.Open());
@@ -102,13 +102,13 @@ TEST_F(GeneratedCodeTest,
   std::string url = ep["0x07"]["default"].front();
 
   // assert
-  EXPECT_EQ("http://test.example.com", url);
+  EXPECT_EQ("http://url.example.com", url);
 }
 
 TEST_F(GeneratedCodeTest,
        RemoveSectionEndpoints_RemoveSectionEndpoints_Expect0EndPoints) {
   // arrange
-  dbms::SQLDatabase db(GeneratedCodeTest::kDatabaseName);
+  dbms::SQLDatabase db(GeneratedCodeTest::kDatabaseName, "test");
 
   // assert
   EXPECT_TRUE(db.Open());
@@ -133,7 +133,7 @@ TEST_F(GeneratedCodeTest,
 TEST_F(GeneratedCodeTest,
        UpdateSectionEndpoints_SetUrlPoint_ExpectPointEqualsUrl) {
   // arrange
-  dbms::SQLDatabase db(GeneratedCodeTest::kDatabaseName);
+  dbms::SQLDatabase db(GeneratedCodeTest::kDatabaseName, "test");
 
   // assert
   EXPECT_TRUE(db.Open());
@@ -176,7 +176,7 @@ TEST_F(GeneratedCodeTest,
 TEST_F(GeneratedCodeTest,
        UpdateSectionAppPolicies_SetAppParams_ExpectDBHasThem) {
   // arrange
-  dbms::SQLDatabase db(GeneratedCodeTest::kDatabaseName);
+  dbms::SQLDatabase db(GeneratedCodeTest::kDatabaseName, "test");
 
   // assert
   EXPECT_TRUE(db.Open());

@@ -55,3 +55,7 @@ endif()
 
 add_library("ConfigProfile" ${HEADERS} ${SOURCES})
 target_link_libraries("ConfigProfile" Utils)
+
+if(BUILD_TESTS)
+  add_subdirectory(test)
+endif()

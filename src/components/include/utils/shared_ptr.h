@@ -169,6 +169,12 @@ class SharedPtr {
   void reset(ObjectType* other);
   ObjectType* get() const;
 
+#ifdef BUILD_TESTS 
+  inline const uint32_t* get_ReferenceCounter() const {
+	  return reinterpret_cast<uint32_t*>(mReferenceCounter);
+  }
+#endif // BUILD_TESTS
+
   /**
    * @return true if mObject not NULL
    */

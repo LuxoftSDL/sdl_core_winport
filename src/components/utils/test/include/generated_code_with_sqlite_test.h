@@ -52,7 +52,7 @@ bool FindSection(dbms::SQLDatabase* db, policy_table::ServiceEndpoints& ep) {
    * index, service_type, application_id, url, is_default
    *
    * If url belongs to default section, application_id should be null and
-   * is_defaut = true
+   *is_defaut = true
    * Otherwise application_id should be set and is_default = false
    */
 
@@ -137,7 +137,7 @@ bool UpdateSection(dbms::SQLDatabase* db,
    * index, service_type, application_id, url, is_default
    *
    * If url belongs to default section, application_id should be null and
-   * is_defaut = true
+   *is_defaut = true
    * Otherwise application_id should be set and is_default = false
    */
 

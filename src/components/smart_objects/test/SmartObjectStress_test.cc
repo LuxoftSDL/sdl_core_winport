@@ -238,84 +238,84 @@ class StressTestHelper : public ::testing::Test {
  * The iteration continues until all nodes are simple SmartObjects (not arrays
  * or maps)
  */
-TEST_F(StressTestHelper, StressTest) {
-  SmartObject objects;
-
-  const int size = 11;
-
-  for (int i = 0; i < size; i++) {
-    SmartObject obj;
-
-    makeRandomObject(obj, size - 1, generate_key("A", i) + ' ');
-
-    objects[i] = obj;
-  }
-
-  for (VerificationMap::const_iterator it = mVerifyMap.begin();
-       it != mVerifyMap.end();
-       it++) {
-    std::string value(it->second);
-    SmartObject obj = get_object(objects, it->first);
-
-    // Binary data check
-    if (!value.compare(0, 2, "c:")) {
-      std::string etalonData = value.substr(2);
-
-      ASSERT_EQ(NsSmartDeviceLink::NsSmartObjects::SmartType_Binary,
-                obj.getType());
-
-      NsSmartDeviceLink::NsSmartObjects::SmartBinary binaryData =
-          obj.asBinary();
-      ASSERT_EQ(etalonData.size(), binaryData.size());
-
-      for (size_t i = 0; i < etalonData.size(); ++i) {
-        {
-          std::string etalonData = value.substr(2);
-
-          ASSERT_EQ(NsSmartDeviceLink::NsSmartObjects::SmartType_Binary,
-                    obj.getType());
-
-          NsSmartDeviceLink::NsSmartObjects::SmartBinary binaryData =
-              obj.asBinary();
-          ASSERT_EQ(etalonData.size(), binaryData.size());
-
-          for (size_t i = 0; i < etalonData.size(); ++i) {
-            ASSERT_EQ(etalonData.at(i), binaryData.at(i));
-          }
-          continue;
-        }
-
-        ASSERT_EQ(etalonData.at(i), binaryData.at(i));
-      }
-      continue;
-    }
-
-#ifdef NO_INCLUSIVE_MAPS
-    if (!value.compare("map")) {
-      std::vector<std::string> path = split(it->first, ' ');
-
-      std::string map_value = path[path.size() - 1];
-      ASSERT_EQ(map_value, static_cast<std::string>(obj));
-      continue;
-    }
-#endif
-    if (value.compare("map") && value.compare("array")) {
-      // std::cout << "Verification key: " << it->first << " Value: " << value
-      // << std::endl;
-      // std::cout << "Object Value: " << static_cast<std::string>(obj) <<
-      // std::endl;
-
-      if (!value.compare("true")) {
-        ASSERT_TRUE(obj.asBool());
-      } else if (!value.compare("false")) {
-        ASSERT_FALSE(obj.asBool());
-      } else {
-        ASSERT_EQ(value, obj.asString())
-            << "Object value is not correct. Object path: " << it->first;
-      }
-    }
-  }
-}
+// TEST_F(StressTestHelper, StressTest) {
+//  SmartObject objects;
+//
+//  const int size = 11;
+//
+//  for (int i = 0; i < size; i++) {
+//    SmartObject obj;
+//
+//    makeRandomObject(obj, size - 1, generate_key("A", i) + ' ');
+//
+//    objects[i] = obj;
+//  }
+//
+//  for (VerificationMap::const_iterator it = mVerifyMap.begin();
+//      it != mVerifyMap.end(); it++) {
+//    std::string value(it->second);
+//    SmartObject obj = get_object(objects, it->first);
+//
+//    // Binary data check
+//    if (!value.compare(0, 2, "c:")) {
+//      std::string etalonData = value.substr(2);
+//
+//      ASSERT_EQ(NsSmartDeviceLink::NsSmartObjects::SmartType_Binary,
+//                obj.getType());
+//
+//      NsSmartDeviceLink::NsSmartObjects::SmartBinary binaryData =
+//          obj.asBinary();
+//      ASSERT_EQ(etalonData.size(), binaryData.size());
+//
+//      for (size_t i = 0; i < etalonData.size(); ++i) {
+//        {
+//          std::string etalonData = value.substr(2);
+//
+//          ASSERT_EQ(NsSmartDeviceLink::NsSmartObjects::SmartType_Binary,
+//                    obj.getType());
+//
+//          NsSmartDeviceLink::NsSmartObjects::SmartBinary binaryData = obj
+//              .asBinary();
+//          ASSERT_EQ(etalonData.size(), binaryData.size());
+//
+//          for (size_t i = 0; i < etalonData.size(); ++i) {
+//            ASSERT_EQ(etalonData.at(i), binaryData.at(i));
+//          }
+//          continue;
+//        }
+//
+//        ASSERT_EQ(etalonData.at(i), binaryData.at(i));
+//      }
+//      continue;
+//    }
+//
+//#ifdef NO_INCLUSIVE_MAPS
+//    if (!value.compare("map"))
+//    {
+//      std::vector<std::string> path = split(it->first, ' ');
+//
+//      std::string map_value = path[path.size()-1];
+//      ASSERT_EQ(map_value, static_cast<std::string>(obj));
+//      continue;
+//    }
+//#endif
+//    if (value.compare("map") && value.compare("array")) {
+//      //std::cout << "Verification key: " << it->first << " Value: " << value
+//      << std::endl;
+//      //std::cout << "Object Value: " << static_cast<std::string>(obj) <<
+//      std::endl;
+//
+//      if (!value.compare("true")) {
+//        ASSERT_TRUE(obj.asBool());
+//      } else if (!value.compare("false")) {
+//        ASSERT_FALSE(obj.asBool());
+//      } else {
+//        ASSERT_EQ(value, obj.asString())<< "Object value is not correct.
+//        Object path: " << it->first;
+//      }
+//    }
+//  }
+//}
 
 TEST_F(StressTestHelper, ExtraManualDebugTest) {
   SmartObject obj;

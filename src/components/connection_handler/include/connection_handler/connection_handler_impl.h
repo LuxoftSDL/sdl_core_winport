@@ -71,6 +71,7 @@ class ConnectionHandlerImpl
       public DevicesDiscoveryStarter,
       public utils::Singleton<ConnectionHandlerImpl> {
  public:
+  // const DeviceMap& getDeviceList();
   /**
    * \brief Destructor
    */
@@ -472,6 +473,7 @@ class ConnectionHandlerImpl
 #ifdef BUILD_TESTS
   // Methods for test usage
  public:
+  const DeviceMap& getDeviceList();
   ConnectionList& getConnectionList();
   void addDeviceConnection(
       const transport_manager::DeviceInfo& device_info,

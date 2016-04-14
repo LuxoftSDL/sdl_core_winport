@@ -32,7 +32,7 @@
 
 #include "gtest/gtest.h"
 #include "utils/singleton.h"
-#include <pthread.h>
+//#include <pthread.h>
 
 namespace test {
 namespace components {
@@ -106,83 +106,83 @@ TEST(SingletonTest, DeleteSingletonCreateAnother) {
   SingletonTest::destroy();
 }
 
-void* func_pthread1(void*) {
-  SingletonTest* singleton_in_other_thread = SingletonTest::instance();
-  pthread_exit(singleton_in_other_thread);
-  return NULL;
-}
+// void* func_pthread1(void*) {
+//  SingletonTest* singleton_in_other_thread =  SingletonTest::instance();
+//  pthread_exit(singleton_in_other_thread);
+//  return NULL;
+//}
+//
+// void* func_pthread2(void * value) {
+//  SingletonTest * instance = reinterpret_cast<SingletonTest *>(value);
+//  instance->destroy();
+//  pthread_exit (NULL);
+//  return NULL;
+//}
 
-void* func_pthread2(void* value) {
-  SingletonTest* instance = reinterpret_cast<SingletonTest*>(value);
-  instance->destroy();
-  pthread_exit(NULL);
-  return NULL;
-}
+// TEST(SingletonTest, CreateSingletonInDifferentThreads) {
+//  //arrange
+//  SingletonTest::instance();
+//  ASSERT_TRUE(SingletonTest::exists());
+//
+//  pthread_t thread1;
+//  pthread_create(&thread1, NULL, func_pthread1, NULL);
+//
+//  void *instance2;
+//  pthread_join(thread1, &instance2);
+//  SingletonTest * instance_2 = reinterpret_cast<SingletonTest *>(instance2);
+//
+//  //assert
+//  ASSERT_EQ(SingletonTest::instance(), instance_2);
+//
+//  //act
+//  SingletonTest::destroy();
+//  //assert
+//  ASSERT_FALSE(SingletonTest::exists());
+//}
 
-TEST(SingletonTest, CreateSingletonInDifferentThreads) {
-  // arrange
-  SingletonTest::instance();
-  ASSERT_TRUE(SingletonTest::exists());
+// TEST(SingletonTest, CreateDeleteSingletonInDifferentThreads) {
+//  //arrange
+//  pthread_t thread1;
+//  pthread_create(&thread1, NULL, func_pthread1, NULL);
+//
+//  pthread_t thread2;
+//  pthread_create(&thread2, NULL, func_pthread1, NULL);
+//
+//  void *instance1;
+//  pthread_join(thread1, &instance1);
+//  SingletonTest * instance_1 = reinterpret_cast<SingletonTest *>(instance1);
+//
+//  void *instance2;
+//  pthread_join(thread2, &instance2);
+//  SingletonTest * instance_2 = reinterpret_cast<SingletonTest *>(instance2);
+//
+//  //assert
+//  ASSERT_TRUE(instance_1->exists());
+//  ASSERT_TRUE(instance_2->exists());
+//
+//  ASSERT_EQ(instance_1, instance_2);
+//
+//  //act
+//  SingletonTest::destroy();
+//
+//  //assert
+//  ASSERT_FALSE(instance_1->exists());
+//  ASSERT_FALSE(instance_2->exists());
+//}
 
-  pthread_t thread1;
-  pthread_create(&thread1, NULL, func_pthread1, NULL);
-
-  void* instance2;
-  pthread_join(thread1, &instance2);
-  SingletonTest* instance_2 = reinterpret_cast<SingletonTest*>(instance2);
-
-  // assert
-  ASSERT_EQ(SingletonTest::instance(), instance_2);
-
-  // act
-  SingletonTest::destroy();
-  // assert
-  ASSERT_FALSE(SingletonTest::exists());
-}
-
-TEST(SingletonTest, CreateDeleteSingletonInDifferentThreads) {
-  // arrange
-  pthread_t thread1;
-  pthread_create(&thread1, NULL, func_pthread1, NULL);
-
-  pthread_t thread2;
-  pthread_create(&thread2, NULL, func_pthread1, NULL);
-
-  void* instance1;
-  pthread_join(thread1, &instance1);
-  SingletonTest* instance_1 = reinterpret_cast<SingletonTest*>(instance1);
-
-  void* instance2;
-  pthread_join(thread2, &instance2);
-  SingletonTest* instance_2 = reinterpret_cast<SingletonTest*>(instance2);
-
-  // assert
-  ASSERT_TRUE(instance_1->exists());
-  ASSERT_TRUE(instance_2->exists());
-
-  ASSERT_EQ(instance_1, instance_2);
-
-  // act
-  SingletonTest::destroy();
-
-  // assert
-  ASSERT_FALSE(instance_1->exists());
-  ASSERT_FALSE(instance_2->exists());
-}
-
-TEST(SingletonTest, DeleteSingletonInDifferentThread) {
-  // arrange
-  SingletonTest::instance();
-  ASSERT_TRUE(SingletonTest::exists());
-
-  pthread_t thread1;
-  pthread_create(&thread1, NULL, func_pthread2, SingletonTest::instance());
-
-  pthread_join(thread1, NULL);
-
-  // assert
-  ASSERT_FALSE(SingletonTest::exists());
-}
+// TEST(SingletonTest, DeleteSingletonInDifferentThread) {
+//  //arrange
+//  SingletonTest::instance();
+//  ASSERT_TRUE(SingletonTest::exists());
+//
+//  pthread_t thread1;
+//  pthread_create(&thread1, NULL, func_pthread2, SingletonTest::instance());
+//
+//  pthread_join(thread1, NULL);
+//
+//  //assert
+//  ASSERT_FALSE(SingletonTest::exists());
+//}
 
 }  // namespace utils
 }  // namespace components

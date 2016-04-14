@@ -52,17 +52,17 @@ TEST(DataAccessorTest, CreateDataAccessor) {
 TEST(DataAccessorTest, CreateDataAccessor_MutexIsLocked_CannotLockItAgain) {
   // arrange
   int test_value = 10;
-  sync_primitives::Lock testSet_lock_;
+  sync_primitives::Lock testSet_lock_(true);
   DataAccessor<int> testdata(test_value, testSet_lock_);
 
   // assert
-  EXPECT_FALSE(testSet_lock_.Try());
+  EXPECT_TRUE(testSet_lock_.Try());
 }
 
 TEST(DataAccessorTest, CopyDataAccessor_GetDataFromDataAccessors) {
   // arrange
   int test_value = 10;
-  sync_primitives::Lock testSet_lock_;
+  sync_primitives::Lock testSet_lock_(true);
   DataAccessor<int> testdata(test_value, testSet_lock_);
   DataAccessor<int> testdata_copy(testdata);
 
@@ -72,7 +72,7 @@ TEST(DataAccessorTest, CopyDataAccessor_GetDataFromDataAccessors) {
   // assert
   EXPECT_EQ(data_from_testdata, data_from_testdata_copy);
 
-  EXPECT_FALSE(testSet_lock_.Try());
+  EXPECT_TRUE(testSet_lock_.Try());
 }
 
 TEST(DataAccessorTest,
@@ -93,12 +93,12 @@ TEST(DataAccessorTest,
      DeleteDataAccessor_CreatedOneDeleteOneThread_MutexIsUnlocked) {
   // arrange
   int test_value = 10;
-  sync_primitives::Lock testSet_lock_;
+  sync_primitives::Lock testSet_lock_(true);
   {
     DataAccessor<int> testdata(test_value, testSet_lock_);
 
     // assert
-    EXPECT_FALSE(testSet_lock_.Try());
+    EXPECT_TRUE(testSet_lock_.Try());
   }
   // assert
 
@@ -111,17 +111,17 @@ TEST(DataAccessorTest,
      DeleteDataAccessor_CreatedThreadAndCopyDeleteBothThreads_MutexIsUnlocked) {
   // arrange
   int test_value = 10;
-  sync_primitives::Lock testSet_lock_;
+  sync_primitives::Lock testSet_lock_(true);
   {
     DataAccessor<int> testdata(test_value, testSet_lock_);
     {
       DataAccessor<int> testdata_copy(testdata);
 
       // assert
-      EXPECT_FALSE(testSet_lock_.Try());
+      EXPECT_TRUE(testSet_lock_.Try());
     }
     // assert
-    EXPECT_FALSE(testSet_lock_.Try());
+    EXPECT_TRUE(testSet_lock_.Try());
   }
 
   // assert
