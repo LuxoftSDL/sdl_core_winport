@@ -83,7 +83,7 @@ int gettimeofday(struct timeval *tv/*in*/, struct timezone *tz/*in*/)
 	/*converting file time to unix epoch*/
 	tmpres /= 10;  /*convert into microseconds*/
 	tmpres -= DELTA_EPOCH_IN_MICROSECS;
-	tv->tv_sec = (__int32)(tmpres*0.000001);
+	tv->tv_sec = static_cast<__int32>(tmpres*0.000001);
 	tv->tv_usec = (tmpres % 1000000);
 
 	//_tzset(),don't work properly, so we use GetTimeZoneInformation
@@ -97,8 +97,8 @@ int gettimeofday(struct timeval *tv/*in*/, struct timezone *tz/*in*/)
 void timersub(struct timeval* x, struct timeval* y, struct timeval* res) {
   double x_ms, y_ms;
 
-  x_ms = (double)x->tv_sec * 1000000 + (double)x->tv_usec;
-  y_ms = (double)y->tv_sec * 1000000 + (double)y->tv_usec;
+  x_ms = static_cast<double>(x->tv_sec) * 1000000 + static_cast<double>(x->tv_usec);
+  y_ms = static_cast<double>(y->tv_sec) * 1000000 + static_cast<double>(y->tv_usec);
 
   res->tv_usec = static_cast<__int32>((double)y_ms - (double)x_ms);
 }
@@ -109,8 +109,9 @@ void timerclear(struct timeval *tvp) {
 }
 
 bool timerisset(struct timeval *tvp) {
-	if (tvp->tv_sec == 0 || tvp->tv_usec == 0)
+	if (tvp->tv_sec == 0 || tvp->tv_usec == 0) {
 		return false;
+	}
 	return true;
 }
 
@@ -122,11 +123,11 @@ bool timerisset(struct timeval *tvp) {
 void usleep(int waitTime) {
 	__int64 time1 = 0, time2 = 0, freq = 0;
 
-	QueryPerformanceCounter((LARGE_INTEGER *)&time1);
-	QueryPerformanceFrequency((LARGE_INTEGER *)&freq);
+	QueryPerformanceCounter(reinterpret_cast<LARGE_INTEGER*>(&time1));
+	QueryPerformanceFrequency(reinterpret_cast<LARGE_INTEGER*>(&freq));
 
 	do {
-		QueryPerformanceCounter((LARGE_INTEGER *)&time2);
+		QueryPerformanceCounter(reinterpret_cast<LARGE_INTEGER*>(&time2));
 	} while ((time2 - time1) < waitTime);
 }
 
