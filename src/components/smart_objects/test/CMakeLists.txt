@@ -46,20 +46,24 @@ set(LIBRARIES
 )
 
 set(SOURCES
-  ${COMPONENTS_DIR}/smart_objects/test/SmartObjectDraft_test.cc
-  ${COMPONENTS_DIR}/smart_objects/test/SmartObjectInvalid_test.cc
-  ${COMPONENTS_DIR}/smart_objects/test/SmartObjectStress_test.cc
-  ${COMPONENTS_DIR}/smart_objects/test/SmartObjectUnit_test.cc
-  ${COMPONENTS_DIR}/smart_objects/test/smart_object_performance_test.cc
-  ${COMPONENTS_DIR}/smart_objects/test/map_performance_test.cc
-  ${COMPONENTS_DIR}/smart_objects/test/BoolSchemaItem_test.cc
-  ${COMPONENTS_DIR}/smart_objects/test/NumberSchemaItem_test.cc
-  ${COMPONENTS_DIR}/smart_objects/test/StringSchemaItem_test.cc
-  ${COMPONENTS_DIR}/smart_objects/test/ArraySchemaItem_test.cc
-  ${COMPONENTS_DIR}/smart_objects/test/CObjectSchemaItem_test.cc
-  ${COMPONENTS_DIR}/smart_objects/test/AlwaysTrueSchemaItem_test.cc
-  ${COMPONENTS_DIR}/smart_objects/test/AlwaysFalseSchemaItem_test.cc
+  ${COMPONENTS_DIR}/smart_objects/test/SmartObjectDraft_test.cc #done
+  ${COMPONENTS_DIR}/smart_objects/test/SmartObjectInvalid_test.cc #done
+  ${COMPONENTS_DIR}/smart_objects/test/SmartObjectStress_test.cc #done
+  ${COMPONENTS_DIR}/smart_objects/test/SmartObjectUnit_test.cc #done
+  ${COMPONENTS_DIR}/smart_objects/test/smart_object_performance_test.cc #done
+  ${COMPONENTS_DIR}/smart_objects/test/map_performance_test.cc #done
+  ${COMPONENTS_DIR}/smart_objects/test/BoolSchemaItem_test.cc #done
+  ${COMPONENTS_DIR}/smart_objects/test/NumberSchemaItem_test.cc #done
+  ${COMPONENTS_DIR}/smart_objects/test/StringSchemaItem_test.cc #done
+  ${COMPONENTS_DIR}/smart_objects/test/ArraySchemaItem_test.cc #done
+  ${COMPONENTS_DIR}/smart_objects/test/CObjectSchemaItem_test.cc # 1 fails
+  ${COMPONENTS_DIR}/smart_objects/test/AlwaysTrueSchemaItem_test.cc #done
+  ${COMPONENTS_DIR}/smart_objects/test/AlwaysFalseSchemaItem_test.cc #done
 )
+
+if(NOT QT_PORT AND ${CMAKE_SYSTEM_NAME} MATCHES "Windows")
+  set_target_properties(security_manager_test PROPERTIES LINK_FLAGS "/machine:X64")
+endif()
 
 create_test("smart_object_test" "${SOURCES}" "${LIBRARIES}")
 

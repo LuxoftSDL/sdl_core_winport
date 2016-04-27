@@ -46,77 +46,77 @@ namespace SchemaItem {
 /**
  * Test ArraySchemaItem no schema item, no min and max size
  **/
-// TEST(test_no_default_value, test_ArraySchemaItemTest) {
-//  using namespace NsSmartDeviceLink::NsSmartObjects;
-//  SmartObject obj;
-//
-//  ISchemaItemPtr item = CArraySchemaItem::create();  // No schema item, no min
-//  and max size
-//
-//  obj[0] = 38;
-//  obj[1] = true;
-//  obj[2] = "New String";
-//  obj[3][0] = 39;
-//  obj[3][1] = false;
-//  obj[3][2] = "Another String";
-//
-//  EXPECT_EQ(38, obj[0].asInt());
-//  EXPECT_TRUE(obj[1].asBool());
-//  EXPECT_EQ(std::string("New String"), obj[2].asString());
-//  EXPECT_EQ(39, obj[3][0].asInt());
-//  EXPECT_FALSE(obj[3][1].asBool());
-//  EXPECT_EQ(std::string("Another String"), obj[3][2].asString());
-//
-//  int resultType = item->validate(obj);
-//  EXPECT_EQ(Errors::OK, resultType);
-//  resultType = item->validate(obj[0]);
-//  EXPECT_EQ(Errors::INVALID_VALUE, resultType);
-//  resultType = item->validate(obj[1]);
-//  EXPECT_EQ(Errors::INVALID_VALUE, resultType);
-//  resultType = item->validate(obj[2]);
-//  EXPECT_EQ(Errors::INVALID_VALUE, resultType);
-//  resultType = item->validate(obj[3]);
-//  EXPECT_EQ(Errors::OK, resultType);
-//
-//  item->applySchema(obj, false);
-//
-//  resultType = item->validate(obj);
-//  EXPECT_EQ(Errors::OK, resultType);
-//  resultType = item->validate(obj[0]);
-//  EXPECT_EQ(Errors::INVALID_VALUE, resultType);
-//  resultType = item->validate(obj[1]);
-//  EXPECT_EQ(Errors::INVALID_VALUE, resultType);
-//  resultType = item->validate(obj[2]);
-//  EXPECT_EQ(Errors::INVALID_VALUE, resultType);
-//  resultType = item->validate(obj[3]);
-//  EXPECT_EQ(Errors::OK, resultType);
-//
-//  EXPECT_EQ(38, obj[0].asInt());
-//  EXPECT_TRUE(obj[1].asBool());
-//  EXPECT_EQ(std::string("New String"), obj[2].asString());
-//  EXPECT_EQ(39, obj[3][0].asInt());
-//  EXPECT_FALSE(obj[3][1].asBool());
-//  EXPECT_EQ(std::string("Another String"), obj[3][2].asString());
-//
-//  //Object - valid string
-//  obj = "New valid string";
-//  ASSERT_EQ(std::string("New valid string"), obj.asString());
-//
-//  resultType = item->validate(obj);
-//  EXPECT_EQ(Errors::INVALID_VALUE, resultType);
-//
-//  //Obj - bool
-//  obj = true;
-//
-//  resultType = item->validate(obj);
-//  EXPECT_EQ(Errors::INVALID_VALUE, resultType);
-//
-//  //Object - number
-//  obj = 3.1415926;
-//
-//  resultType = item->validate(obj);
-//  EXPECT_EQ(Errors::INVALID_VALUE, resultType);
-//}
+TEST(test_no_default_value, test_ArraySchemaItemTest) {
+  using namespace NsSmartDeviceLink::NsSmartObjects;
+  SmartObject obj;
+
+  ISchemaItemPtr item = CArraySchemaItem::create();  // No schema item, no min
+  //and max size
+
+  obj[0] = 38;
+  obj[1] = true;
+  obj[2] = "New String";
+  obj[3][0] = 39;
+  obj[3][1] = false;
+  obj[3][2] = "Another String";
+
+  EXPECT_EQ(38, obj[0].asInt());
+  EXPECT_TRUE(obj[1].asBool());
+  EXPECT_EQ(std::string("New String"), obj[2].asString());
+  EXPECT_EQ(39, obj[3][0].asInt());
+  EXPECT_FALSE(obj[3][1].asBool());
+  EXPECT_EQ(std::string("Another String"), obj[3][2].asString());
+
+  int resultType = item->validate(obj);
+  EXPECT_EQ(Errors::OK, resultType);
+  resultType = item->validate(obj[0]);
+  EXPECT_EQ(Errors::INVALID_VALUE, resultType);
+  resultType = item->validate(obj[1]);
+  EXPECT_EQ(Errors::INVALID_VALUE, resultType);
+  resultType = item->validate(obj[2]);
+  EXPECT_EQ(Errors::INVALID_VALUE, resultType);
+  resultType = item->validate(obj[3]);
+  EXPECT_EQ(Errors::OK, resultType);
+
+  item->applySchema(obj);
+
+  resultType = item->validate(obj);
+  EXPECT_EQ(Errors::OK, resultType);
+  resultType = item->validate(obj[0]);
+  EXPECT_EQ(Errors::INVALID_VALUE, resultType);
+  resultType = item->validate(obj[1]);
+  EXPECT_EQ(Errors::INVALID_VALUE, resultType);
+  resultType = item->validate(obj[2]);
+  EXPECT_EQ(Errors::INVALID_VALUE, resultType);
+  resultType = item->validate(obj[3]);
+  EXPECT_EQ(Errors::OK, resultType);
+
+  EXPECT_EQ(38, obj[0].asInt());
+  EXPECT_TRUE(obj[1].asBool());
+  EXPECT_EQ(std::string("New String"), obj[2].asString());
+  EXPECT_EQ(39, obj[3][0].asInt());
+  EXPECT_FALSE(obj[3][1].asBool());
+  EXPECT_EQ(std::string("Another String"), obj[3][2].asString());
+
+  //Object - valid string
+  obj = "New valid string";
+  ASSERT_EQ(std::string("New valid string"), obj.asString());
+
+  resultType = item->validate(obj);
+  EXPECT_EQ(Errors::INVALID_VALUE, resultType);
+
+  //Obj - bool
+  obj = true;
+
+  resultType = item->validate(obj);
+  EXPECT_EQ(Errors::INVALID_VALUE, resultType);
+
+  //Object - number
+  obj = 3.1415926;
+
+  resultType = item->validate(obj);
+  EXPECT_EQ(Errors::INVALID_VALUE, resultType);
+}
 
 /**
  * Test ArraySchemaItem with schema item
@@ -124,62 +124,62 @@ namespace SchemaItem {
  * Create ArraySchemaItem with schema item. Method validate should return true
  * only if all array elements are valid schema item objects
  **/
-// TEST(test_item_with_default_value, test_ArraySchemaItemTest) {
-//  using namespace NsSmartDeviceLink::NsSmartObjects;
-//  SmartObject obj;
-//
-//  ISchemaItemPtr item = CArraySchemaItem::create();  // No min and max size
-//
-//  obj[0] = "Some String";
-//  obj[1] = "true";
-//  obj[2] = "New String";
-//
-//  EXPECT_EQ(std::string("Some String"), obj[0].asString());
-//  EXPECT_EQ(std::string("true"), obj[1].asString());
-//  EXPECT_EQ(std::string("New String"), obj[2].asString());
-//
-//  int resultType = item->validate(obj);
-//  EXPECT_EQ(Errors::OK, resultType);
-//  resultType = item->validate(obj[0]);
-//  EXPECT_EQ(Errors::INVALID_VALUE, resultType);
-//  resultType = item->validate(obj[1]);
-//  EXPECT_EQ(Errors::INVALID_VALUE, resultType);
-//  resultType = item->validate(obj[2]);
-//  EXPECT_EQ(Errors::INVALID_VALUE, resultType);
-//
-//  item->applySchema(obj, false);
-//
-//  resultType = item->validate(obj);
-//  EXPECT_EQ(Errors::OK, resultType);
-//  resultType = item->validate(obj[0]);
-//  EXPECT_EQ(Errors::INVALID_VALUE, resultType);
-//  resultType = item->validate(obj[1]);
-//  EXPECT_EQ(Errors::INVALID_VALUE, resultType);
-//  resultType = item->validate(obj[2]);
-//  EXPECT_EQ(Errors::INVALID_VALUE, resultType);
-//
-//  EXPECT_EQ(std::string("Some String"), obj[0].asString());
-//  EXPECT_EQ(std::string("true"), obj[1].asString());
-//  EXPECT_EQ(std::string("New String"), obj[2].asString());
-//
-//  obj[3][0] = "39";
-//  obj[3][1] = "false";
-//  obj[3][2] = "Another String";
-//
-//  EXPECT_EQ(std::string("39"), obj[3][0].asString());
-//  EXPECT_EQ(std::string("false"), obj[3][1].asString());
-//  EXPECT_EQ(std::string("Another String"), obj[3][2].asString());
-//
-//  resultType = item->validate(obj);
-//  EXPECT_EQ(Errors::OK, resultType);
-//  resultType = item->validate(obj[3]);
-//  EXPECT_EQ(Errors::OK, resultType);
-//
-//  obj[3][3] = "Another very very loooooong String";
-//
-//  resultType = item->validate(obj[3]);
-//  EXPECT_EQ(Errors::OK, resultType);
-//}
+TEST(test_item_with_default_value, test_ArraySchemaItemTest) {
+  using namespace NsSmartDeviceLink::NsSmartObjects;
+  SmartObject obj;
+
+  ISchemaItemPtr item = CArraySchemaItem::create();  // No min and max size
+
+  obj[0] = "Some String";
+  obj[1] = "true";
+  obj[2] = "New String";
+
+  EXPECT_EQ(std::string("Some String"), obj[0].asString());
+  EXPECT_EQ(std::string("true"), obj[1].asString());
+  EXPECT_EQ(std::string("New String"), obj[2].asString());
+
+  int resultType = item->validate(obj);
+  EXPECT_EQ(Errors::OK, resultType);
+  resultType = item->validate(obj[0]);
+  EXPECT_EQ(Errors::INVALID_VALUE, resultType);
+  resultType = item->validate(obj[1]);
+  EXPECT_EQ(Errors::INVALID_VALUE, resultType);
+  resultType = item->validate(obj[2]);
+  EXPECT_EQ(Errors::INVALID_VALUE, resultType);
+
+  item->applySchema(obj);
+
+  resultType = item->validate(obj);
+  EXPECT_EQ(Errors::OK, resultType);
+  resultType = item->validate(obj[0]);
+  EXPECT_EQ(Errors::INVALID_VALUE, resultType);
+  resultType = item->validate(obj[1]);
+  EXPECT_EQ(Errors::INVALID_VALUE, resultType);
+  resultType = item->validate(obj[2]);
+  EXPECT_EQ(Errors::INVALID_VALUE, resultType);
+
+  EXPECT_EQ(std::string("Some String"), obj[0].asString());
+  EXPECT_EQ(std::string("true"), obj[1].asString());
+  EXPECT_EQ(std::string("New String"), obj[2].asString());
+
+  obj[3][0] = "39";
+  obj[3][1] = "false";
+  obj[3][2] = "Another String";
+
+  EXPECT_EQ(std::string("39"), obj[3][0].asString());
+  EXPECT_EQ(std::string("false"), obj[3][1].asString());
+  EXPECT_EQ(std::string("Another String"), obj[3][2].asString());
+
+  resultType = item->validate(obj);
+  EXPECT_EQ(Errors::OK, resultType);
+  resultType = item->validate(obj[3]);
+  EXPECT_EQ(Errors::OK, resultType);
+
+  obj[3][3] = "Another very very loooooong String";
+
+  resultType = item->validate(obj[3]);
+  EXPECT_EQ(Errors::OK, resultType);
+}
 
 /**
  * Test ArraySchemaItem with min size

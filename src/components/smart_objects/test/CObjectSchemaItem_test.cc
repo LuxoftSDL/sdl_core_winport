@@ -275,131 +275,131 @@ TEST_F(ObjectSchemaItemTest, validation_unexpected_param) {
   EXPECT_EQ(Errors::OK, schema_item->validate(obj));
 }
 
-// TEST_F(ObjectSchemaItemTest, validation_unexpected_param_remove) {
-//  const char* fake1 = "FAKE_PARAM1";
-//  const char* fake2 = "FAKE_PARAM2";
-//  const char* fake3 = "FAKE_PARAM3";
-//
-//  SmartObject obj = SmartObject(SmartType::SmartType_Map);
-//  obj[S_PARAMS][S_FUNCTION_ID] = 0;
-//  obj[S_PARAMS][S_CORRELATION_ID] = 0XFF;
-//  obj[S_PARAMS][S_PROTOCOL_VERSION] = 1;
-//  obj[S_MSG_PARAMS][Keys::RESULT_CODE] = 2;
-//  obj[S_MSG_PARAMS][Keys::INFO] = "123";
-//  obj[S_MSG_PARAMS][Keys::SUCCESS] = true;
-//
-//  obj[fake1] = SmartObject(static_cast<int64_t>(0));
-//  obj[S_PARAMS][fake2] = SmartObject("123");
-//  obj[S_MSG_PARAMS][fake3] = true;
-//
-//  // Check apply schema, does not remove fake parameter
-//  schema_item->applySchema(obj, false);
-//
-//  EXPECT_TRUE(obj.keyExists(fake1));
-//  EXPECT_TRUE(obj[S_PARAMS].keyExists(fake2));
-//  EXPECT_TRUE(obj[S_MSG_PARAMS].keyExists(fake3));
-//  EXPECT_EQ(Errors::OK, schema_item->validate(obj));
-//
-//  // Check apply schema, remove fake parameter
-//  schema_item->applySchema(obj, true);
-//  EXPECT_FALSE(obj.keyExists(fake1));
-//  EXPECT_FALSE(obj[S_PARAMS].keyExists(fake2));
-//  EXPECT_FALSE(obj[S_MSG_PARAMS].keyExists(fake3));
-//  EXPECT_TRUE(obj[S_PARAMS].keyExists(S_FUNCTION_ID));
-//  EXPECT_TRUE(obj[S_PARAMS].keyExists(S_CORRELATION_ID));
-//  EXPECT_TRUE(obj[S_PARAMS].keyExists(S_PROTOCOL_VERSION));
-//  EXPECT_TRUE(obj[S_MSG_PARAMS].keyExists(Keys::RESULT_CODE));
-//  EXPECT_TRUE(obj[S_MSG_PARAMS].keyExists(Keys::INFO));
-//  EXPECT_TRUE(obj[S_MSG_PARAMS].keyExists(Keys::SUCCESS));
-//  EXPECT_EQ(Errors::OK, schema_item->validate(obj));
-//
-//
-//  obj[fake1] = SmartObject(static_cast<int64_t>(0));
-//  obj[S_PARAMS][fake2] = SmartObject("123");
-//  obj[S_MSG_PARAMS][fake3] = true;
-//
-//  // all fake parameters are removed on unapply schema
-//  schema_item->unapplySchema(obj);
-//
-//  // all fake parameters are removed on unapply schema
-//  EXPECT_FALSE(obj.keyExists(fake1));
-//  EXPECT_FALSE(obj[S_PARAMS].keyExists(fake2));
-//  EXPECT_FALSE(obj[S_MSG_PARAMS].keyExists(fake3));
-//  // Invalide state after enum convertion
-//  EXPECT_EQ(Errors::INVALID_VALUE, schema_item->validate(obj));
-//}
+TEST_F(ObjectSchemaItemTest, validation_unexpected_param_remove) {
+  const char* fake1 = "FAKE_PARAM1";
+  const char* fake2 = "FAKE_PARAM2";
+  const char* fake3 = "FAKE_PARAM3";
 
-// TEST_F(ObjectSchemaItemTest, validation_empty_params) {
-//  SmartObject obj;
-//  obj[S_PARAMS][S_FUNCTION_ID] = 1;
-//  obj[S_PARAMS][S_CORRELATION_ID] = 0xFF;
-//  obj[S_PARAMS][S_PROTOCOL_VERSION] = 2;
-//  obj[S_PARAMS][S_PROTOCOL_TYPE] = 0;
-//  // S_MSG_PARAMS has only fake parameter
-//  obj[S_MSG_PARAMS]["FAKE_PARAM1"] = SmartObject();
-//  obj[S_MSG_PARAMS]["FAKE_PARAM2"] = SmartObject(0x1);
-//  obj[S_MSG_PARAMS]["FAKE_PARAM3"] = SmartObject("2");
-//
-//  EXPECT_EQ(Errors::OK, schema_item->validate(obj));
-//
-//  schema_item->applySchema(obj, false);
-//  EXPECT_EQ(Errors::OK, schema_item->validate(obj));
-//
-//  schema_item->unapplySchema(obj);
-//  // Invalide state after enum convertion
-//  EXPECT_EQ(Errors::INVALID_VALUE, schema_item->validate(obj));
-//}
+  SmartObject obj = SmartObject(SmartType::SmartType_Map);
+  obj[S_PARAMS][S_FUNCTION_ID] = 0;
+  obj[S_PARAMS][S_CORRELATION_ID] = 0XFF;
+  obj[S_PARAMS][S_PROTOCOL_VERSION] = 1;
+  obj[S_MSG_PARAMS][Keys::RESULT_CODE] = 2;
+  obj[S_MSG_PARAMS][Keys::INFO] = "123";
+  obj[S_MSG_PARAMS][Keys::SUCCESS] = true;
 
-// TEST_F(ObjectSchemaItemTest, test_strings_to_enum_conversion) {
-//  SmartObject object;
-//  object[S_PARAMS][S_FUNCTION_ID] = SmartObject();
-//  object[S_PARAMS][S_CORRELATION_ID] = 0XFF0;
-//  object[S_PARAMS][S_PROTOCOL_VERSION] = 1;
-//  object[S_MSG_PARAMS][Keys::RESULT_CODE] = SmartObject();
-//  object[S_MSG_PARAMS][Keys::INFO] = "0123456789";
-//  object[S_MSG_PARAMS][Keys::SUCCESS] = true;
-//
-//  typedef EnumConversionHelper<ResultType::eType>::CStringToEnumMap Results;
-//  const Results results =
-//      EnumConversionHelper<ResultType::eType>::cstring_to_enum_map();
-//
-//  typedef EnumConversionHelper<FunctionID::eType>::CStringToEnumMap Functions;
-//  const Functions functions =
-//      EnumConversionHelper<FunctionID::eType>::cstring_to_enum_map();
-//
-//  for (Results::const_iterator res_it = results.begin();
-//      res_it != results.end(); ++res_it) {
-//    for (Functions::const_iterator func_it = functions.begin();
-//        func_it != functions.end(); ++func_it) {
-//      const char* const function_str = func_it->first;
-//      const char* const result_type_str = res_it->first;
-//      const FunctionID::eType function_type = func_it->second;
-//      const ResultType::eType result_type = res_it->second;
-//
-//      object[S_PARAMS][S_FUNCTION_ID] = function_str;
-//      object[S_MSG_PARAMS][Keys::RESULT_CODE] = result_type_str;
-//
-//      // S_FUNCTION_ID and RESULT_CODE are not converted to int
-//      EXPECT_NE(Errors::OK, schema_item->validate(object));
-//
-//      schema_item->applySchema(object, false);
-//      EXPECT_EQ(Errors::OK, schema_item->validate(object));
-//
-//      // check conversion result
-//      EXPECT_EQ(function_type, object[S_PARAMS][S_FUNCTION_ID].asInt());
-//      EXPECT_EQ(result_type, object[S_MSG_PARAMS][Keys::RESULT_CODE].asInt());
-//
-//      schema_item->unapplySchema(object);
-//      // S_FUNCTION_ID and RESULT_CODE are string
-//      EXPECT_NE(Errors::OK, schema_item->validate(object));
-//
-//      // check conversion result
-//      EXPECT_EQ(function_str, object[S_PARAMS][S_FUNCTION_ID].asString());
-//      EXPECT_EQ(result_type_str,
-//                object[S_MSG_PARAMS][Keys::RESULT_CODE].asString());
-//    }
-// }
-//}
+  obj[fake1] = SmartObject(static_cast<int64_t>(0));
+  obj[S_PARAMS][fake2] = SmartObject("123");
+  obj[S_MSG_PARAMS][fake3] = true;
+
+  // Check apply schema, does not remove fake parameter
+  schema_item->applySchema(obj);
+
+  EXPECT_TRUE(obj.keyExists(fake1));
+  EXPECT_TRUE(obj[S_PARAMS].keyExists(fake2));
+  EXPECT_TRUE(obj[S_MSG_PARAMS].keyExists(fake3));
+  EXPECT_EQ(Errors::OK, schema_item->validate(obj));
+
+  // Check apply schema, remove fake parameter
+  schema_item->applySchema(obj);
+  EXPECT_FALSE(obj.keyExists(fake1));
+  EXPECT_FALSE(obj[S_PARAMS].keyExists(fake2));
+  EXPECT_FALSE(obj[S_MSG_PARAMS].keyExists(fake3));
+  EXPECT_TRUE(obj[S_PARAMS].keyExists(S_FUNCTION_ID));
+  EXPECT_TRUE(obj[S_PARAMS].keyExists(S_CORRELATION_ID));
+  EXPECT_TRUE(obj[S_PARAMS].keyExists(S_PROTOCOL_VERSION));
+  EXPECT_TRUE(obj[S_MSG_PARAMS].keyExists(Keys::RESULT_CODE));
+  EXPECT_TRUE(obj[S_MSG_PARAMS].keyExists(Keys::INFO));
+  EXPECT_TRUE(obj[S_MSG_PARAMS].keyExists(Keys::SUCCESS));
+  EXPECT_EQ(Errors::OK, schema_item->validate(obj));
+
+
+  obj[fake1] = SmartObject(static_cast<int64_t>(0));
+  obj[S_PARAMS][fake2] = SmartObject("123");
+  obj[S_MSG_PARAMS][fake3] = true;
+
+  // all fake parameters are removed on unapply schema
+  schema_item->unapplySchema(obj);
+
+  // all fake parameters are removed on unapply schema
+  EXPECT_FALSE(obj.keyExists(fake1));
+  EXPECT_FALSE(obj[S_PARAMS].keyExists(fake2));
+  EXPECT_FALSE(obj[S_MSG_PARAMS].keyExists(fake3));
+  // Invalide state after enum convertion
+  EXPECT_EQ(Errors::INVALID_VALUE, schema_item->validate(obj));
+}
+
+TEST_F(ObjectSchemaItemTest, validation_empty_params) {
+  SmartObject obj;
+  obj[S_PARAMS][S_FUNCTION_ID] = 1;
+  obj[S_PARAMS][S_CORRELATION_ID] = 0xFF;
+  obj[S_PARAMS][S_PROTOCOL_VERSION] = 2;
+  obj[S_PARAMS][S_PROTOCOL_TYPE] = 0;
+  // S_MSG_PARAMS has only fake parameter
+  obj[S_MSG_PARAMS]["FAKE_PARAM1"] = SmartObject();
+  obj[S_MSG_PARAMS]["FAKE_PARAM2"] = SmartObject(0x1);
+  obj[S_MSG_PARAMS]["FAKE_PARAM3"] = SmartObject("2");
+
+  EXPECT_EQ(Errors::OK, schema_item->validate(obj));
+
+  schema_item->applySchema(obj);
+  EXPECT_EQ(Errors::OK, schema_item->validate(obj));
+
+  schema_item->unapplySchema(obj);
+  // Invalide state after enum convertion
+  EXPECT_EQ(Errors::INVALID_VALUE, schema_item->validate(obj));
+}
+
+TEST_F(ObjectSchemaItemTest, test_strings_to_enum_conversion) {
+  SmartObject object;
+  object[S_PARAMS][S_FUNCTION_ID] = SmartObject();
+  object[S_PARAMS][S_CORRELATION_ID] = 0XFF0;
+  object[S_PARAMS][S_PROTOCOL_VERSION] = 1;
+  object[S_MSG_PARAMS][Keys::RESULT_CODE] = SmartObject();
+  object[S_MSG_PARAMS][Keys::INFO] = "0123456789";
+  object[S_MSG_PARAMS][Keys::SUCCESS] = true;
+
+  typedef EnumConversionHelper<ResultType::eType>::CStringToEnumMap Results;
+  const Results results =
+      EnumConversionHelper<ResultType::eType>::cstring_to_enum_map();
+
+  typedef EnumConversionHelper<FunctionID::eType>::CStringToEnumMap Functions;
+  const Functions functions =
+      EnumConversionHelper<FunctionID::eType>::cstring_to_enum_map();
+
+  for (Results::const_iterator res_it = results.begin();
+      res_it != results.end(); ++res_it) {
+    for (Functions::const_iterator func_it = functions.begin();
+        func_it != functions.end(); ++func_it) {
+      const char* const function_str = func_it->first;
+      const char* const result_type_str = res_it->first;
+      const FunctionID::eType function_type = func_it->second;
+      const ResultType::eType result_type = res_it->second;
+
+      object[S_PARAMS][S_FUNCTION_ID] = function_str;
+      object[S_MSG_PARAMS][Keys::RESULT_CODE] = result_type_str;
+
+      // S_FUNCTION_ID and RESULT_CODE are not converted to int
+      EXPECT_NE(Errors::OK, schema_item->validate(object));
+
+      schema_item->applySchema(object);
+      EXPECT_EQ(Errors::OK, schema_item->validate(object));
+
+      // check conversion result
+      EXPECT_EQ(function_type, object[S_PARAMS][S_FUNCTION_ID].asInt());
+      EXPECT_EQ(result_type, object[S_MSG_PARAMS][Keys::RESULT_CODE].asInt());
+
+      schema_item->unapplySchema(object);
+      // S_FUNCTION_ID and RESULT_CODE are string
+      EXPECT_NE(Errors::OK, schema_item->validate(object));
+
+      // check conversion result
+      EXPECT_EQ(function_str, object[S_PARAMS][S_FUNCTION_ID].asString());
+      EXPECT_EQ(result_type_str,
+                object[S_MSG_PARAMS][Keys::RESULT_CODE].asString());
+    }
+ }
+}
 // ----------------------------------------------------------------------------
 }  // namespace SchemaItem
 }  // namespace SmartObjects
