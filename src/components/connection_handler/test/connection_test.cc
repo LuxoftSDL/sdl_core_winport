@@ -347,13 +347,13 @@ TEST_F(ConnectionTest, RemoveSession) {
 
 #ifdef ENABLE_SECURITY
 
-// TEST_F(ConnectionTest, SetSSLContextWithoutSession) {
-//  // random value. Session was not started
-//  uint8_t session_id = 10;
-//  security_manager_test::MockSSLContext mock_ssl_context;
-//  int setResult = connection_->SetSSLContext(session_id, &mock_ssl_context);
-//  EXPECT_EQ(security_manager::SecurityManager::ERROR_INTERNAL, setResult);
-//}
+ TEST_F(ConnectionTest, SetSSLContextWithoutSession) {
+  // random value. Session was not started
+  uint8_t session_id = 10;
+  security_manager_test::MockSSLContext mock_ssl_context;
+  int setResult = connection_->SetSSLContext(session_id, &mock_ssl_context);
+  EXPECT_EQ(security_manager::SecurityManager::ERROR_INTERNAL, setResult);
+}
 
 TEST_F(ConnectionTest, GetSSLContextWithoutSession) {
   // random value. Session was not started
@@ -362,24 +362,24 @@ TEST_F(ConnectionTest, GetSSLContextWithoutSession) {
   EXPECT_EQ(NULL, connection_->GetSSLContext(session_id, kMobileNav));
 }
 
-// TEST_F(ConnectionTest, SetGetSSLContext) {
-//  StartSession();
-//
-//  EXPECT_EQ(NULL, connection_->GetSSLContext(session_id, kMobileNav));
-//  AddNewService(kMobileNav, PROTECTION_ON, EXPECT_RETURN_TRUE,
-//                EXPECT_SERVICE_EXISTS);
-//
-//  EXPECT_EQ(NULL, connection_->GetSSLContext(session_id, kMobileNav));
-//
-//  security_manager_test::MockSSLContext mock_ssl_context;
-//  // Set SSLContext
-//  int setResult = connection_->SetSSLContext(session_id, &mock_ssl_context);
-//  EXPECT_EQ(security_manager::SecurityManager::ERROR_SUCCESS, setResult);
-//
-//  security_manager::SSLContext* result =
-//      connection_->GetSSLContext(session_id, kMobileNav);
-//  EXPECT_EQ(result, &mock_ssl_context);
-//}
+ TEST_F(ConnectionTest, SetGetSSLContext) {
+  StartSession();
+
+  EXPECT_EQ(NULL, connection_->GetSSLContext(session_id, kMobileNav));
+  AddNewService(kMobileNav, PROTECTION_ON, EXPECT_RETURN_TRUE,
+                EXPECT_SERVICE_EXISTS);
+
+  EXPECT_EQ(NULL, connection_->GetSSLContext(session_id, kMobileNav));
+
+  security_manager_test::MockSSLContext mock_ssl_context;
+  // Set SSLContext
+  int setResult = connection_->SetSSLContext(session_id, &mock_ssl_context);
+  EXPECT_EQ(security_manager::SecurityManager::ERROR_SUCCESS, setResult);
+
+  security_manager::SSLContext* result =
+      connection_->GetSSLContext(session_id, kMobileNav);
+  EXPECT_EQ(result, &mock_ssl_context);
+}
 
 TEST_F(ConnectionTest, SetProtectionFlagForRPC) {
   StartSession();

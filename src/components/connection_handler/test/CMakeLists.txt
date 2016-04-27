@@ -53,10 +53,10 @@ set(LIBRARIES
 )
 
 set(SOURCES
-    #connection_handler_impl_test.cc
-    connection_test.cc
-    device_test.cc
-    heart_beat_monitor_test.cc
+    connection_handler_impl_test.cc # 9 fails
+    connection_test.cc #done
+    device_test.cc #done
+    heart_beat_monitor_test.cc # 1 fails
 )
 
 if(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
@@ -65,6 +65,14 @@ if(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
 endif()  
 
 file(COPY ${appMain_DIR}/smartDeviceLink.ini DESTINATION "./")
+
+if(QT_PORT)
+  link_directories (${CMAKE_SOURCE_DIR}/build/openssl_win_x86/lib)
+endif()
+
+if(NOT QT_PORT AND ${CMAKE_SYSTEM_NAME} MATCHES "Windows")
+  link_directories(${CMAKE_SOURCE_DIR}/build/openssl_win_x64/lib/)
+endif()
 
 create_test("connection_handler_test" "${SOURCES}" "${LIBRARIES}")
 

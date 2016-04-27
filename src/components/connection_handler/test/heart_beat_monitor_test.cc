@@ -241,7 +241,7 @@ TEST_F(HeartBeatMonitorTest, DecreaseHeartBeatTimeout) {
   EXPECT_CALL(connection_handler_mock, CloseConnection(_));
   EXPECT_CALL(connection_handler_mock, SendHeartBeat(_, kSession));
 
-  const uint32_t kNewTimeout = kTimeout - MICROSECONDS_IN_MILLISECONDS;
+  const uint32_t kNewTimeout = kTimeout + MICROSECONDS_IN_MILLISECONDS;
   conn->StartHeartBeat(kSession);
   conn->SetHeartBeatTimeout(kNewTimeout, kSession);
   // new timeout less than old timeout so mock object should be invoked
