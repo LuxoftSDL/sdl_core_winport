@@ -69,6 +69,14 @@ endif()
 #  target_link_libraries("media_manager_test" log4cxx -L${LOG4CXX_LIBS_DIRECTORY})
 #endif()
 
+if(QT_PORT)
+  link_directories (${CMAKE_SOURCE_DIR}/build/openssl_win_x86/lib)
+endif()
+
+if(NOT QT_PORT AND ${CMAKE_SYSTEM_NAME} MATCHES "Windows")
+  link_directories(${CMAKE_SOURCE_DIR}/build/openssl_win_x64/lib/)
+endif()
+
 create_test("media_manager_test" "${SOURCES}" "${LIBRARIES}")
 
 if(MSVC)

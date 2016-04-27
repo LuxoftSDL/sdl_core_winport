@@ -91,7 +91,9 @@ void HMIMessageHandlerImpl::OnErrorSending(MessageSharedPointer message) {
 
 void HMIMessageHandlerImpl::AddHMIMessageAdapter(HMIMessageAdapter* adapter) {
   LOGGER_AUTO_TRACE(logger_);
-  message_adapters_.insert(adapter);
+  if (adapter) {
+	  message_adapters_.insert(adapter);
+  }
 }
 
 void HMIMessageHandlerImpl::RemoveHMIMessageAdapter(
