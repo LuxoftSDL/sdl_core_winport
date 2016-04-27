@@ -202,6 +202,7 @@ class SSLContextMock : public security_manager::SSLContext {
   MOCK_CONST_METHOD0(LastError, std::string());
   MOCK_METHOD0(ResetConnection, void());
   MOCK_METHOD1(SetHandshakeContext, void(const HandshakeContext& hsh_ctx));
+  MOCK_CONST_METHOD1(GetCertifcateDueDate, bool(struct tm& due_date));
 };
 #endif  // ENABLE_SECURITY
 }

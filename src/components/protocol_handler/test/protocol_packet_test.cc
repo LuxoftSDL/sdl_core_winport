@@ -174,34 +174,34 @@ TEST_F(ProtocolPacketTest, SetTotalDataBytes) {
   EXPECT_EQ(new_data_size, protocol_packet.total_data_bytes());
 }
 
-TEST_F(ProtocolPacketTest, AppendDataToPacketWithNonZeroSize) {
-  // Set version, serviceType, frameData, sessionId
-  uint8_t session_id = 1u;
-  uint8_t some_data[] = {0x0, 0x07, FRAME_TYPE_CONTROL, session_id};
-  ProtocolPacket protocol_packet;
-  protocol_packet.set_total_data_bytes(sizeof(some_data) + 1);
-  RESULT_CODE res = protocol_packet.appendData(some_data, sizeof(some_data));
-  EXPECT_EQ(RESULT_OK, res);
+//TEST_F(ProtocolPacketTest, AppendDataToPacketWithNonZeroSize) {
+//  // Set version, serviceType, frameData, sessionId
+//  uint8_t session_id = 1u;
+//  uint8_t some_data[] = {0x0, 0x07, FRAME_TYPE_CONTROL, session_id};
+//  ProtocolPacket protocol_packet;
+//  protocol_packet.set_total_data_bytes(sizeof(some_data) + 1);
+//  RESULT_CODE res = protocol_packet.appendData(some_data, sizeof(some_data));
+//  EXPECT_EQ(RESULT_OK, res);
 
-  EXPECT_EQ(0x0, protocol_packet.data()[0]);
-  EXPECT_EQ(0x07, protocol_packet.data()[1]);
-  EXPECT_EQ(FRAME_TYPE_CONTROL, protocol_packet.data()[2]);
-  EXPECT_EQ(session_id, protocol_packet.data()[3]);
-}
+//  EXPECT_EQ(0x0, protocol_packet.data()[0]);
+//  EXPECT_EQ(0x07, protocol_packet.data()[1]);
+//  EXPECT_EQ(FRAME_TYPE_CONTROL, protocol_packet.data()[2]);
+//  EXPECT_EQ(session_id, protocol_packet.data()[3]);
+//}
 
-TEST_F(ProtocolPacketTest, SetData) {
-  uint8_t session_id = 1u;
-  uint8_t some_data[] = {0x0, 0x07, FRAME_TYPE_CONTROL, session_id};
-  ProtocolPacket protocol_packet;
-  protocol_packet.set_data(some_data, sizeof(some_data));
+//TEST_F(ProtocolPacketTest, SetData) {
+//  uint8_t session_id = 1u;
+//  uint8_t some_data[] = {0x0, 0x07, FRAME_TYPE_CONTROL, session_id};
+//  ProtocolPacket protocol_packet;
+//  protocol_packet.set_data(some_data, sizeof(some_data));
 
-  EXPECT_EQ(0x0, protocol_packet.data()[0]);
-  EXPECT_EQ(0x07, protocol_packet.data()[1]);
-  EXPECT_EQ(FRAME_TYPE_CONTROL, protocol_packet.data()[2]);
-  EXPECT_EQ(session_id, protocol_packet.data()[3]);
-}
+//  EXPECT_EQ(0x0, protocol_packet.data()[0]);
+//  EXPECT_EQ(0x07, protocol_packet.data()[1]);
+//  EXPECT_EQ(FRAME_TYPE_CONTROL, protocol_packet.data()[2]);
+//  EXPECT_EQ(session_id, protocol_packet.data()[3]);
+//}
 
-// TEST_F(ProtocolPacketTest, DISABLE_DeserializeZeroPacket) {
+// TEST_F(ProtocolPacketTest, DISABLE_DeserializeZeroPacket) {!!!!!!!!!!
 //  uint8_t message[] = {};
 //  ProtocolPacket protocol_packet;
 //  RESULT_CODE res = protocol_packet.deserializePacket(message, 0);

@@ -29,7 +29,7 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-
+#include <iostream>
 #include "protocol_handler/protocol_handler_impl.h"
 #include <memory.h>
 #include <algorithm>  // std::find
@@ -511,11 +511,15 @@ void ProtocolHandlerImpl::OnTMMessageReceived(const RawMessagePtr tm_message) {
   }
 
   const uint32_t connection_key = tm_message->connection_key();
+
+  if (!connection_key) {
+	  return;
+  }
+
   LOGGER_DEBUG(logger_,
                "Received data from TM  with connection id "
                    << connection_key << " msg data_size "
                    << tm_message->data_size());
-
   RESULT_CODE result;
   size_t malformed_occurs = false;
   const std::list<ProtocolFramePtr> protocol_frames =

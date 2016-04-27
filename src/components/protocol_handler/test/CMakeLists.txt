@@ -47,14 +47,26 @@ set(LIBRARIES
 )
 
 set(SOURCES
-  incoming_data_handler_test.cc
-  protocol_header_validator_test.cc
-  #protocol_handler_tm_test.cc#
-  #protocol_packet_test.cc
-  #protocol_payload_test.cc
-  #multiframe_builder_test.cc#
+  incoming_data_handler_test.cc #done
+  protocol_header_validator_test.cc #done
+  protocol_handler_tm_test.cc# 7 commented
+  protocol_packet_test.cc #done
+  protocol_payload_test.cc #done
+  #multiframe_builder_test.cc# no mulitframe builder in win_sdl
 )
 
+if(QT_PORT)
+  link_directories (${CMAKE_SOURCE_DIR}/build/openssl_win_x86/lib)
+endif()
+
+if(NOT QT_PORT AND ${CMAKE_SYSTEM_NAME} MATCHES "Windows")
+  link_directories(${CMAKE_SOURCE_DIR}/build/openssl_win_x64/lib/)
+endif()
+
 create_test("protocol_handler_test" "${SOURCES}" "${LIBRARIES}")
+
+if(NOT QT_PORT AND ${CMAKE_SYSTEM_NAME} MATCHES "Windows")
+  set_target_properties(protocol_handler_test PROPERTIES LINK_FLAGS "/machine:X64")
+endif()
 
 endif()
