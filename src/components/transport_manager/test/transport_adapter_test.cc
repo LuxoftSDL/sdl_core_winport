@@ -286,7 +286,8 @@ TEST_F(TransportAdapterTest, ConnectDevice_ServerNotAdded_DeviceAdded) {
   EXPECT_EQ(uniq_id, devList[0]);
 
   int app_handle = 1;
-  std::vector<int> intList = {app_handle};
+  std::vector<int> intList; // = {app_handle};
+  intList.push_back(app_handle);
   EXPECT_CALL(*mockdev, GetApplicationList()).WillOnce(Return(intList));
 
   TransportAdapter::Error res = transport_adapter.ConnectDevice(uniq_id);
@@ -327,7 +328,8 @@ TEST_F(TransportAdapterTest, ConnectDevice_DeviceAdded) {
   EXPECT_EQ(uniq_id, devList[0]);
 
   int app_handle = 1;
-  std::vector<int> intList = {app_handle};
+  std::vector<int> intList;// = {app_handle};
+  intList.push_back(app_handle);
   EXPECT_CALL(*mockdev, GetApplicationList()).WillOnce(Return(intList));
 
   EXPECT_CALL(*serverMock, IsInitialised()).WillOnce(Return(true));
@@ -355,7 +357,8 @@ TEST_F(TransportAdapterTest, ConnectDevice_DeviceAddedTwice) {
   EXPECT_EQ(uniq_id, devList[0]);
 
   int app_handle = 1;
-  std::vector<int> intList = {app_handle};
+  std::vector<int> intList;// = {app_handle};
+  intList.push_back(app_handle);
   EXPECT_CALL(*mockdev, GetApplicationList()).WillOnce(Return(intList));
 
   EXPECT_CALL(*serverMock, IsInitialised()).WillOnce(Return(true));
@@ -420,7 +423,8 @@ TEST_F(TransportAdapterTest, DisconnectDevice_DeviceAddedConnectionCreated) {
   ASSERT_EQ(1u, devList.size());
   EXPECT_EQ(uniq_id, devList[0]);
 
-  std::vector<int> intList = {app_handle};
+  std::vector<int> intList;// = {app_handle};
+  intList.push_back(app_handle);
   EXPECT_CALL(*mockdev, GetApplicationList()).WillOnce(Return(intList));
 
   EXPECT_CALL(*serverMock, IsInitialised()).WillOnce(Return(true));
@@ -460,8 +464,9 @@ TEST_F(TransportAdapterTest, DeviceDisconnected) {
   ASSERT_EQ(1u, devList.size());
   EXPECT_EQ(uniq_id, devList[0]);
 
-  std::vector<int> intList = {app_handle};
-  EXPECT_CALL(*mockdev, GetApplicationList()).WillOnce(Return(intList));
+  std::vector<int> intListl; // = {app_handle};
+  intListl.push_back(app_handle);
+  EXPECT_CALL(*mockdev, GetApplicationList()).WillOnce(Return(intListl));
 
   EXPECT_CALL(*serverMock, IsInitialised()).WillOnce(Return(true));
   EXPECT_CALL(*serverMock, CreateConnection(uniq_id, app_handle))
@@ -472,7 +477,7 @@ TEST_F(TransportAdapterTest, DeviceDisconnected) {
   ConnectionMock* mock_connection = new ConnectionMock();
   transport_adapter.ConnectionCreated(mock_connection, uniq_id, app_handle);
 
-  EXPECT_CALL(*mockdev, GetApplicationList()).WillOnce(Return(intList));
+  EXPECT_CALL(*mockdev, GetApplicationList()).WillOnce(Return(intListl));
   EXPECT_CALL(
       mock_listener,
       OnUnexpectedDisconnect(&transport_adapter, uniq_id, app_handle, _));
@@ -685,7 +690,8 @@ TEST_F(TransportAdapterTest, GetDeviceAndApplicationLists) {
   EXPECT_EQ(uniq_id, devList[0]);
 
   int app_handle = 1;
-  std::vector<int> intList = {app_handle};
+  std::vector<int> intList;// = {app_handle};
+  intList.push_back(app_handle);
   EXPECT_CALL(*mockdev, GetApplicationList()).WillOnce(Return(intList));
   std::vector<int> res = transport_adapter.GetApplicationList(uniq_id);
   ASSERT_EQ(1u, res.size());

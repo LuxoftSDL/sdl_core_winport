@@ -59,17 +59,19 @@ if (BUILD_USB_SUPPORT)
 endif()
 
 if (BUILD_BT_SUPPORT)
-  list(APPEND LIBRARIES bluetooth)
+ if (CMAKE_SYSTEM_NAME STREQUAL "Linux")
+  target_link_libraries(${target} Bthprops.lib)
+ endif()
 endif()
 
 set(SOURCES
-  ${TM_TEST_DIR}/transport_manager_default_test.cc
-  ${TM_TEST_DIR}/transport_manager_impl_test.cc
-  ${TM_TEST_DIR}/transport_adapter_test.cc
-  #${TM_TEST_DIR}/transport_adapter_listener_test.cc
+  ${TM_TEST_DIR}/transport_manager_default_test.cc #done
+  ${TM_TEST_DIR}/transport_manager_impl_test.cc # 4 commented
+  ${TM_TEST_DIR}/transport_adapter_test.cc #done copy ini
+  ${TM_TEST_DIR}/transport_adapter_listener_test.cc #done
   #${TM_TEST_DIR}/tcp_transport_adapter_test.cc
-  #${TM_TEST_DIR}/tcp_device_test.cc
-  ${TM_TEST_DIR}/tcp_client_listener_test.cc
+  ${TM_TEST_DIR}/tcp_device_test.cc #done
+  ${TM_TEST_DIR}/tcp_client_listener_test.cc #done
 )
 
 create_test("transport_manager_test" "${SOURCES}" "${LIBRARIES}")
@@ -77,6 +79,11 @@ file(COPY smartDeviceLink_test.ini DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
 
 if(MSVC)
   target_link_libraries("transport_manager_test" ws2_32)
+  target_link_libraries(transport_manager_test Bthprops.lib)
+endif()
+
+if(NOT QT_PORT AND ${CMAKE_SYSTEM_NAME} MATCHES "Windows")
+  set_target_properties(transport_manager_test PROPERTIES LINK_FLAGS "/machine:X64")
 endif()
 
 endif()

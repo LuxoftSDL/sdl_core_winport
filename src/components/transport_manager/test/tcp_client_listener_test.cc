@@ -112,11 +112,10 @@ class TcpClientListenerTest : public ::testing::Test {
   TcpClientListener tcp_client_listener_;
 };
 
-// TEST_F(TcpClientListenerTest, Ctor_test) {
-//  EXPECT_EQ(0, tcp_client_listener_.port());
-//  EXPECT_TRUE(NULL != tcp_client_listener_.thread());
-//  EXPECT_EQ(-1, tcp_client_listener_.get_socket());
-//}
+ TEST_F(TcpClientListenerTest, Ctor_test) {
+  EXPECT_EQ(0, tcp_client_listener_.port());
+  EXPECT_TRUE(NULL != tcp_client_listener_.thread());
+}
 
 TEST_F(TcpClientListenerTest, IsInitialised) {
   EXPECT_TRUE(tcp_client_listener_.IsInitialised());
