@@ -746,35 +746,34 @@ TEST_F(ProfileTest, CheckVectorContainer) {
   EXPECT_TRUE(isEqual);
 }
 
-// TEST_F(ProfileTest, CheckStringContainer) {
-//  // Set new config file
-//  Profile::instance()->config_file_name("smartDeviceLink_test.ini");
-//  EXPECT_EQ("smartDeviceLink_test.ini",
-//            Profile::instance()->config_file_name());
-//
-//  bool isread = false;
-//  std::list < std::string > diagmodes_list = profile::Profile::instance()
-//      ->ReadStringContainer("MAIN", "SupportedDiagModes", &isread);
-//  EXPECT_TRUE(isread);
-//
-//  std::list<std::string>::iterator diag_mode =
-//      std::find(diagmodes_list.begin(), diagmodes_list.end(), "0x12");
-//
-//  // This element doesn't appear in list
-//  EXPECT_EQ(diag_mode, diagmodes_list.end());
-//
-//  // List includes 0x01
-//  diag_mode = std::find(diagmodes_list.begin(), diagmodes_list.end(), "0x01");
-//  EXPECT_EQ(diag_mode, diagmodes_list.begin());
-//
-//  // List includes 0x03
-//  std::list<std::string>::iterator element_mode = diagmodes_list.begin();
-//  element_mode++;
-//  element_mode++;
-//  diag_mode = std::find(diagmodes_list.begin(), diagmodes_list.end(), "
-//  0x03");
-//  EXPECT_EQ(diag_mode, element_mode);
-//}
+ TEST_F(ProfileTest, CheckStringContainer) {
+  // Set new config file
+  Profile::instance()->config_file_name("smartDeviceLink_test.ini");
+  EXPECT_EQ("smartDeviceLink_test.ini",
+            Profile::instance()->config_file_name());
+
+  bool isread = false;
+  std::list < std::string > diagmodes_list = profile::Profile::instance()
+      ->ReadStringContainer("MAIN", "SupportedDiagModes", &isread);
+  EXPECT_TRUE(isread);
+
+  std::list<std::string>::iterator diag_mode =
+      std::find(diagmodes_list.begin(), diagmodes_list.end(), "0x12");
+
+  // This element doesn't appear in list
+  EXPECT_EQ(diag_mode, diagmodes_list.end());
+
+  // List includes 0x01
+  diag_mode = std::find(diagmodes_list.begin(), diagmodes_list.end(), "0x01");
+  EXPECT_EQ(diag_mode, diagmodes_list.begin());
+
+  // List includes 0x03
+  std::list<std::string>::iterator element_mode = diagmodes_list.begin();
+  element_mode++;
+  element_mode++;
+  diag_mode = std::find(diagmodes_list.begin(), diagmodes_list.end(), " 0x03");
+  EXPECT_EQ(diag_mode, element_mode);
+}
 
 #ifdef ENABLE_SECURITY
 TEST_F(ProfileTest, CheckIntContainerInSecurityData) {
