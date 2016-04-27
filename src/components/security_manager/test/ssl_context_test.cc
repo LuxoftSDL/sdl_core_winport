@@ -68,6 +68,7 @@ class SSLTest : public testing::Test {
     std::ifstream file("server/spt_credential.p12.enc");
     std::stringstream ss;
     ss << file.rdbuf();
+	std::cout << ss.str() << std::endl;
     file.close();
     crypto_manager = new security_manager::CryptoManagerImpl();
     const bool crypto_manager_initialization =
@@ -102,8 +103,8 @@ class SSLTest : public testing::Test {
     client_ctx = client_manager->CreateSSLContext();
 
     security_manager::SSLContext::HandshakeContext ctx;
-    // ctx.make_context(custom_str::CustomString("SPT"),
-    //                 custom_str::CustomString("client"));
+    ctx.make_context(std::string("SPT"),
+                     std::string("client"));
     server_ctx->SetHandshakeContext(ctx);
 
     ctx.expected_cn = "server";

@@ -40,6 +40,7 @@
 #include <map>
 
 #include "utils/macro.h"
+#include <iostream>
 
 namespace security_manager {
 
@@ -531,6 +532,7 @@ CryptoManagerImpl::SSLContextImpl::openssl_error_convert_to_internal(
     case X509_V_ERR_DEPTH_ZERO_SELF_SIGNED_CERT:
       return Handshake_Result_CertNotSigned;
     default:
+		std::cout << "openssl" << std::endl;
       return Handshake_Result_Fail;
   }
 }

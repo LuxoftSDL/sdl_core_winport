@@ -139,6 +139,9 @@ TEST_F(CryptoManagerTest, CorrectInit) {
   std::stringstream ss;
   ss << file.rdbuf();
 
+
+  std::cout << ss.str() << std::endl;
+
   // Empty cert and key values for SERVER
   is_initialyzed = crypto_manager->Init(security_manager::SERVER,
                                         security_manager::TLSv1_2,

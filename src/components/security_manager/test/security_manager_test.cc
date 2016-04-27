@@ -51,6 +51,18 @@
 //#include "security_manager/mock_crypto_manager.h"
 //#include "security_manager/mock_security_manager_listener.h"
 
+namespace testing { 
+	namespace internal {
+		bool operator==(const struct tm& p1, const struct tm& p2) {
+			return p1.tm_hour == p2.tm_hour;
+		}
+	}
+}
+
+namespace {
+	struct tm due_date;
+}
+
 namespace test {
 namespace components {
 namespace security_manager_test {
@@ -86,6 +98,8 @@ using ::testing::_;
 using ::security_manager::SecurityManager;
 using ::security_manager::SecurityManagerImpl;
 
+
+
 class SecurityManagerTest : public ::testing::Test {
  protected:
   void SetUp() OVERRIDE {
@@ -100,7 +114,7 @@ class SecurityManagerTest : public ::testing::Test {
   }
 
   void SetMockCryptoManager() {
-    EXPECT_CALL(mock_crypto_manager, IsCertificateUpdateRequired())
+    EXPECT_CALL(mock_crypto_manager, IsCertificateUpdateRequired(due_date))
         .WillRepeatedly(Return(false));
     security_manager_->set_crypto_manager(&mock_crypto_manager);
   }
@@ -527,6 +541,7 @@ TEST_F(SecurityManagerTest, StartHandshake_SSLInternalError) {
   EXPECT_CALL(mock_ssl_context_exists, IsInitCompleted())
       .WillOnce(Return(false));
   EXPECT_CALL(mock_ssl_context_exists, SetHandshakeContext(_));
+  EXPECT_CALL(mock_ssl_context_exists, GetCertifcateDueDate(_));
   EXPECT_CALL(mock_ssl_context_exists, StartHandshake(_, _))
       .WillOnce(
           DoAll(SetArgPointee<0>(handshake_data_out_pointer),
@@ -566,6 +581,7 @@ TEST_F(SecurityManagerTest, StartHandshake_SSLInitIsNotComplete) {
 
   // Emulate SSLContext::StartHandshake with different parameters
   // Only on both correct - data and size shall be send message to mobile app
+  EXPECT_CALL(mock_ssl_context_exists, GetCertifcateDueDate(_)).Times(3);
   EXPECT_CALL(mock_ssl_context_exists, StartHandshake(_, _))
       .WillOnce(DoAll(
           SetArgPointee<0>(handshake_data_out_pointer),
@@ -601,8 +617,7 @@ TEST_F(SecurityManagerTest, StartHandshake_SSLInitIsComplete) {
       .WillOnce(Return(&mock_ssl_context_exists));
   EXPECT_CALL(mock_ssl_context_exists, IsInitCompleted())
       .WillOnce(Return(true));
-  EXPECT_CALL(mock_crypto_manager, IsCertificateUpdateRequired())
-      .WillOnce(Return(false));
+  EXPECT_CALL(mock_ssl_context_exists, GetCertifcateDueDate(_));
 
   security_manager_->StartHandshake(key);
 }
