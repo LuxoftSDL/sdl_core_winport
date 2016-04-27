@@ -254,7 +254,7 @@ template <typename T, size_t minsize, size_t maxsize>
 Array<T, minsize, maxsize>::Array(utils::json::JsonValueRef& value)
     : CompositeType(InitHelper(value, &utils::json::JsonValueRef::IsArray)) {
   if (value.IsValid()) {
-    if (value.isArray()) {
+    if (value.IsArray()) {
       this->reserve(value.Size());
       for (utils::json::JsonValue::iterator i = value.begin(),
                                             end = value.end();
@@ -302,7 +302,7 @@ utils::json::JsonValue Array<T, minsize, maxsize>::ToJsonValue() const {
 // Non-const version
 template <typename T, size_t minsize, size_t maxsize>
 Map<T, minsize, maxsize>::Map(utils::json::JsonValueRef& value)
-    : CompositeType(InitHelper(value, &utils::json::JsonValueRef::isObject)) {
+    : CompositeType(InitHelper(value, &utils::json::JsonValueRef::IsObject)) {
   if (value.IsValid()) {
     if (value.IsObject()) {
       for (utils::json::JsonValue::iterator i = value.begin(),

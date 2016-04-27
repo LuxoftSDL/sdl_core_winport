@@ -44,9 +44,9 @@ set(LIBRARIES
 )
 
 set(SOURCES
-  #rpc_base_json_test.cc
-  #rpc_base_test.cc
-  validation_report_test.cc
+  rpc_base_json_test.cc # 8 comment
+  #rpc_base_test.cc # 2 comment
+  #validation_report_test.cc #done
 )
 
 if (${HMI_DBUS_API})

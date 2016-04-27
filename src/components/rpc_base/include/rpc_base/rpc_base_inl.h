@@ -206,8 +206,7 @@ Integer<T, minval, maxval>::operator IntType() const {
  */
 template <int64_t minnum, int64_t maxnum, int64_t minden, int64_t maxden>
 const Range<double> Float<minnum, maxnum, minden, maxden>::range_ =
-    (double(minnum) / minden),
-                                                  (double(maxnum) / maxden);
+    (double(minnum) / minden), (double(maxnum) / maxden);
 
 template <int64_t minnum, int64_t maxnum, int64_t minden, int64_t maxden>
 Float<minnum, maxnum, minden, maxden>::Float()
@@ -313,10 +312,12 @@ template <typename T, size_t minsize, size_t maxsize>
 Array<T, minsize, maxsize>::Array()
     : CompositeType(kUninitialized) {}
 
-template <typename T, size_t minsize, size_t maxsize>
-template <typename U>
+template<typename T, size_t minsize, size_t maxsize>
+template<typename U>
 Array<T, minsize, maxsize>::Array(const U& value)
-    : ArrayType(value.begin(), value.end()), CompositeType(kUninitialized) {}
+	: ArrayType(value.begin(), value.end()),
+	CompositeType(kUninitialized) {
+}
 
 template <typename T, size_t minsize, size_t maxsize>
 template <typename U>
