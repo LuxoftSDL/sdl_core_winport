@@ -217,15 +217,15 @@ void MessageHelper::SendUpdateSDLResponse(const std::string& result,
       result, correlation_id);
 }
 
-void MessageHelper::SendOnLanguageChangeToMobile(uint32_t connection_key) {
-  MockMessageHelper::message_helper_mock()->SendOnLanguageChangeToMobile(
-      connection_key);
-}
+//void MessageHelper::SendOnLanguageChangeToMobile(uint32_t connection_key) {
+//  MockMessageHelper::message_helper_mock()->SendOnLanguageChangeToMobile(
+//      connection_key);
+//}
 
-void MessageHelper::SendDecryptCertificateToHMI(const std::string& file_name) {
-  MockMessageHelper::message_helper_mock()->SendDecryptCertificateToHMI(
-      file_name);
-}
+//void MessageHelper::SendDecryptCertificateToHMI(const std::string& file_name) {
+//  MockMessageHelper::message_helper_mock()->SendDecryptCertificateToHMI(
+//      file_name);
+//}
 
 hmi_apis::Common_Language::eType MessageHelper::CommonLanguageFromString(
     const std::string& language) {
@@ -233,29 +233,29 @@ hmi_apis::Common_Language::eType MessageHelper::CommonLanguageFromString(
       language);
 }
 
-std::string MessageHelper::MobileLanguageToString(
-    const mobile_apis::Language::eType language) {
-  return MockMessageHelper::message_helper_mock()->MobileLanguageToString(
-      language);
-}
+//std::string MessageHelper::MobileLanguageToString(
+//    const mobile_apis::Language::eType language) {
+//  return MockMessageHelper::message_helper_mock()->MobileLanguageToString(
+//      language);
+//}
 
-mobile_apis::Language::eType MessageHelper::MobileLanguageFromString(
-    const std::string& language) {
-  return MockMessageHelper::message_helper_mock()->MobileLanguageFromString(
-      language);
-}
-
-hmi_apis::Common_Language::eType MessageHelper::MobileToCommonLanguage(
-    const mobile_apis::Language::eType language) {
-  return MockMessageHelper::message_helper_mock()->MobileToCommonLanguage(
-      language);
-}
-
-mobile_apis::Language::eType MessageHelper::CommonToMobileLanguage(
-    const hmi_apis::Common_Language::eType language) {
-  return MockMessageHelper::message_helper_mock()->CommonToMobileLanguage(
-      language);
-}
+//mobile_apis::Language::eType MessageHelper::MobileLanguageFromString(
+//    const std::string& language) {
+//  return MockMessageHelper::message_helper_mock()->MobileLanguageFromString(
+//      language);
+//}
+//
+//hmi_apis::Common_Language::eType MessageHelper::MobileToCommonLanguage(
+//    const mobile_apis::Language::eType language) {
+//  return MockMessageHelper::message_helper_mock()->MobileToCommonLanguage(
+//      language);
+//}
+//
+//mobile_apis::Language::eType MessageHelper::CommonToMobileLanguage(
+//    const hmi_apis::Common_Language::eType language) {
+//  return MockMessageHelper::message_helper_mock()->CommonToMobileLanguage(
+//      language);
+//}
 
 smart_objects::SmartObjectSPtr MessageHelper::CreateModuleInfoSO(
     uint32_t function_id) {

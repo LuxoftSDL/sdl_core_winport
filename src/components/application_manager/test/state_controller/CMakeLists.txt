@@ -39,7 +39,12 @@ include_directories(
 
 set(LIBRARIES
   gmock
+  jsoncpp
   ApplicationManager
+  ProtocolHandler
+  connectionHandler
+  MediaManager
+  Resumption
 )
 
 set(SOURCES
@@ -47,6 +52,6 @@ set(SOURCES
     ${COMPONENTS_DIR}/application_manager/test/mock_message_helper.cc
 )
 
-create_test("state_controller_test" "${SOURCES}" "${LIBRARIES}")
+#create_test("state_controller_test" "${SOURCES}" "${LIBRARIES}")
 
 endif()

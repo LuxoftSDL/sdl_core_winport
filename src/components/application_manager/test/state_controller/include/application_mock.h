@@ -37,10 +37,11 @@
 
 #include "gmock/gmock.h"
 #include "application_manager/application.h"
+#include "application_manager/hmi_state.h"
 namespace state_controller_test {
 namespace am = application_manager;
 
-namespace custom_str = utils::custom_string;
+//namespace custom_str = utils::custom_string;
 
 class ApplicationMock : public am::Application {
  public:
@@ -82,7 +83,7 @@ class ApplicationMock : public am::Application {
   MOCK_METHOD1(set_hmi_application_id, void(uint32_t hmi_app_id));
 
   MOCK_CONST_METHOD0(hmi_app_id, uint32_t());
-  MOCK_CONST_METHOD0(name, const custom_str::CustomString&());
+  MOCK_CONST_METHOD0(name, const std::string&());
   MOCK_METHOD1(set_folder_name, void(const std::string& folder_name));
   MOCK_CONST_METHOD0(folder_name, const std::string());
   MOCK_CONST_METHOD0(is_media_application, bool());
@@ -97,15 +98,15 @@ class ApplicationMock : public am::Application {
                      const mobile_apis::AudioStreamingState::eType());
   MOCK_CONST_METHOD0(app_icon_path, const std::string&());
   MOCK_CONST_METHOD0(device, connection_handler::DeviceHandle());
-  MOCK_CONST_METHOD0(CurrentHmiState, const am::HmiStatePtr());
-  MOCK_CONST_METHOD0(RegularHmiState, const am::HmiStatePtr());
-  MOCK_CONST_METHOD0(PostponedHmiState, const am::HmiStatePtr());
+  MOCK_CONST_METHOD0(CurrentHmiState, am::HmiStatePtr());
+  MOCK_CONST_METHOD0(RegularHmiState, am::HmiStatePtr());
+  MOCK_CONST_METHOD0(PostponedHmiState, am::HmiStatePtr());
   MOCK_METHOD1(set_tts_properties_in_none, void(bool active));
   MOCK_METHOD0(tts_properties_in_none, bool());
   MOCK_METHOD1(set_tts_properties_in_full, void(bool active));
   MOCK_METHOD0(tts_properties_in_full, bool());
   MOCK_METHOD1(set_version, void(const am::Version& version));
-  MOCK_METHOD1(set_name, void(const custom_str::CustomString& name));
+  MOCK_METHOD1(set_name, void(const std::string& name));
   MOCK_METHOD1(set_is_media_application, void(bool is_media));
   MOCK_METHOD0(increment_put_file_in_none_count, void());
   MOCK_METHOD0(increment_delete_file_in_none_count, void());
@@ -252,6 +253,9 @@ class ApplicationMock : public am::Application {
   MOCK_METHOD1(set_reset_global_properties_active, void(bool active));
   MOCK_CONST_METHOD0(is_reset_global_properties_active, bool());
   MOCK_CONST_METHOD0(app_id, uint32_t());
+  MOCK_METHOD0(tts_speak_state, bool());
+  MOCK_METHOD1(AddFile, bool(am::AppFile& file));
+  MOCK_METHOD1(UpdateFile, bool(am::AppFile& file));
 };
 
 }  // namespace state_controller_test

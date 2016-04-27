@@ -51,7 +51,7 @@ class ApplicationManagerMock : public application_manager::ApplicationManager {
   MOCK_METHOD1(set_protocol_handler, void(protocol_handler::ProtocolHandler*));
   MOCK_METHOD1(set_connection_handler,
                void(connection_handler::ConnectionHandler*));
-  MOCK_CONST_METHOD0(applications, DataAccessor<am::ApplicationSet>());
+  MOCK_CONST_METHOD0(applications, am::ApplicationSet&());
   MOCK_CONST_METHOD1(application, am::ApplicationSharedPtr(uint32_t app_id));
   MOCK_CONST_METHOD1(application_by_hmi_app,
                      am::ApplicationSharedPtr(uint32_t));
@@ -74,7 +74,7 @@ class ApplicationManagerMock : public application_manager::ApplicationManager {
   MOCK_CONST_METHOD1(
       GetDefaultHmiLevel,
       mobile_apis::HMILevel::eType(am::ApplicationConstSharedPtr));
-  MOCK_METHOD0(hmi_capabilities, am::HMICapabilities&());
+  //MOCK_METHOD0(hmi_capabilities, am::HMICapabilities&());
   MOCK_METHOD0(is_attenuated_supported, bool());
   MOCK_CONST_METHOD1(IsAppTypeExistsInFullOrLimited,
                      bool(am::ApplicationConstSharedPtr));

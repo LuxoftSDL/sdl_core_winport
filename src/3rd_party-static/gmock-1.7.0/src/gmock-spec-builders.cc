@@ -155,6 +155,7 @@ void UnlockAndSleep(const long usecs) {
   ::std::ostringstream s;
   s << "Sleeping for " << 0.001 * usecs << "mSecs" << ::std::endl;
   Log(testing::internal::kInfo, s.str(), 0);
+  //Sleep(usecs);
   usleep(usecs);
   g_gmock_mutex.Lock();
 }

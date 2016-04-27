@@ -1355,7 +1355,7 @@ template <typename ToPrint, typename OtherOperand>
 class FormatForComparison {
  public:
   static ::std::string Format(const ToPrint& value) {
-    return ::testing::PrintToString(value);
+    return ::testing::PrintToString((const ToPrint&)value);
   }
 };
 

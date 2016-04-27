@@ -45,7 +45,7 @@ namespace resumption_test {
 using ::testing::NiceMock;
 namespace am = application_manager;
 namespace sm = smart_objects;
-using namespace Json;
+//using namespace Json;
 
 using namespace resumption;
 using namespace mobile_apis;

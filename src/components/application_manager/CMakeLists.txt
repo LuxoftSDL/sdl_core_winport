@@ -380,6 +380,7 @@ else ()
   endif (${HMI_DBUS_API})
 
   SET (LIBRARIES
+    Utils
     HMI_API
     MOBILE_API
     v4_protocol_v1_2_no_extra
@@ -423,7 +424,7 @@ else ()
 endif()
 
 if(BUILD_TESTS)
-  #add_subdirectory(test)
-  #add_subdirectory(test/state_controller)
-  #add_subdirectory(test/message_helper)
+  add_subdirectory(test)
+  add_subdirectory(test/state_controller)
+  add_subdirectory(test/message_helper)
 endif()

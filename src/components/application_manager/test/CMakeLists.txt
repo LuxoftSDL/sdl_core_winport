@@ -31,6 +31,7 @@
 # TODO{ALeshin}: APPLINK-10792. Do not write tests which use
 # application manager(AM) singleton while refactoring of AM is finished.
 
+
 if (BUILD_TESTS)
 
   file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/mock)
@@ -84,11 +85,11 @@ include_directories(
 )
 
 set(testSources
-    ${AM_TEST_DIR}/mobile_message_handler_test.cc
-    ${AM_TEST_DIR}/mobile_message_handler_v1_test.cc
-    ${AM_TEST_DIR}/request_info_test.cc
-    ${AM_TEST_DIR}/resumption_sql_queries_test.cc
-    ${AM_TEST_DIR}/event_engine_test.cc
+    ${AM_TEST_DIR}/mobile_message_handler_test.cc #done
+    ${AM_TEST_DIR}/mobile_message_handler_v1_test.cc #done
+    ${AM_TEST_DIR}/request_info_test.cc #done
+    #${AM_TEST_DIR}/resumption_sql_queries_test.cc #done
+    ${AM_TEST_DIR}/event_engine_test.cc #done
     # TODO(VVeremjova) APPLINK-12835
     #${AM_TEST_DIR}/zero_request_amount_test.cc
   )
@@ -173,6 +174,8 @@ set(testLibraries
 )
 
 set(test_exec_libraries
+  Utils
+  dbms
   HMI_API
   MOBILE_API
   v4_protocol_v1_2_no_extra
@@ -181,7 +184,6 @@ set(test_exec_libraries
   ProtocolHandler
   connectionHandler
   HMIMessageHandler
-  Utils
   jsoncpp
   ConfigProfile
   MediaManager
@@ -212,8 +214,22 @@ if(NOT MSVC)
                                                                 AMPolicyLibrary)
 endif()
 
+if(QT_PORT)
+  link_directories (C:/SQL)
+endif()
+
+if(QT_PORT)
+  link_directories (${CMAKE_SOURCE_DIR}/build/openssl_win_x86/lib)
+endif()
+
+if(NOT QT_PORT AND ${CMAKE_SYSTEM_NAME} MATCHES "Windows")
+  link_directories(${CMAKE_SOURCE_DIR}/build/openssl_win_x64/lib/)
+endif()
+
 create_test("application_manager_test" "${testSources}" "${ApplicationManagerTest}")
 target_link_libraries("application_manager_test"
+  Utils
+  dbms
   ApplicationManagerTest ${test_exec_libraries}
   gmock
   ApplicationManager
@@ -236,6 +252,11 @@ target_link_libraries("application_manager_test"
 
   file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/resumption)
   file(COPY smartDeviceLink_test.ini DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/resumption)
-  create_test("resumption/data_resumption_test" "${ResumptionData_SOURCES}" "${testLibraries}")
+  #create_test("resumption/data_resumption_test" "${ResumptionData_SOURCES}" "${testLibraries}")
+
+if(NOT QT_PORT AND ${CMAKE_SYSTEM_NAME} MATCHES "Windows")
+  set_target_properties(application_manager_test PROPERTIES LINK_FLAGS "/machine:X64")
+endif()
+  
 
 endif()

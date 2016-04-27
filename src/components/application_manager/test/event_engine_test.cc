@@ -55,7 +55,8 @@ class EventEngineTest : public testing::Test {
   EventEngineTest()
       : event_id(Event::EventID::BasicCommunication_ActivateApp)
       , event_id2(Event::EventID::BasicCommunication_OnAppActivated)
-      , event_id3(Event::EventID::VR_IsReady) {}
+      , event_id3(Event::EventID::VR_IsReady)
+      , correlation_id(1121){}
 
  protected:
   EventDispatcher* event_dispatcher_instance_;
@@ -64,7 +65,7 @@ class EventEngineTest : public testing::Test {
   const application_manager::event_engine::Event::EventID event_id2;
   const application_manager::event_engine::Event::EventID event_id3;
   MockEventObserver event_observer_mock_;
-  const int32_t correlation_id = 1121;
+  const int32_t correlation_id;// = 1121;
   smart_objects::SmartObject smart_object_with_type_notification;
   smart_objects::SmartObject smart_object_with_type_response;
   smart_objects::SmartObject smart_object_with_type_error_response;

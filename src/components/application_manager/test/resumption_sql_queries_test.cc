@@ -109,9 +109,12 @@ class ResumptionSqlQueriesTest : public ::testing::Test {
   static const int ign_off_count2;
   static const int timeStamp;
   static const int timeStamp2;
+  static int iii;
 
   static void SetUpTestCase() {
-    db_ = new SQLDatabase();
+        //std::string s = std::to_string(iii++);
+    db_ = new SQLDatabase("test", "test_connection");// + s);
+        //std::cout << "test_connection" + s << std::endl;
     ASSERT_TRUE(db_->Open());
     ASSERT_TRUE(db_->IsReadWrite());
     SQLQuery query(db_);
@@ -125,8 +128,26 @@ class ResumptionSqlQueriesTest : public ::testing::Test {
     delete db_;
     string file_to_delete = kDatabaseName + ".sqlite";
     file_system::DeleteFile(file_to_delete);
+	std::cout << "Remove file!" << std::endl;
   }
+  void SetUp() {
+	  //std::string s = std::to_string(iii++);
+	  //db_ = new SQLDatabase("test", "test_connection" + s);
+	  //std::cout << "test_connection" + s << std::endl;
+	  //ASSERT_TRUE(db_->Open());
+	  //ASSERT_TRUE(db_->IsReadWrite());
+	  //SQLQuery query(db_);
+	  //ASSERT_TRUE(query.Exec(resumption::kCreateSchema));
+	  //SQLQuery query_logging_off(db_);
+	  //ASSERT_TRUE(query_logging_off.Exec(kJournalOff));
+  }
+
   void TearDown() {
+	  //db_->Close();
+	  //delete db_;
+	  //string file_to_delete = kDatabaseName + ".sqlite";
+	  //file_system::DeleteFile(file_to_delete);
+	  //std::cout << "Remove file!" << std::endl;
     DeleteTablesData();
   }
 
@@ -348,6 +369,7 @@ const int ResumptionSqlQueriesTest::ign_off_count = 3;
 const int ResumptionSqlQueriesTest::ign_off_count2 = 4;
 const int ResumptionSqlQueriesTest::timeStamp = 2015;
 const int ResumptionSqlQueriesTest::timeStamp2 = 2016;
+int ResumptionSqlQueriesTest::iii = 1;
 
 void ResumptionSqlQueriesTest::CheckDeleteQuery(const string& count_query,
                                                 const string& query_to_check,
@@ -524,12 +546,15 @@ SQLQuery& ResumptionSqlQueriesTest::FillApplicationTable(
   query.Bind(3, hmiAppID);
   query.Bind(4, hmiLevel);
   query.Bind(5, ign_off_count);
-  query.Bind(6, timeStamp);
-  query.Bind(7, glob_prop_key);
-  query.Bind(8, isMediaApplication);
-  query.Bind(9, appID);
-  query.Bind(10, deviceID);
+  query.Bind(6, 0);
+  query.Bind(7, timeStamp);
+  query.Bind(8, glob_prop_key);
+  query.Bind(9, isMediaApplication);
+  query.Bind(10, appID);
+  query.Bind(11, deviceID);
   EXPECT_TRUE(query.Exec());
+  //int x;
+  //std::cin >> x;
   return query;
 }
 
@@ -1112,7 +1137,7 @@ TEST_F(ResumptionSqlQueriesTest, kUpdateHMILevel_ExpectDataUpdated) {
 }
 
 TEST_F(ResumptionSqlQueriesTest, kUpdateIgnOffCount_ExpectDataUpdated) {
-  // Arrange
+   // Arrange
   SQLQuery temp_query(db());
   int64_t key = FillImageTable(temp_query, 1, test_image).LastInsertId();
   key = FillGlobalPropertiesTable(
@@ -1140,6 +1165,8 @@ TEST_F(ResumptionSqlQueriesTest, kUpdateIgnOffCount_ExpectDataUpdated) {
   EXPECT_TRUE(query.Exec(resumption::kUpdateIgnOffCount));
   // Check after action
   CheckSelectQuery(kSelectIgnOffCount, ign_off_count - 1, 0);
+  //int x;
+  //std::cin >> x;
 }
 
 TEST_F(ResumptionSqlQueriesTest, kCountApplicationsIgnOff_ExpectDataCorrect) {
@@ -3086,16 +3113,16 @@ TEST_F(ResumptionSqlQueriesTest, kSelectAppTable_ExpectDataCorrect) {
   ValToPosPair p1(0, app_id1);
   ValToPosPair p2(1, device_id);
   // Checks
-  CheckSelectQuery(kSelectAppTable, p1, p2, app_id1, 0);
   CheckSelectQuery(kSelectAppTable, p1, p2, connection_key, 1);
   CheckSelectQuery(kSelectAppTable, p1, p2, grammarID, 2);
   CheckSelectQuery(kSelectAppTable, p1, p2, test_hash, 3);
   CheckSelectQuery(kSelectAppTable, p1, p2, hmiAppID, 4);
   CheckSelectQuery(kSelectAppTable, p1, p2, hmiLevel, 5);
   CheckSelectQuery(kSelectAppTable, p1, p2, ign_off_count, 6);
-  CheckSelectQuery(kSelectAppTable, p1, p2, timeStamp, 7);
-  CheckSelectQuery(kSelectAppTable, p1, p2, device_id, 8);
-  CheckSelectQuery(kSelectAppTable, p1, p2, true, 9);
+  CheckSelectQuery(kSelectAppTable, p1, p2, timeStamp, 8);
+  CheckSelectQuery(kSelectAppTable, p1, p2, true, 10);
+  CheckSelectQuery(kSelectAppTable, p1, p2, app_id1, 0);
+  CheckSelectQuery(kSelectAppTable, p1, p2, device_id, 9);
 }
 
 }  // namespace test

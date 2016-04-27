@@ -55,6 +55,6 @@ set(SOURCES
     #message_helper_test.cc
 )
 
-create_test("message_helper_test" "${SOURCES}" "${LIBRARIES}")
+#create_test("message_helper_test" "${SOURCES}" "${LIBRARIES}")
 
 endif()
