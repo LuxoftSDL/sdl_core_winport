@@ -51,11 +51,11 @@ set(testLibraries
 )
 
 set(testSources
-  usage_statistics_test.cc
-  #shared_library_test.cc
-  generated_code_test.cc
-  policy_manager_impl_test.cc
-  update_status_manager_test.cc
+  usage_statistics_test.cc #done
+  #shared_library_test.cc # not used in win_sdl
+  generated_code_test.cc #done need to copy files
+  policy_manager_impl_test.cc # 6 commented need to copy files
+  update_status_manager_test.cc #done
 )
 
 list (APPEND testSources

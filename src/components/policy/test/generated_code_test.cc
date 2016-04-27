@@ -30,6 +30,8 @@
  */
 
 #include <fstream>
+//#include <streambuf>
+#include <sstream>
 
 #include "gtest/gtest.h"
 
@@ -48,11 +50,15 @@ namespace policy {
 TEST(PolicyGeneratedCodeTest, TestValidPTPreloadJsonIsValid) {
   std::ifstream json_file("sdl_preloaded_pt.json");
   ASSERT_TRUE(json_file.is_open());
-  Json::Value valid_table;
-  Json::Reader reader;
-  ASSERT_TRUE(reader.parse(json_file, valid_table));
-  utils::json::JsonValueRef json_value_ref;
-  json_value_ref.Append(valid_table);
+  std::stringstream buffer;
+  buffer << json_file.rdbuf();
+  std::string str(buffer.str());
+  utils::json::JsonValue::ParseResult result = utils::json::JsonValue::Parse(str);
+  utils::json::JsonValue valid_table = result.first;
+  //Json::Value valid_table;
+  //Json::Reader reader;
+  //ASSERT_TRUE(reader.parse(json_file, valid_table));
+  utils::json::JsonValueRef json_value_ref = valid_table;
   Table table(json_value_ref);
   table.SetPolicyTableType(rpc::policy_table_interface_base::PT_PRELOADED);
   ASSERT_RPCTYPE_VALID(table);
@@ -61,12 +67,17 @@ TEST(PolicyGeneratedCodeTest, TestValidPTPreloadJsonIsValid) {
 TEST(PolicyGeneratedCodeTest, TestValidPTUpdateJsonIsValid) {
   std::ifstream json_file("valid_sdl_pt_update.json");
   ASSERT_TRUE(json_file.is_open());
-  Json::Value valid_table;
-  Json::Reader reader;
+  std::stringstream buffer;
+  buffer << json_file.rdbuf();
+  std::string str(buffer.str());
+  utils::json::JsonValue::ParseResult result = utils::json::JsonValue::Parse(str);
+  utils::json::JsonValue valid_table = result.first;
+  //Json::Value valid_table;
+  //Json::Reader reader;
 
-  ASSERT_TRUE(reader.parse(json_file, valid_table));
-  utils::json::JsonValueRef json_value_ptr;
-  json_value_ptr.Append(valid_table);
+  //ASSERT_TRUE(reader.parse(json_file, valid_table));
+  utils::json::JsonValueRef json_value_ptr = valid_table;
+  //json_value_ptr.Append(valid_table);
   Table table(json_value_ptr);
   table.SetPolicyTableType(rpc::policy_table_interface_base::PT_UPDATE);
   ASSERT_RPCTYPE_VALID(table);

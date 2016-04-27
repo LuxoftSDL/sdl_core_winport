@@ -70,7 +70,9 @@ PolicyManagerImpl::PolicyManagerImpl(const std::string& app_storage_folder,
     , retry_sequence_timeout_(60)
     , retry_sequence_index_(0)
     , ignition_check_(true)
-    , app_storage_folder_(app_storage_folder) {}
+    , app_storage_folder_(app_storage_folder) {
+	std::cout << "app_storage = " << app_storage_folder << std::endl;
+}
 
 void PolicyManagerImpl::set_listener(PolicyListener* listener) {
   listener_ = listener;
@@ -853,11 +855,13 @@ void PolicyManagerImpl::AddApplication(const std::string& application_id) {
   const std::string device_id = GetCurrentDeviceId(application_id);
   DeviceConsent device_consent = GetUserConsentForDevice(device_id);
   sync_primitives::AutoLock lock(apps_registration_lock_);
-
+  std::cout << "1111111111111" << std::endl;
   if (IsNewApplication(application_id)) {
+	  std::cout << "22" << std::endl;
     AddNewApplication(application_id, device_consent);
     update_status_manager_.OnNewApplicationAdded();
   } else {
+	  std::cout << "3" << std::endl;
     PromoteExistedApplication(application_id, device_consent);
   }
 }
@@ -885,6 +889,7 @@ void PolicyManagerImpl::PromoteExistedApplication(
   // disconnected, app permissions should be changed also
   if (kDeviceAllowed == device_consent &&
       cache_->IsPredataPolicy(application_id)) {
+	  std::cout << "4" << std::endl;
     cache_->SetDefaultPolicy(application_id);
   }
 }
@@ -907,12 +912,14 @@ bool PolicyManagerImpl::CheckAppStorageFolder() const {
   LOGGER_AUTO_TRACE(logger_);
   LOGGER_DEBUG(logger_, "AppStorageFolder " << app_storage_folder_);
   if (!file_system::DirectoryExists(app_storage_folder_)) {
+	  std::cout << "Storage directory doesn't exist " << app_storage_folder_ << "rarara!" << std::endl;
     LOGGER_WARN(logger_,
                 "Storage directory doesn't exist " << app_storage_folder_);
     return false;
   }
   if (!(file_system::IsWritingAllowed(app_storage_folder_) &&
         file_system::IsReadingAllowed(app_storage_folder_))) {
+	  std::cout << "Storage directory doesn't have read/write permissions " << std::endl;
     LOGGER_WARN(logger_,
                 "Storage directory doesn't have read/write permissions "
                     << app_storage_folder_);
@@ -924,6 +931,7 @@ bool PolicyManagerImpl::CheckAppStorageFolder() const {
 bool PolicyManagerImpl::InitPT(const std::string& file_name) {
   LOGGER_AUTO_TRACE(logger_);
   if (!CheckAppStorageFolder()) {
+	  std::cout << "Can not read/write into AppStorageFolder" << std::endl;
     LOGGER_ERROR(logger_, "Can not read/write into AppStorageFolder");
     return false;
   }
@@ -932,6 +940,7 @@ bool PolicyManagerImpl::InitPT(const std::string& file_name) {
     RefreshRetrySequence();
     update_status_manager_.OnPolicyInit(cache_->UpdateRequired());
   }
+  std::cout << "InitPT() " << ret << std::endl;
   return ret;
 }
 

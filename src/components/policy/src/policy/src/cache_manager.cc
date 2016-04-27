@@ -1032,18 +1032,19 @@ bool CacheManager::SetPredataPolicy(const std::string& app_id) {
 bool CacheManager::IsPredataPolicy(const std::string& app_id) {
   // TODO(AOleynik): Maybe change for comparison with pre_DataConsent
   // permissions or check string value from get_string()
+	std::cout << "321" << std::endl;
   policy_table::ApplicationParams& pre_data_app =
       pt_->policy_table.app_policies_section.apps[kPreDataConsentId];
   policy_table::ApplicationParams& specific_app =
       pt_->policy_table.app_policies_section.apps[app_id];
-
+  std::cout << "322" << std::endl;
   policy_table::Strings res;
   std::set_intersection(pre_data_app.groups.begin(),
                         pre_data_app.groups.end(),
                         specific_app.groups.begin(),
                         specific_app.groups.end(),
                         std::back_inserter(res));
-
+  
   bool is_marked_as_predata =
       kPreDataConsentId ==
       pt_->policy_table.app_policies_section.apps[app_id].get_string();
@@ -1098,6 +1099,7 @@ bool CacheManager::Init(const std::string& file_name) {
   bool result = true;
   switch (init_result) {
     case InitResult::EXISTS: {
+		std::cout << "Policy Table exists, was loaded correctly." << std::endl;
       LOGGER_INFO(logger_, "Policy Table exists, was loaded correctly.");
       result = LoadFromBackup();
       if (result) {
@@ -1111,6 +1113,7 @@ bool CacheManager::Init(const std::string& file_name) {
       }
     } break;
     case InitResult::SUCCESS: {
+		std::cout << "Policy Table was inited successfully" << std::endl;
       LOGGER_INFO(logger_, "Policy Table was inited successfully");
       result = LoadFromFile(file_name, *pt_);
       backup_->UpdateDBVersion();
@@ -1120,10 +1123,11 @@ bool CacheManager::Init(const std::string& file_name) {
     } break;
     default: {
       result = false;
+	  std::cout << "Failed to init policy table." << std::endl;
       LOGGER_ERROR(logger_, "Failed to init policy table.");
     } break;
   }
-
+  std::cout << "Init() = " << result << std::endl;
   return result;
 }
 
@@ -1145,6 +1149,7 @@ bool CacheManager::LoadFromFile(const std::string& file_name,
   LOGGER_AUTO_TRACE(logger_);
   BinaryMessage json_string;
   if (!file_system::ReadBinaryFile(file_name, json_string)) {
+	  std::cout << "Failed to read pt file." << std::endl;
     LOGGER_FATAL(logger_, "Failed to read pt file.");
     return false;
   }
@@ -1152,6 +1157,7 @@ bool CacheManager::LoadFromFile(const std::string& file_name,
   std::string json(json_string.begin(), json_string.end());
   JsonValue::ParseResult parse_result = JsonValue::Parse(json);
   if (!parse_result.second) {
+	  std::cout << "Preloaded PT is corrupted." << std::endl;
     LOGGER_FATAL(logger_, "Preloaded PT is corrupted.");
     return false;
   }
@@ -1167,10 +1173,12 @@ bool CacheManager::LoadFromFile(const std::string& file_name,
   if (!table.is_valid()) {
     rpc::ValidationReport report("policy_table");
     table.ReportErrors(&report);
+	std::cout << "Parsed table is not valid " << std::endl;
     LOGGER_FATAL(logger_,
                  "Parsed table is not valid " << rpc::PrettyFormat(report));
     return false;
   }
+  std::cout << "Load pt success!" << std::endl;
   return true;
 }
 

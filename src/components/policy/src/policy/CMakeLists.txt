@@ -103,7 +103,7 @@ endif()
 if (${CMAKE_SYSTEM_NAME} MATCHES "Windows")
 add_custom_target(copy_library_${target} ALL
     COMMAND ${CMAKE_COMMAND} -E copy_if_different
-    ${CMAKE_CURRENT_BINARY_DIR}/$(Configuration)/${library_name}
+    ${CMAKE_CURRENT_BINARY_DIR}/$(Configuration)/Policy.lib
     ${copy_destination}/${library_name}
     DEPENDS ${target}
     COMMENT "Copying library ${library_name}")
